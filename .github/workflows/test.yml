@@ -19,6 +19,8 @@ jobs:
           go-version-file: go.mod
           cache: true
       - run: go mod download
+      - name: normalizer unit tests
+        run: python3 scripts/openapi_normalize_test.py
       - name: gofmt
         run: |
           fmtout="$(gofmt -l main.go internal/)"

@@ -119,11 +119,11 @@ const (
 	CredentialBackedModelConfigInputText  CredentialBackedModelConfigInput = "text"
 )
 
-// Defines values for CredentialBackedModelConfigTextVerbosity0.
+// Defines values for CredentialBackedModelConfigTextVerbosity.
 const (
-	CredentialBackedModelConfigTextVerbosity0High   CredentialBackedModelConfigTextVerbosity0 = "high"
-	CredentialBackedModelConfigTextVerbosity0Low    CredentialBackedModelConfigTextVerbosity0 = "low"
-	CredentialBackedModelConfigTextVerbosity0Medium CredentialBackedModelConfigTextVerbosity0 = "medium"
+	CredentialBackedModelConfigTextVerbosityHigh   CredentialBackedModelConfigTextVerbosity = "high"
+	CredentialBackedModelConfigTextVerbosityLow    CredentialBackedModelConfigTextVerbosity = "low"
+	CredentialBackedModelConfigTextVerbosityMedium CredentialBackedModelConfigTextVerbosity = "medium"
 )
 
 // Defines values for CredentialProvider.
@@ -202,18 +202,18 @@ const (
 	HeartbeatConfigEveryN6h   HeartbeatConfigEvery = "6h"
 )
 
-// Defines values for HeartbeatConfigPatchEvery0.
+// Defines values for HeartbeatConfigPatchEvery.
 const (
-	HeartbeatConfigPatchEvery0N0m   HeartbeatConfigPatchEvery0 = "0m"
-	HeartbeatConfigPatchEvery0N12h  HeartbeatConfigPatchEvery0 = "12h"
-	HeartbeatConfigPatchEvery0N15m  HeartbeatConfigPatchEvery0 = "15m"
-	HeartbeatConfigPatchEvery0N168h HeartbeatConfigPatchEvery0 = "168h"
-	HeartbeatConfigPatchEvery0N1h   HeartbeatConfigPatchEvery0 = "1h"
-	HeartbeatConfigPatchEvery0N24h  HeartbeatConfigPatchEvery0 = "24h"
-	HeartbeatConfigPatchEvery0N2h   HeartbeatConfigPatchEvery0 = "2h"
-	HeartbeatConfigPatchEvery0N30m  HeartbeatConfigPatchEvery0 = "30m"
-	HeartbeatConfigPatchEvery0N5m   HeartbeatConfigPatchEvery0 = "5m"
-	HeartbeatConfigPatchEvery0N6h   HeartbeatConfigPatchEvery0 = "6h"
+	HeartbeatConfigPatchEveryN0m   HeartbeatConfigPatchEvery = "0m"
+	HeartbeatConfigPatchEveryN12h  HeartbeatConfigPatchEvery = "12h"
+	HeartbeatConfigPatchEveryN15m  HeartbeatConfigPatchEvery = "15m"
+	HeartbeatConfigPatchEveryN168h HeartbeatConfigPatchEvery = "168h"
+	HeartbeatConfigPatchEveryN1h   HeartbeatConfigPatchEvery = "1h"
+	HeartbeatConfigPatchEveryN24h  HeartbeatConfigPatchEvery = "24h"
+	HeartbeatConfigPatchEveryN2h   HeartbeatConfigPatchEvery = "2h"
+	HeartbeatConfigPatchEveryN30m  HeartbeatConfigPatchEvery = "30m"
+	HeartbeatConfigPatchEveryN5m   HeartbeatConfigPatchEvery = "5m"
+	HeartbeatConfigPatchEveryN6h   HeartbeatConfigPatchEvery = "6h"
 )
 
 // Defines values for MeteredResource.
@@ -288,28 +288,28 @@ const (
 	OpenClawConfigPatchBotTypeOpenclaw OpenClawConfigPatchBotType = "openclaw"
 )
 
-// Defines values for OpenClawConfigPatchReasoningDefault0.
+// Defines values for OpenClawConfigPatchReasoningDefault.
 const (
-	OpenClawConfigPatchReasoningDefault0Off    OpenClawConfigPatchReasoningDefault0 = "off"
-	OpenClawConfigPatchReasoningDefault0On     OpenClawConfigPatchReasoningDefault0 = "on"
-	OpenClawConfigPatchReasoningDefault0Stream OpenClawConfigPatchReasoningDefault0 = "stream"
+	OpenClawConfigPatchReasoningDefaultOff    OpenClawConfigPatchReasoningDefault = "off"
+	OpenClawConfigPatchReasoningDefaultOn     OpenClawConfigPatchReasoningDefault = "on"
+	OpenClawConfigPatchReasoningDefaultStream OpenClawConfigPatchReasoningDefault = "stream"
 )
 
-// Defines values for OpenClawConfigPatchSystemPromptMode0.
+// Defines values for OpenClawConfigPatchSystemPromptMode.
 const (
-	OpenClawConfigPatchSystemPromptMode0Botyard  OpenClawConfigPatchSystemPromptMode0 = "botyard"
-	OpenClawConfigPatchSystemPromptMode0Openclaw OpenClawConfigPatchSystemPromptMode0 = "openclaw"
+	OpenClawConfigPatchSystemPromptModeBotyard  OpenClawConfigPatchSystemPromptMode = "botyard"
+	OpenClawConfigPatchSystemPromptModeOpenclaw OpenClawConfigPatchSystemPromptMode = "openclaw"
 )
 
-// Defines values for OpenClawConfigPatchThinkingDefault0.
+// Defines values for OpenClawConfigPatchThinkingDefault.
 const (
-	OpenClawConfigPatchThinkingDefault0Adaptive OpenClawConfigPatchThinkingDefault0 = "adaptive"
-	OpenClawConfigPatchThinkingDefault0High     OpenClawConfigPatchThinkingDefault0 = "high"
-	OpenClawConfigPatchThinkingDefault0Low      OpenClawConfigPatchThinkingDefault0 = "low"
-	OpenClawConfigPatchThinkingDefault0Medium   OpenClawConfigPatchThinkingDefault0 = "medium"
-	OpenClawConfigPatchThinkingDefault0Minimal  OpenClawConfigPatchThinkingDefault0 = "minimal"
-	OpenClawConfigPatchThinkingDefault0Off      OpenClawConfigPatchThinkingDefault0 = "off"
-	OpenClawConfigPatchThinkingDefault0Xhigh    OpenClawConfigPatchThinkingDefault0 = "xhigh"
+	OpenClawConfigPatchThinkingDefaultAdaptive OpenClawConfigPatchThinkingDefault = "adaptive"
+	OpenClawConfigPatchThinkingDefaultHigh     OpenClawConfigPatchThinkingDefault = "high"
+	OpenClawConfigPatchThinkingDefaultLow      OpenClawConfigPatchThinkingDefault = "low"
+	OpenClawConfigPatchThinkingDefaultMedium   OpenClawConfigPatchThinkingDefault = "medium"
+	OpenClawConfigPatchThinkingDefaultMinimal  OpenClawConfigPatchThinkingDefault = "minimal"
+	OpenClawConfigPatchThinkingDefaultOff      OpenClawConfigPatchThinkingDefault = "off"
+	OpenClawConfigPatchThinkingDefaultXhigh    OpenClawConfigPatchThinkingDefault = "xhigh"
 )
 
 // Defines values for OpenClawModelApi.
@@ -381,80 +381,25 @@ type ActiveHoursConfig struct {
 // ActiveHoursConfigPatch Patchable fields for active hours configuration.
 type ActiveHoursConfigPatch struct {
 	// FromTime Start time in HH:MM format
-	FromTime *ActiveHoursConfigPatch_FromTime `json:"from_time,omitempty"`
+	FromTime *string `json:"from_time"`
 
 	// Timezone IANA timezone
-	Timezone *ActiveHoursConfigPatch_Timezone `json:"timezone,omitempty"`
+	Timezone *string `json:"timezone"`
 
 	// ToTime End time in HH:MM format
-	ToTime *ActiveHoursConfigPatch_ToTime `json:"to_time,omitempty"`
-}
-
-// ActiveHoursConfigPatchFromTime0 defines model for .
-type ActiveHoursConfigPatchFromTime0 = string
-
-// ActiveHoursConfigPatchFromTime1 defines model for .
-type ActiveHoursConfigPatchFromTime1 = interface{}
-
-// ActiveHoursConfigPatch_FromTime Start time in HH:MM format
-type ActiveHoursConfigPatch_FromTime struct {
-	union json.RawMessage
-}
-
-// ActiveHoursConfigPatchTimezone0 defines model for .
-type ActiveHoursConfigPatchTimezone0 = string
-
-// ActiveHoursConfigPatchTimezone1 defines model for .
-type ActiveHoursConfigPatchTimezone1 = interface{}
-
-// ActiveHoursConfigPatch_Timezone IANA timezone
-type ActiveHoursConfigPatch_Timezone struct {
-	union json.RawMessage
-}
-
-// ActiveHoursConfigPatchToTime0 defines model for .
-type ActiveHoursConfigPatchToTime0 = string
-
-// ActiveHoursConfigPatchToTime1 defines model for .
-type ActiveHoursConfigPatchToTime1 = interface{}
-
-// ActiveHoursConfigPatch_ToTime End time in HH:MM format
-type ActiveHoursConfigPatch_ToTime struct {
-	union json.RawMessage
+	ToTime *string `json:"to_time"`
 }
 
 // AddonInput Shape of an addon instance as it appears in desired_config JSON.
 type AddonInput struct {
-	Config  *AddonInput_Config `json:"config,omitempty"`
-	Enabled *bool              `json:"enabled,omitempty"`
-	Id      string             `json:"id"`
-}
-
-// AddonInputConfig0 defines model for .
-type AddonInputConfig0 map[string]interface{}
-
-// AddonInputConfig1 defines model for .
-type AddonInputConfig1 = interface{}
-
-// AddonInput_Config defines model for AddonInput.Config.
-type AddonInput_Config struct {
-	union json.RawMessage
+	Config  *map[string]interface{} `json:"config"`
+	Enabled *bool                   `json:"enabled,omitempty"`
+	Id      string                  `json:"id"`
 }
 
 // AllowedAgentModelConfig A model reference that agents are allowed to select.
 type AllowedAgentModelConfig struct {
-	Alias *AllowedAgentModelConfig_Alias `json:"alias,omitempty"`
-}
-
-// AllowedAgentModelConfigAlias0 defines model for .
-type AllowedAgentModelConfigAlias0 = string
-
-// AllowedAgentModelConfigAlias1 defines model for .
-type AllowedAgentModelConfigAlias1 = interface{}
-
-// AllowedAgentModelConfig_Alias defines model for AllowedAgentModelConfig.Alias.
-type AllowedAgentModelConfig_Alias struct {
-	union json.RawMessage
+	Alias *string `json:"alias"`
 }
 
 // AndBotFilterField defines model for And_BotFilterField_.
@@ -501,7 +446,7 @@ type BotConfigUpdate struct {
 // BotCreate Request to create a bot from guided form fields.
 type BotCreate struct {
 	// AvatarUrl Avatar image URL (DiceBear data URI or custom)
-	AvatarUrl *BotCreate_AvatarUrl `json:"avatar_url,omitempty"`
+	AvatarUrl *string `json:"avatar_url"`
 
 	// Config Patchable fields for OpenClaw bot configs.
 	//
@@ -521,7 +466,7 @@ type BotCreate struct {
 	Name string `json:"name"`
 
 	// Resources Per-bot resource customisation on top of the tier preset — a sparse list of MeteredResource line-items (only the resources being set; omitted resources use the preset). Enterprise plan only — rejected with 403 otherwise.
-	Resources *BotCreate_Resources `json:"resources,omitempty"`
+	Resources *ResourceQuantities `json:"resources"`
 
 	// SkillIds Skills to assign at creation (the wizard's final selection).
 	SkillIds *[]string `json:"skill_ids,omitempty"`
@@ -533,25 +478,6 @@ type BotCreate struct {
 	ToolIds *[]string `json:"tool_ids,omitempty"`
 }
 
-// BotCreateAvatarUrl0 defines model for .
-type BotCreateAvatarUrl0 = string
-
-// BotCreateAvatarUrl1 defines model for .
-type BotCreateAvatarUrl1 = interface{}
-
-// BotCreate_AvatarUrl Avatar image URL (DiceBear data URI or custom)
-type BotCreate_AvatarUrl struct {
-	union json.RawMessage
-}
-
-// BotCreateResources1 defines model for .
-type BotCreateResources1 = interface{}
-
-// BotCreate_Resources Per-bot resource customisation on top of the tier preset — a sparse list of MeteredResource line-items (only the resources being set; omitted resources use the preset). Enterprise plan only — rejected with 403 otherwise.
-type BotCreate_Resources struct {
-	union json.RawMessage
-}
-
 // BotFilterField Fields filterable via the bot search endpoint.
 type BotFilterField string
 
@@ -561,8 +487,8 @@ type BotHealthStatus string
 // BotListItem Bot list item response.
 type BotListItem struct {
 	// Access Bot visibility within its organization.
-	Access    BotAccess              `json:"access"`
-	AvatarUrl *BotListItem_AvatarUrl `json:"avatar_url,omitempty"`
+	Access    BotAccess `json:"access"`
+	AvatarUrl *string   `json:"avatar_url"`
 
 	// CanUse Whether the calling actor can chat with this bot
 	CanUse *bool `json:"can_use,omitempty"`
@@ -589,10 +515,10 @@ type BotListItem struct {
 	ObservedState ObservedState `json:"observed_state"`
 
 	// ObservedStatus Runtime pod status from the cluster
-	ObservedStatus map[string]interface{}     `json:"observed_status"`
-	OrgId          string                     `json:"org_id"`
-	OwnerId        *BotListItem_OwnerId       `json:"owner_id,omitempty"`
-	ReconcileError BotListItem_ReconcileError `json:"reconcile_error"`
+	ObservedStatus map[string]interface{} `json:"observed_status"`
+	OrgId          string                 `json:"org_id"`
+	OwnerId        *string                `json:"owner_id"`
+	ReconcileError *string                `json:"reconcile_error"`
 
 	// Slug URL-friendly bot identifier
 	Slug string `json:"slug"`
@@ -600,39 +526,6 @@ type BotListItem struct {
 	// Tier Bot subscription tier.
 	Tier      BotTier   `json:"tier"`
 	UpdatedAt time.Time `json:"updated_at"`
-}
-
-// BotListItemAvatarUrl0 defines model for .
-type BotListItemAvatarUrl0 = string
-
-// BotListItemAvatarUrl1 defines model for .
-type BotListItemAvatarUrl1 = interface{}
-
-// BotListItem_AvatarUrl defines model for BotListItem.AvatarUrl.
-type BotListItem_AvatarUrl struct {
-	union json.RawMessage
-}
-
-// BotListItemOwnerId0 defines model for .
-type BotListItemOwnerId0 = string
-
-// BotListItemOwnerId1 defines model for .
-type BotListItemOwnerId1 = interface{}
-
-// BotListItem_OwnerId defines model for BotListItem.OwnerId.
-type BotListItem_OwnerId struct {
-	union json.RawMessage
-}
-
-// BotListItemReconcileError0 defines model for .
-type BotListItemReconcileError0 = string
-
-// BotListItemReconcileError1 defines model for .
-type BotListItemReconcileError1 = interface{}
-
-// BotListItem_ReconcileError defines model for BotListItem.ReconcileError.
-type BotListItem_ReconcileError struct {
-	union json.RawMessage
 }
 
 // BotMemberRole Role of a user on a bot membership.
@@ -651,8 +544,8 @@ type BotOnboardingState string
 // BotResponse Bot desired/observed state response.
 type BotResponse struct {
 	// Access Bot visibility within its organization.
-	Access    BotAccess              `json:"access"`
-	AvatarUrl *BotResponse_AvatarUrl `json:"avatar_url,omitempty"`
+	Access    BotAccess `json:"access"`
+	AvatarUrl *string   `json:"avatar_url"`
 
 	// CanUse Whether the calling actor can chat with this bot
 	CanUse           *bool     `json:"can_use,omitempty"`
@@ -687,13 +580,13 @@ type BotResponse struct {
 	Id string `json:"id"`
 
 	// LastHealthCheckAt Timestamp of the last health check
-	LastHealthCheckAt *BotResponse_LastHealthCheckAt `json:"last_health_check_at,omitempty"`
-	LastReconciledAt  BotResponse_LastReconciledAt   `json:"last_reconciled_at"`
+	LastHealthCheckAt *time.Time `json:"last_health_check_at"`
+	LastReconciledAt  *time.Time `json:"last_reconciled_at"`
 
 	// MemberRole The calling user's role on this bot (null when not a member)
-	MemberRole *BotResponse_MemberRole `json:"member_role,omitempty"`
-	Name       string                  `json:"name"`
-	Namespace  string                  `json:"namespace"`
+	MemberRole *BotMemberRole `json:"member_role"`
+	Name       string         `json:"name"`
+	Namespace  string         `json:"namespace"`
 
 	// ObservedState Operator's view of where a bot is in the reconciler phase pipeline.
 	//
@@ -710,18 +603,18 @@ type BotResponse struct {
 	// ``pending`` bots receive an onboarding directive in their system prompt
 	// until they call the ``finish_onboarding`` tool, which flips them to
 	// ``complete``. ``none`` means the bot was created without guided setup.
-	OnboardingState      BotOnboardingState         `json:"onboarding_state"`
-	OrgId                string                     `json:"org_id"`
-	OwnerId              *BotResponse_OwnerId       `json:"owner_id,omitempty"`
-	ReconcileError       BotResponse_ReconcileError `json:"reconcile_error"`
-	ReconciledGeneration int                        `json:"reconciled_generation"`
+	OnboardingState      BotOnboardingState `json:"onboarding_state"`
+	OrgId                string             `json:"org_id"`
+	OwnerId              *string            `json:"owner_id"`
+	ReconcileError       *string            `json:"reconcile_error"`
+	ReconciledGeneration int                `json:"reconciled_generation"`
 
 	// RescueStage Current rescue escalation stage, if rescue is in progress
-	RescueStage *BotResponse_RescueStage `json:"rescue_stage,omitempty"`
+	RescueStage *RescueStage `json:"rescue_stage"`
 
 	// Resources The bot's current effective resources as a list of MeteredResource line-items in K8s quantities (materialised from the plan defaults plus any enterprise customisation). Null only for a transient un-materialised bot.
-	Resources  *BotResponse_Resources `json:"resources,omitempty"`
-	RetryCount int                    `json:"retry_count"`
+	Resources  *ResourceQuantities `json:"resources"`
+	RetryCount int                 `json:"retry_count"`
 
 	// RuntimeClass Container runtime class for a bot pod.
 	//
@@ -747,85 +640,6 @@ type BotResponse struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-// BotResponseAvatarUrl0 defines model for .
-type BotResponseAvatarUrl0 = string
-
-// BotResponseAvatarUrl1 defines model for .
-type BotResponseAvatarUrl1 = interface{}
-
-// BotResponse_AvatarUrl defines model for BotResponse.AvatarUrl.
-type BotResponse_AvatarUrl struct {
-	union json.RawMessage
-}
-
-// BotResponseLastHealthCheckAt0 defines model for .
-type BotResponseLastHealthCheckAt0 = time.Time
-
-// BotResponseLastHealthCheckAt1 defines model for .
-type BotResponseLastHealthCheckAt1 = interface{}
-
-// BotResponse_LastHealthCheckAt Timestamp of the last health check
-type BotResponse_LastHealthCheckAt struct {
-	union json.RawMessage
-}
-
-// BotResponseLastReconciledAt0 defines model for .
-type BotResponseLastReconciledAt0 = time.Time
-
-// BotResponseLastReconciledAt1 defines model for .
-type BotResponseLastReconciledAt1 = interface{}
-
-// BotResponse_LastReconciledAt defines model for BotResponse.LastReconciledAt.
-type BotResponse_LastReconciledAt struct {
-	union json.RawMessage
-}
-
-// BotResponseMemberRole1 defines model for .
-type BotResponseMemberRole1 = interface{}
-
-// BotResponse_MemberRole The calling user's role on this bot (null when not a member)
-type BotResponse_MemberRole struct {
-	union json.RawMessage
-}
-
-// BotResponseOwnerId0 defines model for .
-type BotResponseOwnerId0 = string
-
-// BotResponseOwnerId1 defines model for .
-type BotResponseOwnerId1 = interface{}
-
-// BotResponse_OwnerId defines model for BotResponse.OwnerId.
-type BotResponse_OwnerId struct {
-	union json.RawMessage
-}
-
-// BotResponseReconcileError0 defines model for .
-type BotResponseReconcileError0 = string
-
-// BotResponseReconcileError1 defines model for .
-type BotResponseReconcileError1 = interface{}
-
-// BotResponse_ReconcileError defines model for BotResponse.ReconcileError.
-type BotResponse_ReconcileError struct {
-	union json.RawMessage
-}
-
-// BotResponseRescueStage1 defines model for .
-type BotResponseRescueStage1 = interface{}
-
-// BotResponse_RescueStage Current rescue escalation stage, if rescue is in progress
-type BotResponse_RescueStage struct {
-	union json.RawMessage
-}
-
-// BotResponseResources1 defines model for .
-type BotResponseResources1 = interface{}
-
-// BotResponse_Resources The bot's current effective resources as a list of MeteredResource line-items in K8s quantities (materialised from the plan defaults plus any enterprise customisation). Null only for a transient un-materialised bot.
-type BotResponse_Resources struct {
-	union json.RawMessage
-}
-
 // BotRestartResponse Response for a user-triggered bot container restart.
 type BotRestartResponse struct {
 	Message string `json:"message"`
@@ -845,16 +659,8 @@ type BotRuntimePrivilegeMode string
 // BotSearchRequest Request body for POST /v1/orgs/{org_id}/bots/search.
 type BotSearchRequest struct {
 	// Pagination Query parameters for offset-based paginated endpoints.
-	Pagination *PaginationParams       `json:"pagination,omitempty"`
-	Where      *BotSearchRequest_Where `json:"where,omitempty"`
-}
-
-// BotSearchRequestWhere1 defines model for .
-type BotSearchRequestWhere1 = interface{}
-
-// BotSearchRequest_Where defines model for BotSearchRequest.Where.
-type BotSearchRequest_Where struct {
-	union json.RawMessage
+	Pagination *PaginationParams         `json:"pagination,omitempty"`
+	Where      *FilterNodeBotFilterField `json:"where"`
 }
 
 // BotStorageClass Storage class for the bot's workspace PVC.
@@ -873,43 +679,16 @@ type BotTier string
 // For config changes, use PATCH /{bot_slug}/config instead.
 type BotUpdate struct {
 	// AvatarUrl Avatar image URL (DiceBear data URI or custom). Send null to clear; omit to leave unchanged.
-	AvatarUrl *BotUpdate_AvatarUrl `json:"avatar_url,omitempty"`
+	AvatarUrl *string `json:"avatar_url"`
 
 	// Resources Per-bot resource customisation — a sparse list of MeteredResource line-items (only the resources being changed). Send a block to set resources on top of the tier defaults; send null to reset to the tier defaults; omit to leave unchanged. Enterprise plan only.
-	Resources *BotUpdate_Resources `json:"resources,omitempty"`
+	Resources *ResourceQuantities `json:"resources"`
 
 	// RuntimePrivilegeMode Privilege level requested for the bot runtime pod.
 	RuntimePrivilegeMode *BotRuntimePrivilegeMode `json:"runtime_privilege_mode,omitempty"`
 
 	// Tier Bot tier
-	Tier *BotUpdate_Tier `json:"tier,omitempty"`
-}
-
-// BotUpdateAvatarUrl0 defines model for .
-type BotUpdateAvatarUrl0 = string
-
-// BotUpdateAvatarUrl1 defines model for .
-type BotUpdateAvatarUrl1 = interface{}
-
-// BotUpdate_AvatarUrl Avatar image URL (DiceBear data URI or custom). Send null to clear; omit to leave unchanged.
-type BotUpdate_AvatarUrl struct {
-	union json.RawMessage
-}
-
-// BotUpdateResources1 defines model for .
-type BotUpdateResources1 = interface{}
-
-// BotUpdate_Resources Per-bot resource customisation — a sparse list of MeteredResource line-items (only the resources being changed). Send a block to set resources on top of the tier defaults; send null to reset to the tier defaults; omit to leave unchanged. Enterprise plan only.
-type BotUpdate_Resources struct {
-	union json.RawMessage
-}
-
-// BotUpdateTier1 defines model for .
-type BotUpdateTier1 = interface{}
-
-// BotUpdate_Tier Bot tier
-type BotUpdate_Tier struct {
-	union json.RawMessage
+	Tier *BotTier `json:"tier"`
 }
 
 // BrowserConfig OpenClaw browser plugin configuration.
@@ -937,24 +716,13 @@ type BotUpdate_Tier struct {
 // fails to start with a confusing error.
 type BrowserConfig struct {
 	// ExecutablePath Absolute path to the Chromium-compatible browser binary OpenClaw should launch. Defaults to the wrapper ``provision.sh`` installs, which resolves the Playwright-bundled chromium in the tools component at exec time (so the path survives tools-component hot-upgrades). Set to ``None`` to fall back to OpenClaw's PATH-based discovery (Chrome/Brave/Edge/Chromium/Chrome Canary).
-	ExecutablePath *BrowserConfig_ExecutablePath `json:"executable_path,omitempty"`
+	ExecutablePath *string `json:"executable_path"`
 
 	// Headless Force headless launch. Required for our pods, which have no ``DISPLAY`` (no X server, no Wayland compositor). When ``executable_path`` is set, OpenClaw's plugin doesn't auto-infer headless from the binary name — it must be told explicitly via this flag. Default ``True`` because every Botyard bot pod is a server environment with no display.
 	Headless *bool `json:"headless,omitempty"`
 
 	// NoSandbox Add ``--no-sandbox`` to Chromium's launch args. Required for non-root container deployments where Chromium's setuid + namespace sandboxes can't initialise. Default ``True`` because every Botyard bot pod runs non-root.
 	NoSandbox *bool `json:"no_sandbox,omitempty"`
-}
-
-// BrowserConfigExecutablePath0 defines model for .
-type BrowserConfigExecutablePath0 = string
-
-// BrowserConfigExecutablePath1 defines model for .
-type BrowserConfigExecutablePath1 = interface{}
-
-// BrowserConfig_ExecutablePath Absolute path to the Chromium-compatible browser binary OpenClaw should launch. Defaults to the wrapper “provision.sh“ installs, which resolves the Playwright-bundled chromium in the tools component at exec time (so the path survives tools-component hot-upgrades). Set to “None“ to fall back to OpenClaw's PATH-based discovery (Chrome/Brave/Edge/Chromium/Chrome Canary).
-type BrowserConfig_ExecutablePath struct {
-	union json.RawMessage
 }
 
 // ClaudeCodeProviderEntry Claude Code CLI backend configuration for an openclaw bot.
@@ -1044,60 +812,16 @@ type CliWatchdogConfig struct {
 // the platform-level fix; bots can still override per-bot.
 type CliWatchdogProfile struct {
 	// MaxMs Upper bound on the resolved no-output timeout (ms).
-	MaxMs *CliWatchdogProfile_MaxMs `json:"max_ms,omitempty"`
+	MaxMs *int `json:"max_ms"`
 
 	// MinMs Lower bound on the resolved no-output timeout (ms).
-	MinMs *CliWatchdogProfile_MinMs `json:"min_ms,omitempty"`
+	MinMs *int `json:"min_ms"`
 
 	// NoOutputTimeoutMs Explicit no-output timeout in ms. When set, overrides the ratio/min/max computation. Capped by OpenClaw at ``timeoutMs - 1s``.
-	NoOutputTimeoutMs *CliWatchdogProfile_NoOutputTimeoutMs `json:"no_output_timeout_ms,omitempty"`
+	NoOutputTimeoutMs *int `json:"no_output_timeout_ms"`
 
 	// NoOutputTimeoutRatio Fraction of the total turn ``timeoutMs`` used when ``no_output_timeout_ms`` is unset. Clamped to ``[0.05, 0.95]`` by OpenClaw.
-	NoOutputTimeoutRatio *CliWatchdogProfile_NoOutputTimeoutRatio `json:"no_output_timeout_ratio,omitempty"`
-}
-
-// CliWatchdogProfileMaxMs0 defines model for .
-type CliWatchdogProfileMaxMs0 = int
-
-// CliWatchdogProfileMaxMs1 defines model for .
-type CliWatchdogProfileMaxMs1 = interface{}
-
-// CliWatchdogProfile_MaxMs Upper bound on the resolved no-output timeout (ms).
-type CliWatchdogProfile_MaxMs struct {
-	union json.RawMessage
-}
-
-// CliWatchdogProfileMinMs0 defines model for .
-type CliWatchdogProfileMinMs0 = int
-
-// CliWatchdogProfileMinMs1 defines model for .
-type CliWatchdogProfileMinMs1 = interface{}
-
-// CliWatchdogProfile_MinMs Lower bound on the resolved no-output timeout (ms).
-type CliWatchdogProfile_MinMs struct {
-	union json.RawMessage
-}
-
-// CliWatchdogProfileNoOutputTimeoutMs0 defines model for .
-type CliWatchdogProfileNoOutputTimeoutMs0 = int
-
-// CliWatchdogProfileNoOutputTimeoutMs1 defines model for .
-type CliWatchdogProfileNoOutputTimeoutMs1 = interface{}
-
-// CliWatchdogProfile_NoOutputTimeoutMs Explicit no-output timeout in ms. When set, overrides the ratio/min/max computation. Capped by OpenClaw at “timeoutMs - 1s“.
-type CliWatchdogProfile_NoOutputTimeoutMs struct {
-	union json.RawMessage
-}
-
-// CliWatchdogProfileNoOutputTimeoutRatio0 defines model for .
-type CliWatchdogProfileNoOutputTimeoutRatio0 = float32
-
-// CliWatchdogProfileNoOutputTimeoutRatio1 defines model for .
-type CliWatchdogProfileNoOutputTimeoutRatio1 = interface{}
-
-// CliWatchdogProfile_NoOutputTimeoutRatio Fraction of the total turn “timeoutMs“ used when “no_output_timeout_ms“ is unset. Clamped to “[0.05, 0.95]“ by OpenClaw.
-type CliWatchdogProfile_NoOutputTimeoutRatio struct {
-	union json.RawMessage
+	NoOutputTimeoutRatio *float32 `json:"no_output_timeout_ratio"`
 }
 
 // CommandsConfig Schema-required commands configuration.
@@ -1142,88 +866,22 @@ type CompactionConfig struct {
 // CompactionConfigPatch Patchable compaction fields (all optional; only provided fields apply).
 type CompactionConfigPatch struct {
 	// MaxActiveTranscriptBytes Byte size that triggers proactive local compaction.
-	MaxActiveTranscriptBytes *CompactionConfigPatch_MaxActiveTranscriptBytes `json:"max_active_transcript_bytes,omitempty"`
+	MaxActiveTranscriptBytes *int `json:"max_active_transcript_bytes"`
 
 	// MidTurnPrecheck Run a tool-loop context precheck before the next model call.
-	MidTurnPrecheck *CompactionConfigPatch_MidTurnPrecheck `json:"mid_turn_precheck,omitempty"`
+	MidTurnPrecheck *bool `json:"mid_turn_precheck"`
 
 	// ReserveTokens Reply/tool headroom tokens reserved after compaction.
-	ReserveTokens *CompactionConfigPatch_ReserveTokens `json:"reserve_tokens,omitempty"`
+	ReserveTokens *int `json:"reserve_tokens"`
 
 	// ReserveTokensFloor Floor enforced for reserve_tokens (0 disables).
-	ReserveTokensFloor *CompactionConfigPatch_ReserveTokensFloor `json:"reserve_tokens_floor,omitempty"`
+	ReserveTokensFloor *int `json:"reserve_tokens_floor"`
 
 	// TimeoutSeconds Maximum seconds allowed for one compaction operation.
-	TimeoutSeconds *CompactionConfigPatch_TimeoutSeconds `json:"timeout_seconds,omitempty"`
+	TimeoutSeconds *int `json:"timeout_seconds"`
 
 	// TruncateAfterCompaction Rotate the active transcript to a compacted successor.
-	TruncateAfterCompaction *CompactionConfigPatch_TruncateAfterCompaction `json:"truncate_after_compaction,omitempty"`
-}
-
-// CompactionConfigPatchMaxActiveTranscriptBytes0 defines model for .
-type CompactionConfigPatchMaxActiveTranscriptBytes0 = int
-
-// CompactionConfigPatchMaxActiveTranscriptBytes1 defines model for .
-type CompactionConfigPatchMaxActiveTranscriptBytes1 = interface{}
-
-// CompactionConfigPatch_MaxActiveTranscriptBytes Byte size that triggers proactive local compaction.
-type CompactionConfigPatch_MaxActiveTranscriptBytes struct {
-	union json.RawMessage
-}
-
-// CompactionConfigPatchMidTurnPrecheck0 defines model for .
-type CompactionConfigPatchMidTurnPrecheck0 = bool
-
-// CompactionConfigPatchMidTurnPrecheck1 defines model for .
-type CompactionConfigPatchMidTurnPrecheck1 = interface{}
-
-// CompactionConfigPatch_MidTurnPrecheck Run a tool-loop context precheck before the next model call.
-type CompactionConfigPatch_MidTurnPrecheck struct {
-	union json.RawMessage
-}
-
-// CompactionConfigPatchReserveTokens0 defines model for .
-type CompactionConfigPatchReserveTokens0 = int
-
-// CompactionConfigPatchReserveTokens1 defines model for .
-type CompactionConfigPatchReserveTokens1 = interface{}
-
-// CompactionConfigPatch_ReserveTokens Reply/tool headroom tokens reserved after compaction.
-type CompactionConfigPatch_ReserveTokens struct {
-	union json.RawMessage
-}
-
-// CompactionConfigPatchReserveTokensFloor0 defines model for .
-type CompactionConfigPatchReserveTokensFloor0 = int
-
-// CompactionConfigPatchReserveTokensFloor1 defines model for .
-type CompactionConfigPatchReserveTokensFloor1 = interface{}
-
-// CompactionConfigPatch_ReserveTokensFloor Floor enforced for reserve_tokens (0 disables).
-type CompactionConfigPatch_ReserveTokensFloor struct {
-	union json.RawMessage
-}
-
-// CompactionConfigPatchTimeoutSeconds0 defines model for .
-type CompactionConfigPatchTimeoutSeconds0 = int
-
-// CompactionConfigPatchTimeoutSeconds1 defines model for .
-type CompactionConfigPatchTimeoutSeconds1 = interface{}
-
-// CompactionConfigPatch_TimeoutSeconds Maximum seconds allowed for one compaction operation.
-type CompactionConfigPatch_TimeoutSeconds struct {
-	union json.RawMessage
-}
-
-// CompactionConfigPatchTruncateAfterCompaction0 defines model for .
-type CompactionConfigPatchTruncateAfterCompaction0 = bool
-
-// CompactionConfigPatchTruncateAfterCompaction1 defines model for .
-type CompactionConfigPatchTruncateAfterCompaction1 = interface{}
-
-// CompactionConfigPatch_TruncateAfterCompaction Rotate the active transcript to a compacted successor.
-type CompactionConfigPatch_TruncateAfterCompaction struct {
-	union json.RawMessage
+	TruncateAfterCompaction *bool `json:"truncate_after_compaction"`
 }
 
 // ConditionBotFilterField defines model for Condition_BotFilterField_.
@@ -1243,152 +901,48 @@ type ConditionBotFilterFieldKind string
 // CpuMetrics defines model for CpuMetrics.
 type CpuMetrics struct {
 	// LimitCores CPU quota expressed as cores, or null when unlimited/unavailable
-	LimitCores CpuMetrics_LimitCores `json:"limit_cores"`
+	LimitCores *float32 `json:"limit_cores"`
 
 	// PercentOfLimit Current CPU consumption as percentage of the CPU limit
-	PercentOfLimit CpuMetrics_PercentOfLimit `json:"percent_of_limit"`
+	PercentOfLimit *float32 `json:"percent_of_limit"`
 
 	// SampleWindowMs Milliseconds between the current and previous CPU samples
-	SampleWindowMs CpuMetrics_SampleWindowMs `json:"sample_window_ms"`
+	SampleWindowMs *int `json:"sample_window_ms"`
 
 	// UsageCores Current CPU consumption in cores, derived from consecutive samples
-	UsageCores CpuMetrics_UsageCores `json:"usage_cores"`
+	UsageCores *float32 `json:"usage_cores"`
 
 	// UsageUsec Cumulative CPU usage in microseconds
-	UsageUsec CpuMetrics_UsageUsec `json:"usage_usec"`
-}
-
-// CpuMetricsLimitCores0 defines model for .
-type CpuMetricsLimitCores0 = float32
-
-// CpuMetricsLimitCores1 defines model for .
-type CpuMetricsLimitCores1 = interface{}
-
-// CpuMetrics_LimitCores CPU quota expressed as cores, or null when unlimited/unavailable
-type CpuMetrics_LimitCores struct {
-	union json.RawMessage
-}
-
-// CpuMetricsPercentOfLimit0 defines model for .
-type CpuMetricsPercentOfLimit0 = float32
-
-// CpuMetricsPercentOfLimit1 defines model for .
-type CpuMetricsPercentOfLimit1 = interface{}
-
-// CpuMetrics_PercentOfLimit Current CPU consumption as percentage of the CPU limit
-type CpuMetrics_PercentOfLimit struct {
-	union json.RawMessage
-}
-
-// CpuMetricsSampleWindowMs0 defines model for .
-type CpuMetricsSampleWindowMs0 = int
-
-// CpuMetricsSampleWindowMs1 defines model for .
-type CpuMetricsSampleWindowMs1 = interface{}
-
-// CpuMetrics_SampleWindowMs Milliseconds between the current and previous CPU samples
-type CpuMetrics_SampleWindowMs struct {
-	union json.RawMessage
-}
-
-// CpuMetricsUsageCores0 defines model for .
-type CpuMetricsUsageCores0 = float32
-
-// CpuMetricsUsageCores1 defines model for .
-type CpuMetricsUsageCores1 = interface{}
-
-// CpuMetrics_UsageCores Current CPU consumption in cores, derived from consecutive samples
-type CpuMetrics_UsageCores struct {
-	union json.RawMessage
-}
-
-// CpuMetricsUsageUsec0 defines model for .
-type CpuMetricsUsageUsec0 = int
-
-// CpuMetricsUsageUsec1 defines model for .
-type CpuMetricsUsageUsec1 = interface{}
-
-// CpuMetrics_UsageUsec Cumulative CPU usage in microseconds
-type CpuMetrics_UsageUsec struct {
-	union json.RawMessage
+	UsageUsec *int `json:"usage_usec"`
 }
 
 // CredentialBackedModelConfig A single OpenClaw model entry backed by a Botyard credential.
 type CredentialBackedModelConfig struct {
-	Api                       *CredentialBackedModelConfig_Api                       `json:"api,omitempty"`
-	ContextWindow             *int                                                   `json:"context_window,omitempty"`
-	Headers                   *map[string]string                                     `json:"headers,omitempty"`
-	Id                        string                                                 `json:"id"`
-	Input                     *[]CredentialBackedModelConfigInput                    `json:"input,omitempty"`
-	MaxTokens                 *int                                                   `json:"max_tokens,omitempty"`
-	Reasoning                 *bool                                                  `json:"reasoning,omitempty"`
-	ResponsesCompactThreshold *CredentialBackedModelConfig_ResponsesCompactThreshold `json:"responses_compact_threshold,omitempty"`
-	ResponsesServerCompaction *CredentialBackedModelConfig_ResponsesServerCompaction `json:"responses_server_compaction,omitempty"`
-	SupportsStore             *CredentialBackedModelConfig_SupportsStore             `json:"supports_store,omitempty"`
-	TextVerbosity             *CredentialBackedModelConfig_TextVerbosity             `json:"text_verbosity,omitempty"`
-}
-
-// CredentialBackedModelConfigApi1 defines model for .
-type CredentialBackedModelConfigApi1 = interface{}
-
-// CredentialBackedModelConfig_Api defines model for CredentialBackedModelConfig.Api.
-type CredentialBackedModelConfig_Api struct {
-	union json.RawMessage
+	Api                       *OpenClawModelApi                         `json:"api"`
+	ContextWindow             *int                                      `json:"context_window,omitempty"`
+	Headers                   *map[string]string                        `json:"headers,omitempty"`
+	Id                        string                                    `json:"id"`
+	Input                     *[]CredentialBackedModelConfigInput       `json:"input,omitempty"`
+	MaxTokens                 *int                                      `json:"max_tokens,omitempty"`
+	Reasoning                 *bool                                     `json:"reasoning,omitempty"`
+	ResponsesCompactThreshold *int                                      `json:"responses_compact_threshold"`
+	ResponsesServerCompaction *bool                                     `json:"responses_server_compaction"`
+	SupportsStore             *bool                                     `json:"supports_store"`
+	TextVerbosity             *CredentialBackedModelConfigTextVerbosity `json:"text_verbosity"`
 }
 
 // CredentialBackedModelConfigInput defines model for CredentialBackedModelConfig.Input.
 type CredentialBackedModelConfigInput string
 
-// CredentialBackedModelConfigResponsesCompactThreshold0 defines model for .
-type CredentialBackedModelConfigResponsesCompactThreshold0 = int
-
-// CredentialBackedModelConfigResponsesCompactThreshold1 defines model for .
-type CredentialBackedModelConfigResponsesCompactThreshold1 = interface{}
-
-// CredentialBackedModelConfig_ResponsesCompactThreshold defines model for CredentialBackedModelConfig.ResponsesCompactThreshold.
-type CredentialBackedModelConfig_ResponsesCompactThreshold struct {
-	union json.RawMessage
-}
-
-// CredentialBackedModelConfigResponsesServerCompaction0 defines model for .
-type CredentialBackedModelConfigResponsesServerCompaction0 = bool
-
-// CredentialBackedModelConfigResponsesServerCompaction1 defines model for .
-type CredentialBackedModelConfigResponsesServerCompaction1 = interface{}
-
-// CredentialBackedModelConfig_ResponsesServerCompaction defines model for CredentialBackedModelConfig.ResponsesServerCompaction.
-type CredentialBackedModelConfig_ResponsesServerCompaction struct {
-	union json.RawMessage
-}
-
-// CredentialBackedModelConfigSupportsStore0 defines model for .
-type CredentialBackedModelConfigSupportsStore0 = bool
-
-// CredentialBackedModelConfigSupportsStore1 defines model for .
-type CredentialBackedModelConfigSupportsStore1 = interface{}
-
-// CredentialBackedModelConfig_SupportsStore defines model for CredentialBackedModelConfig.SupportsStore.
-type CredentialBackedModelConfig_SupportsStore struct {
-	union json.RawMessage
-}
-
-// CredentialBackedModelConfigTextVerbosity0 defines model for CredentialBackedModelConfig.TextVerbosity.0.
-type CredentialBackedModelConfigTextVerbosity0 string
-
-// CredentialBackedModelConfigTextVerbosity1 defines model for .
-type CredentialBackedModelConfigTextVerbosity1 = interface{}
-
-// CredentialBackedModelConfig_TextVerbosity defines model for CredentialBackedModelConfig.TextVerbosity.
-type CredentialBackedModelConfig_TextVerbosity struct {
-	union json.RawMessage
-}
+// CredentialBackedModelConfigTextVerbosity defines model for CredentialBackedModelConfig.TextVerbosity.
+type CredentialBackedModelConfigTextVerbosity string
 
 // CredentialProvider Known provider vendors.
 type CredentialProvider string
 
 // CredentialProviderConfig OpenClaw provider entry generated from a Botyard credential.
 type CredentialProviderConfig struct {
-	Api *CredentialProviderConfig_Api `json:"api,omitempty"`
+	Api *OpenClawModelApi `json:"api"`
 
 	// ApiProtocol Wire protocol for communicating with a provider.
 	ApiProtocol ApiProtocol                   `json:"api_protocol"`
@@ -1398,14 +952,6 @@ type CredentialProviderConfig struct {
 	// Provider Known provider vendors.
 	Provider CredentialProvider `json:"provider"`
 	Slug     string             `json:"slug"`
-}
-
-// CredentialProviderConfigApi1 defines model for .
-type CredentialProviderConfigApi1 = interface{}
-
-// CredentialProviderConfig_Api defines model for CredentialProviderConfig.Api.
-type CredentialProviderConfig_Api struct {
-	union json.RawMessage
 }
 
 // DesiredState Control-plane intent for a bot's lifecycle.
@@ -1445,422 +991,115 @@ type GatewayConfigMode string
 // HeartbeatConfig Heartbeat scheduling and behavior configuration.
 type HeartbeatConfig struct {
 	// AckMaxChars Max characters after HEARTBEAT_OK before delivery (default: 300)
-	AckMaxChars *HeartbeatConfig_AckMaxChars `json:"ack_max_chars,omitempty"`
+	AckMaxChars *int `json:"ack_max_chars"`
 
 	// ActiveHours Time window when heartbeats are active
-	ActiveHours *HeartbeatConfig_ActiveHours `json:"active_hours,omitempty"`
+	ActiveHours *ActiveHoursConfig `json:"active_hours"`
 
 	// Every How often the heartbeat fires. '0m' disables heartbeats — anything else schedules a recurring run at that interval.
 	Every *HeartbeatConfigEvery `json:"every,omitempty"`
 
 	// IncludeReasoning Whether to include reasoning traces in heartbeat responses
-	IncludeReasoning *HeartbeatConfig_IncludeReasoning `json:"include_reasoning,omitempty"`
+	IncludeReasoning *bool `json:"include_reasoning"`
 
 	// IsolatedSession Run each heartbeat in a fresh session with no history
-	IsolatedSession *HeartbeatConfig_IsolatedSession `json:"isolated_session,omitempty"`
+	IsolatedSession *bool `json:"isolated_session"`
 
 	// LightContext Use minimal context (only HEARTBEAT.md) to reduce token cost
-	LightContext *HeartbeatConfig_LightContext `json:"light_context,omitempty"`
+	LightContext *bool `json:"light_context"`
 
 	// Model LLM model override for heartbeat runs
-	Model *HeartbeatConfig_Model `json:"model,omitempty"`
+	Model *string `json:"model"`
 
 	// Prompt Prompt sent as the user message on each heartbeat tick. Null = use platform default.
-	Prompt *HeartbeatConfig_Prompt `json:"prompt,omitempty"`
-}
-
-// HeartbeatConfigAckMaxChars0 defines model for .
-type HeartbeatConfigAckMaxChars0 = int
-
-// HeartbeatConfigAckMaxChars1 defines model for .
-type HeartbeatConfigAckMaxChars1 = interface{}
-
-// HeartbeatConfig_AckMaxChars Max characters after HEARTBEAT_OK before delivery (default: 300)
-type HeartbeatConfig_AckMaxChars struct {
-	union json.RawMessage
-}
-
-// HeartbeatConfigActiveHours1 defines model for .
-type HeartbeatConfigActiveHours1 = interface{}
-
-// HeartbeatConfig_ActiveHours Time window when heartbeats are active
-type HeartbeatConfig_ActiveHours struct {
-	union json.RawMessage
+	Prompt *string `json:"prompt"`
 }
 
 // HeartbeatConfigEvery How often the heartbeat fires. '0m' disables heartbeats — anything else schedules a recurring run at that interval.
 type HeartbeatConfigEvery string
 
-// HeartbeatConfigIncludeReasoning0 defines model for .
-type HeartbeatConfigIncludeReasoning0 = bool
-
-// HeartbeatConfigIncludeReasoning1 defines model for .
-type HeartbeatConfigIncludeReasoning1 = interface{}
-
-// HeartbeatConfig_IncludeReasoning Whether to include reasoning traces in heartbeat responses
-type HeartbeatConfig_IncludeReasoning struct {
-	union json.RawMessage
-}
-
-// HeartbeatConfigIsolatedSession0 defines model for .
-type HeartbeatConfigIsolatedSession0 = bool
-
-// HeartbeatConfigIsolatedSession1 defines model for .
-type HeartbeatConfigIsolatedSession1 = interface{}
-
-// HeartbeatConfig_IsolatedSession Run each heartbeat in a fresh session with no history
-type HeartbeatConfig_IsolatedSession struct {
-	union json.RawMessage
-}
-
-// HeartbeatConfigLightContext0 defines model for .
-type HeartbeatConfigLightContext0 = bool
-
-// HeartbeatConfigLightContext1 defines model for .
-type HeartbeatConfigLightContext1 = interface{}
-
-// HeartbeatConfig_LightContext Use minimal context (only HEARTBEAT.md) to reduce token cost
-type HeartbeatConfig_LightContext struct {
-	union json.RawMessage
-}
-
-// HeartbeatConfigModel0 defines model for .
-type HeartbeatConfigModel0 = string
-
-// HeartbeatConfigModel1 defines model for .
-type HeartbeatConfigModel1 = interface{}
-
-// HeartbeatConfig_Model LLM model override for heartbeat runs
-type HeartbeatConfig_Model struct {
-	union json.RawMessage
-}
-
-// HeartbeatConfigPrompt0 defines model for .
-type HeartbeatConfigPrompt0 = string
-
-// HeartbeatConfigPrompt1 defines model for .
-type HeartbeatConfigPrompt1 = interface{}
-
-// HeartbeatConfig_Prompt Prompt sent as the user message on each heartbeat tick. Null = use platform default.
-type HeartbeatConfig_Prompt struct {
-	union json.RawMessage
-}
-
 // HeartbeatConfigPatch Patchable fields for heartbeat configuration.
 type HeartbeatConfigPatch struct {
 	// AckMaxChars Max characters after HEARTBEAT_OK before delivery
-	AckMaxChars *HeartbeatConfigPatch_AckMaxChars `json:"ack_max_chars,omitempty"`
+	AckMaxChars *int `json:"ack_max_chars"`
 
 	// ActiveHours Time window when heartbeats are active
-	ActiveHours *HeartbeatConfigPatch_ActiveHours `json:"active_hours,omitempty"`
+	ActiveHours *ActiveHoursConfigPatch `json:"active_hours"`
 
 	// Every How often the heartbeat fires. Send '0m' (or null) to disable heartbeats; omit the field to leave the current interval unchanged.
-	Every *HeartbeatConfigPatch_Every `json:"every,omitempty"`
+	Every *HeartbeatConfigPatchEvery `json:"every"`
 
 	// IncludeReasoning Whether to include reasoning traces in heartbeat responses
-	IncludeReasoning *HeartbeatConfigPatch_IncludeReasoning `json:"include_reasoning,omitempty"`
+	IncludeReasoning *bool `json:"include_reasoning"`
 
 	// IsolatedSession Run each heartbeat in a fresh session with no history
-	IsolatedSession *HeartbeatConfigPatch_IsolatedSession `json:"isolated_session,omitempty"`
+	IsolatedSession *bool `json:"isolated_session"`
 
 	// LightContext Use minimal context (only HEARTBEAT.md) to reduce token cost
-	LightContext *HeartbeatConfigPatch_LightContext `json:"light_context,omitempty"`
+	LightContext *bool `json:"light_context"`
 
 	// Model LLM model override for heartbeat runs
-	Model *HeartbeatConfigPatch_Model `json:"model,omitempty"`
+	Model *string `json:"model"`
 
 	// Prompt Custom prompt replacing the default HEARTBEAT.md reader
-	Prompt *HeartbeatConfigPatch_Prompt `json:"prompt,omitempty"`
+	Prompt *string `json:"prompt"`
 }
 
-// HeartbeatConfigPatchAckMaxChars0 defines model for .
-type HeartbeatConfigPatchAckMaxChars0 = int
-
-// HeartbeatConfigPatchAckMaxChars1 defines model for .
-type HeartbeatConfigPatchAckMaxChars1 = interface{}
-
-// HeartbeatConfigPatch_AckMaxChars Max characters after HEARTBEAT_OK before delivery
-type HeartbeatConfigPatch_AckMaxChars struct {
-	union json.RawMessage
-}
-
-// HeartbeatConfigPatchActiveHours1 defines model for .
-type HeartbeatConfigPatchActiveHours1 = interface{}
-
-// HeartbeatConfigPatch_ActiveHours Time window when heartbeats are active
-type HeartbeatConfigPatch_ActiveHours struct {
-	union json.RawMessage
-}
-
-// HeartbeatConfigPatchEvery0 defines model for HeartbeatConfigPatch.Every.0.
-type HeartbeatConfigPatchEvery0 string
-
-// HeartbeatConfigPatchEvery1 defines model for .
-type HeartbeatConfigPatchEvery1 = interface{}
-
-// HeartbeatConfigPatch_Every How often the heartbeat fires. Send '0m' (or null) to disable heartbeats; omit the field to leave the current interval unchanged.
-type HeartbeatConfigPatch_Every struct {
-	union json.RawMessage
-}
-
-// HeartbeatConfigPatchIncludeReasoning0 defines model for .
-type HeartbeatConfigPatchIncludeReasoning0 = bool
-
-// HeartbeatConfigPatchIncludeReasoning1 defines model for .
-type HeartbeatConfigPatchIncludeReasoning1 = interface{}
-
-// HeartbeatConfigPatch_IncludeReasoning Whether to include reasoning traces in heartbeat responses
-type HeartbeatConfigPatch_IncludeReasoning struct {
-	union json.RawMessage
-}
-
-// HeartbeatConfigPatchIsolatedSession0 defines model for .
-type HeartbeatConfigPatchIsolatedSession0 = bool
-
-// HeartbeatConfigPatchIsolatedSession1 defines model for .
-type HeartbeatConfigPatchIsolatedSession1 = interface{}
-
-// HeartbeatConfigPatch_IsolatedSession Run each heartbeat in a fresh session with no history
-type HeartbeatConfigPatch_IsolatedSession struct {
-	union json.RawMessage
-}
-
-// HeartbeatConfigPatchLightContext0 defines model for .
-type HeartbeatConfigPatchLightContext0 = bool
-
-// HeartbeatConfigPatchLightContext1 defines model for .
-type HeartbeatConfigPatchLightContext1 = interface{}
-
-// HeartbeatConfigPatch_LightContext Use minimal context (only HEARTBEAT.md) to reduce token cost
-type HeartbeatConfigPatch_LightContext struct {
-	union json.RawMessage
-}
-
-// HeartbeatConfigPatchModel0 defines model for .
-type HeartbeatConfigPatchModel0 = string
-
-// HeartbeatConfigPatchModel1 defines model for .
-type HeartbeatConfigPatchModel1 = interface{}
-
-// HeartbeatConfigPatch_Model LLM model override for heartbeat runs
-type HeartbeatConfigPatch_Model struct {
-	union json.RawMessage
-}
-
-// HeartbeatConfigPatchPrompt0 defines model for .
-type HeartbeatConfigPatchPrompt0 = string
-
-// HeartbeatConfigPatchPrompt1 defines model for .
-type HeartbeatConfigPatchPrompt1 = interface{}
-
-// HeartbeatConfigPatch_Prompt Custom prompt replacing the default HEARTBEAT.md reader
-type HeartbeatConfigPatch_Prompt struct {
-	union json.RawMessage
-}
+// HeartbeatConfigPatchEvery How often the heartbeat fires. Send '0m' (or null) to disable heartbeats; omit the field to leave the current interval unchanged.
+type HeartbeatConfigPatchEvery string
 
 // IdentityConfig Bot agent identity (mutable — patch_model uses setattr).
 type IdentityConfig struct {
-	Avatar *IdentityConfig_Avatar `json:"avatar,omitempty"`
-	Emoji  *string                `json:"emoji,omitempty"`
-	Name   string                 `json:"name"`
-	Theme  *string                `json:"theme,omitempty"`
-}
-
-// IdentityConfigAvatar0 defines model for .
-type IdentityConfigAvatar0 = string
-
-// IdentityConfigAvatar1 defines model for .
-type IdentityConfigAvatar1 = interface{}
-
-// IdentityConfig_Avatar defines model for IdentityConfig.Avatar.
-type IdentityConfig_Avatar struct {
-	union json.RawMessage
+	Avatar *string `json:"avatar"`
+	Emoji  *string `json:"emoji,omitempty"`
+	Name   string  `json:"name"`
+	Theme  *string `json:"theme,omitempty"`
 }
 
 // IdentityConfigPatch Patchable fields for bot identity.
 type IdentityConfigPatch struct {
 	// Emoji Bot identity emoji
-	Emoji *IdentityConfigPatch_Emoji `json:"emoji,omitempty"`
+	Emoji *string `json:"emoji"`
 
 	// Theme Bot identity theme
-	Theme *IdentityConfigPatch_Theme `json:"theme,omitempty"`
-}
-
-// IdentityConfigPatchEmoji0 defines model for .
-type IdentityConfigPatchEmoji0 = string
-
-// IdentityConfigPatchEmoji1 defines model for .
-type IdentityConfigPatchEmoji1 = interface{}
-
-// IdentityConfigPatch_Emoji Bot identity emoji
-type IdentityConfigPatch_Emoji struct {
-	union json.RawMessage
-}
-
-// IdentityConfigPatchTheme0 defines model for .
-type IdentityConfigPatchTheme0 = string
-
-// IdentityConfigPatchTheme1 defines model for .
-type IdentityConfigPatchTheme1 = interface{}
-
-// IdentityConfigPatch_Theme Bot identity theme
-type IdentityConfigPatch_Theme struct {
-	union json.RawMessage
+	Theme *string `json:"theme"`
 }
 
 // MemoryEventCounters defines model for MemoryEventCounters.
 type MemoryEventCounters struct {
 	// High memory.events high counter
-	High MemoryEventCounters_High `json:"high"`
+	High *int `json:"high"`
 
 	// Low memory.events low counter
-	Low MemoryEventCounters_Low `json:"low"`
+	Low *int `json:"low"`
 
 	// Max memory.events max counter
-	Max MemoryEventCounters_Max `json:"max"`
+	Max *int `json:"max"`
 
 	// Oom memory.events oom counter
-	Oom MemoryEventCounters_Oom `json:"oom"`
+	Oom *int `json:"oom"`
 
 	// OomKill memory.events oom_kill counter
-	OomKill MemoryEventCounters_OomKill `json:"oom_kill"`
-}
-
-// MemoryEventCountersHigh0 defines model for .
-type MemoryEventCountersHigh0 = int
-
-// MemoryEventCountersHigh1 defines model for .
-type MemoryEventCountersHigh1 = interface{}
-
-// MemoryEventCounters_High memory.events high counter
-type MemoryEventCounters_High struct {
-	union json.RawMessage
-}
-
-// MemoryEventCountersLow0 defines model for .
-type MemoryEventCountersLow0 = int
-
-// MemoryEventCountersLow1 defines model for .
-type MemoryEventCountersLow1 = interface{}
-
-// MemoryEventCounters_Low memory.events low counter
-type MemoryEventCounters_Low struct {
-	union json.RawMessage
-}
-
-// MemoryEventCountersMax0 defines model for .
-type MemoryEventCountersMax0 = int
-
-// MemoryEventCountersMax1 defines model for .
-type MemoryEventCountersMax1 = interface{}
-
-// MemoryEventCounters_Max memory.events max counter
-type MemoryEventCounters_Max struct {
-	union json.RawMessage
-}
-
-// MemoryEventCountersOom0 defines model for .
-type MemoryEventCountersOom0 = int
-
-// MemoryEventCountersOom1 defines model for .
-type MemoryEventCountersOom1 = interface{}
-
-// MemoryEventCounters_Oom memory.events oom counter
-type MemoryEventCounters_Oom struct {
-	union json.RawMessage
-}
-
-// MemoryEventCountersOomKill0 defines model for .
-type MemoryEventCountersOomKill0 = int
-
-// MemoryEventCountersOomKill1 defines model for .
-type MemoryEventCountersOomKill1 = interface{}
-
-// MemoryEventCounters_OomKill memory.events oom_kill counter
-type MemoryEventCounters_OomKill struct {
-	union json.RawMessage
+	OomKill *int `json:"oom_kill"`
 }
 
 // MemoryMetrics defines model for MemoryMetrics.
 type MemoryMetrics struct {
 	// CurrentBytes OOM-relevant memory working set in bytes: raw cgroup usage minus inactive_file.
-	CurrentBytes MemoryMetrics_CurrentBytes `json:"current_bytes"`
-	Events       MemoryMetrics_Events       `json:"events"`
+	CurrentBytes *int                 `json:"current_bytes"`
+	Events       *MemoryEventCounters `json:"events"`
 
 	// InactiveFileBytes Reclaimable inactive_file bytes subtracted from raw_current_bytes when available.
-	InactiveFileBytes *MemoryMetrics_InactiveFileBytes `json:"inactive_file_bytes,omitempty"`
+	InactiveFileBytes *int `json:"inactive_file_bytes"`
 
 	// LimitBytes Memory limit, or null when unlimited/unavailable
-	LimitBytes MemoryMetrics_LimitBytes `json:"limit_bytes"`
+	LimitBytes *int `json:"limit_bytes"`
 
 	// PercentOfLimit Working-set memory usage as percentage of limit
-	PercentOfLimit MemoryMetrics_PercentOfLimit `json:"percent_of_limit"`
+	PercentOfLimit *float32 `json:"percent_of_limit"`
 
 	// RawCurrentBytes Raw cgroup memory usage before subtracting reclaimable inactive_file.
-	RawCurrentBytes *MemoryMetrics_RawCurrentBytes `json:"raw_current_bytes,omitempty"`
-}
-
-// MemoryMetricsCurrentBytes0 defines model for .
-type MemoryMetricsCurrentBytes0 = int
-
-// MemoryMetricsCurrentBytes1 defines model for .
-type MemoryMetricsCurrentBytes1 = interface{}
-
-// MemoryMetrics_CurrentBytes OOM-relevant memory working set in bytes: raw cgroup usage minus inactive_file.
-type MemoryMetrics_CurrentBytes struct {
-	union json.RawMessage
-}
-
-// MemoryMetricsEvents1 defines model for .
-type MemoryMetricsEvents1 = interface{}
-
-// MemoryMetrics_Events defines model for MemoryMetrics.Events.
-type MemoryMetrics_Events struct {
-	union json.RawMessage
-}
-
-// MemoryMetricsInactiveFileBytes0 defines model for .
-type MemoryMetricsInactiveFileBytes0 = int
-
-// MemoryMetricsInactiveFileBytes1 defines model for .
-type MemoryMetricsInactiveFileBytes1 = interface{}
-
-// MemoryMetrics_InactiveFileBytes Reclaimable inactive_file bytes subtracted from raw_current_bytes when available.
-type MemoryMetrics_InactiveFileBytes struct {
-	union json.RawMessage
-}
-
-// MemoryMetricsLimitBytes0 defines model for .
-type MemoryMetricsLimitBytes0 = int
-
-// MemoryMetricsLimitBytes1 defines model for .
-type MemoryMetricsLimitBytes1 = interface{}
-
-// MemoryMetrics_LimitBytes Memory limit, or null when unlimited/unavailable
-type MemoryMetrics_LimitBytes struct {
-	union json.RawMessage
-}
-
-// MemoryMetricsPercentOfLimit0 defines model for .
-type MemoryMetricsPercentOfLimit0 = float32
-
-// MemoryMetricsPercentOfLimit1 defines model for .
-type MemoryMetricsPercentOfLimit1 = interface{}
-
-// MemoryMetrics_PercentOfLimit Working-set memory usage as percentage of limit
-type MemoryMetrics_PercentOfLimit struct {
-	union json.RawMessage
-}
-
-// MemoryMetricsRawCurrentBytes0 defines model for .
-type MemoryMetricsRawCurrentBytes0 = int
-
-// MemoryMetricsRawCurrentBytes1 defines model for .
-type MemoryMetricsRawCurrentBytes1 = interface{}
-
-// MemoryMetrics_RawCurrentBytes Raw cgroup memory usage before subtracting reclaimable inactive_file.
-type MemoryMetrics_RawCurrentBytes struct {
-	union json.RawMessage
+	RawCurrentBytes *int `json:"raw_current_bytes"`
 }
 
 // MeteredResource A billable resource line-item the allocation ledger meters independently.
@@ -1898,15 +1137,7 @@ type ModelConfigInput string
 // ModelConfigPatch Patchable fields for model configuration.
 type ModelConfigPatch struct {
 	// Primary Primary model
-	Primary *ModelConfigPatch_Primary `json:"primary,omitempty"`
-}
-
-// ModelConfigPatchPrimary1 defines model for .
-type ModelConfigPatchPrimary1 = interface{}
-
-// ModelConfigPatch_Primary Primary model
-type ModelConfigPatch_Primary struct {
-	union json.RawMessage
+	Primary *ModelRef `json:"primary"`
 }
 
 // ModelRef A reference to a model within an OpenClaw provider.
@@ -1939,7 +1170,7 @@ type ObservedState string
 // “extra="ignore"“ ensures old data with removed fields doesn't break
 // on read (schema evolution safety).
 type OpenClawBotConfig struct {
-	Addons  *OpenClawBotConfig_Addons `json:"addons,omitempty"`
+	Addons  *[]AddonInput             `json:"addons"`
 	AgentId *string                   `json:"agent_id,omitempty"`
 	BotType *OpenClawBotConfigBotType `json:"bot_type,omitempty"`
 
@@ -1966,8 +1197,8 @@ type OpenClawBotConfig struct {
 	// bot pod is non-root with no ``CAP_SYS_ADMIN``, so Chromium's
 	// sandbox can't initialise. Without ``--no-sandbox`` the browser
 	// fails to start with a confusing error.
-	Browser    *BrowserConfig                `json:"browser,omitempty"`
-	ClaudeCode *OpenClawBotConfig_ClaudeCode `json:"claude_code,omitempty"`
+	Browser    *BrowserConfig           `json:"browser,omitempty"`
+	ClaudeCode *ClaudeCodeProviderEntry `json:"claude_code"`
 
 	// CliWatchdog OpenClaw CLI watchdog overrides for the ``claude-cli`` backend.
 	//
@@ -1996,9 +1227,9 @@ type OpenClawBotConfig struct {
 	Compaction *CompactionConfig `json:"compaction,omitempty"`
 
 	// Gateway Gateway configuration.
-	Gateway      *GatewayConfig               `json:"gateway,omitempty"`
-	GatewayToken string                       `json:"gateway_token"`
-	Heartbeat    *OpenClawBotConfig_Heartbeat `json:"heartbeat,omitempty"`
+	Gateway      *GatewayConfig   `json:"gateway,omitempty"`
+	GatewayToken string           `json:"gateway_token"`
+	Heartbeat    *HeartbeatConfig `json:"heartbeat"`
 
 	// Identity Bot agent identity (mutable — patch_model uses setattr).
 	Identity IdentityConfig `json:"identity"`
@@ -2006,7 +1237,7 @@ type OpenClawBotConfig struct {
 	// Model LLM model configuration (mutable — patch_model uses setattr).
 	Model            *ModelConfig                       `json:"model,omitempty"`
 	ReasoningDefault *OpenClawBotConfigReasoningDefault `json:"reasoning_default,omitempty"`
-	Secrets          *OpenClawBotConfig_Secrets         `json:"secrets,omitempty"`
+	Secrets          *OpenClawSecretsConfig             `json:"secrets"`
 
 	// Session Session-reliability settings serialized into the openclaw config.
 	Session *SessionConfig `json:"session,omitempty"`
@@ -2029,46 +1260,11 @@ type OpenClawBotConfig struct {
 	Tools *ToolsConfig `json:"tools,omitempty"`
 }
 
-// OpenClawBotConfigAddons0 defines model for .
-type OpenClawBotConfigAddons0 = []AddonInput
-
-// OpenClawBotConfigAddons1 defines model for .
-type OpenClawBotConfigAddons1 = interface{}
-
-// OpenClawBotConfig_Addons defines model for OpenClawBotConfig.Addons.
-type OpenClawBotConfig_Addons struct {
-	union json.RawMessage
-}
-
 // OpenClawBotConfigBotType defines model for OpenClawBotConfig.BotType.
 type OpenClawBotConfigBotType string
 
-// OpenClawBotConfigClaudeCode1 defines model for .
-type OpenClawBotConfigClaudeCode1 = interface{}
-
-// OpenClawBotConfig_ClaudeCode defines model for OpenClawBotConfig.ClaudeCode.
-type OpenClawBotConfig_ClaudeCode struct {
-	union json.RawMessage
-}
-
-// OpenClawBotConfigHeartbeat1 defines model for .
-type OpenClawBotConfigHeartbeat1 = interface{}
-
-// OpenClawBotConfig_Heartbeat defines model for OpenClawBotConfig.Heartbeat.
-type OpenClawBotConfig_Heartbeat struct {
-	union json.RawMessage
-}
-
 // OpenClawBotConfigReasoningDefault defines model for OpenClawBotConfig.ReasoningDefault.
 type OpenClawBotConfigReasoningDefault string
-
-// OpenClawBotConfigSecrets1 defines model for .
-type OpenClawBotConfigSecrets1 = interface{}
-
-// OpenClawBotConfig_Secrets defines model for OpenClawBotConfig.Secrets.
-type OpenClawBotConfig_Secrets struct {
-	union json.RawMessage
-}
 
 // OpenClawBotConfigSystemPromptMode System prompt source: botyard (lean, default) or openclaw
 type OpenClawBotConfigSystemPromptMode string
@@ -2084,120 +1280,45 @@ type OpenClawBotConfigThinkingDefault string
 // from explicitly-set-to-None.
 type OpenClawConfigPatch struct {
 	// Addons Replace addon list (null = no change)
-	Addons  *OpenClawConfigPatch_Addons `json:"addons,omitempty"`
+	Addons  *[]AddonInput               `json:"addons"`
 	BotType *OpenClawConfigPatchBotType `json:"bot_type,omitempty"`
 
 	// Compaction Context-compaction safeguards
-	Compaction *OpenClawConfigPatch_Compaction `json:"compaction,omitempty"`
+	Compaction *CompactionConfigPatch `json:"compaction"`
 
 	// Heartbeat Heartbeat scheduling and behavior configuration
-	Heartbeat *OpenClawConfigPatch_Heartbeat `json:"heartbeat,omitempty"`
+	Heartbeat *HeartbeatConfigPatch `json:"heartbeat"`
 
 	// Identity Bot identity
-	Identity *OpenClawConfigPatch_Identity `json:"identity,omitempty"`
+	Identity *IdentityConfigPatch `json:"identity"`
 
 	// Model Model configuration
-	Model *OpenClawConfigPatch_Model `json:"model,omitempty"`
+	Model *ModelConfigPatch `json:"model"`
 
 	// ReasoningDefault Default reasoning mode (off, on, or stream)
-	ReasoningDefault *OpenClawConfigPatch_ReasoningDefault `json:"reasoning_default,omitempty"`
+	ReasoningDefault *OpenClawConfigPatchReasoningDefault `json:"reasoning_default"`
 
 	// Session Session-reliability settings
-	Session *OpenClawConfigPatch_Session `json:"session,omitempty"`
+	Session *SessionConfigPatch `json:"session"`
 
 	// SystemPromptMode System prompt source: botyard (lean) or openclaw (default)
-	SystemPromptMode *OpenClawConfigPatch_SystemPromptMode `json:"system_prompt_mode,omitempty"`
+	SystemPromptMode *OpenClawConfigPatchSystemPromptMode `json:"system_prompt_mode"`
 
 	// ThinkingDefault Default thinking budget level for conversations
-	ThinkingDefault *OpenClawConfigPatch_ThinkingDefault `json:"thinking_default,omitempty"`
-}
-
-// OpenClawConfigPatchAddons0 defines model for .
-type OpenClawConfigPatchAddons0 = []AddonInput
-
-// OpenClawConfigPatchAddons1 defines model for .
-type OpenClawConfigPatchAddons1 = interface{}
-
-// OpenClawConfigPatch_Addons Replace addon list (null = no change)
-type OpenClawConfigPatch_Addons struct {
-	union json.RawMessage
+	ThinkingDefault *OpenClawConfigPatchThinkingDefault `json:"thinking_default"`
 }
 
 // OpenClawConfigPatchBotType defines model for OpenClawConfigPatch.BotType.
 type OpenClawConfigPatchBotType string
 
-// OpenClawConfigPatchCompaction1 defines model for .
-type OpenClawConfigPatchCompaction1 = interface{}
+// OpenClawConfigPatchReasoningDefault Default reasoning mode (off, on, or stream)
+type OpenClawConfigPatchReasoningDefault string
 
-// OpenClawConfigPatch_Compaction Context-compaction safeguards
-type OpenClawConfigPatch_Compaction struct {
-	union json.RawMessage
-}
+// OpenClawConfigPatchSystemPromptMode System prompt source: botyard (lean) or openclaw (default)
+type OpenClawConfigPatchSystemPromptMode string
 
-// OpenClawConfigPatchHeartbeat1 defines model for .
-type OpenClawConfigPatchHeartbeat1 = interface{}
-
-// OpenClawConfigPatch_Heartbeat Heartbeat scheduling and behavior configuration
-type OpenClawConfigPatch_Heartbeat struct {
-	union json.RawMessage
-}
-
-// OpenClawConfigPatchIdentity1 defines model for .
-type OpenClawConfigPatchIdentity1 = interface{}
-
-// OpenClawConfigPatch_Identity Bot identity
-type OpenClawConfigPatch_Identity struct {
-	union json.RawMessage
-}
-
-// OpenClawConfigPatchModel1 defines model for .
-type OpenClawConfigPatchModel1 = interface{}
-
-// OpenClawConfigPatch_Model Model configuration
-type OpenClawConfigPatch_Model struct {
-	union json.RawMessage
-}
-
-// OpenClawConfigPatchReasoningDefault0 defines model for OpenClawConfigPatch.ReasoningDefault.0.
-type OpenClawConfigPatchReasoningDefault0 string
-
-// OpenClawConfigPatchReasoningDefault1 defines model for .
-type OpenClawConfigPatchReasoningDefault1 = interface{}
-
-// OpenClawConfigPatch_ReasoningDefault Default reasoning mode (off, on, or stream)
-type OpenClawConfigPatch_ReasoningDefault struct {
-	union json.RawMessage
-}
-
-// OpenClawConfigPatchSession1 defines model for .
-type OpenClawConfigPatchSession1 = interface{}
-
-// OpenClawConfigPatch_Session Session-reliability settings
-type OpenClawConfigPatch_Session struct {
-	union json.RawMessage
-}
-
-// OpenClawConfigPatchSystemPromptMode0 defines model for OpenClawConfigPatch.SystemPromptMode.0.
-type OpenClawConfigPatchSystemPromptMode0 string
-
-// OpenClawConfigPatchSystemPromptMode1 defines model for .
-type OpenClawConfigPatchSystemPromptMode1 = interface{}
-
-// OpenClawConfigPatch_SystemPromptMode System prompt source: botyard (lean) or openclaw (default)
-type OpenClawConfigPatch_SystemPromptMode struct {
-	union json.RawMessage
-}
-
-// OpenClawConfigPatchThinkingDefault0 defines model for OpenClawConfigPatch.ThinkingDefault.0.
-type OpenClawConfigPatchThinkingDefault0 string
-
-// OpenClawConfigPatchThinkingDefault1 defines model for .
-type OpenClawConfigPatchThinkingDefault1 = interface{}
-
-// OpenClawConfigPatch_ThinkingDefault Default thinking budget level for conversations
-type OpenClawConfigPatch_ThinkingDefault struct {
-	union json.RawMessage
-}
+// OpenClawConfigPatchThinkingDefault Default thinking budget level for conversations
+type OpenClawConfigPatchThinkingDefault string
 
 // OpenClawModelApi OpenClaw provider/model API adapter identifiers.
 type OpenClawModelApi string
@@ -2244,6 +1365,56 @@ type PaginationParams struct {
 
 	// Offset Number of items to skip
 	Offset *int `json:"offset,omitempty"`
+}
+
+// ProblemDetails RFC 9457 Problem Details response body.
+//
+// Every Botyard error response is a “ProblemDetails“ serialized as
+// “application/problem+json“. The five RFC core fields are always
+// populated; the three Botyard extensions (“error_code“, “errors“,
+// “trace_id“) appear as described below.
+type ProblemDetails struct {
+	// Detail Human-readable explanation specific to this occurrence. Safe to surface to end users — never contains debugging information.
+	Detail string `json:"detail"`
+
+	// ErrorCode Short machine-readable identifier (snake_case). Redundant with ``type`` but easier to switch on.
+	ErrorCode string `json:"error_code"`
+
+	// Errors Field-level failures (present on 422 responses from validation)
+	Errors *[]ProblemErrorItem `json:"errors"`
+
+	// Instance Request path that produced the error
+	Instance string `json:"instance"`
+
+	// Status HTTP status code for this occurrence
+	Status int `json:"status"`
+
+	// Title Short human summary of the problem type; stable across occurrences. Fallback for humans that don't recognise the type URI.
+	Title string `json:"title"`
+
+	// TraceId OpenTelemetry trace ID (32 hex chars) when tracing is active. Lets support pivot from a failure the caller reports straight to the Tempo trace.
+	TraceId *string `json:"trace_id"`
+
+	// Type URI identifier for the problem type; primary machine identifier. Clients should switch on this (or ``error_code``), not on ``title`` or ``detail``.
+	Type                 string                 `json:"type"`
+	AdditionalProperties map[string]interface{} `json:"-"`
+}
+
+// ProblemErrorItem Field-level problem, carried inside :attr:`ProblemDetails.errors`.
+//
+// Conforms to the conventions described in RFC 9457 §3.1 for extension
+// members that describe individual request-field failures. The
+// “pointer“ is an RFC 6901 JSON Pointer into the request body so the
+// client can navigate exactly which field failed.
+type ProblemErrorItem struct {
+	// Detail Per-field human-readable problem text
+	Detail string `json:"detail"`
+
+	// Pointer RFC 6901 JSON Pointer into the request body (e.g. '/config/model/primary'). Empty string '' points at the root document.
+	Pointer string `json:"pointer"`
+
+	// Type Pydantic error kind — 'missing', 'extra_forbidden', 'enum', etc.
+	Type string `json:"type"`
 }
 
 // RescueStage Rescue escalation stages.
@@ -2319,18 +1490,7 @@ type SessionConfig struct {
 // SessionConfigPatch Patchable session-reliability fields.
 type SessionConfigPatch struct {
 	// WriteLockMaxHoldMs Watchdog force-release threshold for the session lock (ms).
-	WriteLockMaxHoldMs *SessionConfigPatch_WriteLockMaxHoldMs `json:"write_lock_max_hold_ms,omitempty"`
-}
-
-// SessionConfigPatchWriteLockMaxHoldMs0 defines model for .
-type SessionConfigPatchWriteLockMaxHoldMs0 = int
-
-// SessionConfigPatchWriteLockMaxHoldMs1 defines model for .
-type SessionConfigPatchWriteLockMaxHoldMs1 = interface{}
-
-// SessionConfigPatch_WriteLockMaxHoldMs Watchdog force-release threshold for the session lock (ms).
-type SessionConfigPatch_WriteLockMaxHoldMs struct {
-	union json.RawMessage
+	WriteLockMaxHoldMs *int `json:"write_lock_max_hold_ms"`
 }
 
 // SkillsConfig Skills loading configuration.
@@ -2418,314 +1578,165 @@ type UpdateBotV1OrgsOrgIdBotsBotSlugPatchJSONRequestBody = BotUpdate
 // UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchJSONRequestBody defines body for UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatch for application/json ContentType.
 type UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchJSONRequestBody = BotConfigUpdate
 
-// AsActiveHoursConfigPatchFromTime0 returns the union data inside the ActiveHoursConfigPatch_FromTime as a ActiveHoursConfigPatchFromTime0
-func (t ActiveHoursConfigPatch_FromTime) AsActiveHoursConfigPatchFromTime0() (ActiveHoursConfigPatchFromTime0, error) {
-	var body ActiveHoursConfigPatchFromTime0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
+// Getter for additional properties for ProblemDetails. Returns the specified
+// element and whether it was found
+func (a ProblemDetails) Get(fieldName string) (value interface{}, found bool) {
+	if a.AdditionalProperties != nil {
+		value, found = a.AdditionalProperties[fieldName]
+	}
+	return
 }
 
-// FromActiveHoursConfigPatchFromTime0 overwrites any union data inside the ActiveHoursConfigPatch_FromTime as the provided ActiveHoursConfigPatchFromTime0
-func (t *ActiveHoursConfigPatch_FromTime) FromActiveHoursConfigPatchFromTime0(v ActiveHoursConfigPatchFromTime0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
+// Setter for additional properties for ProblemDetails
+func (a *ProblemDetails) Set(fieldName string, value interface{}) {
+	if a.AdditionalProperties == nil {
+		a.AdditionalProperties = make(map[string]interface{})
+	}
+	a.AdditionalProperties[fieldName] = value
 }
 
-// MergeActiveHoursConfigPatchFromTime0 performs a merge with any union data inside the ActiveHoursConfigPatch_FromTime, using the provided ActiveHoursConfigPatchFromTime0
-func (t *ActiveHoursConfigPatch_FromTime) MergeActiveHoursConfigPatchFromTime0(v ActiveHoursConfigPatchFromTime0) error {
-	b, err := json.Marshal(v)
+// Override default JSON handling for ProblemDetails to handle AdditionalProperties
+func (a *ProblemDetails) UnmarshalJSON(b []byte) error {
+	object := make(map[string]json.RawMessage)
+	err := json.Unmarshal(b, &object)
 	if err != nil {
 		return err
 	}
 
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsActiveHoursConfigPatchFromTime1 returns the union data inside the ActiveHoursConfigPatch_FromTime as a ActiveHoursConfigPatchFromTime1
-func (t ActiveHoursConfigPatch_FromTime) AsActiveHoursConfigPatchFromTime1() (ActiveHoursConfigPatchFromTime1, error) {
-	var body ActiveHoursConfigPatchFromTime1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromActiveHoursConfigPatchFromTime1 overwrites any union data inside the ActiveHoursConfigPatch_FromTime as the provided ActiveHoursConfigPatchFromTime1
-func (t *ActiveHoursConfigPatch_FromTime) FromActiveHoursConfigPatchFromTime1(v ActiveHoursConfigPatchFromTime1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeActiveHoursConfigPatchFromTime1 performs a merge with any union data inside the ActiveHoursConfigPatch_FromTime, using the provided ActiveHoursConfigPatchFromTime1
-func (t *ActiveHoursConfigPatch_FromTime) MergeActiveHoursConfigPatchFromTime1(v ActiveHoursConfigPatchFromTime1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
+	if raw, found := object["detail"]; found {
+		err = json.Unmarshal(raw, &a.Detail)
+		if err != nil {
+			return fmt.Errorf("error reading 'detail': %w", err)
+		}
+		delete(object, "detail")
 	}
 
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t ActiveHoursConfigPatch_FromTime) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *ActiveHoursConfigPatch_FromTime) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsActiveHoursConfigPatchTimezone0 returns the union data inside the ActiveHoursConfigPatch_Timezone as a ActiveHoursConfigPatchTimezone0
-func (t ActiveHoursConfigPatch_Timezone) AsActiveHoursConfigPatchTimezone0() (ActiveHoursConfigPatchTimezone0, error) {
-	var body ActiveHoursConfigPatchTimezone0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromActiveHoursConfigPatchTimezone0 overwrites any union data inside the ActiveHoursConfigPatch_Timezone as the provided ActiveHoursConfigPatchTimezone0
-func (t *ActiveHoursConfigPatch_Timezone) FromActiveHoursConfigPatchTimezone0(v ActiveHoursConfigPatchTimezone0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeActiveHoursConfigPatchTimezone0 performs a merge with any union data inside the ActiveHoursConfigPatch_Timezone, using the provided ActiveHoursConfigPatchTimezone0
-func (t *ActiveHoursConfigPatch_Timezone) MergeActiveHoursConfigPatchTimezone0(v ActiveHoursConfigPatchTimezone0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
+	if raw, found := object["error_code"]; found {
+		err = json.Unmarshal(raw, &a.ErrorCode)
+		if err != nil {
+			return fmt.Errorf("error reading 'error_code': %w", err)
+		}
+		delete(object, "error_code")
 	}
 
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsActiveHoursConfigPatchTimezone1 returns the union data inside the ActiveHoursConfigPatch_Timezone as a ActiveHoursConfigPatchTimezone1
-func (t ActiveHoursConfigPatch_Timezone) AsActiveHoursConfigPatchTimezone1() (ActiveHoursConfigPatchTimezone1, error) {
-	var body ActiveHoursConfigPatchTimezone1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromActiveHoursConfigPatchTimezone1 overwrites any union data inside the ActiveHoursConfigPatch_Timezone as the provided ActiveHoursConfigPatchTimezone1
-func (t *ActiveHoursConfigPatch_Timezone) FromActiveHoursConfigPatchTimezone1(v ActiveHoursConfigPatchTimezone1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeActiveHoursConfigPatchTimezone1 performs a merge with any union data inside the ActiveHoursConfigPatch_Timezone, using the provided ActiveHoursConfigPatchTimezone1
-func (t *ActiveHoursConfigPatch_Timezone) MergeActiveHoursConfigPatchTimezone1(v ActiveHoursConfigPatchTimezone1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
+	if raw, found := object["errors"]; found {
+		err = json.Unmarshal(raw, &a.Errors)
+		if err != nil {
+			return fmt.Errorf("error reading 'errors': %w", err)
+		}
+		delete(object, "errors")
 	}
 
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t ActiveHoursConfigPatch_Timezone) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *ActiveHoursConfigPatch_Timezone) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsActiveHoursConfigPatchToTime0 returns the union data inside the ActiveHoursConfigPatch_ToTime as a ActiveHoursConfigPatchToTime0
-func (t ActiveHoursConfigPatch_ToTime) AsActiveHoursConfigPatchToTime0() (ActiveHoursConfigPatchToTime0, error) {
-	var body ActiveHoursConfigPatchToTime0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromActiveHoursConfigPatchToTime0 overwrites any union data inside the ActiveHoursConfigPatch_ToTime as the provided ActiveHoursConfigPatchToTime0
-func (t *ActiveHoursConfigPatch_ToTime) FromActiveHoursConfigPatchToTime0(v ActiveHoursConfigPatchToTime0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeActiveHoursConfigPatchToTime0 performs a merge with any union data inside the ActiveHoursConfigPatch_ToTime, using the provided ActiveHoursConfigPatchToTime0
-func (t *ActiveHoursConfigPatch_ToTime) MergeActiveHoursConfigPatchToTime0(v ActiveHoursConfigPatchToTime0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
+	if raw, found := object["instance"]; found {
+		err = json.Unmarshal(raw, &a.Instance)
+		if err != nil {
+			return fmt.Errorf("error reading 'instance': %w", err)
+		}
+		delete(object, "instance")
 	}
 
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsActiveHoursConfigPatchToTime1 returns the union data inside the ActiveHoursConfigPatch_ToTime as a ActiveHoursConfigPatchToTime1
-func (t ActiveHoursConfigPatch_ToTime) AsActiveHoursConfigPatchToTime1() (ActiveHoursConfigPatchToTime1, error) {
-	var body ActiveHoursConfigPatchToTime1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromActiveHoursConfigPatchToTime1 overwrites any union data inside the ActiveHoursConfigPatch_ToTime as the provided ActiveHoursConfigPatchToTime1
-func (t *ActiveHoursConfigPatch_ToTime) FromActiveHoursConfigPatchToTime1(v ActiveHoursConfigPatchToTime1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeActiveHoursConfigPatchToTime1 performs a merge with any union data inside the ActiveHoursConfigPatch_ToTime, using the provided ActiveHoursConfigPatchToTime1
-func (t *ActiveHoursConfigPatch_ToTime) MergeActiveHoursConfigPatchToTime1(v ActiveHoursConfigPatchToTime1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
+	if raw, found := object["status"]; found {
+		err = json.Unmarshal(raw, &a.Status)
+		if err != nil {
+			return fmt.Errorf("error reading 'status': %w", err)
+		}
+		delete(object, "status")
 	}
 
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t ActiveHoursConfigPatch_ToTime) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *ActiveHoursConfigPatch_ToTime) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsAddonInputConfig0 returns the union data inside the AddonInput_Config as a AddonInputConfig0
-func (t AddonInput_Config) AsAddonInputConfig0() (AddonInputConfig0, error) {
-	var body AddonInputConfig0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromAddonInputConfig0 overwrites any union data inside the AddonInput_Config as the provided AddonInputConfig0
-func (t *AddonInput_Config) FromAddonInputConfig0(v AddonInputConfig0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeAddonInputConfig0 performs a merge with any union data inside the AddonInput_Config, using the provided AddonInputConfig0
-func (t *AddonInput_Config) MergeAddonInputConfig0(v AddonInputConfig0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
+	if raw, found := object["title"]; found {
+		err = json.Unmarshal(raw, &a.Title)
+		if err != nil {
+			return fmt.Errorf("error reading 'title': %w", err)
+		}
+		delete(object, "title")
 	}
 
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsAddonInputConfig1 returns the union data inside the AddonInput_Config as a AddonInputConfig1
-func (t AddonInput_Config) AsAddonInputConfig1() (AddonInputConfig1, error) {
-	var body AddonInputConfig1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromAddonInputConfig1 overwrites any union data inside the AddonInput_Config as the provided AddonInputConfig1
-func (t *AddonInput_Config) FromAddonInputConfig1(v AddonInputConfig1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeAddonInputConfig1 performs a merge with any union data inside the AddonInput_Config, using the provided AddonInputConfig1
-func (t *AddonInput_Config) MergeAddonInputConfig1(v AddonInputConfig1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
+	if raw, found := object["trace_id"]; found {
+		err = json.Unmarshal(raw, &a.TraceId)
+		if err != nil {
+			return fmt.Errorf("error reading 'trace_id': %w", err)
+		}
+		delete(object, "trace_id")
 	}
 
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t AddonInput_Config) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *AddonInput_Config) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsAllowedAgentModelConfigAlias0 returns the union data inside the AllowedAgentModelConfig_Alias as a AllowedAgentModelConfigAlias0
-func (t AllowedAgentModelConfig_Alias) AsAllowedAgentModelConfigAlias0() (AllowedAgentModelConfigAlias0, error) {
-	var body AllowedAgentModelConfigAlias0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromAllowedAgentModelConfigAlias0 overwrites any union data inside the AllowedAgentModelConfig_Alias as the provided AllowedAgentModelConfigAlias0
-func (t *AllowedAgentModelConfig_Alias) FromAllowedAgentModelConfigAlias0(v AllowedAgentModelConfigAlias0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeAllowedAgentModelConfigAlias0 performs a merge with any union data inside the AllowedAgentModelConfig_Alias, using the provided AllowedAgentModelConfigAlias0
-func (t *AllowedAgentModelConfig_Alias) MergeAllowedAgentModelConfigAlias0(v AllowedAgentModelConfigAlias0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
+	if raw, found := object["type"]; found {
+		err = json.Unmarshal(raw, &a.Type)
+		if err != nil {
+			return fmt.Errorf("error reading 'type': %w", err)
+		}
+		delete(object, "type")
 	}
 
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
+	if len(object) != 0 {
+		a.AdditionalProperties = make(map[string]interface{})
+		for fieldName, fieldBuf := range object {
+			var fieldVal interface{}
+			err := json.Unmarshal(fieldBuf, &fieldVal)
+			if err != nil {
+				return fmt.Errorf("error unmarshaling field %s: %w", fieldName, err)
+			}
+			a.AdditionalProperties[fieldName] = fieldVal
+		}
+	}
+	return nil
 }
 
-// AsAllowedAgentModelConfigAlias1 returns the union data inside the AllowedAgentModelConfig_Alias as a AllowedAgentModelConfigAlias1
-func (t AllowedAgentModelConfig_Alias) AsAllowedAgentModelConfigAlias1() (AllowedAgentModelConfigAlias1, error) {
-	var body AllowedAgentModelConfigAlias1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
+// Override default JSON handling for ProblemDetails to handle AdditionalProperties
+func (a ProblemDetails) MarshalJSON() ([]byte, error) {
+	var err error
+	object := make(map[string]json.RawMessage)
 
-// FromAllowedAgentModelConfigAlias1 overwrites any union data inside the AllowedAgentModelConfig_Alias as the provided AllowedAgentModelConfigAlias1
-func (t *AllowedAgentModelConfig_Alias) FromAllowedAgentModelConfigAlias1(v AllowedAgentModelConfigAlias1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeAllowedAgentModelConfigAlias1 performs a merge with any union data inside the AllowedAgentModelConfig_Alias, using the provided AllowedAgentModelConfigAlias1
-func (t *AllowedAgentModelConfig_Alias) MergeAllowedAgentModelConfigAlias1(v AllowedAgentModelConfigAlias1) error {
-	b, err := json.Marshal(v)
+	object["detail"], err = json.Marshal(a.Detail)
 	if err != nil {
-		return err
+		return nil, fmt.Errorf("error marshaling 'detail': %w", err)
 	}
 
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
+	object["error_code"], err = json.Marshal(a.ErrorCode)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'error_code': %w", err)
+	}
 
-func (t AllowedAgentModelConfig_Alias) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
+	if a.Errors != nil {
+		object["errors"], err = json.Marshal(a.Errors)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'errors': %w", err)
+		}
+	}
 
-func (t *AllowedAgentModelConfig_Alias) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
+	object["instance"], err = json.Marshal(a.Instance)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'instance': %w", err)
+	}
+
+	object["status"], err = json.Marshal(a.Status)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'status': %w", err)
+	}
+
+	object["title"], err = json.Marshal(a.Title)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'title': %w", err)
+	}
+
+	if a.TraceId != nil {
+		object["trace_id"], err = json.Marshal(a.TraceId)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'trace_id': %w", err)
+		}
+	}
+
+	object["type"], err = json.Marshal(a.Type)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'type': %w", err)
+	}
+
+	for fieldName, field := range a.AdditionalProperties {
+		object[fieldName], err = json.Marshal(field)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling '%s': %w", fieldName, err)
+		}
+	}
+	return json.Marshal(object)
 }
 
 // AsAndBotFilterField returns the union data inside the AndBotFilterField_Filters_Item as a AndBotFilterField
@@ -2812,2424 +1823,6 @@ func (t AndBotFilterField_Filters_Item) MarshalJSON() ([]byte, error) {
 }
 
 func (t *AndBotFilterField_Filters_Item) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsBotCreateAvatarUrl0 returns the union data inside the BotCreate_AvatarUrl as a BotCreateAvatarUrl0
-func (t BotCreate_AvatarUrl) AsBotCreateAvatarUrl0() (BotCreateAvatarUrl0, error) {
-	var body BotCreateAvatarUrl0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromBotCreateAvatarUrl0 overwrites any union data inside the BotCreate_AvatarUrl as the provided BotCreateAvatarUrl0
-func (t *BotCreate_AvatarUrl) FromBotCreateAvatarUrl0(v BotCreateAvatarUrl0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeBotCreateAvatarUrl0 performs a merge with any union data inside the BotCreate_AvatarUrl, using the provided BotCreateAvatarUrl0
-func (t *BotCreate_AvatarUrl) MergeBotCreateAvatarUrl0(v BotCreateAvatarUrl0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsBotCreateAvatarUrl1 returns the union data inside the BotCreate_AvatarUrl as a BotCreateAvatarUrl1
-func (t BotCreate_AvatarUrl) AsBotCreateAvatarUrl1() (BotCreateAvatarUrl1, error) {
-	var body BotCreateAvatarUrl1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromBotCreateAvatarUrl1 overwrites any union data inside the BotCreate_AvatarUrl as the provided BotCreateAvatarUrl1
-func (t *BotCreate_AvatarUrl) FromBotCreateAvatarUrl1(v BotCreateAvatarUrl1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeBotCreateAvatarUrl1 performs a merge with any union data inside the BotCreate_AvatarUrl, using the provided BotCreateAvatarUrl1
-func (t *BotCreate_AvatarUrl) MergeBotCreateAvatarUrl1(v BotCreateAvatarUrl1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t BotCreate_AvatarUrl) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *BotCreate_AvatarUrl) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsResourceQuantities returns the union data inside the BotCreate_Resources as a ResourceQuantities
-func (t BotCreate_Resources) AsResourceQuantities() (ResourceQuantities, error) {
-	var body ResourceQuantities
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromResourceQuantities overwrites any union data inside the BotCreate_Resources as the provided ResourceQuantities
-func (t *BotCreate_Resources) FromResourceQuantities(v ResourceQuantities) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeResourceQuantities performs a merge with any union data inside the BotCreate_Resources, using the provided ResourceQuantities
-func (t *BotCreate_Resources) MergeResourceQuantities(v ResourceQuantities) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsBotCreateResources1 returns the union data inside the BotCreate_Resources as a BotCreateResources1
-func (t BotCreate_Resources) AsBotCreateResources1() (BotCreateResources1, error) {
-	var body BotCreateResources1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromBotCreateResources1 overwrites any union data inside the BotCreate_Resources as the provided BotCreateResources1
-func (t *BotCreate_Resources) FromBotCreateResources1(v BotCreateResources1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeBotCreateResources1 performs a merge with any union data inside the BotCreate_Resources, using the provided BotCreateResources1
-func (t *BotCreate_Resources) MergeBotCreateResources1(v BotCreateResources1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t BotCreate_Resources) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *BotCreate_Resources) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsBotListItemAvatarUrl0 returns the union data inside the BotListItem_AvatarUrl as a BotListItemAvatarUrl0
-func (t BotListItem_AvatarUrl) AsBotListItemAvatarUrl0() (BotListItemAvatarUrl0, error) {
-	var body BotListItemAvatarUrl0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromBotListItemAvatarUrl0 overwrites any union data inside the BotListItem_AvatarUrl as the provided BotListItemAvatarUrl0
-func (t *BotListItem_AvatarUrl) FromBotListItemAvatarUrl0(v BotListItemAvatarUrl0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeBotListItemAvatarUrl0 performs a merge with any union data inside the BotListItem_AvatarUrl, using the provided BotListItemAvatarUrl0
-func (t *BotListItem_AvatarUrl) MergeBotListItemAvatarUrl0(v BotListItemAvatarUrl0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsBotListItemAvatarUrl1 returns the union data inside the BotListItem_AvatarUrl as a BotListItemAvatarUrl1
-func (t BotListItem_AvatarUrl) AsBotListItemAvatarUrl1() (BotListItemAvatarUrl1, error) {
-	var body BotListItemAvatarUrl1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromBotListItemAvatarUrl1 overwrites any union data inside the BotListItem_AvatarUrl as the provided BotListItemAvatarUrl1
-func (t *BotListItem_AvatarUrl) FromBotListItemAvatarUrl1(v BotListItemAvatarUrl1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeBotListItemAvatarUrl1 performs a merge with any union data inside the BotListItem_AvatarUrl, using the provided BotListItemAvatarUrl1
-func (t *BotListItem_AvatarUrl) MergeBotListItemAvatarUrl1(v BotListItemAvatarUrl1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t BotListItem_AvatarUrl) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *BotListItem_AvatarUrl) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsBotListItemOwnerId0 returns the union data inside the BotListItem_OwnerId as a BotListItemOwnerId0
-func (t BotListItem_OwnerId) AsBotListItemOwnerId0() (BotListItemOwnerId0, error) {
-	var body BotListItemOwnerId0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromBotListItemOwnerId0 overwrites any union data inside the BotListItem_OwnerId as the provided BotListItemOwnerId0
-func (t *BotListItem_OwnerId) FromBotListItemOwnerId0(v BotListItemOwnerId0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeBotListItemOwnerId0 performs a merge with any union data inside the BotListItem_OwnerId, using the provided BotListItemOwnerId0
-func (t *BotListItem_OwnerId) MergeBotListItemOwnerId0(v BotListItemOwnerId0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsBotListItemOwnerId1 returns the union data inside the BotListItem_OwnerId as a BotListItemOwnerId1
-func (t BotListItem_OwnerId) AsBotListItemOwnerId1() (BotListItemOwnerId1, error) {
-	var body BotListItemOwnerId1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromBotListItemOwnerId1 overwrites any union data inside the BotListItem_OwnerId as the provided BotListItemOwnerId1
-func (t *BotListItem_OwnerId) FromBotListItemOwnerId1(v BotListItemOwnerId1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeBotListItemOwnerId1 performs a merge with any union data inside the BotListItem_OwnerId, using the provided BotListItemOwnerId1
-func (t *BotListItem_OwnerId) MergeBotListItemOwnerId1(v BotListItemOwnerId1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t BotListItem_OwnerId) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *BotListItem_OwnerId) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsBotListItemReconcileError0 returns the union data inside the BotListItem_ReconcileError as a BotListItemReconcileError0
-func (t BotListItem_ReconcileError) AsBotListItemReconcileError0() (BotListItemReconcileError0, error) {
-	var body BotListItemReconcileError0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromBotListItemReconcileError0 overwrites any union data inside the BotListItem_ReconcileError as the provided BotListItemReconcileError0
-func (t *BotListItem_ReconcileError) FromBotListItemReconcileError0(v BotListItemReconcileError0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeBotListItemReconcileError0 performs a merge with any union data inside the BotListItem_ReconcileError, using the provided BotListItemReconcileError0
-func (t *BotListItem_ReconcileError) MergeBotListItemReconcileError0(v BotListItemReconcileError0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsBotListItemReconcileError1 returns the union data inside the BotListItem_ReconcileError as a BotListItemReconcileError1
-func (t BotListItem_ReconcileError) AsBotListItemReconcileError1() (BotListItemReconcileError1, error) {
-	var body BotListItemReconcileError1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromBotListItemReconcileError1 overwrites any union data inside the BotListItem_ReconcileError as the provided BotListItemReconcileError1
-func (t *BotListItem_ReconcileError) FromBotListItemReconcileError1(v BotListItemReconcileError1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeBotListItemReconcileError1 performs a merge with any union data inside the BotListItem_ReconcileError, using the provided BotListItemReconcileError1
-func (t *BotListItem_ReconcileError) MergeBotListItemReconcileError1(v BotListItemReconcileError1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t BotListItem_ReconcileError) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *BotListItem_ReconcileError) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsBotResponseAvatarUrl0 returns the union data inside the BotResponse_AvatarUrl as a BotResponseAvatarUrl0
-func (t BotResponse_AvatarUrl) AsBotResponseAvatarUrl0() (BotResponseAvatarUrl0, error) {
-	var body BotResponseAvatarUrl0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromBotResponseAvatarUrl0 overwrites any union data inside the BotResponse_AvatarUrl as the provided BotResponseAvatarUrl0
-func (t *BotResponse_AvatarUrl) FromBotResponseAvatarUrl0(v BotResponseAvatarUrl0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeBotResponseAvatarUrl0 performs a merge with any union data inside the BotResponse_AvatarUrl, using the provided BotResponseAvatarUrl0
-func (t *BotResponse_AvatarUrl) MergeBotResponseAvatarUrl0(v BotResponseAvatarUrl0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsBotResponseAvatarUrl1 returns the union data inside the BotResponse_AvatarUrl as a BotResponseAvatarUrl1
-func (t BotResponse_AvatarUrl) AsBotResponseAvatarUrl1() (BotResponseAvatarUrl1, error) {
-	var body BotResponseAvatarUrl1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromBotResponseAvatarUrl1 overwrites any union data inside the BotResponse_AvatarUrl as the provided BotResponseAvatarUrl1
-func (t *BotResponse_AvatarUrl) FromBotResponseAvatarUrl1(v BotResponseAvatarUrl1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeBotResponseAvatarUrl1 performs a merge with any union data inside the BotResponse_AvatarUrl, using the provided BotResponseAvatarUrl1
-func (t *BotResponse_AvatarUrl) MergeBotResponseAvatarUrl1(v BotResponseAvatarUrl1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t BotResponse_AvatarUrl) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *BotResponse_AvatarUrl) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsBotResponseLastHealthCheckAt0 returns the union data inside the BotResponse_LastHealthCheckAt as a BotResponseLastHealthCheckAt0
-func (t BotResponse_LastHealthCheckAt) AsBotResponseLastHealthCheckAt0() (BotResponseLastHealthCheckAt0, error) {
-	var body BotResponseLastHealthCheckAt0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromBotResponseLastHealthCheckAt0 overwrites any union data inside the BotResponse_LastHealthCheckAt as the provided BotResponseLastHealthCheckAt0
-func (t *BotResponse_LastHealthCheckAt) FromBotResponseLastHealthCheckAt0(v BotResponseLastHealthCheckAt0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeBotResponseLastHealthCheckAt0 performs a merge with any union data inside the BotResponse_LastHealthCheckAt, using the provided BotResponseLastHealthCheckAt0
-func (t *BotResponse_LastHealthCheckAt) MergeBotResponseLastHealthCheckAt0(v BotResponseLastHealthCheckAt0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsBotResponseLastHealthCheckAt1 returns the union data inside the BotResponse_LastHealthCheckAt as a BotResponseLastHealthCheckAt1
-func (t BotResponse_LastHealthCheckAt) AsBotResponseLastHealthCheckAt1() (BotResponseLastHealthCheckAt1, error) {
-	var body BotResponseLastHealthCheckAt1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromBotResponseLastHealthCheckAt1 overwrites any union data inside the BotResponse_LastHealthCheckAt as the provided BotResponseLastHealthCheckAt1
-func (t *BotResponse_LastHealthCheckAt) FromBotResponseLastHealthCheckAt1(v BotResponseLastHealthCheckAt1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeBotResponseLastHealthCheckAt1 performs a merge with any union data inside the BotResponse_LastHealthCheckAt, using the provided BotResponseLastHealthCheckAt1
-func (t *BotResponse_LastHealthCheckAt) MergeBotResponseLastHealthCheckAt1(v BotResponseLastHealthCheckAt1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t BotResponse_LastHealthCheckAt) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *BotResponse_LastHealthCheckAt) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsBotResponseLastReconciledAt0 returns the union data inside the BotResponse_LastReconciledAt as a BotResponseLastReconciledAt0
-func (t BotResponse_LastReconciledAt) AsBotResponseLastReconciledAt0() (BotResponseLastReconciledAt0, error) {
-	var body BotResponseLastReconciledAt0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromBotResponseLastReconciledAt0 overwrites any union data inside the BotResponse_LastReconciledAt as the provided BotResponseLastReconciledAt0
-func (t *BotResponse_LastReconciledAt) FromBotResponseLastReconciledAt0(v BotResponseLastReconciledAt0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeBotResponseLastReconciledAt0 performs a merge with any union data inside the BotResponse_LastReconciledAt, using the provided BotResponseLastReconciledAt0
-func (t *BotResponse_LastReconciledAt) MergeBotResponseLastReconciledAt0(v BotResponseLastReconciledAt0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsBotResponseLastReconciledAt1 returns the union data inside the BotResponse_LastReconciledAt as a BotResponseLastReconciledAt1
-func (t BotResponse_LastReconciledAt) AsBotResponseLastReconciledAt1() (BotResponseLastReconciledAt1, error) {
-	var body BotResponseLastReconciledAt1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromBotResponseLastReconciledAt1 overwrites any union data inside the BotResponse_LastReconciledAt as the provided BotResponseLastReconciledAt1
-func (t *BotResponse_LastReconciledAt) FromBotResponseLastReconciledAt1(v BotResponseLastReconciledAt1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeBotResponseLastReconciledAt1 performs a merge with any union data inside the BotResponse_LastReconciledAt, using the provided BotResponseLastReconciledAt1
-func (t *BotResponse_LastReconciledAt) MergeBotResponseLastReconciledAt1(v BotResponseLastReconciledAt1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t BotResponse_LastReconciledAt) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *BotResponse_LastReconciledAt) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsBotMemberRole returns the union data inside the BotResponse_MemberRole as a BotMemberRole
-func (t BotResponse_MemberRole) AsBotMemberRole() (BotMemberRole, error) {
-	var body BotMemberRole
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromBotMemberRole overwrites any union data inside the BotResponse_MemberRole as the provided BotMemberRole
-func (t *BotResponse_MemberRole) FromBotMemberRole(v BotMemberRole) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeBotMemberRole performs a merge with any union data inside the BotResponse_MemberRole, using the provided BotMemberRole
-func (t *BotResponse_MemberRole) MergeBotMemberRole(v BotMemberRole) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsBotResponseMemberRole1 returns the union data inside the BotResponse_MemberRole as a BotResponseMemberRole1
-func (t BotResponse_MemberRole) AsBotResponseMemberRole1() (BotResponseMemberRole1, error) {
-	var body BotResponseMemberRole1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromBotResponseMemberRole1 overwrites any union data inside the BotResponse_MemberRole as the provided BotResponseMemberRole1
-func (t *BotResponse_MemberRole) FromBotResponseMemberRole1(v BotResponseMemberRole1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeBotResponseMemberRole1 performs a merge with any union data inside the BotResponse_MemberRole, using the provided BotResponseMemberRole1
-func (t *BotResponse_MemberRole) MergeBotResponseMemberRole1(v BotResponseMemberRole1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t BotResponse_MemberRole) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *BotResponse_MemberRole) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsBotResponseOwnerId0 returns the union data inside the BotResponse_OwnerId as a BotResponseOwnerId0
-func (t BotResponse_OwnerId) AsBotResponseOwnerId0() (BotResponseOwnerId0, error) {
-	var body BotResponseOwnerId0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromBotResponseOwnerId0 overwrites any union data inside the BotResponse_OwnerId as the provided BotResponseOwnerId0
-func (t *BotResponse_OwnerId) FromBotResponseOwnerId0(v BotResponseOwnerId0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeBotResponseOwnerId0 performs a merge with any union data inside the BotResponse_OwnerId, using the provided BotResponseOwnerId0
-func (t *BotResponse_OwnerId) MergeBotResponseOwnerId0(v BotResponseOwnerId0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsBotResponseOwnerId1 returns the union data inside the BotResponse_OwnerId as a BotResponseOwnerId1
-func (t BotResponse_OwnerId) AsBotResponseOwnerId1() (BotResponseOwnerId1, error) {
-	var body BotResponseOwnerId1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromBotResponseOwnerId1 overwrites any union data inside the BotResponse_OwnerId as the provided BotResponseOwnerId1
-func (t *BotResponse_OwnerId) FromBotResponseOwnerId1(v BotResponseOwnerId1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeBotResponseOwnerId1 performs a merge with any union data inside the BotResponse_OwnerId, using the provided BotResponseOwnerId1
-func (t *BotResponse_OwnerId) MergeBotResponseOwnerId1(v BotResponseOwnerId1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t BotResponse_OwnerId) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *BotResponse_OwnerId) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsBotResponseReconcileError0 returns the union data inside the BotResponse_ReconcileError as a BotResponseReconcileError0
-func (t BotResponse_ReconcileError) AsBotResponseReconcileError0() (BotResponseReconcileError0, error) {
-	var body BotResponseReconcileError0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromBotResponseReconcileError0 overwrites any union data inside the BotResponse_ReconcileError as the provided BotResponseReconcileError0
-func (t *BotResponse_ReconcileError) FromBotResponseReconcileError0(v BotResponseReconcileError0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeBotResponseReconcileError0 performs a merge with any union data inside the BotResponse_ReconcileError, using the provided BotResponseReconcileError0
-func (t *BotResponse_ReconcileError) MergeBotResponseReconcileError0(v BotResponseReconcileError0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsBotResponseReconcileError1 returns the union data inside the BotResponse_ReconcileError as a BotResponseReconcileError1
-func (t BotResponse_ReconcileError) AsBotResponseReconcileError1() (BotResponseReconcileError1, error) {
-	var body BotResponseReconcileError1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromBotResponseReconcileError1 overwrites any union data inside the BotResponse_ReconcileError as the provided BotResponseReconcileError1
-func (t *BotResponse_ReconcileError) FromBotResponseReconcileError1(v BotResponseReconcileError1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeBotResponseReconcileError1 performs a merge with any union data inside the BotResponse_ReconcileError, using the provided BotResponseReconcileError1
-func (t *BotResponse_ReconcileError) MergeBotResponseReconcileError1(v BotResponseReconcileError1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t BotResponse_ReconcileError) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *BotResponse_ReconcileError) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsRescueStage returns the union data inside the BotResponse_RescueStage as a RescueStage
-func (t BotResponse_RescueStage) AsRescueStage() (RescueStage, error) {
-	var body RescueStage
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromRescueStage overwrites any union data inside the BotResponse_RescueStage as the provided RescueStage
-func (t *BotResponse_RescueStage) FromRescueStage(v RescueStage) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeRescueStage performs a merge with any union data inside the BotResponse_RescueStage, using the provided RescueStage
-func (t *BotResponse_RescueStage) MergeRescueStage(v RescueStage) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsBotResponseRescueStage1 returns the union data inside the BotResponse_RescueStage as a BotResponseRescueStage1
-func (t BotResponse_RescueStage) AsBotResponseRescueStage1() (BotResponseRescueStage1, error) {
-	var body BotResponseRescueStage1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromBotResponseRescueStage1 overwrites any union data inside the BotResponse_RescueStage as the provided BotResponseRescueStage1
-func (t *BotResponse_RescueStage) FromBotResponseRescueStage1(v BotResponseRescueStage1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeBotResponseRescueStage1 performs a merge with any union data inside the BotResponse_RescueStage, using the provided BotResponseRescueStage1
-func (t *BotResponse_RescueStage) MergeBotResponseRescueStage1(v BotResponseRescueStage1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t BotResponse_RescueStage) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *BotResponse_RescueStage) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsResourceQuantities returns the union data inside the BotResponse_Resources as a ResourceQuantities
-func (t BotResponse_Resources) AsResourceQuantities() (ResourceQuantities, error) {
-	var body ResourceQuantities
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromResourceQuantities overwrites any union data inside the BotResponse_Resources as the provided ResourceQuantities
-func (t *BotResponse_Resources) FromResourceQuantities(v ResourceQuantities) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeResourceQuantities performs a merge with any union data inside the BotResponse_Resources, using the provided ResourceQuantities
-func (t *BotResponse_Resources) MergeResourceQuantities(v ResourceQuantities) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsBotResponseResources1 returns the union data inside the BotResponse_Resources as a BotResponseResources1
-func (t BotResponse_Resources) AsBotResponseResources1() (BotResponseResources1, error) {
-	var body BotResponseResources1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromBotResponseResources1 overwrites any union data inside the BotResponse_Resources as the provided BotResponseResources1
-func (t *BotResponse_Resources) FromBotResponseResources1(v BotResponseResources1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeBotResponseResources1 performs a merge with any union data inside the BotResponse_Resources, using the provided BotResponseResources1
-func (t *BotResponse_Resources) MergeBotResponseResources1(v BotResponseResources1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t BotResponse_Resources) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *BotResponse_Resources) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsFilterNodeBotFilterField returns the union data inside the BotSearchRequest_Where as a FilterNodeBotFilterField
-func (t BotSearchRequest_Where) AsFilterNodeBotFilterField() (FilterNodeBotFilterField, error) {
-	var body FilterNodeBotFilterField
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromFilterNodeBotFilterField overwrites any union data inside the BotSearchRequest_Where as the provided FilterNodeBotFilterField
-func (t *BotSearchRequest_Where) FromFilterNodeBotFilterField(v FilterNodeBotFilterField) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeFilterNodeBotFilterField performs a merge with any union data inside the BotSearchRequest_Where, using the provided FilterNodeBotFilterField
-func (t *BotSearchRequest_Where) MergeFilterNodeBotFilterField(v FilterNodeBotFilterField) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsBotSearchRequestWhere1 returns the union data inside the BotSearchRequest_Where as a BotSearchRequestWhere1
-func (t BotSearchRequest_Where) AsBotSearchRequestWhere1() (BotSearchRequestWhere1, error) {
-	var body BotSearchRequestWhere1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromBotSearchRequestWhere1 overwrites any union data inside the BotSearchRequest_Where as the provided BotSearchRequestWhere1
-func (t *BotSearchRequest_Where) FromBotSearchRequestWhere1(v BotSearchRequestWhere1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeBotSearchRequestWhere1 performs a merge with any union data inside the BotSearchRequest_Where, using the provided BotSearchRequestWhere1
-func (t *BotSearchRequest_Where) MergeBotSearchRequestWhere1(v BotSearchRequestWhere1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t BotSearchRequest_Where) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *BotSearchRequest_Where) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsBotUpdateAvatarUrl0 returns the union data inside the BotUpdate_AvatarUrl as a BotUpdateAvatarUrl0
-func (t BotUpdate_AvatarUrl) AsBotUpdateAvatarUrl0() (BotUpdateAvatarUrl0, error) {
-	var body BotUpdateAvatarUrl0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromBotUpdateAvatarUrl0 overwrites any union data inside the BotUpdate_AvatarUrl as the provided BotUpdateAvatarUrl0
-func (t *BotUpdate_AvatarUrl) FromBotUpdateAvatarUrl0(v BotUpdateAvatarUrl0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeBotUpdateAvatarUrl0 performs a merge with any union data inside the BotUpdate_AvatarUrl, using the provided BotUpdateAvatarUrl0
-func (t *BotUpdate_AvatarUrl) MergeBotUpdateAvatarUrl0(v BotUpdateAvatarUrl0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsBotUpdateAvatarUrl1 returns the union data inside the BotUpdate_AvatarUrl as a BotUpdateAvatarUrl1
-func (t BotUpdate_AvatarUrl) AsBotUpdateAvatarUrl1() (BotUpdateAvatarUrl1, error) {
-	var body BotUpdateAvatarUrl1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromBotUpdateAvatarUrl1 overwrites any union data inside the BotUpdate_AvatarUrl as the provided BotUpdateAvatarUrl1
-func (t *BotUpdate_AvatarUrl) FromBotUpdateAvatarUrl1(v BotUpdateAvatarUrl1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeBotUpdateAvatarUrl1 performs a merge with any union data inside the BotUpdate_AvatarUrl, using the provided BotUpdateAvatarUrl1
-func (t *BotUpdate_AvatarUrl) MergeBotUpdateAvatarUrl1(v BotUpdateAvatarUrl1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t BotUpdate_AvatarUrl) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *BotUpdate_AvatarUrl) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsResourceQuantities returns the union data inside the BotUpdate_Resources as a ResourceQuantities
-func (t BotUpdate_Resources) AsResourceQuantities() (ResourceQuantities, error) {
-	var body ResourceQuantities
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromResourceQuantities overwrites any union data inside the BotUpdate_Resources as the provided ResourceQuantities
-func (t *BotUpdate_Resources) FromResourceQuantities(v ResourceQuantities) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeResourceQuantities performs a merge with any union data inside the BotUpdate_Resources, using the provided ResourceQuantities
-func (t *BotUpdate_Resources) MergeResourceQuantities(v ResourceQuantities) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsBotUpdateResources1 returns the union data inside the BotUpdate_Resources as a BotUpdateResources1
-func (t BotUpdate_Resources) AsBotUpdateResources1() (BotUpdateResources1, error) {
-	var body BotUpdateResources1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromBotUpdateResources1 overwrites any union data inside the BotUpdate_Resources as the provided BotUpdateResources1
-func (t *BotUpdate_Resources) FromBotUpdateResources1(v BotUpdateResources1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeBotUpdateResources1 performs a merge with any union data inside the BotUpdate_Resources, using the provided BotUpdateResources1
-func (t *BotUpdate_Resources) MergeBotUpdateResources1(v BotUpdateResources1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t BotUpdate_Resources) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *BotUpdate_Resources) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsBotTier returns the union data inside the BotUpdate_Tier as a BotTier
-func (t BotUpdate_Tier) AsBotTier() (BotTier, error) {
-	var body BotTier
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromBotTier overwrites any union data inside the BotUpdate_Tier as the provided BotTier
-func (t *BotUpdate_Tier) FromBotTier(v BotTier) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeBotTier performs a merge with any union data inside the BotUpdate_Tier, using the provided BotTier
-func (t *BotUpdate_Tier) MergeBotTier(v BotTier) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsBotUpdateTier1 returns the union data inside the BotUpdate_Tier as a BotUpdateTier1
-func (t BotUpdate_Tier) AsBotUpdateTier1() (BotUpdateTier1, error) {
-	var body BotUpdateTier1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromBotUpdateTier1 overwrites any union data inside the BotUpdate_Tier as the provided BotUpdateTier1
-func (t *BotUpdate_Tier) FromBotUpdateTier1(v BotUpdateTier1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeBotUpdateTier1 performs a merge with any union data inside the BotUpdate_Tier, using the provided BotUpdateTier1
-func (t *BotUpdate_Tier) MergeBotUpdateTier1(v BotUpdateTier1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t BotUpdate_Tier) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *BotUpdate_Tier) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsBrowserConfigExecutablePath0 returns the union data inside the BrowserConfig_ExecutablePath as a BrowserConfigExecutablePath0
-func (t BrowserConfig_ExecutablePath) AsBrowserConfigExecutablePath0() (BrowserConfigExecutablePath0, error) {
-	var body BrowserConfigExecutablePath0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromBrowserConfigExecutablePath0 overwrites any union data inside the BrowserConfig_ExecutablePath as the provided BrowserConfigExecutablePath0
-func (t *BrowserConfig_ExecutablePath) FromBrowserConfigExecutablePath0(v BrowserConfigExecutablePath0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeBrowserConfigExecutablePath0 performs a merge with any union data inside the BrowserConfig_ExecutablePath, using the provided BrowserConfigExecutablePath0
-func (t *BrowserConfig_ExecutablePath) MergeBrowserConfigExecutablePath0(v BrowserConfigExecutablePath0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsBrowserConfigExecutablePath1 returns the union data inside the BrowserConfig_ExecutablePath as a BrowserConfigExecutablePath1
-func (t BrowserConfig_ExecutablePath) AsBrowserConfigExecutablePath1() (BrowserConfigExecutablePath1, error) {
-	var body BrowserConfigExecutablePath1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromBrowserConfigExecutablePath1 overwrites any union data inside the BrowserConfig_ExecutablePath as the provided BrowserConfigExecutablePath1
-func (t *BrowserConfig_ExecutablePath) FromBrowserConfigExecutablePath1(v BrowserConfigExecutablePath1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeBrowserConfigExecutablePath1 performs a merge with any union data inside the BrowserConfig_ExecutablePath, using the provided BrowserConfigExecutablePath1
-func (t *BrowserConfig_ExecutablePath) MergeBrowserConfigExecutablePath1(v BrowserConfigExecutablePath1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t BrowserConfig_ExecutablePath) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *BrowserConfig_ExecutablePath) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsCliWatchdogProfileMaxMs0 returns the union data inside the CliWatchdogProfile_MaxMs as a CliWatchdogProfileMaxMs0
-func (t CliWatchdogProfile_MaxMs) AsCliWatchdogProfileMaxMs0() (CliWatchdogProfileMaxMs0, error) {
-	var body CliWatchdogProfileMaxMs0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromCliWatchdogProfileMaxMs0 overwrites any union data inside the CliWatchdogProfile_MaxMs as the provided CliWatchdogProfileMaxMs0
-func (t *CliWatchdogProfile_MaxMs) FromCliWatchdogProfileMaxMs0(v CliWatchdogProfileMaxMs0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeCliWatchdogProfileMaxMs0 performs a merge with any union data inside the CliWatchdogProfile_MaxMs, using the provided CliWatchdogProfileMaxMs0
-func (t *CliWatchdogProfile_MaxMs) MergeCliWatchdogProfileMaxMs0(v CliWatchdogProfileMaxMs0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsCliWatchdogProfileMaxMs1 returns the union data inside the CliWatchdogProfile_MaxMs as a CliWatchdogProfileMaxMs1
-func (t CliWatchdogProfile_MaxMs) AsCliWatchdogProfileMaxMs1() (CliWatchdogProfileMaxMs1, error) {
-	var body CliWatchdogProfileMaxMs1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromCliWatchdogProfileMaxMs1 overwrites any union data inside the CliWatchdogProfile_MaxMs as the provided CliWatchdogProfileMaxMs1
-func (t *CliWatchdogProfile_MaxMs) FromCliWatchdogProfileMaxMs1(v CliWatchdogProfileMaxMs1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeCliWatchdogProfileMaxMs1 performs a merge with any union data inside the CliWatchdogProfile_MaxMs, using the provided CliWatchdogProfileMaxMs1
-func (t *CliWatchdogProfile_MaxMs) MergeCliWatchdogProfileMaxMs1(v CliWatchdogProfileMaxMs1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t CliWatchdogProfile_MaxMs) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *CliWatchdogProfile_MaxMs) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsCliWatchdogProfileMinMs0 returns the union data inside the CliWatchdogProfile_MinMs as a CliWatchdogProfileMinMs0
-func (t CliWatchdogProfile_MinMs) AsCliWatchdogProfileMinMs0() (CliWatchdogProfileMinMs0, error) {
-	var body CliWatchdogProfileMinMs0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromCliWatchdogProfileMinMs0 overwrites any union data inside the CliWatchdogProfile_MinMs as the provided CliWatchdogProfileMinMs0
-func (t *CliWatchdogProfile_MinMs) FromCliWatchdogProfileMinMs0(v CliWatchdogProfileMinMs0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeCliWatchdogProfileMinMs0 performs a merge with any union data inside the CliWatchdogProfile_MinMs, using the provided CliWatchdogProfileMinMs0
-func (t *CliWatchdogProfile_MinMs) MergeCliWatchdogProfileMinMs0(v CliWatchdogProfileMinMs0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsCliWatchdogProfileMinMs1 returns the union data inside the CliWatchdogProfile_MinMs as a CliWatchdogProfileMinMs1
-func (t CliWatchdogProfile_MinMs) AsCliWatchdogProfileMinMs1() (CliWatchdogProfileMinMs1, error) {
-	var body CliWatchdogProfileMinMs1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromCliWatchdogProfileMinMs1 overwrites any union data inside the CliWatchdogProfile_MinMs as the provided CliWatchdogProfileMinMs1
-func (t *CliWatchdogProfile_MinMs) FromCliWatchdogProfileMinMs1(v CliWatchdogProfileMinMs1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeCliWatchdogProfileMinMs1 performs a merge with any union data inside the CliWatchdogProfile_MinMs, using the provided CliWatchdogProfileMinMs1
-func (t *CliWatchdogProfile_MinMs) MergeCliWatchdogProfileMinMs1(v CliWatchdogProfileMinMs1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t CliWatchdogProfile_MinMs) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *CliWatchdogProfile_MinMs) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsCliWatchdogProfileNoOutputTimeoutMs0 returns the union data inside the CliWatchdogProfile_NoOutputTimeoutMs as a CliWatchdogProfileNoOutputTimeoutMs0
-func (t CliWatchdogProfile_NoOutputTimeoutMs) AsCliWatchdogProfileNoOutputTimeoutMs0() (CliWatchdogProfileNoOutputTimeoutMs0, error) {
-	var body CliWatchdogProfileNoOutputTimeoutMs0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromCliWatchdogProfileNoOutputTimeoutMs0 overwrites any union data inside the CliWatchdogProfile_NoOutputTimeoutMs as the provided CliWatchdogProfileNoOutputTimeoutMs0
-func (t *CliWatchdogProfile_NoOutputTimeoutMs) FromCliWatchdogProfileNoOutputTimeoutMs0(v CliWatchdogProfileNoOutputTimeoutMs0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeCliWatchdogProfileNoOutputTimeoutMs0 performs a merge with any union data inside the CliWatchdogProfile_NoOutputTimeoutMs, using the provided CliWatchdogProfileNoOutputTimeoutMs0
-func (t *CliWatchdogProfile_NoOutputTimeoutMs) MergeCliWatchdogProfileNoOutputTimeoutMs0(v CliWatchdogProfileNoOutputTimeoutMs0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsCliWatchdogProfileNoOutputTimeoutMs1 returns the union data inside the CliWatchdogProfile_NoOutputTimeoutMs as a CliWatchdogProfileNoOutputTimeoutMs1
-func (t CliWatchdogProfile_NoOutputTimeoutMs) AsCliWatchdogProfileNoOutputTimeoutMs1() (CliWatchdogProfileNoOutputTimeoutMs1, error) {
-	var body CliWatchdogProfileNoOutputTimeoutMs1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromCliWatchdogProfileNoOutputTimeoutMs1 overwrites any union data inside the CliWatchdogProfile_NoOutputTimeoutMs as the provided CliWatchdogProfileNoOutputTimeoutMs1
-func (t *CliWatchdogProfile_NoOutputTimeoutMs) FromCliWatchdogProfileNoOutputTimeoutMs1(v CliWatchdogProfileNoOutputTimeoutMs1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeCliWatchdogProfileNoOutputTimeoutMs1 performs a merge with any union data inside the CliWatchdogProfile_NoOutputTimeoutMs, using the provided CliWatchdogProfileNoOutputTimeoutMs1
-func (t *CliWatchdogProfile_NoOutputTimeoutMs) MergeCliWatchdogProfileNoOutputTimeoutMs1(v CliWatchdogProfileNoOutputTimeoutMs1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t CliWatchdogProfile_NoOutputTimeoutMs) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *CliWatchdogProfile_NoOutputTimeoutMs) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsCliWatchdogProfileNoOutputTimeoutRatio0 returns the union data inside the CliWatchdogProfile_NoOutputTimeoutRatio as a CliWatchdogProfileNoOutputTimeoutRatio0
-func (t CliWatchdogProfile_NoOutputTimeoutRatio) AsCliWatchdogProfileNoOutputTimeoutRatio0() (CliWatchdogProfileNoOutputTimeoutRatio0, error) {
-	var body CliWatchdogProfileNoOutputTimeoutRatio0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromCliWatchdogProfileNoOutputTimeoutRatio0 overwrites any union data inside the CliWatchdogProfile_NoOutputTimeoutRatio as the provided CliWatchdogProfileNoOutputTimeoutRatio0
-func (t *CliWatchdogProfile_NoOutputTimeoutRatio) FromCliWatchdogProfileNoOutputTimeoutRatio0(v CliWatchdogProfileNoOutputTimeoutRatio0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeCliWatchdogProfileNoOutputTimeoutRatio0 performs a merge with any union data inside the CliWatchdogProfile_NoOutputTimeoutRatio, using the provided CliWatchdogProfileNoOutputTimeoutRatio0
-func (t *CliWatchdogProfile_NoOutputTimeoutRatio) MergeCliWatchdogProfileNoOutputTimeoutRatio0(v CliWatchdogProfileNoOutputTimeoutRatio0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsCliWatchdogProfileNoOutputTimeoutRatio1 returns the union data inside the CliWatchdogProfile_NoOutputTimeoutRatio as a CliWatchdogProfileNoOutputTimeoutRatio1
-func (t CliWatchdogProfile_NoOutputTimeoutRatio) AsCliWatchdogProfileNoOutputTimeoutRatio1() (CliWatchdogProfileNoOutputTimeoutRatio1, error) {
-	var body CliWatchdogProfileNoOutputTimeoutRatio1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromCliWatchdogProfileNoOutputTimeoutRatio1 overwrites any union data inside the CliWatchdogProfile_NoOutputTimeoutRatio as the provided CliWatchdogProfileNoOutputTimeoutRatio1
-func (t *CliWatchdogProfile_NoOutputTimeoutRatio) FromCliWatchdogProfileNoOutputTimeoutRatio1(v CliWatchdogProfileNoOutputTimeoutRatio1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeCliWatchdogProfileNoOutputTimeoutRatio1 performs a merge with any union data inside the CliWatchdogProfile_NoOutputTimeoutRatio, using the provided CliWatchdogProfileNoOutputTimeoutRatio1
-func (t *CliWatchdogProfile_NoOutputTimeoutRatio) MergeCliWatchdogProfileNoOutputTimeoutRatio1(v CliWatchdogProfileNoOutputTimeoutRatio1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t CliWatchdogProfile_NoOutputTimeoutRatio) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *CliWatchdogProfile_NoOutputTimeoutRatio) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsCompactionConfigPatchMaxActiveTranscriptBytes0 returns the union data inside the CompactionConfigPatch_MaxActiveTranscriptBytes as a CompactionConfigPatchMaxActiveTranscriptBytes0
-func (t CompactionConfigPatch_MaxActiveTranscriptBytes) AsCompactionConfigPatchMaxActiveTranscriptBytes0() (CompactionConfigPatchMaxActiveTranscriptBytes0, error) {
-	var body CompactionConfigPatchMaxActiveTranscriptBytes0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromCompactionConfigPatchMaxActiveTranscriptBytes0 overwrites any union data inside the CompactionConfigPatch_MaxActiveTranscriptBytes as the provided CompactionConfigPatchMaxActiveTranscriptBytes0
-func (t *CompactionConfigPatch_MaxActiveTranscriptBytes) FromCompactionConfigPatchMaxActiveTranscriptBytes0(v CompactionConfigPatchMaxActiveTranscriptBytes0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeCompactionConfigPatchMaxActiveTranscriptBytes0 performs a merge with any union data inside the CompactionConfigPatch_MaxActiveTranscriptBytes, using the provided CompactionConfigPatchMaxActiveTranscriptBytes0
-func (t *CompactionConfigPatch_MaxActiveTranscriptBytes) MergeCompactionConfigPatchMaxActiveTranscriptBytes0(v CompactionConfigPatchMaxActiveTranscriptBytes0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsCompactionConfigPatchMaxActiveTranscriptBytes1 returns the union data inside the CompactionConfigPatch_MaxActiveTranscriptBytes as a CompactionConfigPatchMaxActiveTranscriptBytes1
-func (t CompactionConfigPatch_MaxActiveTranscriptBytes) AsCompactionConfigPatchMaxActiveTranscriptBytes1() (CompactionConfigPatchMaxActiveTranscriptBytes1, error) {
-	var body CompactionConfigPatchMaxActiveTranscriptBytes1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromCompactionConfigPatchMaxActiveTranscriptBytes1 overwrites any union data inside the CompactionConfigPatch_MaxActiveTranscriptBytes as the provided CompactionConfigPatchMaxActiveTranscriptBytes1
-func (t *CompactionConfigPatch_MaxActiveTranscriptBytes) FromCompactionConfigPatchMaxActiveTranscriptBytes1(v CompactionConfigPatchMaxActiveTranscriptBytes1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeCompactionConfigPatchMaxActiveTranscriptBytes1 performs a merge with any union data inside the CompactionConfigPatch_MaxActiveTranscriptBytes, using the provided CompactionConfigPatchMaxActiveTranscriptBytes1
-func (t *CompactionConfigPatch_MaxActiveTranscriptBytes) MergeCompactionConfigPatchMaxActiveTranscriptBytes1(v CompactionConfigPatchMaxActiveTranscriptBytes1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t CompactionConfigPatch_MaxActiveTranscriptBytes) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *CompactionConfigPatch_MaxActiveTranscriptBytes) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsCompactionConfigPatchMidTurnPrecheck0 returns the union data inside the CompactionConfigPatch_MidTurnPrecheck as a CompactionConfigPatchMidTurnPrecheck0
-func (t CompactionConfigPatch_MidTurnPrecheck) AsCompactionConfigPatchMidTurnPrecheck0() (CompactionConfigPatchMidTurnPrecheck0, error) {
-	var body CompactionConfigPatchMidTurnPrecheck0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromCompactionConfigPatchMidTurnPrecheck0 overwrites any union data inside the CompactionConfigPatch_MidTurnPrecheck as the provided CompactionConfigPatchMidTurnPrecheck0
-func (t *CompactionConfigPatch_MidTurnPrecheck) FromCompactionConfigPatchMidTurnPrecheck0(v CompactionConfigPatchMidTurnPrecheck0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeCompactionConfigPatchMidTurnPrecheck0 performs a merge with any union data inside the CompactionConfigPatch_MidTurnPrecheck, using the provided CompactionConfigPatchMidTurnPrecheck0
-func (t *CompactionConfigPatch_MidTurnPrecheck) MergeCompactionConfigPatchMidTurnPrecheck0(v CompactionConfigPatchMidTurnPrecheck0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsCompactionConfigPatchMidTurnPrecheck1 returns the union data inside the CompactionConfigPatch_MidTurnPrecheck as a CompactionConfigPatchMidTurnPrecheck1
-func (t CompactionConfigPatch_MidTurnPrecheck) AsCompactionConfigPatchMidTurnPrecheck1() (CompactionConfigPatchMidTurnPrecheck1, error) {
-	var body CompactionConfigPatchMidTurnPrecheck1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromCompactionConfigPatchMidTurnPrecheck1 overwrites any union data inside the CompactionConfigPatch_MidTurnPrecheck as the provided CompactionConfigPatchMidTurnPrecheck1
-func (t *CompactionConfigPatch_MidTurnPrecheck) FromCompactionConfigPatchMidTurnPrecheck1(v CompactionConfigPatchMidTurnPrecheck1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeCompactionConfigPatchMidTurnPrecheck1 performs a merge with any union data inside the CompactionConfigPatch_MidTurnPrecheck, using the provided CompactionConfigPatchMidTurnPrecheck1
-func (t *CompactionConfigPatch_MidTurnPrecheck) MergeCompactionConfigPatchMidTurnPrecheck1(v CompactionConfigPatchMidTurnPrecheck1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t CompactionConfigPatch_MidTurnPrecheck) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *CompactionConfigPatch_MidTurnPrecheck) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsCompactionConfigPatchReserveTokens0 returns the union data inside the CompactionConfigPatch_ReserveTokens as a CompactionConfigPatchReserveTokens0
-func (t CompactionConfigPatch_ReserveTokens) AsCompactionConfigPatchReserveTokens0() (CompactionConfigPatchReserveTokens0, error) {
-	var body CompactionConfigPatchReserveTokens0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromCompactionConfigPatchReserveTokens0 overwrites any union data inside the CompactionConfigPatch_ReserveTokens as the provided CompactionConfigPatchReserveTokens0
-func (t *CompactionConfigPatch_ReserveTokens) FromCompactionConfigPatchReserveTokens0(v CompactionConfigPatchReserveTokens0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeCompactionConfigPatchReserveTokens0 performs a merge with any union data inside the CompactionConfigPatch_ReserveTokens, using the provided CompactionConfigPatchReserveTokens0
-func (t *CompactionConfigPatch_ReserveTokens) MergeCompactionConfigPatchReserveTokens0(v CompactionConfigPatchReserveTokens0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsCompactionConfigPatchReserveTokens1 returns the union data inside the CompactionConfigPatch_ReserveTokens as a CompactionConfigPatchReserveTokens1
-func (t CompactionConfigPatch_ReserveTokens) AsCompactionConfigPatchReserveTokens1() (CompactionConfigPatchReserveTokens1, error) {
-	var body CompactionConfigPatchReserveTokens1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromCompactionConfigPatchReserveTokens1 overwrites any union data inside the CompactionConfigPatch_ReserveTokens as the provided CompactionConfigPatchReserveTokens1
-func (t *CompactionConfigPatch_ReserveTokens) FromCompactionConfigPatchReserveTokens1(v CompactionConfigPatchReserveTokens1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeCompactionConfigPatchReserveTokens1 performs a merge with any union data inside the CompactionConfigPatch_ReserveTokens, using the provided CompactionConfigPatchReserveTokens1
-func (t *CompactionConfigPatch_ReserveTokens) MergeCompactionConfigPatchReserveTokens1(v CompactionConfigPatchReserveTokens1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t CompactionConfigPatch_ReserveTokens) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *CompactionConfigPatch_ReserveTokens) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsCompactionConfigPatchReserveTokensFloor0 returns the union data inside the CompactionConfigPatch_ReserveTokensFloor as a CompactionConfigPatchReserveTokensFloor0
-func (t CompactionConfigPatch_ReserveTokensFloor) AsCompactionConfigPatchReserveTokensFloor0() (CompactionConfigPatchReserveTokensFloor0, error) {
-	var body CompactionConfigPatchReserveTokensFloor0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromCompactionConfigPatchReserveTokensFloor0 overwrites any union data inside the CompactionConfigPatch_ReserveTokensFloor as the provided CompactionConfigPatchReserveTokensFloor0
-func (t *CompactionConfigPatch_ReserveTokensFloor) FromCompactionConfigPatchReserveTokensFloor0(v CompactionConfigPatchReserveTokensFloor0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeCompactionConfigPatchReserveTokensFloor0 performs a merge with any union data inside the CompactionConfigPatch_ReserveTokensFloor, using the provided CompactionConfigPatchReserveTokensFloor0
-func (t *CompactionConfigPatch_ReserveTokensFloor) MergeCompactionConfigPatchReserveTokensFloor0(v CompactionConfigPatchReserveTokensFloor0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsCompactionConfigPatchReserveTokensFloor1 returns the union data inside the CompactionConfigPatch_ReserveTokensFloor as a CompactionConfigPatchReserveTokensFloor1
-func (t CompactionConfigPatch_ReserveTokensFloor) AsCompactionConfigPatchReserveTokensFloor1() (CompactionConfigPatchReserveTokensFloor1, error) {
-	var body CompactionConfigPatchReserveTokensFloor1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromCompactionConfigPatchReserveTokensFloor1 overwrites any union data inside the CompactionConfigPatch_ReserveTokensFloor as the provided CompactionConfigPatchReserveTokensFloor1
-func (t *CompactionConfigPatch_ReserveTokensFloor) FromCompactionConfigPatchReserveTokensFloor1(v CompactionConfigPatchReserveTokensFloor1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeCompactionConfigPatchReserveTokensFloor1 performs a merge with any union data inside the CompactionConfigPatch_ReserveTokensFloor, using the provided CompactionConfigPatchReserveTokensFloor1
-func (t *CompactionConfigPatch_ReserveTokensFloor) MergeCompactionConfigPatchReserveTokensFloor1(v CompactionConfigPatchReserveTokensFloor1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t CompactionConfigPatch_ReserveTokensFloor) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *CompactionConfigPatch_ReserveTokensFloor) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsCompactionConfigPatchTimeoutSeconds0 returns the union data inside the CompactionConfigPatch_TimeoutSeconds as a CompactionConfigPatchTimeoutSeconds0
-func (t CompactionConfigPatch_TimeoutSeconds) AsCompactionConfigPatchTimeoutSeconds0() (CompactionConfigPatchTimeoutSeconds0, error) {
-	var body CompactionConfigPatchTimeoutSeconds0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromCompactionConfigPatchTimeoutSeconds0 overwrites any union data inside the CompactionConfigPatch_TimeoutSeconds as the provided CompactionConfigPatchTimeoutSeconds0
-func (t *CompactionConfigPatch_TimeoutSeconds) FromCompactionConfigPatchTimeoutSeconds0(v CompactionConfigPatchTimeoutSeconds0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeCompactionConfigPatchTimeoutSeconds0 performs a merge with any union data inside the CompactionConfigPatch_TimeoutSeconds, using the provided CompactionConfigPatchTimeoutSeconds0
-func (t *CompactionConfigPatch_TimeoutSeconds) MergeCompactionConfigPatchTimeoutSeconds0(v CompactionConfigPatchTimeoutSeconds0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsCompactionConfigPatchTimeoutSeconds1 returns the union data inside the CompactionConfigPatch_TimeoutSeconds as a CompactionConfigPatchTimeoutSeconds1
-func (t CompactionConfigPatch_TimeoutSeconds) AsCompactionConfigPatchTimeoutSeconds1() (CompactionConfigPatchTimeoutSeconds1, error) {
-	var body CompactionConfigPatchTimeoutSeconds1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromCompactionConfigPatchTimeoutSeconds1 overwrites any union data inside the CompactionConfigPatch_TimeoutSeconds as the provided CompactionConfigPatchTimeoutSeconds1
-func (t *CompactionConfigPatch_TimeoutSeconds) FromCompactionConfigPatchTimeoutSeconds1(v CompactionConfigPatchTimeoutSeconds1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeCompactionConfigPatchTimeoutSeconds1 performs a merge with any union data inside the CompactionConfigPatch_TimeoutSeconds, using the provided CompactionConfigPatchTimeoutSeconds1
-func (t *CompactionConfigPatch_TimeoutSeconds) MergeCompactionConfigPatchTimeoutSeconds1(v CompactionConfigPatchTimeoutSeconds1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t CompactionConfigPatch_TimeoutSeconds) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *CompactionConfigPatch_TimeoutSeconds) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsCompactionConfigPatchTruncateAfterCompaction0 returns the union data inside the CompactionConfigPatch_TruncateAfterCompaction as a CompactionConfigPatchTruncateAfterCompaction0
-func (t CompactionConfigPatch_TruncateAfterCompaction) AsCompactionConfigPatchTruncateAfterCompaction0() (CompactionConfigPatchTruncateAfterCompaction0, error) {
-	var body CompactionConfigPatchTruncateAfterCompaction0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromCompactionConfigPatchTruncateAfterCompaction0 overwrites any union data inside the CompactionConfigPatch_TruncateAfterCompaction as the provided CompactionConfigPatchTruncateAfterCompaction0
-func (t *CompactionConfigPatch_TruncateAfterCompaction) FromCompactionConfigPatchTruncateAfterCompaction0(v CompactionConfigPatchTruncateAfterCompaction0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeCompactionConfigPatchTruncateAfterCompaction0 performs a merge with any union data inside the CompactionConfigPatch_TruncateAfterCompaction, using the provided CompactionConfigPatchTruncateAfterCompaction0
-func (t *CompactionConfigPatch_TruncateAfterCompaction) MergeCompactionConfigPatchTruncateAfterCompaction0(v CompactionConfigPatchTruncateAfterCompaction0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsCompactionConfigPatchTruncateAfterCompaction1 returns the union data inside the CompactionConfigPatch_TruncateAfterCompaction as a CompactionConfigPatchTruncateAfterCompaction1
-func (t CompactionConfigPatch_TruncateAfterCompaction) AsCompactionConfigPatchTruncateAfterCompaction1() (CompactionConfigPatchTruncateAfterCompaction1, error) {
-	var body CompactionConfigPatchTruncateAfterCompaction1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromCompactionConfigPatchTruncateAfterCompaction1 overwrites any union data inside the CompactionConfigPatch_TruncateAfterCompaction as the provided CompactionConfigPatchTruncateAfterCompaction1
-func (t *CompactionConfigPatch_TruncateAfterCompaction) FromCompactionConfigPatchTruncateAfterCompaction1(v CompactionConfigPatchTruncateAfterCompaction1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeCompactionConfigPatchTruncateAfterCompaction1 performs a merge with any union data inside the CompactionConfigPatch_TruncateAfterCompaction, using the provided CompactionConfigPatchTruncateAfterCompaction1
-func (t *CompactionConfigPatch_TruncateAfterCompaction) MergeCompactionConfigPatchTruncateAfterCompaction1(v CompactionConfigPatchTruncateAfterCompaction1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t CompactionConfigPatch_TruncateAfterCompaction) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *CompactionConfigPatch_TruncateAfterCompaction) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsCpuMetricsLimitCores0 returns the union data inside the CpuMetrics_LimitCores as a CpuMetricsLimitCores0
-func (t CpuMetrics_LimitCores) AsCpuMetricsLimitCores0() (CpuMetricsLimitCores0, error) {
-	var body CpuMetricsLimitCores0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromCpuMetricsLimitCores0 overwrites any union data inside the CpuMetrics_LimitCores as the provided CpuMetricsLimitCores0
-func (t *CpuMetrics_LimitCores) FromCpuMetricsLimitCores0(v CpuMetricsLimitCores0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeCpuMetricsLimitCores0 performs a merge with any union data inside the CpuMetrics_LimitCores, using the provided CpuMetricsLimitCores0
-func (t *CpuMetrics_LimitCores) MergeCpuMetricsLimitCores0(v CpuMetricsLimitCores0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsCpuMetricsLimitCores1 returns the union data inside the CpuMetrics_LimitCores as a CpuMetricsLimitCores1
-func (t CpuMetrics_LimitCores) AsCpuMetricsLimitCores1() (CpuMetricsLimitCores1, error) {
-	var body CpuMetricsLimitCores1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromCpuMetricsLimitCores1 overwrites any union data inside the CpuMetrics_LimitCores as the provided CpuMetricsLimitCores1
-func (t *CpuMetrics_LimitCores) FromCpuMetricsLimitCores1(v CpuMetricsLimitCores1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeCpuMetricsLimitCores1 performs a merge with any union data inside the CpuMetrics_LimitCores, using the provided CpuMetricsLimitCores1
-func (t *CpuMetrics_LimitCores) MergeCpuMetricsLimitCores1(v CpuMetricsLimitCores1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t CpuMetrics_LimitCores) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *CpuMetrics_LimitCores) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsCpuMetricsPercentOfLimit0 returns the union data inside the CpuMetrics_PercentOfLimit as a CpuMetricsPercentOfLimit0
-func (t CpuMetrics_PercentOfLimit) AsCpuMetricsPercentOfLimit0() (CpuMetricsPercentOfLimit0, error) {
-	var body CpuMetricsPercentOfLimit0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromCpuMetricsPercentOfLimit0 overwrites any union data inside the CpuMetrics_PercentOfLimit as the provided CpuMetricsPercentOfLimit0
-func (t *CpuMetrics_PercentOfLimit) FromCpuMetricsPercentOfLimit0(v CpuMetricsPercentOfLimit0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeCpuMetricsPercentOfLimit0 performs a merge with any union data inside the CpuMetrics_PercentOfLimit, using the provided CpuMetricsPercentOfLimit0
-func (t *CpuMetrics_PercentOfLimit) MergeCpuMetricsPercentOfLimit0(v CpuMetricsPercentOfLimit0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsCpuMetricsPercentOfLimit1 returns the union data inside the CpuMetrics_PercentOfLimit as a CpuMetricsPercentOfLimit1
-func (t CpuMetrics_PercentOfLimit) AsCpuMetricsPercentOfLimit1() (CpuMetricsPercentOfLimit1, error) {
-	var body CpuMetricsPercentOfLimit1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromCpuMetricsPercentOfLimit1 overwrites any union data inside the CpuMetrics_PercentOfLimit as the provided CpuMetricsPercentOfLimit1
-func (t *CpuMetrics_PercentOfLimit) FromCpuMetricsPercentOfLimit1(v CpuMetricsPercentOfLimit1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeCpuMetricsPercentOfLimit1 performs a merge with any union data inside the CpuMetrics_PercentOfLimit, using the provided CpuMetricsPercentOfLimit1
-func (t *CpuMetrics_PercentOfLimit) MergeCpuMetricsPercentOfLimit1(v CpuMetricsPercentOfLimit1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t CpuMetrics_PercentOfLimit) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *CpuMetrics_PercentOfLimit) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsCpuMetricsSampleWindowMs0 returns the union data inside the CpuMetrics_SampleWindowMs as a CpuMetricsSampleWindowMs0
-func (t CpuMetrics_SampleWindowMs) AsCpuMetricsSampleWindowMs0() (CpuMetricsSampleWindowMs0, error) {
-	var body CpuMetricsSampleWindowMs0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromCpuMetricsSampleWindowMs0 overwrites any union data inside the CpuMetrics_SampleWindowMs as the provided CpuMetricsSampleWindowMs0
-func (t *CpuMetrics_SampleWindowMs) FromCpuMetricsSampleWindowMs0(v CpuMetricsSampleWindowMs0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeCpuMetricsSampleWindowMs0 performs a merge with any union data inside the CpuMetrics_SampleWindowMs, using the provided CpuMetricsSampleWindowMs0
-func (t *CpuMetrics_SampleWindowMs) MergeCpuMetricsSampleWindowMs0(v CpuMetricsSampleWindowMs0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsCpuMetricsSampleWindowMs1 returns the union data inside the CpuMetrics_SampleWindowMs as a CpuMetricsSampleWindowMs1
-func (t CpuMetrics_SampleWindowMs) AsCpuMetricsSampleWindowMs1() (CpuMetricsSampleWindowMs1, error) {
-	var body CpuMetricsSampleWindowMs1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromCpuMetricsSampleWindowMs1 overwrites any union data inside the CpuMetrics_SampleWindowMs as the provided CpuMetricsSampleWindowMs1
-func (t *CpuMetrics_SampleWindowMs) FromCpuMetricsSampleWindowMs1(v CpuMetricsSampleWindowMs1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeCpuMetricsSampleWindowMs1 performs a merge with any union data inside the CpuMetrics_SampleWindowMs, using the provided CpuMetricsSampleWindowMs1
-func (t *CpuMetrics_SampleWindowMs) MergeCpuMetricsSampleWindowMs1(v CpuMetricsSampleWindowMs1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t CpuMetrics_SampleWindowMs) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *CpuMetrics_SampleWindowMs) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsCpuMetricsUsageCores0 returns the union data inside the CpuMetrics_UsageCores as a CpuMetricsUsageCores0
-func (t CpuMetrics_UsageCores) AsCpuMetricsUsageCores0() (CpuMetricsUsageCores0, error) {
-	var body CpuMetricsUsageCores0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromCpuMetricsUsageCores0 overwrites any union data inside the CpuMetrics_UsageCores as the provided CpuMetricsUsageCores0
-func (t *CpuMetrics_UsageCores) FromCpuMetricsUsageCores0(v CpuMetricsUsageCores0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeCpuMetricsUsageCores0 performs a merge with any union data inside the CpuMetrics_UsageCores, using the provided CpuMetricsUsageCores0
-func (t *CpuMetrics_UsageCores) MergeCpuMetricsUsageCores0(v CpuMetricsUsageCores0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsCpuMetricsUsageCores1 returns the union data inside the CpuMetrics_UsageCores as a CpuMetricsUsageCores1
-func (t CpuMetrics_UsageCores) AsCpuMetricsUsageCores1() (CpuMetricsUsageCores1, error) {
-	var body CpuMetricsUsageCores1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromCpuMetricsUsageCores1 overwrites any union data inside the CpuMetrics_UsageCores as the provided CpuMetricsUsageCores1
-func (t *CpuMetrics_UsageCores) FromCpuMetricsUsageCores1(v CpuMetricsUsageCores1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeCpuMetricsUsageCores1 performs a merge with any union data inside the CpuMetrics_UsageCores, using the provided CpuMetricsUsageCores1
-func (t *CpuMetrics_UsageCores) MergeCpuMetricsUsageCores1(v CpuMetricsUsageCores1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t CpuMetrics_UsageCores) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *CpuMetrics_UsageCores) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsCpuMetricsUsageUsec0 returns the union data inside the CpuMetrics_UsageUsec as a CpuMetricsUsageUsec0
-func (t CpuMetrics_UsageUsec) AsCpuMetricsUsageUsec0() (CpuMetricsUsageUsec0, error) {
-	var body CpuMetricsUsageUsec0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromCpuMetricsUsageUsec0 overwrites any union data inside the CpuMetrics_UsageUsec as the provided CpuMetricsUsageUsec0
-func (t *CpuMetrics_UsageUsec) FromCpuMetricsUsageUsec0(v CpuMetricsUsageUsec0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeCpuMetricsUsageUsec0 performs a merge with any union data inside the CpuMetrics_UsageUsec, using the provided CpuMetricsUsageUsec0
-func (t *CpuMetrics_UsageUsec) MergeCpuMetricsUsageUsec0(v CpuMetricsUsageUsec0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsCpuMetricsUsageUsec1 returns the union data inside the CpuMetrics_UsageUsec as a CpuMetricsUsageUsec1
-func (t CpuMetrics_UsageUsec) AsCpuMetricsUsageUsec1() (CpuMetricsUsageUsec1, error) {
-	var body CpuMetricsUsageUsec1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromCpuMetricsUsageUsec1 overwrites any union data inside the CpuMetrics_UsageUsec as the provided CpuMetricsUsageUsec1
-func (t *CpuMetrics_UsageUsec) FromCpuMetricsUsageUsec1(v CpuMetricsUsageUsec1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeCpuMetricsUsageUsec1 performs a merge with any union data inside the CpuMetrics_UsageUsec, using the provided CpuMetricsUsageUsec1
-func (t *CpuMetrics_UsageUsec) MergeCpuMetricsUsageUsec1(v CpuMetricsUsageUsec1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t CpuMetrics_UsageUsec) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *CpuMetrics_UsageUsec) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsOpenClawModelApi returns the union data inside the CredentialBackedModelConfig_Api as a OpenClawModelApi
-func (t CredentialBackedModelConfig_Api) AsOpenClawModelApi() (OpenClawModelApi, error) {
-	var body OpenClawModelApi
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromOpenClawModelApi overwrites any union data inside the CredentialBackedModelConfig_Api as the provided OpenClawModelApi
-func (t *CredentialBackedModelConfig_Api) FromOpenClawModelApi(v OpenClawModelApi) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeOpenClawModelApi performs a merge with any union data inside the CredentialBackedModelConfig_Api, using the provided OpenClawModelApi
-func (t *CredentialBackedModelConfig_Api) MergeOpenClawModelApi(v OpenClawModelApi) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsCredentialBackedModelConfigApi1 returns the union data inside the CredentialBackedModelConfig_Api as a CredentialBackedModelConfigApi1
-func (t CredentialBackedModelConfig_Api) AsCredentialBackedModelConfigApi1() (CredentialBackedModelConfigApi1, error) {
-	var body CredentialBackedModelConfigApi1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromCredentialBackedModelConfigApi1 overwrites any union data inside the CredentialBackedModelConfig_Api as the provided CredentialBackedModelConfigApi1
-func (t *CredentialBackedModelConfig_Api) FromCredentialBackedModelConfigApi1(v CredentialBackedModelConfigApi1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeCredentialBackedModelConfigApi1 performs a merge with any union data inside the CredentialBackedModelConfig_Api, using the provided CredentialBackedModelConfigApi1
-func (t *CredentialBackedModelConfig_Api) MergeCredentialBackedModelConfigApi1(v CredentialBackedModelConfigApi1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t CredentialBackedModelConfig_Api) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *CredentialBackedModelConfig_Api) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsCredentialBackedModelConfigResponsesCompactThreshold0 returns the union data inside the CredentialBackedModelConfig_ResponsesCompactThreshold as a CredentialBackedModelConfigResponsesCompactThreshold0
-func (t CredentialBackedModelConfig_ResponsesCompactThreshold) AsCredentialBackedModelConfigResponsesCompactThreshold0() (CredentialBackedModelConfigResponsesCompactThreshold0, error) {
-	var body CredentialBackedModelConfigResponsesCompactThreshold0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromCredentialBackedModelConfigResponsesCompactThreshold0 overwrites any union data inside the CredentialBackedModelConfig_ResponsesCompactThreshold as the provided CredentialBackedModelConfigResponsesCompactThreshold0
-func (t *CredentialBackedModelConfig_ResponsesCompactThreshold) FromCredentialBackedModelConfigResponsesCompactThreshold0(v CredentialBackedModelConfigResponsesCompactThreshold0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeCredentialBackedModelConfigResponsesCompactThreshold0 performs a merge with any union data inside the CredentialBackedModelConfig_ResponsesCompactThreshold, using the provided CredentialBackedModelConfigResponsesCompactThreshold0
-func (t *CredentialBackedModelConfig_ResponsesCompactThreshold) MergeCredentialBackedModelConfigResponsesCompactThreshold0(v CredentialBackedModelConfigResponsesCompactThreshold0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsCredentialBackedModelConfigResponsesCompactThreshold1 returns the union data inside the CredentialBackedModelConfig_ResponsesCompactThreshold as a CredentialBackedModelConfigResponsesCompactThreshold1
-func (t CredentialBackedModelConfig_ResponsesCompactThreshold) AsCredentialBackedModelConfigResponsesCompactThreshold1() (CredentialBackedModelConfigResponsesCompactThreshold1, error) {
-	var body CredentialBackedModelConfigResponsesCompactThreshold1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromCredentialBackedModelConfigResponsesCompactThreshold1 overwrites any union data inside the CredentialBackedModelConfig_ResponsesCompactThreshold as the provided CredentialBackedModelConfigResponsesCompactThreshold1
-func (t *CredentialBackedModelConfig_ResponsesCompactThreshold) FromCredentialBackedModelConfigResponsesCompactThreshold1(v CredentialBackedModelConfigResponsesCompactThreshold1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeCredentialBackedModelConfigResponsesCompactThreshold1 performs a merge with any union data inside the CredentialBackedModelConfig_ResponsesCompactThreshold, using the provided CredentialBackedModelConfigResponsesCompactThreshold1
-func (t *CredentialBackedModelConfig_ResponsesCompactThreshold) MergeCredentialBackedModelConfigResponsesCompactThreshold1(v CredentialBackedModelConfigResponsesCompactThreshold1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t CredentialBackedModelConfig_ResponsesCompactThreshold) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *CredentialBackedModelConfig_ResponsesCompactThreshold) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsCredentialBackedModelConfigResponsesServerCompaction0 returns the union data inside the CredentialBackedModelConfig_ResponsesServerCompaction as a CredentialBackedModelConfigResponsesServerCompaction0
-func (t CredentialBackedModelConfig_ResponsesServerCompaction) AsCredentialBackedModelConfigResponsesServerCompaction0() (CredentialBackedModelConfigResponsesServerCompaction0, error) {
-	var body CredentialBackedModelConfigResponsesServerCompaction0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromCredentialBackedModelConfigResponsesServerCompaction0 overwrites any union data inside the CredentialBackedModelConfig_ResponsesServerCompaction as the provided CredentialBackedModelConfigResponsesServerCompaction0
-func (t *CredentialBackedModelConfig_ResponsesServerCompaction) FromCredentialBackedModelConfigResponsesServerCompaction0(v CredentialBackedModelConfigResponsesServerCompaction0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeCredentialBackedModelConfigResponsesServerCompaction0 performs a merge with any union data inside the CredentialBackedModelConfig_ResponsesServerCompaction, using the provided CredentialBackedModelConfigResponsesServerCompaction0
-func (t *CredentialBackedModelConfig_ResponsesServerCompaction) MergeCredentialBackedModelConfigResponsesServerCompaction0(v CredentialBackedModelConfigResponsesServerCompaction0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsCredentialBackedModelConfigResponsesServerCompaction1 returns the union data inside the CredentialBackedModelConfig_ResponsesServerCompaction as a CredentialBackedModelConfigResponsesServerCompaction1
-func (t CredentialBackedModelConfig_ResponsesServerCompaction) AsCredentialBackedModelConfigResponsesServerCompaction1() (CredentialBackedModelConfigResponsesServerCompaction1, error) {
-	var body CredentialBackedModelConfigResponsesServerCompaction1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromCredentialBackedModelConfigResponsesServerCompaction1 overwrites any union data inside the CredentialBackedModelConfig_ResponsesServerCompaction as the provided CredentialBackedModelConfigResponsesServerCompaction1
-func (t *CredentialBackedModelConfig_ResponsesServerCompaction) FromCredentialBackedModelConfigResponsesServerCompaction1(v CredentialBackedModelConfigResponsesServerCompaction1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeCredentialBackedModelConfigResponsesServerCompaction1 performs a merge with any union data inside the CredentialBackedModelConfig_ResponsesServerCompaction, using the provided CredentialBackedModelConfigResponsesServerCompaction1
-func (t *CredentialBackedModelConfig_ResponsesServerCompaction) MergeCredentialBackedModelConfigResponsesServerCompaction1(v CredentialBackedModelConfigResponsesServerCompaction1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t CredentialBackedModelConfig_ResponsesServerCompaction) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *CredentialBackedModelConfig_ResponsesServerCompaction) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsCredentialBackedModelConfigSupportsStore0 returns the union data inside the CredentialBackedModelConfig_SupportsStore as a CredentialBackedModelConfigSupportsStore0
-func (t CredentialBackedModelConfig_SupportsStore) AsCredentialBackedModelConfigSupportsStore0() (CredentialBackedModelConfigSupportsStore0, error) {
-	var body CredentialBackedModelConfigSupportsStore0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromCredentialBackedModelConfigSupportsStore0 overwrites any union data inside the CredentialBackedModelConfig_SupportsStore as the provided CredentialBackedModelConfigSupportsStore0
-func (t *CredentialBackedModelConfig_SupportsStore) FromCredentialBackedModelConfigSupportsStore0(v CredentialBackedModelConfigSupportsStore0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeCredentialBackedModelConfigSupportsStore0 performs a merge with any union data inside the CredentialBackedModelConfig_SupportsStore, using the provided CredentialBackedModelConfigSupportsStore0
-func (t *CredentialBackedModelConfig_SupportsStore) MergeCredentialBackedModelConfigSupportsStore0(v CredentialBackedModelConfigSupportsStore0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsCredentialBackedModelConfigSupportsStore1 returns the union data inside the CredentialBackedModelConfig_SupportsStore as a CredentialBackedModelConfigSupportsStore1
-func (t CredentialBackedModelConfig_SupportsStore) AsCredentialBackedModelConfigSupportsStore1() (CredentialBackedModelConfigSupportsStore1, error) {
-	var body CredentialBackedModelConfigSupportsStore1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromCredentialBackedModelConfigSupportsStore1 overwrites any union data inside the CredentialBackedModelConfig_SupportsStore as the provided CredentialBackedModelConfigSupportsStore1
-func (t *CredentialBackedModelConfig_SupportsStore) FromCredentialBackedModelConfigSupportsStore1(v CredentialBackedModelConfigSupportsStore1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeCredentialBackedModelConfigSupportsStore1 performs a merge with any union data inside the CredentialBackedModelConfig_SupportsStore, using the provided CredentialBackedModelConfigSupportsStore1
-func (t *CredentialBackedModelConfig_SupportsStore) MergeCredentialBackedModelConfigSupportsStore1(v CredentialBackedModelConfigSupportsStore1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t CredentialBackedModelConfig_SupportsStore) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *CredentialBackedModelConfig_SupportsStore) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsCredentialBackedModelConfigTextVerbosity0 returns the union data inside the CredentialBackedModelConfig_TextVerbosity as a CredentialBackedModelConfigTextVerbosity0
-func (t CredentialBackedModelConfig_TextVerbosity) AsCredentialBackedModelConfigTextVerbosity0() (CredentialBackedModelConfigTextVerbosity0, error) {
-	var body CredentialBackedModelConfigTextVerbosity0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromCredentialBackedModelConfigTextVerbosity0 overwrites any union data inside the CredentialBackedModelConfig_TextVerbosity as the provided CredentialBackedModelConfigTextVerbosity0
-func (t *CredentialBackedModelConfig_TextVerbosity) FromCredentialBackedModelConfigTextVerbosity0(v CredentialBackedModelConfigTextVerbosity0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeCredentialBackedModelConfigTextVerbosity0 performs a merge with any union data inside the CredentialBackedModelConfig_TextVerbosity, using the provided CredentialBackedModelConfigTextVerbosity0
-func (t *CredentialBackedModelConfig_TextVerbosity) MergeCredentialBackedModelConfigTextVerbosity0(v CredentialBackedModelConfigTextVerbosity0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsCredentialBackedModelConfigTextVerbosity1 returns the union data inside the CredentialBackedModelConfig_TextVerbosity as a CredentialBackedModelConfigTextVerbosity1
-func (t CredentialBackedModelConfig_TextVerbosity) AsCredentialBackedModelConfigTextVerbosity1() (CredentialBackedModelConfigTextVerbosity1, error) {
-	var body CredentialBackedModelConfigTextVerbosity1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromCredentialBackedModelConfigTextVerbosity1 overwrites any union data inside the CredentialBackedModelConfig_TextVerbosity as the provided CredentialBackedModelConfigTextVerbosity1
-func (t *CredentialBackedModelConfig_TextVerbosity) FromCredentialBackedModelConfigTextVerbosity1(v CredentialBackedModelConfigTextVerbosity1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeCredentialBackedModelConfigTextVerbosity1 performs a merge with any union data inside the CredentialBackedModelConfig_TextVerbosity, using the provided CredentialBackedModelConfigTextVerbosity1
-func (t *CredentialBackedModelConfig_TextVerbosity) MergeCredentialBackedModelConfigTextVerbosity1(v CredentialBackedModelConfigTextVerbosity1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t CredentialBackedModelConfig_TextVerbosity) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *CredentialBackedModelConfig_TextVerbosity) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsOpenClawModelApi returns the union data inside the CredentialProviderConfig_Api as a OpenClawModelApi
-func (t CredentialProviderConfig_Api) AsOpenClawModelApi() (OpenClawModelApi, error) {
-	var body OpenClawModelApi
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromOpenClawModelApi overwrites any union data inside the CredentialProviderConfig_Api as the provided OpenClawModelApi
-func (t *CredentialProviderConfig_Api) FromOpenClawModelApi(v OpenClawModelApi) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeOpenClawModelApi performs a merge with any union data inside the CredentialProviderConfig_Api, using the provided OpenClawModelApi
-func (t *CredentialProviderConfig_Api) MergeOpenClawModelApi(v OpenClawModelApi) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsCredentialProviderConfigApi1 returns the union data inside the CredentialProviderConfig_Api as a CredentialProviderConfigApi1
-func (t CredentialProviderConfig_Api) AsCredentialProviderConfigApi1() (CredentialProviderConfigApi1, error) {
-	var body CredentialProviderConfigApi1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromCredentialProviderConfigApi1 overwrites any union data inside the CredentialProviderConfig_Api as the provided CredentialProviderConfigApi1
-func (t *CredentialProviderConfig_Api) FromCredentialProviderConfigApi1(v CredentialProviderConfigApi1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeCredentialProviderConfigApi1 performs a merge with any union data inside the CredentialProviderConfig_Api, using the provided CredentialProviderConfigApi1
-func (t *CredentialProviderConfig_Api) MergeCredentialProviderConfigApi1(v CredentialProviderConfigApi1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t CredentialProviderConfig_Api) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *CredentialProviderConfig_Api) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }
@@ -5322,2672 +1915,6 @@ func (t *FilterNodeBotFilterField) UnmarshalJSON(b []byte) error {
 	return err
 }
 
-// AsHeartbeatConfigAckMaxChars0 returns the union data inside the HeartbeatConfig_AckMaxChars as a HeartbeatConfigAckMaxChars0
-func (t HeartbeatConfig_AckMaxChars) AsHeartbeatConfigAckMaxChars0() (HeartbeatConfigAckMaxChars0, error) {
-	var body HeartbeatConfigAckMaxChars0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromHeartbeatConfigAckMaxChars0 overwrites any union data inside the HeartbeatConfig_AckMaxChars as the provided HeartbeatConfigAckMaxChars0
-func (t *HeartbeatConfig_AckMaxChars) FromHeartbeatConfigAckMaxChars0(v HeartbeatConfigAckMaxChars0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeHeartbeatConfigAckMaxChars0 performs a merge with any union data inside the HeartbeatConfig_AckMaxChars, using the provided HeartbeatConfigAckMaxChars0
-func (t *HeartbeatConfig_AckMaxChars) MergeHeartbeatConfigAckMaxChars0(v HeartbeatConfigAckMaxChars0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsHeartbeatConfigAckMaxChars1 returns the union data inside the HeartbeatConfig_AckMaxChars as a HeartbeatConfigAckMaxChars1
-func (t HeartbeatConfig_AckMaxChars) AsHeartbeatConfigAckMaxChars1() (HeartbeatConfigAckMaxChars1, error) {
-	var body HeartbeatConfigAckMaxChars1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromHeartbeatConfigAckMaxChars1 overwrites any union data inside the HeartbeatConfig_AckMaxChars as the provided HeartbeatConfigAckMaxChars1
-func (t *HeartbeatConfig_AckMaxChars) FromHeartbeatConfigAckMaxChars1(v HeartbeatConfigAckMaxChars1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeHeartbeatConfigAckMaxChars1 performs a merge with any union data inside the HeartbeatConfig_AckMaxChars, using the provided HeartbeatConfigAckMaxChars1
-func (t *HeartbeatConfig_AckMaxChars) MergeHeartbeatConfigAckMaxChars1(v HeartbeatConfigAckMaxChars1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t HeartbeatConfig_AckMaxChars) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *HeartbeatConfig_AckMaxChars) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsActiveHoursConfig returns the union data inside the HeartbeatConfig_ActiveHours as a ActiveHoursConfig
-func (t HeartbeatConfig_ActiveHours) AsActiveHoursConfig() (ActiveHoursConfig, error) {
-	var body ActiveHoursConfig
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromActiveHoursConfig overwrites any union data inside the HeartbeatConfig_ActiveHours as the provided ActiveHoursConfig
-func (t *HeartbeatConfig_ActiveHours) FromActiveHoursConfig(v ActiveHoursConfig) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeActiveHoursConfig performs a merge with any union data inside the HeartbeatConfig_ActiveHours, using the provided ActiveHoursConfig
-func (t *HeartbeatConfig_ActiveHours) MergeActiveHoursConfig(v ActiveHoursConfig) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsHeartbeatConfigActiveHours1 returns the union data inside the HeartbeatConfig_ActiveHours as a HeartbeatConfigActiveHours1
-func (t HeartbeatConfig_ActiveHours) AsHeartbeatConfigActiveHours1() (HeartbeatConfigActiveHours1, error) {
-	var body HeartbeatConfigActiveHours1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromHeartbeatConfigActiveHours1 overwrites any union data inside the HeartbeatConfig_ActiveHours as the provided HeartbeatConfigActiveHours1
-func (t *HeartbeatConfig_ActiveHours) FromHeartbeatConfigActiveHours1(v HeartbeatConfigActiveHours1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeHeartbeatConfigActiveHours1 performs a merge with any union data inside the HeartbeatConfig_ActiveHours, using the provided HeartbeatConfigActiveHours1
-func (t *HeartbeatConfig_ActiveHours) MergeHeartbeatConfigActiveHours1(v HeartbeatConfigActiveHours1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t HeartbeatConfig_ActiveHours) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *HeartbeatConfig_ActiveHours) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsHeartbeatConfigIncludeReasoning0 returns the union data inside the HeartbeatConfig_IncludeReasoning as a HeartbeatConfigIncludeReasoning0
-func (t HeartbeatConfig_IncludeReasoning) AsHeartbeatConfigIncludeReasoning0() (HeartbeatConfigIncludeReasoning0, error) {
-	var body HeartbeatConfigIncludeReasoning0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromHeartbeatConfigIncludeReasoning0 overwrites any union data inside the HeartbeatConfig_IncludeReasoning as the provided HeartbeatConfigIncludeReasoning0
-func (t *HeartbeatConfig_IncludeReasoning) FromHeartbeatConfigIncludeReasoning0(v HeartbeatConfigIncludeReasoning0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeHeartbeatConfigIncludeReasoning0 performs a merge with any union data inside the HeartbeatConfig_IncludeReasoning, using the provided HeartbeatConfigIncludeReasoning0
-func (t *HeartbeatConfig_IncludeReasoning) MergeHeartbeatConfigIncludeReasoning0(v HeartbeatConfigIncludeReasoning0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsHeartbeatConfigIncludeReasoning1 returns the union data inside the HeartbeatConfig_IncludeReasoning as a HeartbeatConfigIncludeReasoning1
-func (t HeartbeatConfig_IncludeReasoning) AsHeartbeatConfigIncludeReasoning1() (HeartbeatConfigIncludeReasoning1, error) {
-	var body HeartbeatConfigIncludeReasoning1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromHeartbeatConfigIncludeReasoning1 overwrites any union data inside the HeartbeatConfig_IncludeReasoning as the provided HeartbeatConfigIncludeReasoning1
-func (t *HeartbeatConfig_IncludeReasoning) FromHeartbeatConfigIncludeReasoning1(v HeartbeatConfigIncludeReasoning1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeHeartbeatConfigIncludeReasoning1 performs a merge with any union data inside the HeartbeatConfig_IncludeReasoning, using the provided HeartbeatConfigIncludeReasoning1
-func (t *HeartbeatConfig_IncludeReasoning) MergeHeartbeatConfigIncludeReasoning1(v HeartbeatConfigIncludeReasoning1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t HeartbeatConfig_IncludeReasoning) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *HeartbeatConfig_IncludeReasoning) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsHeartbeatConfigIsolatedSession0 returns the union data inside the HeartbeatConfig_IsolatedSession as a HeartbeatConfigIsolatedSession0
-func (t HeartbeatConfig_IsolatedSession) AsHeartbeatConfigIsolatedSession0() (HeartbeatConfigIsolatedSession0, error) {
-	var body HeartbeatConfigIsolatedSession0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromHeartbeatConfigIsolatedSession0 overwrites any union data inside the HeartbeatConfig_IsolatedSession as the provided HeartbeatConfigIsolatedSession0
-func (t *HeartbeatConfig_IsolatedSession) FromHeartbeatConfigIsolatedSession0(v HeartbeatConfigIsolatedSession0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeHeartbeatConfigIsolatedSession0 performs a merge with any union data inside the HeartbeatConfig_IsolatedSession, using the provided HeartbeatConfigIsolatedSession0
-func (t *HeartbeatConfig_IsolatedSession) MergeHeartbeatConfigIsolatedSession0(v HeartbeatConfigIsolatedSession0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsHeartbeatConfigIsolatedSession1 returns the union data inside the HeartbeatConfig_IsolatedSession as a HeartbeatConfigIsolatedSession1
-func (t HeartbeatConfig_IsolatedSession) AsHeartbeatConfigIsolatedSession1() (HeartbeatConfigIsolatedSession1, error) {
-	var body HeartbeatConfigIsolatedSession1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromHeartbeatConfigIsolatedSession1 overwrites any union data inside the HeartbeatConfig_IsolatedSession as the provided HeartbeatConfigIsolatedSession1
-func (t *HeartbeatConfig_IsolatedSession) FromHeartbeatConfigIsolatedSession1(v HeartbeatConfigIsolatedSession1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeHeartbeatConfigIsolatedSession1 performs a merge with any union data inside the HeartbeatConfig_IsolatedSession, using the provided HeartbeatConfigIsolatedSession1
-func (t *HeartbeatConfig_IsolatedSession) MergeHeartbeatConfigIsolatedSession1(v HeartbeatConfigIsolatedSession1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t HeartbeatConfig_IsolatedSession) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *HeartbeatConfig_IsolatedSession) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsHeartbeatConfigLightContext0 returns the union data inside the HeartbeatConfig_LightContext as a HeartbeatConfigLightContext0
-func (t HeartbeatConfig_LightContext) AsHeartbeatConfigLightContext0() (HeartbeatConfigLightContext0, error) {
-	var body HeartbeatConfigLightContext0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromHeartbeatConfigLightContext0 overwrites any union data inside the HeartbeatConfig_LightContext as the provided HeartbeatConfigLightContext0
-func (t *HeartbeatConfig_LightContext) FromHeartbeatConfigLightContext0(v HeartbeatConfigLightContext0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeHeartbeatConfigLightContext0 performs a merge with any union data inside the HeartbeatConfig_LightContext, using the provided HeartbeatConfigLightContext0
-func (t *HeartbeatConfig_LightContext) MergeHeartbeatConfigLightContext0(v HeartbeatConfigLightContext0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsHeartbeatConfigLightContext1 returns the union data inside the HeartbeatConfig_LightContext as a HeartbeatConfigLightContext1
-func (t HeartbeatConfig_LightContext) AsHeartbeatConfigLightContext1() (HeartbeatConfigLightContext1, error) {
-	var body HeartbeatConfigLightContext1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromHeartbeatConfigLightContext1 overwrites any union data inside the HeartbeatConfig_LightContext as the provided HeartbeatConfigLightContext1
-func (t *HeartbeatConfig_LightContext) FromHeartbeatConfigLightContext1(v HeartbeatConfigLightContext1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeHeartbeatConfigLightContext1 performs a merge with any union data inside the HeartbeatConfig_LightContext, using the provided HeartbeatConfigLightContext1
-func (t *HeartbeatConfig_LightContext) MergeHeartbeatConfigLightContext1(v HeartbeatConfigLightContext1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t HeartbeatConfig_LightContext) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *HeartbeatConfig_LightContext) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsHeartbeatConfigModel0 returns the union data inside the HeartbeatConfig_Model as a HeartbeatConfigModel0
-func (t HeartbeatConfig_Model) AsHeartbeatConfigModel0() (HeartbeatConfigModel0, error) {
-	var body HeartbeatConfigModel0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromHeartbeatConfigModel0 overwrites any union data inside the HeartbeatConfig_Model as the provided HeartbeatConfigModel0
-func (t *HeartbeatConfig_Model) FromHeartbeatConfigModel0(v HeartbeatConfigModel0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeHeartbeatConfigModel0 performs a merge with any union data inside the HeartbeatConfig_Model, using the provided HeartbeatConfigModel0
-func (t *HeartbeatConfig_Model) MergeHeartbeatConfigModel0(v HeartbeatConfigModel0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsHeartbeatConfigModel1 returns the union data inside the HeartbeatConfig_Model as a HeartbeatConfigModel1
-func (t HeartbeatConfig_Model) AsHeartbeatConfigModel1() (HeartbeatConfigModel1, error) {
-	var body HeartbeatConfigModel1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromHeartbeatConfigModel1 overwrites any union data inside the HeartbeatConfig_Model as the provided HeartbeatConfigModel1
-func (t *HeartbeatConfig_Model) FromHeartbeatConfigModel1(v HeartbeatConfigModel1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeHeartbeatConfigModel1 performs a merge with any union data inside the HeartbeatConfig_Model, using the provided HeartbeatConfigModel1
-func (t *HeartbeatConfig_Model) MergeHeartbeatConfigModel1(v HeartbeatConfigModel1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t HeartbeatConfig_Model) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *HeartbeatConfig_Model) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsHeartbeatConfigPrompt0 returns the union data inside the HeartbeatConfig_Prompt as a HeartbeatConfigPrompt0
-func (t HeartbeatConfig_Prompt) AsHeartbeatConfigPrompt0() (HeartbeatConfigPrompt0, error) {
-	var body HeartbeatConfigPrompt0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromHeartbeatConfigPrompt0 overwrites any union data inside the HeartbeatConfig_Prompt as the provided HeartbeatConfigPrompt0
-func (t *HeartbeatConfig_Prompt) FromHeartbeatConfigPrompt0(v HeartbeatConfigPrompt0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeHeartbeatConfigPrompt0 performs a merge with any union data inside the HeartbeatConfig_Prompt, using the provided HeartbeatConfigPrompt0
-func (t *HeartbeatConfig_Prompt) MergeHeartbeatConfigPrompt0(v HeartbeatConfigPrompt0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsHeartbeatConfigPrompt1 returns the union data inside the HeartbeatConfig_Prompt as a HeartbeatConfigPrompt1
-func (t HeartbeatConfig_Prompt) AsHeartbeatConfigPrompt1() (HeartbeatConfigPrompt1, error) {
-	var body HeartbeatConfigPrompt1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromHeartbeatConfigPrompt1 overwrites any union data inside the HeartbeatConfig_Prompt as the provided HeartbeatConfigPrompt1
-func (t *HeartbeatConfig_Prompt) FromHeartbeatConfigPrompt1(v HeartbeatConfigPrompt1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeHeartbeatConfigPrompt1 performs a merge with any union data inside the HeartbeatConfig_Prompt, using the provided HeartbeatConfigPrompt1
-func (t *HeartbeatConfig_Prompt) MergeHeartbeatConfigPrompt1(v HeartbeatConfigPrompt1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t HeartbeatConfig_Prompt) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *HeartbeatConfig_Prompt) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsHeartbeatConfigPatchAckMaxChars0 returns the union data inside the HeartbeatConfigPatch_AckMaxChars as a HeartbeatConfigPatchAckMaxChars0
-func (t HeartbeatConfigPatch_AckMaxChars) AsHeartbeatConfigPatchAckMaxChars0() (HeartbeatConfigPatchAckMaxChars0, error) {
-	var body HeartbeatConfigPatchAckMaxChars0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromHeartbeatConfigPatchAckMaxChars0 overwrites any union data inside the HeartbeatConfigPatch_AckMaxChars as the provided HeartbeatConfigPatchAckMaxChars0
-func (t *HeartbeatConfigPatch_AckMaxChars) FromHeartbeatConfigPatchAckMaxChars0(v HeartbeatConfigPatchAckMaxChars0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeHeartbeatConfigPatchAckMaxChars0 performs a merge with any union data inside the HeartbeatConfigPatch_AckMaxChars, using the provided HeartbeatConfigPatchAckMaxChars0
-func (t *HeartbeatConfigPatch_AckMaxChars) MergeHeartbeatConfigPatchAckMaxChars0(v HeartbeatConfigPatchAckMaxChars0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsHeartbeatConfigPatchAckMaxChars1 returns the union data inside the HeartbeatConfigPatch_AckMaxChars as a HeartbeatConfigPatchAckMaxChars1
-func (t HeartbeatConfigPatch_AckMaxChars) AsHeartbeatConfigPatchAckMaxChars1() (HeartbeatConfigPatchAckMaxChars1, error) {
-	var body HeartbeatConfigPatchAckMaxChars1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromHeartbeatConfigPatchAckMaxChars1 overwrites any union data inside the HeartbeatConfigPatch_AckMaxChars as the provided HeartbeatConfigPatchAckMaxChars1
-func (t *HeartbeatConfigPatch_AckMaxChars) FromHeartbeatConfigPatchAckMaxChars1(v HeartbeatConfigPatchAckMaxChars1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeHeartbeatConfigPatchAckMaxChars1 performs a merge with any union data inside the HeartbeatConfigPatch_AckMaxChars, using the provided HeartbeatConfigPatchAckMaxChars1
-func (t *HeartbeatConfigPatch_AckMaxChars) MergeHeartbeatConfigPatchAckMaxChars1(v HeartbeatConfigPatchAckMaxChars1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t HeartbeatConfigPatch_AckMaxChars) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *HeartbeatConfigPatch_AckMaxChars) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsActiveHoursConfigPatch returns the union data inside the HeartbeatConfigPatch_ActiveHours as a ActiveHoursConfigPatch
-func (t HeartbeatConfigPatch_ActiveHours) AsActiveHoursConfigPatch() (ActiveHoursConfigPatch, error) {
-	var body ActiveHoursConfigPatch
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromActiveHoursConfigPatch overwrites any union data inside the HeartbeatConfigPatch_ActiveHours as the provided ActiveHoursConfigPatch
-func (t *HeartbeatConfigPatch_ActiveHours) FromActiveHoursConfigPatch(v ActiveHoursConfigPatch) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeActiveHoursConfigPatch performs a merge with any union data inside the HeartbeatConfigPatch_ActiveHours, using the provided ActiveHoursConfigPatch
-func (t *HeartbeatConfigPatch_ActiveHours) MergeActiveHoursConfigPatch(v ActiveHoursConfigPatch) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsHeartbeatConfigPatchActiveHours1 returns the union data inside the HeartbeatConfigPatch_ActiveHours as a HeartbeatConfigPatchActiveHours1
-func (t HeartbeatConfigPatch_ActiveHours) AsHeartbeatConfigPatchActiveHours1() (HeartbeatConfigPatchActiveHours1, error) {
-	var body HeartbeatConfigPatchActiveHours1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromHeartbeatConfigPatchActiveHours1 overwrites any union data inside the HeartbeatConfigPatch_ActiveHours as the provided HeartbeatConfigPatchActiveHours1
-func (t *HeartbeatConfigPatch_ActiveHours) FromHeartbeatConfigPatchActiveHours1(v HeartbeatConfigPatchActiveHours1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeHeartbeatConfigPatchActiveHours1 performs a merge with any union data inside the HeartbeatConfigPatch_ActiveHours, using the provided HeartbeatConfigPatchActiveHours1
-func (t *HeartbeatConfigPatch_ActiveHours) MergeHeartbeatConfigPatchActiveHours1(v HeartbeatConfigPatchActiveHours1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t HeartbeatConfigPatch_ActiveHours) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *HeartbeatConfigPatch_ActiveHours) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsHeartbeatConfigPatchEvery0 returns the union data inside the HeartbeatConfigPatch_Every as a HeartbeatConfigPatchEvery0
-func (t HeartbeatConfigPatch_Every) AsHeartbeatConfigPatchEvery0() (HeartbeatConfigPatchEvery0, error) {
-	var body HeartbeatConfigPatchEvery0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromHeartbeatConfigPatchEvery0 overwrites any union data inside the HeartbeatConfigPatch_Every as the provided HeartbeatConfigPatchEvery0
-func (t *HeartbeatConfigPatch_Every) FromHeartbeatConfigPatchEvery0(v HeartbeatConfigPatchEvery0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeHeartbeatConfigPatchEvery0 performs a merge with any union data inside the HeartbeatConfigPatch_Every, using the provided HeartbeatConfigPatchEvery0
-func (t *HeartbeatConfigPatch_Every) MergeHeartbeatConfigPatchEvery0(v HeartbeatConfigPatchEvery0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsHeartbeatConfigPatchEvery1 returns the union data inside the HeartbeatConfigPatch_Every as a HeartbeatConfigPatchEvery1
-func (t HeartbeatConfigPatch_Every) AsHeartbeatConfigPatchEvery1() (HeartbeatConfigPatchEvery1, error) {
-	var body HeartbeatConfigPatchEvery1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromHeartbeatConfigPatchEvery1 overwrites any union data inside the HeartbeatConfigPatch_Every as the provided HeartbeatConfigPatchEvery1
-func (t *HeartbeatConfigPatch_Every) FromHeartbeatConfigPatchEvery1(v HeartbeatConfigPatchEvery1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeHeartbeatConfigPatchEvery1 performs a merge with any union data inside the HeartbeatConfigPatch_Every, using the provided HeartbeatConfigPatchEvery1
-func (t *HeartbeatConfigPatch_Every) MergeHeartbeatConfigPatchEvery1(v HeartbeatConfigPatchEvery1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t HeartbeatConfigPatch_Every) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *HeartbeatConfigPatch_Every) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsHeartbeatConfigPatchIncludeReasoning0 returns the union data inside the HeartbeatConfigPatch_IncludeReasoning as a HeartbeatConfigPatchIncludeReasoning0
-func (t HeartbeatConfigPatch_IncludeReasoning) AsHeartbeatConfigPatchIncludeReasoning0() (HeartbeatConfigPatchIncludeReasoning0, error) {
-	var body HeartbeatConfigPatchIncludeReasoning0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromHeartbeatConfigPatchIncludeReasoning0 overwrites any union data inside the HeartbeatConfigPatch_IncludeReasoning as the provided HeartbeatConfigPatchIncludeReasoning0
-func (t *HeartbeatConfigPatch_IncludeReasoning) FromHeartbeatConfigPatchIncludeReasoning0(v HeartbeatConfigPatchIncludeReasoning0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeHeartbeatConfigPatchIncludeReasoning0 performs a merge with any union data inside the HeartbeatConfigPatch_IncludeReasoning, using the provided HeartbeatConfigPatchIncludeReasoning0
-func (t *HeartbeatConfigPatch_IncludeReasoning) MergeHeartbeatConfigPatchIncludeReasoning0(v HeartbeatConfigPatchIncludeReasoning0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsHeartbeatConfigPatchIncludeReasoning1 returns the union data inside the HeartbeatConfigPatch_IncludeReasoning as a HeartbeatConfigPatchIncludeReasoning1
-func (t HeartbeatConfigPatch_IncludeReasoning) AsHeartbeatConfigPatchIncludeReasoning1() (HeartbeatConfigPatchIncludeReasoning1, error) {
-	var body HeartbeatConfigPatchIncludeReasoning1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromHeartbeatConfigPatchIncludeReasoning1 overwrites any union data inside the HeartbeatConfigPatch_IncludeReasoning as the provided HeartbeatConfigPatchIncludeReasoning1
-func (t *HeartbeatConfigPatch_IncludeReasoning) FromHeartbeatConfigPatchIncludeReasoning1(v HeartbeatConfigPatchIncludeReasoning1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeHeartbeatConfigPatchIncludeReasoning1 performs a merge with any union data inside the HeartbeatConfigPatch_IncludeReasoning, using the provided HeartbeatConfigPatchIncludeReasoning1
-func (t *HeartbeatConfigPatch_IncludeReasoning) MergeHeartbeatConfigPatchIncludeReasoning1(v HeartbeatConfigPatchIncludeReasoning1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t HeartbeatConfigPatch_IncludeReasoning) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *HeartbeatConfigPatch_IncludeReasoning) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsHeartbeatConfigPatchIsolatedSession0 returns the union data inside the HeartbeatConfigPatch_IsolatedSession as a HeartbeatConfigPatchIsolatedSession0
-func (t HeartbeatConfigPatch_IsolatedSession) AsHeartbeatConfigPatchIsolatedSession0() (HeartbeatConfigPatchIsolatedSession0, error) {
-	var body HeartbeatConfigPatchIsolatedSession0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromHeartbeatConfigPatchIsolatedSession0 overwrites any union data inside the HeartbeatConfigPatch_IsolatedSession as the provided HeartbeatConfigPatchIsolatedSession0
-func (t *HeartbeatConfigPatch_IsolatedSession) FromHeartbeatConfigPatchIsolatedSession0(v HeartbeatConfigPatchIsolatedSession0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeHeartbeatConfigPatchIsolatedSession0 performs a merge with any union data inside the HeartbeatConfigPatch_IsolatedSession, using the provided HeartbeatConfigPatchIsolatedSession0
-func (t *HeartbeatConfigPatch_IsolatedSession) MergeHeartbeatConfigPatchIsolatedSession0(v HeartbeatConfigPatchIsolatedSession0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsHeartbeatConfigPatchIsolatedSession1 returns the union data inside the HeartbeatConfigPatch_IsolatedSession as a HeartbeatConfigPatchIsolatedSession1
-func (t HeartbeatConfigPatch_IsolatedSession) AsHeartbeatConfigPatchIsolatedSession1() (HeartbeatConfigPatchIsolatedSession1, error) {
-	var body HeartbeatConfigPatchIsolatedSession1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromHeartbeatConfigPatchIsolatedSession1 overwrites any union data inside the HeartbeatConfigPatch_IsolatedSession as the provided HeartbeatConfigPatchIsolatedSession1
-func (t *HeartbeatConfigPatch_IsolatedSession) FromHeartbeatConfigPatchIsolatedSession1(v HeartbeatConfigPatchIsolatedSession1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeHeartbeatConfigPatchIsolatedSession1 performs a merge with any union data inside the HeartbeatConfigPatch_IsolatedSession, using the provided HeartbeatConfigPatchIsolatedSession1
-func (t *HeartbeatConfigPatch_IsolatedSession) MergeHeartbeatConfigPatchIsolatedSession1(v HeartbeatConfigPatchIsolatedSession1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t HeartbeatConfigPatch_IsolatedSession) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *HeartbeatConfigPatch_IsolatedSession) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsHeartbeatConfigPatchLightContext0 returns the union data inside the HeartbeatConfigPatch_LightContext as a HeartbeatConfigPatchLightContext0
-func (t HeartbeatConfigPatch_LightContext) AsHeartbeatConfigPatchLightContext0() (HeartbeatConfigPatchLightContext0, error) {
-	var body HeartbeatConfigPatchLightContext0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromHeartbeatConfigPatchLightContext0 overwrites any union data inside the HeartbeatConfigPatch_LightContext as the provided HeartbeatConfigPatchLightContext0
-func (t *HeartbeatConfigPatch_LightContext) FromHeartbeatConfigPatchLightContext0(v HeartbeatConfigPatchLightContext0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeHeartbeatConfigPatchLightContext0 performs a merge with any union data inside the HeartbeatConfigPatch_LightContext, using the provided HeartbeatConfigPatchLightContext0
-func (t *HeartbeatConfigPatch_LightContext) MergeHeartbeatConfigPatchLightContext0(v HeartbeatConfigPatchLightContext0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsHeartbeatConfigPatchLightContext1 returns the union data inside the HeartbeatConfigPatch_LightContext as a HeartbeatConfigPatchLightContext1
-func (t HeartbeatConfigPatch_LightContext) AsHeartbeatConfigPatchLightContext1() (HeartbeatConfigPatchLightContext1, error) {
-	var body HeartbeatConfigPatchLightContext1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromHeartbeatConfigPatchLightContext1 overwrites any union data inside the HeartbeatConfigPatch_LightContext as the provided HeartbeatConfigPatchLightContext1
-func (t *HeartbeatConfigPatch_LightContext) FromHeartbeatConfigPatchLightContext1(v HeartbeatConfigPatchLightContext1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeHeartbeatConfigPatchLightContext1 performs a merge with any union data inside the HeartbeatConfigPatch_LightContext, using the provided HeartbeatConfigPatchLightContext1
-func (t *HeartbeatConfigPatch_LightContext) MergeHeartbeatConfigPatchLightContext1(v HeartbeatConfigPatchLightContext1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t HeartbeatConfigPatch_LightContext) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *HeartbeatConfigPatch_LightContext) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsHeartbeatConfigPatchModel0 returns the union data inside the HeartbeatConfigPatch_Model as a HeartbeatConfigPatchModel0
-func (t HeartbeatConfigPatch_Model) AsHeartbeatConfigPatchModel0() (HeartbeatConfigPatchModel0, error) {
-	var body HeartbeatConfigPatchModel0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromHeartbeatConfigPatchModel0 overwrites any union data inside the HeartbeatConfigPatch_Model as the provided HeartbeatConfigPatchModel0
-func (t *HeartbeatConfigPatch_Model) FromHeartbeatConfigPatchModel0(v HeartbeatConfigPatchModel0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeHeartbeatConfigPatchModel0 performs a merge with any union data inside the HeartbeatConfigPatch_Model, using the provided HeartbeatConfigPatchModel0
-func (t *HeartbeatConfigPatch_Model) MergeHeartbeatConfigPatchModel0(v HeartbeatConfigPatchModel0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsHeartbeatConfigPatchModel1 returns the union data inside the HeartbeatConfigPatch_Model as a HeartbeatConfigPatchModel1
-func (t HeartbeatConfigPatch_Model) AsHeartbeatConfigPatchModel1() (HeartbeatConfigPatchModel1, error) {
-	var body HeartbeatConfigPatchModel1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromHeartbeatConfigPatchModel1 overwrites any union data inside the HeartbeatConfigPatch_Model as the provided HeartbeatConfigPatchModel1
-func (t *HeartbeatConfigPatch_Model) FromHeartbeatConfigPatchModel1(v HeartbeatConfigPatchModel1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeHeartbeatConfigPatchModel1 performs a merge with any union data inside the HeartbeatConfigPatch_Model, using the provided HeartbeatConfigPatchModel1
-func (t *HeartbeatConfigPatch_Model) MergeHeartbeatConfigPatchModel1(v HeartbeatConfigPatchModel1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t HeartbeatConfigPatch_Model) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *HeartbeatConfigPatch_Model) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsHeartbeatConfigPatchPrompt0 returns the union data inside the HeartbeatConfigPatch_Prompt as a HeartbeatConfigPatchPrompt0
-func (t HeartbeatConfigPatch_Prompt) AsHeartbeatConfigPatchPrompt0() (HeartbeatConfigPatchPrompt0, error) {
-	var body HeartbeatConfigPatchPrompt0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromHeartbeatConfigPatchPrompt0 overwrites any union data inside the HeartbeatConfigPatch_Prompt as the provided HeartbeatConfigPatchPrompt0
-func (t *HeartbeatConfigPatch_Prompt) FromHeartbeatConfigPatchPrompt0(v HeartbeatConfigPatchPrompt0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeHeartbeatConfigPatchPrompt0 performs a merge with any union data inside the HeartbeatConfigPatch_Prompt, using the provided HeartbeatConfigPatchPrompt0
-func (t *HeartbeatConfigPatch_Prompt) MergeHeartbeatConfigPatchPrompt0(v HeartbeatConfigPatchPrompt0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsHeartbeatConfigPatchPrompt1 returns the union data inside the HeartbeatConfigPatch_Prompt as a HeartbeatConfigPatchPrompt1
-func (t HeartbeatConfigPatch_Prompt) AsHeartbeatConfigPatchPrompt1() (HeartbeatConfigPatchPrompt1, error) {
-	var body HeartbeatConfigPatchPrompt1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromHeartbeatConfigPatchPrompt1 overwrites any union data inside the HeartbeatConfigPatch_Prompt as the provided HeartbeatConfigPatchPrompt1
-func (t *HeartbeatConfigPatch_Prompt) FromHeartbeatConfigPatchPrompt1(v HeartbeatConfigPatchPrompt1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeHeartbeatConfigPatchPrompt1 performs a merge with any union data inside the HeartbeatConfigPatch_Prompt, using the provided HeartbeatConfigPatchPrompt1
-func (t *HeartbeatConfigPatch_Prompt) MergeHeartbeatConfigPatchPrompt1(v HeartbeatConfigPatchPrompt1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t HeartbeatConfigPatch_Prompt) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *HeartbeatConfigPatch_Prompt) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsIdentityConfigAvatar0 returns the union data inside the IdentityConfig_Avatar as a IdentityConfigAvatar0
-func (t IdentityConfig_Avatar) AsIdentityConfigAvatar0() (IdentityConfigAvatar0, error) {
-	var body IdentityConfigAvatar0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromIdentityConfigAvatar0 overwrites any union data inside the IdentityConfig_Avatar as the provided IdentityConfigAvatar0
-func (t *IdentityConfig_Avatar) FromIdentityConfigAvatar0(v IdentityConfigAvatar0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeIdentityConfigAvatar0 performs a merge with any union data inside the IdentityConfig_Avatar, using the provided IdentityConfigAvatar0
-func (t *IdentityConfig_Avatar) MergeIdentityConfigAvatar0(v IdentityConfigAvatar0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsIdentityConfigAvatar1 returns the union data inside the IdentityConfig_Avatar as a IdentityConfigAvatar1
-func (t IdentityConfig_Avatar) AsIdentityConfigAvatar1() (IdentityConfigAvatar1, error) {
-	var body IdentityConfigAvatar1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromIdentityConfigAvatar1 overwrites any union data inside the IdentityConfig_Avatar as the provided IdentityConfigAvatar1
-func (t *IdentityConfig_Avatar) FromIdentityConfigAvatar1(v IdentityConfigAvatar1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeIdentityConfigAvatar1 performs a merge with any union data inside the IdentityConfig_Avatar, using the provided IdentityConfigAvatar1
-func (t *IdentityConfig_Avatar) MergeIdentityConfigAvatar1(v IdentityConfigAvatar1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t IdentityConfig_Avatar) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *IdentityConfig_Avatar) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsIdentityConfigPatchEmoji0 returns the union data inside the IdentityConfigPatch_Emoji as a IdentityConfigPatchEmoji0
-func (t IdentityConfigPatch_Emoji) AsIdentityConfigPatchEmoji0() (IdentityConfigPatchEmoji0, error) {
-	var body IdentityConfigPatchEmoji0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromIdentityConfigPatchEmoji0 overwrites any union data inside the IdentityConfigPatch_Emoji as the provided IdentityConfigPatchEmoji0
-func (t *IdentityConfigPatch_Emoji) FromIdentityConfigPatchEmoji0(v IdentityConfigPatchEmoji0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeIdentityConfigPatchEmoji0 performs a merge with any union data inside the IdentityConfigPatch_Emoji, using the provided IdentityConfigPatchEmoji0
-func (t *IdentityConfigPatch_Emoji) MergeIdentityConfigPatchEmoji0(v IdentityConfigPatchEmoji0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsIdentityConfigPatchEmoji1 returns the union data inside the IdentityConfigPatch_Emoji as a IdentityConfigPatchEmoji1
-func (t IdentityConfigPatch_Emoji) AsIdentityConfigPatchEmoji1() (IdentityConfigPatchEmoji1, error) {
-	var body IdentityConfigPatchEmoji1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromIdentityConfigPatchEmoji1 overwrites any union data inside the IdentityConfigPatch_Emoji as the provided IdentityConfigPatchEmoji1
-func (t *IdentityConfigPatch_Emoji) FromIdentityConfigPatchEmoji1(v IdentityConfigPatchEmoji1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeIdentityConfigPatchEmoji1 performs a merge with any union data inside the IdentityConfigPatch_Emoji, using the provided IdentityConfigPatchEmoji1
-func (t *IdentityConfigPatch_Emoji) MergeIdentityConfigPatchEmoji1(v IdentityConfigPatchEmoji1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t IdentityConfigPatch_Emoji) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *IdentityConfigPatch_Emoji) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsIdentityConfigPatchTheme0 returns the union data inside the IdentityConfigPatch_Theme as a IdentityConfigPatchTheme0
-func (t IdentityConfigPatch_Theme) AsIdentityConfigPatchTheme0() (IdentityConfigPatchTheme0, error) {
-	var body IdentityConfigPatchTheme0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromIdentityConfigPatchTheme0 overwrites any union data inside the IdentityConfigPatch_Theme as the provided IdentityConfigPatchTheme0
-func (t *IdentityConfigPatch_Theme) FromIdentityConfigPatchTheme0(v IdentityConfigPatchTheme0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeIdentityConfigPatchTheme0 performs a merge with any union data inside the IdentityConfigPatch_Theme, using the provided IdentityConfigPatchTheme0
-func (t *IdentityConfigPatch_Theme) MergeIdentityConfigPatchTheme0(v IdentityConfigPatchTheme0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsIdentityConfigPatchTheme1 returns the union data inside the IdentityConfigPatch_Theme as a IdentityConfigPatchTheme1
-func (t IdentityConfigPatch_Theme) AsIdentityConfigPatchTheme1() (IdentityConfigPatchTheme1, error) {
-	var body IdentityConfigPatchTheme1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromIdentityConfigPatchTheme1 overwrites any union data inside the IdentityConfigPatch_Theme as the provided IdentityConfigPatchTheme1
-func (t *IdentityConfigPatch_Theme) FromIdentityConfigPatchTheme1(v IdentityConfigPatchTheme1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeIdentityConfigPatchTheme1 performs a merge with any union data inside the IdentityConfigPatch_Theme, using the provided IdentityConfigPatchTheme1
-func (t *IdentityConfigPatch_Theme) MergeIdentityConfigPatchTheme1(v IdentityConfigPatchTheme1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t IdentityConfigPatch_Theme) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *IdentityConfigPatch_Theme) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsMemoryEventCountersHigh0 returns the union data inside the MemoryEventCounters_High as a MemoryEventCountersHigh0
-func (t MemoryEventCounters_High) AsMemoryEventCountersHigh0() (MemoryEventCountersHigh0, error) {
-	var body MemoryEventCountersHigh0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromMemoryEventCountersHigh0 overwrites any union data inside the MemoryEventCounters_High as the provided MemoryEventCountersHigh0
-func (t *MemoryEventCounters_High) FromMemoryEventCountersHigh0(v MemoryEventCountersHigh0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeMemoryEventCountersHigh0 performs a merge with any union data inside the MemoryEventCounters_High, using the provided MemoryEventCountersHigh0
-func (t *MemoryEventCounters_High) MergeMemoryEventCountersHigh0(v MemoryEventCountersHigh0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsMemoryEventCountersHigh1 returns the union data inside the MemoryEventCounters_High as a MemoryEventCountersHigh1
-func (t MemoryEventCounters_High) AsMemoryEventCountersHigh1() (MemoryEventCountersHigh1, error) {
-	var body MemoryEventCountersHigh1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromMemoryEventCountersHigh1 overwrites any union data inside the MemoryEventCounters_High as the provided MemoryEventCountersHigh1
-func (t *MemoryEventCounters_High) FromMemoryEventCountersHigh1(v MemoryEventCountersHigh1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeMemoryEventCountersHigh1 performs a merge with any union data inside the MemoryEventCounters_High, using the provided MemoryEventCountersHigh1
-func (t *MemoryEventCounters_High) MergeMemoryEventCountersHigh1(v MemoryEventCountersHigh1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t MemoryEventCounters_High) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *MemoryEventCounters_High) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsMemoryEventCountersLow0 returns the union data inside the MemoryEventCounters_Low as a MemoryEventCountersLow0
-func (t MemoryEventCounters_Low) AsMemoryEventCountersLow0() (MemoryEventCountersLow0, error) {
-	var body MemoryEventCountersLow0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromMemoryEventCountersLow0 overwrites any union data inside the MemoryEventCounters_Low as the provided MemoryEventCountersLow0
-func (t *MemoryEventCounters_Low) FromMemoryEventCountersLow0(v MemoryEventCountersLow0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeMemoryEventCountersLow0 performs a merge with any union data inside the MemoryEventCounters_Low, using the provided MemoryEventCountersLow0
-func (t *MemoryEventCounters_Low) MergeMemoryEventCountersLow0(v MemoryEventCountersLow0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsMemoryEventCountersLow1 returns the union data inside the MemoryEventCounters_Low as a MemoryEventCountersLow1
-func (t MemoryEventCounters_Low) AsMemoryEventCountersLow1() (MemoryEventCountersLow1, error) {
-	var body MemoryEventCountersLow1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromMemoryEventCountersLow1 overwrites any union data inside the MemoryEventCounters_Low as the provided MemoryEventCountersLow1
-func (t *MemoryEventCounters_Low) FromMemoryEventCountersLow1(v MemoryEventCountersLow1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeMemoryEventCountersLow1 performs a merge with any union data inside the MemoryEventCounters_Low, using the provided MemoryEventCountersLow1
-func (t *MemoryEventCounters_Low) MergeMemoryEventCountersLow1(v MemoryEventCountersLow1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t MemoryEventCounters_Low) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *MemoryEventCounters_Low) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsMemoryEventCountersMax0 returns the union data inside the MemoryEventCounters_Max as a MemoryEventCountersMax0
-func (t MemoryEventCounters_Max) AsMemoryEventCountersMax0() (MemoryEventCountersMax0, error) {
-	var body MemoryEventCountersMax0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromMemoryEventCountersMax0 overwrites any union data inside the MemoryEventCounters_Max as the provided MemoryEventCountersMax0
-func (t *MemoryEventCounters_Max) FromMemoryEventCountersMax0(v MemoryEventCountersMax0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeMemoryEventCountersMax0 performs a merge with any union data inside the MemoryEventCounters_Max, using the provided MemoryEventCountersMax0
-func (t *MemoryEventCounters_Max) MergeMemoryEventCountersMax0(v MemoryEventCountersMax0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsMemoryEventCountersMax1 returns the union data inside the MemoryEventCounters_Max as a MemoryEventCountersMax1
-func (t MemoryEventCounters_Max) AsMemoryEventCountersMax1() (MemoryEventCountersMax1, error) {
-	var body MemoryEventCountersMax1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromMemoryEventCountersMax1 overwrites any union data inside the MemoryEventCounters_Max as the provided MemoryEventCountersMax1
-func (t *MemoryEventCounters_Max) FromMemoryEventCountersMax1(v MemoryEventCountersMax1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeMemoryEventCountersMax1 performs a merge with any union data inside the MemoryEventCounters_Max, using the provided MemoryEventCountersMax1
-func (t *MemoryEventCounters_Max) MergeMemoryEventCountersMax1(v MemoryEventCountersMax1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t MemoryEventCounters_Max) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *MemoryEventCounters_Max) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsMemoryEventCountersOom0 returns the union data inside the MemoryEventCounters_Oom as a MemoryEventCountersOom0
-func (t MemoryEventCounters_Oom) AsMemoryEventCountersOom0() (MemoryEventCountersOom0, error) {
-	var body MemoryEventCountersOom0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromMemoryEventCountersOom0 overwrites any union data inside the MemoryEventCounters_Oom as the provided MemoryEventCountersOom0
-func (t *MemoryEventCounters_Oom) FromMemoryEventCountersOom0(v MemoryEventCountersOom0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeMemoryEventCountersOom0 performs a merge with any union data inside the MemoryEventCounters_Oom, using the provided MemoryEventCountersOom0
-func (t *MemoryEventCounters_Oom) MergeMemoryEventCountersOom0(v MemoryEventCountersOom0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsMemoryEventCountersOom1 returns the union data inside the MemoryEventCounters_Oom as a MemoryEventCountersOom1
-func (t MemoryEventCounters_Oom) AsMemoryEventCountersOom1() (MemoryEventCountersOom1, error) {
-	var body MemoryEventCountersOom1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromMemoryEventCountersOom1 overwrites any union data inside the MemoryEventCounters_Oom as the provided MemoryEventCountersOom1
-func (t *MemoryEventCounters_Oom) FromMemoryEventCountersOom1(v MemoryEventCountersOom1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeMemoryEventCountersOom1 performs a merge with any union data inside the MemoryEventCounters_Oom, using the provided MemoryEventCountersOom1
-func (t *MemoryEventCounters_Oom) MergeMemoryEventCountersOom1(v MemoryEventCountersOom1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t MemoryEventCounters_Oom) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *MemoryEventCounters_Oom) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsMemoryEventCountersOomKill0 returns the union data inside the MemoryEventCounters_OomKill as a MemoryEventCountersOomKill0
-func (t MemoryEventCounters_OomKill) AsMemoryEventCountersOomKill0() (MemoryEventCountersOomKill0, error) {
-	var body MemoryEventCountersOomKill0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromMemoryEventCountersOomKill0 overwrites any union data inside the MemoryEventCounters_OomKill as the provided MemoryEventCountersOomKill0
-func (t *MemoryEventCounters_OomKill) FromMemoryEventCountersOomKill0(v MemoryEventCountersOomKill0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeMemoryEventCountersOomKill0 performs a merge with any union data inside the MemoryEventCounters_OomKill, using the provided MemoryEventCountersOomKill0
-func (t *MemoryEventCounters_OomKill) MergeMemoryEventCountersOomKill0(v MemoryEventCountersOomKill0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsMemoryEventCountersOomKill1 returns the union data inside the MemoryEventCounters_OomKill as a MemoryEventCountersOomKill1
-func (t MemoryEventCounters_OomKill) AsMemoryEventCountersOomKill1() (MemoryEventCountersOomKill1, error) {
-	var body MemoryEventCountersOomKill1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromMemoryEventCountersOomKill1 overwrites any union data inside the MemoryEventCounters_OomKill as the provided MemoryEventCountersOomKill1
-func (t *MemoryEventCounters_OomKill) FromMemoryEventCountersOomKill1(v MemoryEventCountersOomKill1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeMemoryEventCountersOomKill1 performs a merge with any union data inside the MemoryEventCounters_OomKill, using the provided MemoryEventCountersOomKill1
-func (t *MemoryEventCounters_OomKill) MergeMemoryEventCountersOomKill1(v MemoryEventCountersOomKill1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t MemoryEventCounters_OomKill) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *MemoryEventCounters_OomKill) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsMemoryMetricsCurrentBytes0 returns the union data inside the MemoryMetrics_CurrentBytes as a MemoryMetricsCurrentBytes0
-func (t MemoryMetrics_CurrentBytes) AsMemoryMetricsCurrentBytes0() (MemoryMetricsCurrentBytes0, error) {
-	var body MemoryMetricsCurrentBytes0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromMemoryMetricsCurrentBytes0 overwrites any union data inside the MemoryMetrics_CurrentBytes as the provided MemoryMetricsCurrentBytes0
-func (t *MemoryMetrics_CurrentBytes) FromMemoryMetricsCurrentBytes0(v MemoryMetricsCurrentBytes0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeMemoryMetricsCurrentBytes0 performs a merge with any union data inside the MemoryMetrics_CurrentBytes, using the provided MemoryMetricsCurrentBytes0
-func (t *MemoryMetrics_CurrentBytes) MergeMemoryMetricsCurrentBytes0(v MemoryMetricsCurrentBytes0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsMemoryMetricsCurrentBytes1 returns the union data inside the MemoryMetrics_CurrentBytes as a MemoryMetricsCurrentBytes1
-func (t MemoryMetrics_CurrentBytes) AsMemoryMetricsCurrentBytes1() (MemoryMetricsCurrentBytes1, error) {
-	var body MemoryMetricsCurrentBytes1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromMemoryMetricsCurrentBytes1 overwrites any union data inside the MemoryMetrics_CurrentBytes as the provided MemoryMetricsCurrentBytes1
-func (t *MemoryMetrics_CurrentBytes) FromMemoryMetricsCurrentBytes1(v MemoryMetricsCurrentBytes1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeMemoryMetricsCurrentBytes1 performs a merge with any union data inside the MemoryMetrics_CurrentBytes, using the provided MemoryMetricsCurrentBytes1
-func (t *MemoryMetrics_CurrentBytes) MergeMemoryMetricsCurrentBytes1(v MemoryMetricsCurrentBytes1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t MemoryMetrics_CurrentBytes) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *MemoryMetrics_CurrentBytes) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsMemoryEventCounters returns the union data inside the MemoryMetrics_Events as a MemoryEventCounters
-func (t MemoryMetrics_Events) AsMemoryEventCounters() (MemoryEventCounters, error) {
-	var body MemoryEventCounters
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromMemoryEventCounters overwrites any union data inside the MemoryMetrics_Events as the provided MemoryEventCounters
-func (t *MemoryMetrics_Events) FromMemoryEventCounters(v MemoryEventCounters) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeMemoryEventCounters performs a merge with any union data inside the MemoryMetrics_Events, using the provided MemoryEventCounters
-func (t *MemoryMetrics_Events) MergeMemoryEventCounters(v MemoryEventCounters) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsMemoryMetricsEvents1 returns the union data inside the MemoryMetrics_Events as a MemoryMetricsEvents1
-func (t MemoryMetrics_Events) AsMemoryMetricsEvents1() (MemoryMetricsEvents1, error) {
-	var body MemoryMetricsEvents1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromMemoryMetricsEvents1 overwrites any union data inside the MemoryMetrics_Events as the provided MemoryMetricsEvents1
-func (t *MemoryMetrics_Events) FromMemoryMetricsEvents1(v MemoryMetricsEvents1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeMemoryMetricsEvents1 performs a merge with any union data inside the MemoryMetrics_Events, using the provided MemoryMetricsEvents1
-func (t *MemoryMetrics_Events) MergeMemoryMetricsEvents1(v MemoryMetricsEvents1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t MemoryMetrics_Events) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *MemoryMetrics_Events) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsMemoryMetricsInactiveFileBytes0 returns the union data inside the MemoryMetrics_InactiveFileBytes as a MemoryMetricsInactiveFileBytes0
-func (t MemoryMetrics_InactiveFileBytes) AsMemoryMetricsInactiveFileBytes0() (MemoryMetricsInactiveFileBytes0, error) {
-	var body MemoryMetricsInactiveFileBytes0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromMemoryMetricsInactiveFileBytes0 overwrites any union data inside the MemoryMetrics_InactiveFileBytes as the provided MemoryMetricsInactiveFileBytes0
-func (t *MemoryMetrics_InactiveFileBytes) FromMemoryMetricsInactiveFileBytes0(v MemoryMetricsInactiveFileBytes0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeMemoryMetricsInactiveFileBytes0 performs a merge with any union data inside the MemoryMetrics_InactiveFileBytes, using the provided MemoryMetricsInactiveFileBytes0
-func (t *MemoryMetrics_InactiveFileBytes) MergeMemoryMetricsInactiveFileBytes0(v MemoryMetricsInactiveFileBytes0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsMemoryMetricsInactiveFileBytes1 returns the union data inside the MemoryMetrics_InactiveFileBytes as a MemoryMetricsInactiveFileBytes1
-func (t MemoryMetrics_InactiveFileBytes) AsMemoryMetricsInactiveFileBytes1() (MemoryMetricsInactiveFileBytes1, error) {
-	var body MemoryMetricsInactiveFileBytes1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromMemoryMetricsInactiveFileBytes1 overwrites any union data inside the MemoryMetrics_InactiveFileBytes as the provided MemoryMetricsInactiveFileBytes1
-func (t *MemoryMetrics_InactiveFileBytes) FromMemoryMetricsInactiveFileBytes1(v MemoryMetricsInactiveFileBytes1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeMemoryMetricsInactiveFileBytes1 performs a merge with any union data inside the MemoryMetrics_InactiveFileBytes, using the provided MemoryMetricsInactiveFileBytes1
-func (t *MemoryMetrics_InactiveFileBytes) MergeMemoryMetricsInactiveFileBytes1(v MemoryMetricsInactiveFileBytes1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t MemoryMetrics_InactiveFileBytes) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *MemoryMetrics_InactiveFileBytes) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsMemoryMetricsLimitBytes0 returns the union data inside the MemoryMetrics_LimitBytes as a MemoryMetricsLimitBytes0
-func (t MemoryMetrics_LimitBytes) AsMemoryMetricsLimitBytes0() (MemoryMetricsLimitBytes0, error) {
-	var body MemoryMetricsLimitBytes0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromMemoryMetricsLimitBytes0 overwrites any union data inside the MemoryMetrics_LimitBytes as the provided MemoryMetricsLimitBytes0
-func (t *MemoryMetrics_LimitBytes) FromMemoryMetricsLimitBytes0(v MemoryMetricsLimitBytes0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeMemoryMetricsLimitBytes0 performs a merge with any union data inside the MemoryMetrics_LimitBytes, using the provided MemoryMetricsLimitBytes0
-func (t *MemoryMetrics_LimitBytes) MergeMemoryMetricsLimitBytes0(v MemoryMetricsLimitBytes0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsMemoryMetricsLimitBytes1 returns the union data inside the MemoryMetrics_LimitBytes as a MemoryMetricsLimitBytes1
-func (t MemoryMetrics_LimitBytes) AsMemoryMetricsLimitBytes1() (MemoryMetricsLimitBytes1, error) {
-	var body MemoryMetricsLimitBytes1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromMemoryMetricsLimitBytes1 overwrites any union data inside the MemoryMetrics_LimitBytes as the provided MemoryMetricsLimitBytes1
-func (t *MemoryMetrics_LimitBytes) FromMemoryMetricsLimitBytes1(v MemoryMetricsLimitBytes1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeMemoryMetricsLimitBytes1 performs a merge with any union data inside the MemoryMetrics_LimitBytes, using the provided MemoryMetricsLimitBytes1
-func (t *MemoryMetrics_LimitBytes) MergeMemoryMetricsLimitBytes1(v MemoryMetricsLimitBytes1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t MemoryMetrics_LimitBytes) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *MemoryMetrics_LimitBytes) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsMemoryMetricsPercentOfLimit0 returns the union data inside the MemoryMetrics_PercentOfLimit as a MemoryMetricsPercentOfLimit0
-func (t MemoryMetrics_PercentOfLimit) AsMemoryMetricsPercentOfLimit0() (MemoryMetricsPercentOfLimit0, error) {
-	var body MemoryMetricsPercentOfLimit0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromMemoryMetricsPercentOfLimit0 overwrites any union data inside the MemoryMetrics_PercentOfLimit as the provided MemoryMetricsPercentOfLimit0
-func (t *MemoryMetrics_PercentOfLimit) FromMemoryMetricsPercentOfLimit0(v MemoryMetricsPercentOfLimit0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeMemoryMetricsPercentOfLimit0 performs a merge with any union data inside the MemoryMetrics_PercentOfLimit, using the provided MemoryMetricsPercentOfLimit0
-func (t *MemoryMetrics_PercentOfLimit) MergeMemoryMetricsPercentOfLimit0(v MemoryMetricsPercentOfLimit0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsMemoryMetricsPercentOfLimit1 returns the union data inside the MemoryMetrics_PercentOfLimit as a MemoryMetricsPercentOfLimit1
-func (t MemoryMetrics_PercentOfLimit) AsMemoryMetricsPercentOfLimit1() (MemoryMetricsPercentOfLimit1, error) {
-	var body MemoryMetricsPercentOfLimit1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromMemoryMetricsPercentOfLimit1 overwrites any union data inside the MemoryMetrics_PercentOfLimit as the provided MemoryMetricsPercentOfLimit1
-func (t *MemoryMetrics_PercentOfLimit) FromMemoryMetricsPercentOfLimit1(v MemoryMetricsPercentOfLimit1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeMemoryMetricsPercentOfLimit1 performs a merge with any union data inside the MemoryMetrics_PercentOfLimit, using the provided MemoryMetricsPercentOfLimit1
-func (t *MemoryMetrics_PercentOfLimit) MergeMemoryMetricsPercentOfLimit1(v MemoryMetricsPercentOfLimit1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t MemoryMetrics_PercentOfLimit) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *MemoryMetrics_PercentOfLimit) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsMemoryMetricsRawCurrentBytes0 returns the union data inside the MemoryMetrics_RawCurrentBytes as a MemoryMetricsRawCurrentBytes0
-func (t MemoryMetrics_RawCurrentBytes) AsMemoryMetricsRawCurrentBytes0() (MemoryMetricsRawCurrentBytes0, error) {
-	var body MemoryMetricsRawCurrentBytes0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromMemoryMetricsRawCurrentBytes0 overwrites any union data inside the MemoryMetrics_RawCurrentBytes as the provided MemoryMetricsRawCurrentBytes0
-func (t *MemoryMetrics_RawCurrentBytes) FromMemoryMetricsRawCurrentBytes0(v MemoryMetricsRawCurrentBytes0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeMemoryMetricsRawCurrentBytes0 performs a merge with any union data inside the MemoryMetrics_RawCurrentBytes, using the provided MemoryMetricsRawCurrentBytes0
-func (t *MemoryMetrics_RawCurrentBytes) MergeMemoryMetricsRawCurrentBytes0(v MemoryMetricsRawCurrentBytes0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsMemoryMetricsRawCurrentBytes1 returns the union data inside the MemoryMetrics_RawCurrentBytes as a MemoryMetricsRawCurrentBytes1
-func (t MemoryMetrics_RawCurrentBytes) AsMemoryMetricsRawCurrentBytes1() (MemoryMetricsRawCurrentBytes1, error) {
-	var body MemoryMetricsRawCurrentBytes1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromMemoryMetricsRawCurrentBytes1 overwrites any union data inside the MemoryMetrics_RawCurrentBytes as the provided MemoryMetricsRawCurrentBytes1
-func (t *MemoryMetrics_RawCurrentBytes) FromMemoryMetricsRawCurrentBytes1(v MemoryMetricsRawCurrentBytes1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeMemoryMetricsRawCurrentBytes1 performs a merge with any union data inside the MemoryMetrics_RawCurrentBytes, using the provided MemoryMetricsRawCurrentBytes1
-func (t *MemoryMetrics_RawCurrentBytes) MergeMemoryMetricsRawCurrentBytes1(v MemoryMetricsRawCurrentBytes1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t MemoryMetrics_RawCurrentBytes) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *MemoryMetrics_RawCurrentBytes) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsModelRef returns the union data inside the ModelConfigPatch_Primary as a ModelRef
-func (t ModelConfigPatch_Primary) AsModelRef() (ModelRef, error) {
-	var body ModelRef
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromModelRef overwrites any union data inside the ModelConfigPatch_Primary as the provided ModelRef
-func (t *ModelConfigPatch_Primary) FromModelRef(v ModelRef) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeModelRef performs a merge with any union data inside the ModelConfigPatch_Primary, using the provided ModelRef
-func (t *ModelConfigPatch_Primary) MergeModelRef(v ModelRef) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsModelConfigPatchPrimary1 returns the union data inside the ModelConfigPatch_Primary as a ModelConfigPatchPrimary1
-func (t ModelConfigPatch_Primary) AsModelConfigPatchPrimary1() (ModelConfigPatchPrimary1, error) {
-	var body ModelConfigPatchPrimary1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromModelConfigPatchPrimary1 overwrites any union data inside the ModelConfigPatch_Primary as the provided ModelConfigPatchPrimary1
-func (t *ModelConfigPatch_Primary) FromModelConfigPatchPrimary1(v ModelConfigPatchPrimary1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeModelConfigPatchPrimary1 performs a merge with any union data inside the ModelConfigPatch_Primary, using the provided ModelConfigPatchPrimary1
-func (t *ModelConfigPatch_Primary) MergeModelConfigPatchPrimary1(v ModelConfigPatchPrimary1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t ModelConfigPatch_Primary) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *ModelConfigPatch_Primary) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsOpenClawBotConfigAddons0 returns the union data inside the OpenClawBotConfig_Addons as a OpenClawBotConfigAddons0
-func (t OpenClawBotConfig_Addons) AsOpenClawBotConfigAddons0() (OpenClawBotConfigAddons0, error) {
-	var body OpenClawBotConfigAddons0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromOpenClawBotConfigAddons0 overwrites any union data inside the OpenClawBotConfig_Addons as the provided OpenClawBotConfigAddons0
-func (t *OpenClawBotConfig_Addons) FromOpenClawBotConfigAddons0(v OpenClawBotConfigAddons0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeOpenClawBotConfigAddons0 performs a merge with any union data inside the OpenClawBotConfig_Addons, using the provided OpenClawBotConfigAddons0
-func (t *OpenClawBotConfig_Addons) MergeOpenClawBotConfigAddons0(v OpenClawBotConfigAddons0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsOpenClawBotConfigAddons1 returns the union data inside the OpenClawBotConfig_Addons as a OpenClawBotConfigAddons1
-func (t OpenClawBotConfig_Addons) AsOpenClawBotConfigAddons1() (OpenClawBotConfigAddons1, error) {
-	var body OpenClawBotConfigAddons1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromOpenClawBotConfigAddons1 overwrites any union data inside the OpenClawBotConfig_Addons as the provided OpenClawBotConfigAddons1
-func (t *OpenClawBotConfig_Addons) FromOpenClawBotConfigAddons1(v OpenClawBotConfigAddons1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeOpenClawBotConfigAddons1 performs a merge with any union data inside the OpenClawBotConfig_Addons, using the provided OpenClawBotConfigAddons1
-func (t *OpenClawBotConfig_Addons) MergeOpenClawBotConfigAddons1(v OpenClawBotConfigAddons1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t OpenClawBotConfig_Addons) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *OpenClawBotConfig_Addons) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsClaudeCodeProviderEntry returns the union data inside the OpenClawBotConfig_ClaudeCode as a ClaudeCodeProviderEntry
-func (t OpenClawBotConfig_ClaudeCode) AsClaudeCodeProviderEntry() (ClaudeCodeProviderEntry, error) {
-	var body ClaudeCodeProviderEntry
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromClaudeCodeProviderEntry overwrites any union data inside the OpenClawBotConfig_ClaudeCode as the provided ClaudeCodeProviderEntry
-func (t *OpenClawBotConfig_ClaudeCode) FromClaudeCodeProviderEntry(v ClaudeCodeProviderEntry) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeClaudeCodeProviderEntry performs a merge with any union data inside the OpenClawBotConfig_ClaudeCode, using the provided ClaudeCodeProviderEntry
-func (t *OpenClawBotConfig_ClaudeCode) MergeClaudeCodeProviderEntry(v ClaudeCodeProviderEntry) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsOpenClawBotConfigClaudeCode1 returns the union data inside the OpenClawBotConfig_ClaudeCode as a OpenClawBotConfigClaudeCode1
-func (t OpenClawBotConfig_ClaudeCode) AsOpenClawBotConfigClaudeCode1() (OpenClawBotConfigClaudeCode1, error) {
-	var body OpenClawBotConfigClaudeCode1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromOpenClawBotConfigClaudeCode1 overwrites any union data inside the OpenClawBotConfig_ClaudeCode as the provided OpenClawBotConfigClaudeCode1
-func (t *OpenClawBotConfig_ClaudeCode) FromOpenClawBotConfigClaudeCode1(v OpenClawBotConfigClaudeCode1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeOpenClawBotConfigClaudeCode1 performs a merge with any union data inside the OpenClawBotConfig_ClaudeCode, using the provided OpenClawBotConfigClaudeCode1
-func (t *OpenClawBotConfig_ClaudeCode) MergeOpenClawBotConfigClaudeCode1(v OpenClawBotConfigClaudeCode1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t OpenClawBotConfig_ClaudeCode) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *OpenClawBotConfig_ClaudeCode) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsHeartbeatConfig returns the union data inside the OpenClawBotConfig_Heartbeat as a HeartbeatConfig
-func (t OpenClawBotConfig_Heartbeat) AsHeartbeatConfig() (HeartbeatConfig, error) {
-	var body HeartbeatConfig
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromHeartbeatConfig overwrites any union data inside the OpenClawBotConfig_Heartbeat as the provided HeartbeatConfig
-func (t *OpenClawBotConfig_Heartbeat) FromHeartbeatConfig(v HeartbeatConfig) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeHeartbeatConfig performs a merge with any union data inside the OpenClawBotConfig_Heartbeat, using the provided HeartbeatConfig
-func (t *OpenClawBotConfig_Heartbeat) MergeHeartbeatConfig(v HeartbeatConfig) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsOpenClawBotConfigHeartbeat1 returns the union data inside the OpenClawBotConfig_Heartbeat as a OpenClawBotConfigHeartbeat1
-func (t OpenClawBotConfig_Heartbeat) AsOpenClawBotConfigHeartbeat1() (OpenClawBotConfigHeartbeat1, error) {
-	var body OpenClawBotConfigHeartbeat1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromOpenClawBotConfigHeartbeat1 overwrites any union data inside the OpenClawBotConfig_Heartbeat as the provided OpenClawBotConfigHeartbeat1
-func (t *OpenClawBotConfig_Heartbeat) FromOpenClawBotConfigHeartbeat1(v OpenClawBotConfigHeartbeat1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeOpenClawBotConfigHeartbeat1 performs a merge with any union data inside the OpenClawBotConfig_Heartbeat, using the provided OpenClawBotConfigHeartbeat1
-func (t *OpenClawBotConfig_Heartbeat) MergeOpenClawBotConfigHeartbeat1(v OpenClawBotConfigHeartbeat1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t OpenClawBotConfig_Heartbeat) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *OpenClawBotConfig_Heartbeat) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsOpenClawSecretsConfig returns the union data inside the OpenClawBotConfig_Secrets as a OpenClawSecretsConfig
-func (t OpenClawBotConfig_Secrets) AsOpenClawSecretsConfig() (OpenClawSecretsConfig, error) {
-	var body OpenClawSecretsConfig
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromOpenClawSecretsConfig overwrites any union data inside the OpenClawBotConfig_Secrets as the provided OpenClawSecretsConfig
-func (t *OpenClawBotConfig_Secrets) FromOpenClawSecretsConfig(v OpenClawSecretsConfig) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeOpenClawSecretsConfig performs a merge with any union data inside the OpenClawBotConfig_Secrets, using the provided OpenClawSecretsConfig
-func (t *OpenClawBotConfig_Secrets) MergeOpenClawSecretsConfig(v OpenClawSecretsConfig) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsOpenClawBotConfigSecrets1 returns the union data inside the OpenClawBotConfig_Secrets as a OpenClawBotConfigSecrets1
-func (t OpenClawBotConfig_Secrets) AsOpenClawBotConfigSecrets1() (OpenClawBotConfigSecrets1, error) {
-	var body OpenClawBotConfigSecrets1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromOpenClawBotConfigSecrets1 overwrites any union data inside the OpenClawBotConfig_Secrets as the provided OpenClawBotConfigSecrets1
-func (t *OpenClawBotConfig_Secrets) FromOpenClawBotConfigSecrets1(v OpenClawBotConfigSecrets1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeOpenClawBotConfigSecrets1 performs a merge with any union data inside the OpenClawBotConfig_Secrets, using the provided OpenClawBotConfigSecrets1
-func (t *OpenClawBotConfig_Secrets) MergeOpenClawBotConfigSecrets1(v OpenClawBotConfigSecrets1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t OpenClawBotConfig_Secrets) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *OpenClawBotConfig_Secrets) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsOpenClawConfigPatchAddons0 returns the union data inside the OpenClawConfigPatch_Addons as a OpenClawConfigPatchAddons0
-func (t OpenClawConfigPatch_Addons) AsOpenClawConfigPatchAddons0() (OpenClawConfigPatchAddons0, error) {
-	var body OpenClawConfigPatchAddons0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromOpenClawConfigPatchAddons0 overwrites any union data inside the OpenClawConfigPatch_Addons as the provided OpenClawConfigPatchAddons0
-func (t *OpenClawConfigPatch_Addons) FromOpenClawConfigPatchAddons0(v OpenClawConfigPatchAddons0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeOpenClawConfigPatchAddons0 performs a merge with any union data inside the OpenClawConfigPatch_Addons, using the provided OpenClawConfigPatchAddons0
-func (t *OpenClawConfigPatch_Addons) MergeOpenClawConfigPatchAddons0(v OpenClawConfigPatchAddons0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsOpenClawConfigPatchAddons1 returns the union data inside the OpenClawConfigPatch_Addons as a OpenClawConfigPatchAddons1
-func (t OpenClawConfigPatch_Addons) AsOpenClawConfigPatchAddons1() (OpenClawConfigPatchAddons1, error) {
-	var body OpenClawConfigPatchAddons1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromOpenClawConfigPatchAddons1 overwrites any union data inside the OpenClawConfigPatch_Addons as the provided OpenClawConfigPatchAddons1
-func (t *OpenClawConfigPatch_Addons) FromOpenClawConfigPatchAddons1(v OpenClawConfigPatchAddons1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeOpenClawConfigPatchAddons1 performs a merge with any union data inside the OpenClawConfigPatch_Addons, using the provided OpenClawConfigPatchAddons1
-func (t *OpenClawConfigPatch_Addons) MergeOpenClawConfigPatchAddons1(v OpenClawConfigPatchAddons1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t OpenClawConfigPatch_Addons) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *OpenClawConfigPatch_Addons) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsCompactionConfigPatch returns the union data inside the OpenClawConfigPatch_Compaction as a CompactionConfigPatch
-func (t OpenClawConfigPatch_Compaction) AsCompactionConfigPatch() (CompactionConfigPatch, error) {
-	var body CompactionConfigPatch
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromCompactionConfigPatch overwrites any union data inside the OpenClawConfigPatch_Compaction as the provided CompactionConfigPatch
-func (t *OpenClawConfigPatch_Compaction) FromCompactionConfigPatch(v CompactionConfigPatch) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeCompactionConfigPatch performs a merge with any union data inside the OpenClawConfigPatch_Compaction, using the provided CompactionConfigPatch
-func (t *OpenClawConfigPatch_Compaction) MergeCompactionConfigPatch(v CompactionConfigPatch) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsOpenClawConfigPatchCompaction1 returns the union data inside the OpenClawConfigPatch_Compaction as a OpenClawConfigPatchCompaction1
-func (t OpenClawConfigPatch_Compaction) AsOpenClawConfigPatchCompaction1() (OpenClawConfigPatchCompaction1, error) {
-	var body OpenClawConfigPatchCompaction1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromOpenClawConfigPatchCompaction1 overwrites any union data inside the OpenClawConfigPatch_Compaction as the provided OpenClawConfigPatchCompaction1
-func (t *OpenClawConfigPatch_Compaction) FromOpenClawConfigPatchCompaction1(v OpenClawConfigPatchCompaction1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeOpenClawConfigPatchCompaction1 performs a merge with any union data inside the OpenClawConfigPatch_Compaction, using the provided OpenClawConfigPatchCompaction1
-func (t *OpenClawConfigPatch_Compaction) MergeOpenClawConfigPatchCompaction1(v OpenClawConfigPatchCompaction1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t OpenClawConfigPatch_Compaction) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *OpenClawConfigPatch_Compaction) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsHeartbeatConfigPatch returns the union data inside the OpenClawConfigPatch_Heartbeat as a HeartbeatConfigPatch
-func (t OpenClawConfigPatch_Heartbeat) AsHeartbeatConfigPatch() (HeartbeatConfigPatch, error) {
-	var body HeartbeatConfigPatch
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromHeartbeatConfigPatch overwrites any union data inside the OpenClawConfigPatch_Heartbeat as the provided HeartbeatConfigPatch
-func (t *OpenClawConfigPatch_Heartbeat) FromHeartbeatConfigPatch(v HeartbeatConfigPatch) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeHeartbeatConfigPatch performs a merge with any union data inside the OpenClawConfigPatch_Heartbeat, using the provided HeartbeatConfigPatch
-func (t *OpenClawConfigPatch_Heartbeat) MergeHeartbeatConfigPatch(v HeartbeatConfigPatch) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsOpenClawConfigPatchHeartbeat1 returns the union data inside the OpenClawConfigPatch_Heartbeat as a OpenClawConfigPatchHeartbeat1
-func (t OpenClawConfigPatch_Heartbeat) AsOpenClawConfigPatchHeartbeat1() (OpenClawConfigPatchHeartbeat1, error) {
-	var body OpenClawConfigPatchHeartbeat1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromOpenClawConfigPatchHeartbeat1 overwrites any union data inside the OpenClawConfigPatch_Heartbeat as the provided OpenClawConfigPatchHeartbeat1
-func (t *OpenClawConfigPatch_Heartbeat) FromOpenClawConfigPatchHeartbeat1(v OpenClawConfigPatchHeartbeat1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeOpenClawConfigPatchHeartbeat1 performs a merge with any union data inside the OpenClawConfigPatch_Heartbeat, using the provided OpenClawConfigPatchHeartbeat1
-func (t *OpenClawConfigPatch_Heartbeat) MergeOpenClawConfigPatchHeartbeat1(v OpenClawConfigPatchHeartbeat1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t OpenClawConfigPatch_Heartbeat) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *OpenClawConfigPatch_Heartbeat) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsIdentityConfigPatch returns the union data inside the OpenClawConfigPatch_Identity as a IdentityConfigPatch
-func (t OpenClawConfigPatch_Identity) AsIdentityConfigPatch() (IdentityConfigPatch, error) {
-	var body IdentityConfigPatch
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromIdentityConfigPatch overwrites any union data inside the OpenClawConfigPatch_Identity as the provided IdentityConfigPatch
-func (t *OpenClawConfigPatch_Identity) FromIdentityConfigPatch(v IdentityConfigPatch) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeIdentityConfigPatch performs a merge with any union data inside the OpenClawConfigPatch_Identity, using the provided IdentityConfigPatch
-func (t *OpenClawConfigPatch_Identity) MergeIdentityConfigPatch(v IdentityConfigPatch) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsOpenClawConfigPatchIdentity1 returns the union data inside the OpenClawConfigPatch_Identity as a OpenClawConfigPatchIdentity1
-func (t OpenClawConfigPatch_Identity) AsOpenClawConfigPatchIdentity1() (OpenClawConfigPatchIdentity1, error) {
-	var body OpenClawConfigPatchIdentity1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromOpenClawConfigPatchIdentity1 overwrites any union data inside the OpenClawConfigPatch_Identity as the provided OpenClawConfigPatchIdentity1
-func (t *OpenClawConfigPatch_Identity) FromOpenClawConfigPatchIdentity1(v OpenClawConfigPatchIdentity1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeOpenClawConfigPatchIdentity1 performs a merge with any union data inside the OpenClawConfigPatch_Identity, using the provided OpenClawConfigPatchIdentity1
-func (t *OpenClawConfigPatch_Identity) MergeOpenClawConfigPatchIdentity1(v OpenClawConfigPatchIdentity1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t OpenClawConfigPatch_Identity) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *OpenClawConfigPatch_Identity) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsModelConfigPatch returns the union data inside the OpenClawConfigPatch_Model as a ModelConfigPatch
-func (t OpenClawConfigPatch_Model) AsModelConfigPatch() (ModelConfigPatch, error) {
-	var body ModelConfigPatch
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromModelConfigPatch overwrites any union data inside the OpenClawConfigPatch_Model as the provided ModelConfigPatch
-func (t *OpenClawConfigPatch_Model) FromModelConfigPatch(v ModelConfigPatch) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeModelConfigPatch performs a merge with any union data inside the OpenClawConfigPatch_Model, using the provided ModelConfigPatch
-func (t *OpenClawConfigPatch_Model) MergeModelConfigPatch(v ModelConfigPatch) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsOpenClawConfigPatchModel1 returns the union data inside the OpenClawConfigPatch_Model as a OpenClawConfigPatchModel1
-func (t OpenClawConfigPatch_Model) AsOpenClawConfigPatchModel1() (OpenClawConfigPatchModel1, error) {
-	var body OpenClawConfigPatchModel1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromOpenClawConfigPatchModel1 overwrites any union data inside the OpenClawConfigPatch_Model as the provided OpenClawConfigPatchModel1
-func (t *OpenClawConfigPatch_Model) FromOpenClawConfigPatchModel1(v OpenClawConfigPatchModel1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeOpenClawConfigPatchModel1 performs a merge with any union data inside the OpenClawConfigPatch_Model, using the provided OpenClawConfigPatchModel1
-func (t *OpenClawConfigPatch_Model) MergeOpenClawConfigPatchModel1(v OpenClawConfigPatchModel1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t OpenClawConfigPatch_Model) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *OpenClawConfigPatch_Model) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsOpenClawConfigPatchReasoningDefault0 returns the union data inside the OpenClawConfigPatch_ReasoningDefault as a OpenClawConfigPatchReasoningDefault0
-func (t OpenClawConfigPatch_ReasoningDefault) AsOpenClawConfigPatchReasoningDefault0() (OpenClawConfigPatchReasoningDefault0, error) {
-	var body OpenClawConfigPatchReasoningDefault0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromOpenClawConfigPatchReasoningDefault0 overwrites any union data inside the OpenClawConfigPatch_ReasoningDefault as the provided OpenClawConfigPatchReasoningDefault0
-func (t *OpenClawConfigPatch_ReasoningDefault) FromOpenClawConfigPatchReasoningDefault0(v OpenClawConfigPatchReasoningDefault0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeOpenClawConfigPatchReasoningDefault0 performs a merge with any union data inside the OpenClawConfigPatch_ReasoningDefault, using the provided OpenClawConfigPatchReasoningDefault0
-func (t *OpenClawConfigPatch_ReasoningDefault) MergeOpenClawConfigPatchReasoningDefault0(v OpenClawConfigPatchReasoningDefault0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsOpenClawConfigPatchReasoningDefault1 returns the union data inside the OpenClawConfigPatch_ReasoningDefault as a OpenClawConfigPatchReasoningDefault1
-func (t OpenClawConfigPatch_ReasoningDefault) AsOpenClawConfigPatchReasoningDefault1() (OpenClawConfigPatchReasoningDefault1, error) {
-	var body OpenClawConfigPatchReasoningDefault1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromOpenClawConfigPatchReasoningDefault1 overwrites any union data inside the OpenClawConfigPatch_ReasoningDefault as the provided OpenClawConfigPatchReasoningDefault1
-func (t *OpenClawConfigPatch_ReasoningDefault) FromOpenClawConfigPatchReasoningDefault1(v OpenClawConfigPatchReasoningDefault1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeOpenClawConfigPatchReasoningDefault1 performs a merge with any union data inside the OpenClawConfigPatch_ReasoningDefault, using the provided OpenClawConfigPatchReasoningDefault1
-func (t *OpenClawConfigPatch_ReasoningDefault) MergeOpenClawConfigPatchReasoningDefault1(v OpenClawConfigPatchReasoningDefault1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t OpenClawConfigPatch_ReasoningDefault) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *OpenClawConfigPatch_ReasoningDefault) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsSessionConfigPatch returns the union data inside the OpenClawConfigPatch_Session as a SessionConfigPatch
-func (t OpenClawConfigPatch_Session) AsSessionConfigPatch() (SessionConfigPatch, error) {
-	var body SessionConfigPatch
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromSessionConfigPatch overwrites any union data inside the OpenClawConfigPatch_Session as the provided SessionConfigPatch
-func (t *OpenClawConfigPatch_Session) FromSessionConfigPatch(v SessionConfigPatch) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeSessionConfigPatch performs a merge with any union data inside the OpenClawConfigPatch_Session, using the provided SessionConfigPatch
-func (t *OpenClawConfigPatch_Session) MergeSessionConfigPatch(v SessionConfigPatch) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsOpenClawConfigPatchSession1 returns the union data inside the OpenClawConfigPatch_Session as a OpenClawConfigPatchSession1
-func (t OpenClawConfigPatch_Session) AsOpenClawConfigPatchSession1() (OpenClawConfigPatchSession1, error) {
-	var body OpenClawConfigPatchSession1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromOpenClawConfigPatchSession1 overwrites any union data inside the OpenClawConfigPatch_Session as the provided OpenClawConfigPatchSession1
-func (t *OpenClawConfigPatch_Session) FromOpenClawConfigPatchSession1(v OpenClawConfigPatchSession1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeOpenClawConfigPatchSession1 performs a merge with any union data inside the OpenClawConfigPatch_Session, using the provided OpenClawConfigPatchSession1
-func (t *OpenClawConfigPatch_Session) MergeOpenClawConfigPatchSession1(v OpenClawConfigPatchSession1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t OpenClawConfigPatch_Session) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *OpenClawConfigPatch_Session) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsOpenClawConfigPatchSystemPromptMode0 returns the union data inside the OpenClawConfigPatch_SystemPromptMode as a OpenClawConfigPatchSystemPromptMode0
-func (t OpenClawConfigPatch_SystemPromptMode) AsOpenClawConfigPatchSystemPromptMode0() (OpenClawConfigPatchSystemPromptMode0, error) {
-	var body OpenClawConfigPatchSystemPromptMode0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromOpenClawConfigPatchSystemPromptMode0 overwrites any union data inside the OpenClawConfigPatch_SystemPromptMode as the provided OpenClawConfigPatchSystemPromptMode0
-func (t *OpenClawConfigPatch_SystemPromptMode) FromOpenClawConfigPatchSystemPromptMode0(v OpenClawConfigPatchSystemPromptMode0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeOpenClawConfigPatchSystemPromptMode0 performs a merge with any union data inside the OpenClawConfigPatch_SystemPromptMode, using the provided OpenClawConfigPatchSystemPromptMode0
-func (t *OpenClawConfigPatch_SystemPromptMode) MergeOpenClawConfigPatchSystemPromptMode0(v OpenClawConfigPatchSystemPromptMode0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsOpenClawConfigPatchSystemPromptMode1 returns the union data inside the OpenClawConfigPatch_SystemPromptMode as a OpenClawConfigPatchSystemPromptMode1
-func (t OpenClawConfigPatch_SystemPromptMode) AsOpenClawConfigPatchSystemPromptMode1() (OpenClawConfigPatchSystemPromptMode1, error) {
-	var body OpenClawConfigPatchSystemPromptMode1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromOpenClawConfigPatchSystemPromptMode1 overwrites any union data inside the OpenClawConfigPatch_SystemPromptMode as the provided OpenClawConfigPatchSystemPromptMode1
-func (t *OpenClawConfigPatch_SystemPromptMode) FromOpenClawConfigPatchSystemPromptMode1(v OpenClawConfigPatchSystemPromptMode1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeOpenClawConfigPatchSystemPromptMode1 performs a merge with any union data inside the OpenClawConfigPatch_SystemPromptMode, using the provided OpenClawConfigPatchSystemPromptMode1
-func (t *OpenClawConfigPatch_SystemPromptMode) MergeOpenClawConfigPatchSystemPromptMode1(v OpenClawConfigPatchSystemPromptMode1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t OpenClawConfigPatch_SystemPromptMode) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *OpenClawConfigPatch_SystemPromptMode) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsOpenClawConfigPatchThinkingDefault0 returns the union data inside the OpenClawConfigPatch_ThinkingDefault as a OpenClawConfigPatchThinkingDefault0
-func (t OpenClawConfigPatch_ThinkingDefault) AsOpenClawConfigPatchThinkingDefault0() (OpenClawConfigPatchThinkingDefault0, error) {
-	var body OpenClawConfigPatchThinkingDefault0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromOpenClawConfigPatchThinkingDefault0 overwrites any union data inside the OpenClawConfigPatch_ThinkingDefault as the provided OpenClawConfigPatchThinkingDefault0
-func (t *OpenClawConfigPatch_ThinkingDefault) FromOpenClawConfigPatchThinkingDefault0(v OpenClawConfigPatchThinkingDefault0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeOpenClawConfigPatchThinkingDefault0 performs a merge with any union data inside the OpenClawConfigPatch_ThinkingDefault, using the provided OpenClawConfigPatchThinkingDefault0
-func (t *OpenClawConfigPatch_ThinkingDefault) MergeOpenClawConfigPatchThinkingDefault0(v OpenClawConfigPatchThinkingDefault0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsOpenClawConfigPatchThinkingDefault1 returns the union data inside the OpenClawConfigPatch_ThinkingDefault as a OpenClawConfigPatchThinkingDefault1
-func (t OpenClawConfigPatch_ThinkingDefault) AsOpenClawConfigPatchThinkingDefault1() (OpenClawConfigPatchThinkingDefault1, error) {
-	var body OpenClawConfigPatchThinkingDefault1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromOpenClawConfigPatchThinkingDefault1 overwrites any union data inside the OpenClawConfigPatch_ThinkingDefault as the provided OpenClawConfigPatchThinkingDefault1
-func (t *OpenClawConfigPatch_ThinkingDefault) FromOpenClawConfigPatchThinkingDefault1(v OpenClawConfigPatchThinkingDefault1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeOpenClawConfigPatchThinkingDefault1 performs a merge with any union data inside the OpenClawConfigPatch_ThinkingDefault, using the provided OpenClawConfigPatchThinkingDefault1
-func (t *OpenClawConfigPatch_ThinkingDefault) MergeOpenClawConfigPatchThinkingDefault1(v OpenClawConfigPatchThinkingDefault1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t OpenClawConfigPatch_ThinkingDefault) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *OpenClawConfigPatch_ThinkingDefault) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
 // AsAndBotFilterField returns the union data inside the OrBotFilterField_Filters_Item as a AndBotFilterField
 func (t OrBotFilterField_Filters_Item) AsAndBotFilterField() (AndBotFilterField, error) {
 	var body AndBotFilterField
@@ -8072,68 +1999,6 @@ func (t OrBotFilterField_Filters_Item) MarshalJSON() ([]byte, error) {
 }
 
 func (t *OrBotFilterField_Filters_Item) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsSessionConfigPatchWriteLockMaxHoldMs0 returns the union data inside the SessionConfigPatch_WriteLockMaxHoldMs as a SessionConfigPatchWriteLockMaxHoldMs0
-func (t SessionConfigPatch_WriteLockMaxHoldMs) AsSessionConfigPatchWriteLockMaxHoldMs0() (SessionConfigPatchWriteLockMaxHoldMs0, error) {
-	var body SessionConfigPatchWriteLockMaxHoldMs0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromSessionConfigPatchWriteLockMaxHoldMs0 overwrites any union data inside the SessionConfigPatch_WriteLockMaxHoldMs as the provided SessionConfigPatchWriteLockMaxHoldMs0
-func (t *SessionConfigPatch_WriteLockMaxHoldMs) FromSessionConfigPatchWriteLockMaxHoldMs0(v SessionConfigPatchWriteLockMaxHoldMs0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeSessionConfigPatchWriteLockMaxHoldMs0 performs a merge with any union data inside the SessionConfigPatch_WriteLockMaxHoldMs, using the provided SessionConfigPatchWriteLockMaxHoldMs0
-func (t *SessionConfigPatch_WriteLockMaxHoldMs) MergeSessionConfigPatchWriteLockMaxHoldMs0(v SessionConfigPatchWriteLockMaxHoldMs0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsSessionConfigPatchWriteLockMaxHoldMs1 returns the union data inside the SessionConfigPatch_WriteLockMaxHoldMs as a SessionConfigPatchWriteLockMaxHoldMs1
-func (t SessionConfigPatch_WriteLockMaxHoldMs) AsSessionConfigPatchWriteLockMaxHoldMs1() (SessionConfigPatchWriteLockMaxHoldMs1, error) {
-	var body SessionConfigPatchWriteLockMaxHoldMs1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromSessionConfigPatchWriteLockMaxHoldMs1 overwrites any union data inside the SessionConfigPatch_WriteLockMaxHoldMs as the provided SessionConfigPatchWriteLockMaxHoldMs1
-func (t *SessionConfigPatch_WriteLockMaxHoldMs) FromSessionConfigPatchWriteLockMaxHoldMs1(v SessionConfigPatchWriteLockMaxHoldMs1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeSessionConfigPatchWriteLockMaxHoldMs1 performs a merge with any union data inside the SessionConfigPatch_WriteLockMaxHoldMs, using the provided SessionConfigPatchWriteLockMaxHoldMs1
-func (t *SessionConfigPatch_WriteLockMaxHoldMs) MergeSessionConfigPatchWriteLockMaxHoldMs1(v SessionConfigPatchWriteLockMaxHoldMs1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t SessionConfigPatch_WriteLockMaxHoldMs) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *SessionConfigPatch_WriteLockMaxHoldMs) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }
@@ -9101,9 +2966,10 @@ type ClientWithResponsesInterface interface {
 }
 
 type ListBotsV1OrgsOrgIdBotsGetResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *PaginatedResponseBotListItem
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *PaginatedResponseBotListItem
+	ApplicationproblemJSONDefault *ProblemDetails
 }
 
 // Status returns HTTPResponse.Status
@@ -9123,9 +2989,10 @@ func (r ListBotsV1OrgsOrgIdBotsGetResponse) StatusCode() int {
 }
 
 type CreateBotV1OrgsOrgIdBotsPostResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON201      *BotResponse
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON201                       *BotResponse
+	ApplicationproblemJSONDefault *ProblemDetails
 }
 
 // Status returns HTTPResponse.Status
@@ -9145,9 +3012,10 @@ func (r CreateBotV1OrgsOrgIdBotsPostResponse) StatusCode() int {
 }
 
 type SearchBotsV1OrgsOrgIdBotsSearchPostResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *PaginatedResponseBotListItem
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *PaginatedResponseBotListItem
+	ApplicationproblemJSONDefault *ProblemDetails
 }
 
 // Status returns HTTPResponse.Status
@@ -9167,9 +3035,10 @@ func (r SearchBotsV1OrgsOrgIdBotsSearchPostResponse) StatusCode() int {
 }
 
 type DeleteBotV1OrgsOrgIdBotsBotSlugDeleteResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *BotResponse
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *BotResponse
+	ApplicationproblemJSONDefault *ProblemDetails
 }
 
 // Status returns HTTPResponse.Status
@@ -9189,9 +3058,10 @@ func (r DeleteBotV1OrgsOrgIdBotsBotSlugDeleteResponse) StatusCode() int {
 }
 
 type GetBotV1OrgsOrgIdBotsBotSlugGetResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *BotResponse
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *BotResponse
+	ApplicationproblemJSONDefault *ProblemDetails
 }
 
 // Status returns HTTPResponse.Status
@@ -9211,9 +3081,10 @@ func (r GetBotV1OrgsOrgIdBotsBotSlugGetResponse) StatusCode() int {
 }
 
 type UpdateBotV1OrgsOrgIdBotsBotSlugPatchResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *BotResponse
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *BotResponse
+	ApplicationproblemJSONDefault *ProblemDetails
 }
 
 // Status returns HTTPResponse.Status
@@ -9233,9 +3104,10 @@ func (r UpdateBotV1OrgsOrgIdBotsBotSlugPatchResponse) StatusCode() int {
 }
 
 type GetBotChatReadinessV1OrgsOrgIdBotsBotSlugChatReadinessGetResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *BotChatReadiness
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *BotChatReadiness
+	ApplicationproblemJSONDefault *ProblemDetails
 }
 
 // Status returns HTTPResponse.Status
@@ -9255,9 +3127,10 @@ func (r GetBotChatReadinessV1OrgsOrgIdBotsBotSlugChatReadinessGetResponse) Statu
 }
 
 type UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *BotResponse
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *BotResponse
+	ApplicationproblemJSONDefault *ProblemDetails
 }
 
 // Status returns HTTPResponse.Status
@@ -9277,9 +3150,10 @@ func (r UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchResponse) StatusCode() i
 }
 
 type FinishBotOnboardingRouteV1OrgsOrgIdBotsBotSlugFinishOnboardingPostResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *BotResponse
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *BotResponse
+	ApplicationproblemJSONDefault *ProblemDetails
 }
 
 // Status returns HTTPResponse.Status
@@ -9299,9 +3173,10 @@ func (r FinishBotOnboardingRouteV1OrgsOrgIdBotsBotSlugFinishOnboardingPostRespon
 }
 
 type GetBotResourcesV1OrgsOrgIdBotsBotSlugResourcesGetResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *ResourceMetricsResponse
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *ResourceMetricsResponse
+	ApplicationproblemJSONDefault *ProblemDetails
 }
 
 // Status returns HTTPResponse.Status
@@ -9321,9 +3196,10 @@ func (r GetBotResourcesV1OrgsOrgIdBotsBotSlugResourcesGetResponse) StatusCode() 
 }
 
 type RestartBotV1OrgsOrgIdBotsBotSlugRestartPostResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *BotRestartResponse
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *BotRestartResponse
+	ApplicationproblemJSONDefault *ProblemDetails
 }
 
 // Status returns HTTPResponse.Status
@@ -9494,6 +3370,13 @@ func ParseListBotsV1OrgsOrgIdBotsGetResponse(rsp *http.Response) (*ListBotsV1Org
 		}
 		response.JSON200 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
 	}
 
 	return response, nil
@@ -9519,6 +3402,13 @@ func ParseCreateBotV1OrgsOrgIdBotsPostResponse(rsp *http.Response) (*CreateBotV1
 			return nil, err
 		}
 		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
 
 	}
 
@@ -9546,6 +3436,13 @@ func ParseSearchBotsV1OrgsOrgIdBotsSearchPostResponse(rsp *http.Response) (*Sear
 		}
 		response.JSON200 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
 	}
 
 	return response, nil
@@ -9571,6 +3468,13 @@ func ParseDeleteBotV1OrgsOrgIdBotsBotSlugDeleteResponse(rsp *http.Response) (*De
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
 
 	}
 
@@ -9598,6 +3502,13 @@ func ParseGetBotV1OrgsOrgIdBotsBotSlugGetResponse(rsp *http.Response) (*GetBotV1
 		}
 		response.JSON200 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
 	}
 
 	return response, nil
@@ -9623,6 +3534,13 @@ func ParseUpdateBotV1OrgsOrgIdBotsBotSlugPatchResponse(rsp *http.Response) (*Upd
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
 
 	}
 
@@ -9650,6 +3568,13 @@ func ParseGetBotChatReadinessV1OrgsOrgIdBotsBotSlugChatReadinessGetResponse(rsp 
 		}
 		response.JSON200 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
 	}
 
 	return response, nil
@@ -9675,6 +3600,13 @@ func ParseUpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchResponse(rsp *http.Res
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
 
 	}
 
@@ -9702,6 +3634,13 @@ func ParseFinishBotOnboardingRouteV1OrgsOrgIdBotsBotSlugFinishOnboardingPostResp
 		}
 		response.JSON200 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
 	}
 
 	return response, nil
@@ -9728,6 +3667,13 @@ func ParseGetBotResourcesV1OrgsOrgIdBotsBotSlugResourcesGetResponse(rsp *http.Re
 		}
 		response.JSON200 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
 	}
 
 	return response, nil
@@ -9753,6 +3699,13 @@ func ParseRestartBotV1OrgsOrgIdBotsBotSlugRestartPostResponse(rsp *http.Response
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
 
 	}
 
