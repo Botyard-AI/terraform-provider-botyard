@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
@@ -89,50 +90,80 @@ func (p *BotyardProvider) Configure(ctx context.Context, req provider.ConfigureR
 		return
 	}
 
-	// Unknown values (e.g. interpolated from a not-yet-known resource) cannot be
-	// resolved at configure time — fail with a clear, attribute-scoped error.
-	if cfg.APIKey.IsUnknown() {
-		resp.Diagnostics.AddAttributeError(path.Root("api_key"),
-			"Unknown Botyard API key",
-			"The provider cannot be configured with an unknown api_key value. Set it statically or via BOTYARD_API_KEY.")
-	}
-	if cfg.OrgID.IsUnknown() {
-		resp.Diagnostics.AddAttributeError(path.Root("org_id"),
-			"Unknown Botyard organization ID",
-			"The provider cannot be configured with an unknown org_id value. Set it statically or via BOTYARD_ORG_ID.")
-	}
+	resolved, diags := resolveProviderConfig(cfg, os.Getenv)
+	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	endpoint := firstNonEmpty(cfg.Endpoint.ValueString(), os.Getenv("BOTYARD_ENDPOINT"), defaultEndpoint)
-	apiKey := firstNonEmpty(cfg.APIKey.ValueString(), os.Getenv("BOTYARD_API_KEY"))
-	orgID := firstNonEmpty(cfg.OrgID.ValueString(), os.Getenv("BOTYARD_ORG_ID"))
-
-	if apiKey == "" {
-		resp.Diagnostics.AddAttributeError(path.Root("api_key"),
-			"Missing Botyard API key",
-			"Set the api_key provider attribute or the BOTYARD_API_KEY environment variable.")
-	}
-	if orgID == "" {
-		resp.Diagnostics.AddAttributeError(path.Root("org_id"),
-			"Missing Botyard organization ID",
-			"Set the org_id provider attribute or the BOTYARD_ORG_ID environment variable.")
-	}
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	c, err := client.NewClientWithResponses(strings.TrimRight(endpoint, "/"),
-		client.WithRequestEditorFn(bearerAuth(apiKey)))
+	c, err := client.NewClientWithResponses(resolved.endpoint,
+		client.WithRequestEditorFn(bearerAuth(resolved.apiKey)))
 	if err != nil {
 		resp.Diagnostics.AddError("Unable to create Botyard API client", err.Error())
 		return
 	}
 
-	data := &providerData{client: c, orgID: orgID}
+	data := &providerData{client: c, orgID: resolved.orgID}
 	resp.DataSourceData = data
 	resp.ResourceData = data
+}
+
+// resolvedConfig holds effective provider settings after env fallbacks.
+type resolvedConfig struct {
+	endpoint string
+	apiKey   string
+	orgID    string
+}
+
+// resolveProviderConfig validates the provider model and resolves effective
+// values, applying BOTYARD_* environment fallbacks. getenv is injected so the
+// resolution is unit-testable. Unknown or missing required values produce
+// attribute-scoped diagnostics.
+func resolveProviderConfig(cfg BotyardProviderModel, getenv func(string) string) (resolvedConfig, diag.Diagnostics) {
+	var diags diag.Diagnostics
+
+	// Unknown values (e.g. interpolated from a not-yet-known resource) cannot be
+	// resolved at configure time — fail with a clear, attribute-scoped error.
+	for _, u := range []struct {
+		val  interface{ IsUnknown() bool }
+		attr string
+		env  string
+	}{
+		{cfg.Endpoint, "endpoint", "BOTYARD_ENDPOINT"},
+		{cfg.APIKey, "api_key", "BOTYARD_API_KEY"},
+		{cfg.OrgID, "org_id", "BOTYARD_ORG_ID"},
+	} {
+		if u.val.IsUnknown() {
+			diags.AddAttributeError(path.Root(u.attr),
+				"Unknown Botyard provider configuration",
+				"The provider cannot be configured with an unknown "+u.attr+" value. "+
+					"Set it statically or via the "+u.env+" environment variable.")
+		}
+	}
+	if diags.HasError() {
+		return resolvedConfig{}, diags
+	}
+
+	endpoint := firstNonEmpty(cfg.Endpoint.ValueString(), getenv("BOTYARD_ENDPOINT"), defaultEndpoint)
+	apiKey := firstNonEmpty(cfg.APIKey.ValueString(), getenv("BOTYARD_API_KEY"))
+	orgID := firstNonEmpty(cfg.OrgID.ValueString(), getenv("BOTYARD_ORG_ID"))
+
+	if apiKey == "" {
+		diags.AddAttributeError(path.Root("api_key"),
+			"Missing Botyard API key",
+			"Set the api_key provider attribute or the BOTYARD_API_KEY environment variable.")
+	}
+	if orgID == "" {
+		diags.AddAttributeError(path.Root("org_id"),
+			"Missing Botyard organization ID",
+			"Set the org_id provider attribute or the BOTYARD_ORG_ID environment variable.")
+	}
+
+	return resolvedConfig{
+		endpoint: strings.TrimRight(endpoint, "/"),
+		apiKey:   apiKey,
+		orgID:    orgID,
+	}, diags
 }
 
 func (p *BotyardProvider) Resources(_ context.Context) []func() resource.Resource {

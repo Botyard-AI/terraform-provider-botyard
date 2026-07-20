@@ -92,3 +92,19 @@ func TestBotDataSource_ClientRoundTripWithAuth(t *testing.T) {
 		t.Errorf("config_generation = %d, want 7", model.ConfigGeneration.ValueInt64())
 	}
 }
+
+func TestDescribeAPIError(t *testing.T) {
+	cases := map[string]struct{ body, want string }{
+		"problem detail": {`{"detail":"bot not found","title":"Not Found"}`, "bot not found"},
+		"title only":     {`{"title":"Not Found"}`, "Not Found"},
+		"non-json":       {"upstream exploded", "upstream exploded"},
+		"empty":          {"", "(empty response body)"},
+	}
+	for name, c := range cases {
+		t.Run(name, func(t *testing.T) {
+			if got := describeAPIError([]byte(c.body)); got != c.want {
+				t.Errorf("describeAPIError(%q) = %q, want %q", c.body, got, c.want)
+			}
+		})
+	}
+}

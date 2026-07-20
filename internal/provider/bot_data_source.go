@@ -2,6 +2,7 @@ package provider
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -112,7 +113,7 @@ func (d *BotDataSource) Read(ctx context.Context, req datasource.ReadRequest, re
 	if apiResp.JSON200 == nil {
 		resp.Diagnostics.AddError(
 			"Unexpected response reading bot",
-			fmt.Sprintf("Reading bot %q returned HTTP %d: %s", slug, apiResp.StatusCode(), problemDetail(apiResp.Body)),
+			fmt.Sprintf("Reading bot %q returned HTTP %d: %s", slug, apiResp.StatusCode(), describeAPIError(apiResp.Body)),
 		)
 		return
 	}
@@ -143,11 +144,24 @@ func botToModel(b *client.BotResponse) BotDataSourceModel {
 	}
 }
 
-// problemDetail renders a best-effort human-readable message from a response
-// body, falling back to the raw body when it is not a ProblemDetails document.
-func problemDetail(body []byte) string {
+// describeAPIError renders a concise human-readable message from an error
+// response body. It prefers a ProblemDetails "detail" (then "title") when the
+// body parses as JSON, and falls back to the raw body otherwise.
+func describeAPIError(body []byte) string {
 	if len(body) == 0 {
 		return "(empty response body)"
+	}
+	var pd struct {
+		Detail string `json:"detail"`
+		Title  string `json:"title"`
+	}
+	if err := json.Unmarshal(body, &pd); err == nil {
+		if pd.Detail != "" {
+			return pd.Detail
+		}
+		if pd.Title != "" {
+			return pd.Title
+		}
 	}
 	return string(body)
 }
