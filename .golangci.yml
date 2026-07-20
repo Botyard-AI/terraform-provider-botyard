@@ -1,0 +1,17 @@
+# golangci-lint v2 configuration.
+# The default suite (errcheck, govet, ineffassign, staticcheck, unused) plus a
+# curated set of high-signal linters. golangci-lint auto-skips generated files
+# (internal/client/botyard.gen.go carries the "DO NOT EDIT" header).
+version: "2"
+
+run:
+  timeout: 5m
+
+linters:
+  default: standard
+  enable:
+    - gosec # security issues
+    - gocritic # opinionated correctness/style checks
+    - misspell # spelling in comments/strings
+    - unconvert # redundant type conversions
+    - unparam # unused function parameters/results
