@@ -1,0 +1,103 @@
+name: Release
+
+# Releases are cut MANUALLY (workflow_dispatch), not on every push to main, so
+# multiple merges batch into one deliberate, semver-tagged release. Choose a
+# bump level (or pass an explicit version); the workflow derives the next
+# vX.Y.Z from the latest tag, creates + pushes the tag, and runs GoReleaser to
+# build, GPG-sign, and publish the GitHub release the Terraform Registry ingests.
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: "Semver bump for the next release"
+        type: choice
+        options: [patch, minor, major]
+        default: patch
+        required: true
+      version:
+        description: "Explicit version override, e.g. v0.1.0 (overrides bump when set)"
+        type: string
+        required: false
+
+permissions:
+  contents: write # create tags and the GitHub release
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history + tags for version derivation
+
+      - name: Determine version
+        id: version
+        env:
+          BUMP: ${{ inputs.bump }}
+          OVERRIDE: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          git fetch --tags --force
+          if [ -n "$OVERRIDE" ]; then
+            next="$OVERRIDE"
+          else
+            latest="$(git tag -l 'v[0-9]*.[0-9]*.[0-9]*' --sort=-v:refname | head -n1)"
+            if [ -z "$latest" ]; then
+              next="v0.1.0"   # first release
+            else
+              ver="${latest#v}"
+              major="${ver%%.*}"; rest="${ver#*.}"; minor="${rest%%.*}"; patch="${rest#*.}"
+              case "$BUMP" in
+                major) major=$((major + 1)); minor=0; patch=0 ;;
+                minor) minor=$((minor + 1)); patch=0 ;;
+                patch) patch=$((patch + 1)) ;;
+                *) echo "Unknown bump: $BUMP" >&2; exit 1 ;;
+              esac
+              next="v${major}.${minor}.${patch}"
+            fi
+          fi
+          if ! printf '%s' "$next" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "Invalid version '$next' (expected vMAJOR.MINOR.PATCH)" >&2; exit 1
+          fi
+          if git rev-parse -q --verify "refs/tags/$next" >/dev/null; then
+            echo "Tag $next already exists" >&2; exit 1
+          fi
+          echo "version=$next" >> "$GITHUB_OUTPUT"
+          echo "Releasing $next from ${GITHUB_SHA:0:7}"
+
+      - name: Create and push tag
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git tag -a "$VERSION" -m "Release $VERSION"
+          git push origin "$VERSION"
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Import GPG key
+        id: import_gpg
+        uses: crazy-max/ghaction-import-gpg@v6
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.PASSPHRASE }}
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          version: "~> v2"
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
