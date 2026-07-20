@@ -167,7 +167,9 @@ func resolveProviderConfig(cfg BotyardProviderModel, getenv func(string) string)
 }
 
 func (p *BotyardProvider) Resources(_ context.Context) []func() resource.Resource {
-	return nil
+	return []func() resource.Resource{
+		NewMcpServerResource,
+	}
 }
 
 func (p *BotyardProvider) DataSources(_ context.Context) []func() datasource.DataSource {

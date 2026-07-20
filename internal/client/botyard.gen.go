@@ -113,6 +113,21 @@ const (
 	ConditionBotFilterFieldKindCondition ConditionBotFilterFieldKind = "condition"
 )
 
+// Defines values for ContainerImageMcpServerCreateRuntimeKind.
+const (
+	ContainerImageMcpServerCreateRuntimeKindContainerImage ContainerImageMcpServerCreateRuntimeKind = "container_image"
+)
+
+// Defines values for ContainerImageMcpServerDetailRuntimeKind.
+const (
+	ContainerImageMcpServerDetailRuntimeKindContainerImage ContainerImageMcpServerDetailRuntimeKind = "container_image"
+)
+
+// Defines values for ContainerImageMcpServerSummaryRuntimeKind.
+const (
+	ContainerImageMcpServerSummaryRuntimeKindContainerImage ContainerImageMcpServerSummaryRuntimeKind = "container_image"
+)
+
 // Defines values for CredentialBackedModelConfigInput.
 const (
 	CredentialBackedModelConfigInputImage CredentialBackedModelConfigInput = "image"
@@ -214,6 +229,109 @@ const (
 	HeartbeatConfigPatchEveryN30m  HeartbeatConfigPatchEvery = "30m"
 	HeartbeatConfigPatchEveryN5m   HeartbeatConfigPatchEvery = "5m"
 	HeartbeatConfigPatchEveryN6h   HeartbeatConfigPatchEvery = "6h"
+)
+
+// Defines values for ManagedRemoteMcpServerCreateRuntimeKind.
+const (
+	ManagedRemoteMcpServerCreateRuntimeKindManagedRemote ManagedRemoteMcpServerCreateRuntimeKind = "managed_remote"
+)
+
+// Defines values for ManagedRemoteMcpServerDetailRuntimeKind.
+const (
+	ManagedRemoteMcpServerDetailRuntimeKindManagedRemote ManagedRemoteMcpServerDetailRuntimeKind = "managed_remote"
+)
+
+// Defines values for ManagedRemoteMcpServerSummaryRuntimeKind.
+const (
+	ManagedRemoteMcpServerSummaryRuntimeKindManagedRemote ManagedRemoteMcpServerSummaryRuntimeKind = "managed_remote"
+)
+
+// Defines values for McpCatalogFormFieldAllowedModes.
+const (
+	McpCatalogFormFieldAllowedModesPlaintext McpCatalogFormFieldAllowedModes = "plaintext"
+	McpCatalogFormFieldAllowedModesSecretRef McpCatalogFormFieldAllowedModes = "secret_ref"
+)
+
+// Defines values for McpCatalogFormFieldDefaultMode.
+const (
+	McpCatalogFormFieldDefaultModePlaintext McpCatalogFormFieldDefaultMode = "plaintext"
+	McpCatalogFormFieldDefaultModeSecretRef McpCatalogFormFieldDefaultMode = "secret_ref"
+)
+
+// Defines values for McpCatalogFormFieldKind.
+const (
+	McpCatalogFormFieldKindBoolean         McpCatalogFormFieldKind = "boolean"
+	McpCatalogFormFieldKindNumber          McpCatalogFormFieldKind = "number"
+	McpCatalogFormFieldKindPassword        McpCatalogFormFieldKind = "password"
+	McpCatalogFormFieldKindSecretRef       McpCatalogFormFieldKind = "secret_ref"
+	McpCatalogFormFieldKindSelect          McpCatalogFormFieldKind = "select"
+	McpCatalogFormFieldKindText            McpCatalogFormFieldKind = "text"
+	McpCatalogFormFieldKindTextOrSecretRef McpCatalogFormFieldKind = "text_or_secret_ref"
+	McpCatalogFormFieldKindTextarea        McpCatalogFormFieldKind = "textarea"
+)
+
+// Defines values for McpCatalogFormFieldTargetProperty.
+const (
+	McpCatalogFormFieldTargetPropertyDescription McpCatalogFormFieldTargetProperty = "description"
+	McpCatalogFormFieldTargetPropertyEndpointUrl McpCatalogFormFieldTargetProperty = "endpoint_url"
+	McpCatalogFormFieldTargetPropertyName        McpCatalogFormFieldTargetProperty = "name"
+	McpCatalogFormFieldTargetPropertyPort        McpCatalogFormFieldTargetProperty = "port"
+)
+
+// Defines values for McpCatalogFormFieldTargetType.
+const (
+	McpCatalogFormFieldTargetTypeArg      McpCatalogFormFieldTargetType = "arg"
+	McpCatalogFormFieldTargetTypeEnv      McpCatalogFormFieldTargetType = "env"
+	McpCatalogFormFieldTargetTypeTopLevel McpCatalogFormFieldTargetType = "top_level"
+)
+
+// Defines values for McpCatalogFormFieldValueMode.
+const (
+	McpCatalogFormFieldValueModePlaintext McpCatalogFormFieldValueMode = "plaintext"
+	McpCatalogFormFieldValueModeSecretRef McpCatalogFormFieldValueMode = "secret_ref"
+)
+
+// Defines values for McpCatalogFormSpecLockedConfig.
+const (
+	McpCatalogFormSpecLockedConfigEnvironment McpCatalogFormSpecLockedConfig = "environment"
+	McpCatalogFormSpecLockedConfigLaunch      McpCatalogFormSpecLockedConfig = "launch"
+	McpCatalogFormSpecLockedConfigRuntime     McpCatalogFormSpecLockedConfig = "runtime"
+)
+
+// Defines values for McpCatalogFormSpecVersion.
+const (
+	McpCatalogFormSpecVersionN1 McpCatalogFormSpecVersion = 1
+)
+
+// Defines values for McpServerDesiredState.
+const (
+	McpServerDesiredStateDeleted McpServerDesiredState = "deleted"
+	McpServerDesiredStateRunning McpServerDesiredState = "running"
+	McpServerDesiredStateStopped McpServerDesiredState = "stopped"
+)
+
+// Defines values for McpServerSetupSource.
+const (
+	McpServerSetupSourceBotyardBuiltin McpServerSetupSource = "botyard_builtin"
+	McpServerSetupSourceCustom         McpServerSetupSource = "custom"
+	McpServerSetupSourceCustomTemplate McpServerSetupSource = "custom_template"
+)
+
+// Defines values for McpServerState.
+const (
+	McpServerStateAwaitingReady     McpServerState = "awaiting_ready"
+	McpServerStateDeleting          McpServerState = "deleting"
+	McpServerStateFailed            McpServerState = "failed"
+	McpServerStatePending           McpServerState = "pending"
+	McpServerStateProvisioningInfra McpServerState = "provisioning:infra"
+	McpServerStateProvisioningSetup McpServerState = "provisioning:setup"
+	McpServerStateRunning           McpServerState = "running"
+	McpServerStateStopped           McpServerState = "stopped"
+)
+
+// Defines values for McpServerTransport.
+const (
+	McpServerTransportStreamableHttp McpServerTransport = "streamable_http"
 )
 
 // Defines values for MeteredResource.
@@ -898,6 +1016,230 @@ type ConditionBotFilterField struct {
 // ConditionBotFilterFieldKind defines model for ConditionBotFilterField.Kind.
 type ConditionBotFilterFieldKind string
 
+// ContainerImageMcpServerCreate Register a new MCP server that Botyard will run as a K8s pod.
+type ContainerImageMcpServerCreate struct {
+	// Args Argv-style arguments appended to command/entrypoint
+	Args *[]string `json:"args"`
+
+	// Command Argv-style entrypoint override (null = use image default)
+	Command *[]string `json:"command"`
+
+	// Description Optional free-form description shown alongside the server in the UI
+	Description *string `json:"description"`
+
+	// EnvPlaintext Non-sensitive environment variables injected into the container
+	EnvPlaintext *map[string]string `json:"env_plaintext,omitempty"`
+
+	// EnvSecretRefs Env-var name → secret_key_path references resolved at runtime by secrets-service. Values are pointers (not secrets) and safe to return.
+	EnvSecretRefs *map[string]string `json:"env_secret_refs,omitempty"`
+
+	// Image Container image reference (e.g. ``ghcr.io/foo/mcp:1.0``)
+	Image string `json:"image"`
+
+	// McpCatalogEntryId Catalog entry used to prefill this create payload, if any
+	McpCatalogEntryId *string `json:"mcp_catalog_entry_id"`
+
+	// Name Human-readable label for the MCP server (unique per org)
+	Name string `json:"name"`
+
+	// Port Container port the streamable-http transport listens on
+	Port int `json:"port"`
+
+	// RequestTimeoutSeconds Override (seconds) for the gateway's request timeout when proxying tool calls to this MCP. Omit/null to inherit the gateway default. Applies to both runtime kinds.
+	RequestTimeoutSeconds *int `json:"request_timeout_seconds"`
+
+	// RuntimeKind Runtime kind tag — always ``container_image`` for this variant
+	RuntimeKind ContainerImageMcpServerCreateRuntimeKind `json:"runtime_kind"`
+
+	// SecretFileMounts Absolute container file path → secret_key_path references resolved at runtime by secrets-service and mounted as read-only files (e.g. TLS client certs/keys). Values are pointers (not secrets) and safe to return.
+	SecretFileMounts *map[string]string `json:"secret_file_mounts,omitempty"`
+
+	// Slug URL-safe identifier — server-generated from ``name`` when omitted. Must match ``^[a-z0-9][a-z0-9-]{0,63}$`` if provided.
+	Slug *string `json:"slug"`
+
+	// Transport Wire transport a deployed MCP server exposes to the gateway.
+	Transport *McpServerTransport `json:"transport,omitempty"`
+}
+
+// ContainerImageMcpServerCreateRuntimeKind Runtime kind tag — always “container_image“ for this variant
+type ContainerImageMcpServerCreateRuntimeKind string
+
+// ContainerImageMcpServerDetail Full row for a container-image MCP server — detail view.
+type ContainerImageMcpServerDetail struct {
+	// Args Argv-style arguments appended to command
+	Args *[]string `json:"args"`
+
+	// Command Argv-style entrypoint override (null = image default)
+	Command *[]string `json:"command"`
+
+	// ConfigGeneration Monotonic config generation counter bumped on every provisioning-relevant update
+	ConfigGeneration int `json:"config_generation"`
+
+	// CreatedAt When the server was registered
+	CreatedAt time.Time `json:"created_at"`
+
+	// Description Optional free-form description
+	Description *string `json:"description"`
+
+	// DesiredState Control-plane intent for an MCP server.
+	DesiredState McpServerDesiredState `json:"desired_state"`
+
+	// EnvPlaintext Non-sensitive environment variables
+	EnvPlaintext *map[string]string `json:"env_plaintext,omitempty"`
+
+	// EnvSecretRefs Env-var name → secret_key_path references resolved at runtime. Safe to expose (it's a pointer, not the secret value).
+	EnvSecretRefs *map[string]string `json:"env_secret_refs,omitempty"`
+
+	// Image Container image reference
+	Image string `json:"image"`
+
+	// LastError Last reconciler error message, if any
+	LastError *string `json:"last_error"`
+
+	// McpCatalogEntryId Catalog entry this server was created from, if any
+	McpCatalogEntryId *string `json:"mcp_catalog_entry_id"`
+
+	// McpServerId UUID of the MCP server
+	McpServerId string `json:"mcp_server_id"`
+
+	// Name Human-readable label
+	Name string `json:"name"`
+
+	// ObservedState Observed lifecycle state of an org-scoped MCP server pod.
+	//
+	// Mirrors the bot reconciler phase pipeline: a discrete ``pending`` /
+	// ``failed`` / ``stopped`` / ``deleting`` plus ``provisioning:*`` /
+	// ``awaiting_ready`` / ``running`` progression.
+	ObservedState McpServerState `json:"observed_state"`
+
+	// OrgId Organization the MCP server belongs to
+	OrgId string `json:"org_id"`
+
+	// Port Container port for the streamable-http transport
+	Port int `json:"port"`
+
+	// ReconciledGeneration The config_generation the reconciler has most recently applied
+	ReconciledGeneration int `json:"reconciled_generation"`
+
+	// RequestTimeoutSeconds Per-server gateway request-timeout override (seconds); null inherits the gateway default.
+	RequestTimeoutSeconds *int `json:"request_timeout_seconds"`
+
+	// RuntimeKind Runtime kind tag — always ``container_image`` for this variant
+	RuntimeKind ContainerImageMcpServerDetailRuntimeKind `json:"runtime_kind"`
+
+	// SecretFileMounts Absolute container file path → secret_key_path references mounted as read-only files. Safe to expose (pointers, not the secret values).
+	SecretFileMounts *map[string]string `json:"secret_file_mounts,omitempty"`
+
+	// SetupCatalogName Human-readable catalog/template name this server was created from
+	SetupCatalogName *string `json:"setup_catalog_name"`
+
+	// SetupFormSpec Dynamic setup form spec snapshotted when the server was created
+	SetupFormSpec *McpCatalogFormSpec `json:"setup_form_spec"`
+
+	// SetupFormSpecVersion Dynamic form spec version snapshotted when the server was created
+	SetupFormSpecVersion *int `json:"setup_form_spec_version"`
+
+	// SetupFormValues Form-shaped setup values derived from the current server config
+	SetupFormValues *map[string]McpCatalogFormFieldValue `json:"setup_form_values,omitempty"`
+
+	// SetupLogoUrl Logo URL inherited from the setup catalog source, if any
+	SetupLogoUrl *string `json:"setup_logo_url"`
+
+	// SetupSource How an MCP server row was created in the setup flow.
+	SetupSource *McpServerSetupSource `json:"setup_source,omitempty"`
+
+	// Slug URL-safe unique-per-org identifier
+	Slug string `json:"slug"`
+
+	// ToolCount Number of tools in the last successful tools/list snapshot (0 if uncached)
+	ToolCount int `json:"tool_count"`
+
+	// ToolListCached Cached tool descriptors from the last successful tools/list (null if never cached)
+	ToolListCached *[]McpToolSummary `json:"tool_list_cached"`
+
+	// ToolListCachedAt When tool_list_cached was last refreshed
+	ToolListCachedAt *time.Time `json:"tool_list_cached_at"`
+
+	// Transport Wire transport a deployed MCP server exposes to the gateway.
+	Transport McpServerTransport `json:"transport"`
+
+	// UpdatedAt Last update timestamp
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+// ContainerImageMcpServerDetailRuntimeKind Runtime kind tag — always “container_image“ for this variant
+type ContainerImageMcpServerDetailRuntimeKind string
+
+// ContainerImageMcpServerSummary Summary projection of a container-image MCP server row.
+type ContainerImageMcpServerSummary struct {
+	// CreatedAt When the server was registered
+	CreatedAt time.Time `json:"created_at"`
+
+	// Description Optional free-form description
+	Description *string `json:"description"`
+
+	// DesiredState Control-plane intent for an MCP server.
+	DesiredState McpServerDesiredState `json:"desired_state"`
+
+	// Image Container image reference
+	Image string `json:"image"`
+
+	// LastError Last reconciler error message, if any
+	LastError *string `json:"last_error"`
+
+	// McpCatalogEntryId Catalog entry this server was created from, if any
+	McpCatalogEntryId *string `json:"mcp_catalog_entry_id"`
+
+	// McpServerId UUID of the MCP server
+	McpServerId string `json:"mcp_server_id"`
+
+	// Name Human-readable label
+	Name string `json:"name"`
+
+	// ObservedState Observed lifecycle state of an org-scoped MCP server pod.
+	//
+	// Mirrors the bot reconciler phase pipeline: a discrete ``pending`` /
+	// ``failed`` / ``stopped`` / ``deleting`` plus ``provisioning:*`` /
+	// ``awaiting_ready`` / ``running`` progression.
+	ObservedState McpServerState `json:"observed_state"`
+
+	// OrgId Organization the MCP server belongs to
+	OrgId string `json:"org_id"`
+
+	// Port Container port for the streamable-http transport
+	Port int `json:"port"`
+
+	// RequestTimeoutSeconds Per-server gateway request-timeout override (seconds); null inherits the gateway default.
+	RequestTimeoutSeconds *int `json:"request_timeout_seconds"`
+
+	// RuntimeKind Runtime kind tag — always ``container_image`` for this variant
+	RuntimeKind ContainerImageMcpServerSummaryRuntimeKind `json:"runtime_kind"`
+
+	// SetupCatalogName Human-readable catalog/template name this server was created from
+	SetupCatalogName *string `json:"setup_catalog_name"`
+
+	// SetupLogoUrl Logo URL inherited from the setup catalog source, if any
+	SetupLogoUrl *string `json:"setup_logo_url"`
+
+	// SetupSource How an MCP server row was created in the setup flow.
+	SetupSource *McpServerSetupSource `json:"setup_source,omitempty"`
+
+	// Slug URL-safe unique-per-org identifier
+	Slug string `json:"slug"`
+
+	// ToolCount Number of tools in the last successful tools/list snapshot (0 if uncached)
+	ToolCount int `json:"tool_count"`
+
+	// Transport Wire transport a deployed MCP server exposes to the gateway.
+	Transport McpServerTransport `json:"transport"`
+
+	// UpdatedAt Last update timestamp
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+// ContainerImageMcpServerSummaryRuntimeKind Runtime kind tag — always “container_image“ for this variant
+type ContainerImageMcpServerSummaryRuntimeKind string
+
 // CpuMetrics defines model for CpuMetrics.
 type CpuMetrics struct {
 	// LimitCores CPU quota expressed as cores, or null when unlimited/unavailable
@@ -1063,6 +1405,367 @@ type IdentityConfigPatch struct {
 
 	// Theme Bot identity theme
 	Theme *string `json:"theme"`
+}
+
+// ManagedRemoteMcpServerCreate Register a new MCP server that Botyard proxies to a vendor-hosted URL.
+type ManagedRemoteMcpServerCreate struct {
+	// Description Optional free-form description shown alongside the server in the UI
+	Description *string `json:"description"`
+
+	// EndpointUrl Vendor-hosted MCP URL (e.g. ``https://mcp.deepwiki.com/mcp``)
+	EndpointUrl string `json:"endpoint_url"`
+
+	// McpCatalogEntryId Catalog entry used to prefill this create payload, if any
+	McpCatalogEntryId *string `json:"mcp_catalog_entry_id"`
+
+	// Name Human-readable label for the MCP server (unique per org)
+	Name string `json:"name"`
+
+	// RequestTimeoutSeconds Override (seconds) for the gateway's request timeout when proxying tool calls to this MCP. Omit/null to inherit the gateway default. Applies to both runtime kinds.
+	RequestTimeoutSeconds *int `json:"request_timeout_seconds"`
+
+	// RuntimeKind Runtime kind tag — always ``managed_remote`` for this variant
+	RuntimeKind ManagedRemoteMcpServerCreateRuntimeKind `json:"runtime_kind"`
+
+	// Slug URL-safe identifier — server-generated from ``name`` when omitted. Must match ``^[a-z0-9][a-z0-9-]{0,63}$`` if provided.
+	Slug *string `json:"slug"`
+
+	// Transport Wire transport a deployed MCP server exposes to the gateway.
+	Transport *McpServerTransport `json:"transport,omitempty"`
+}
+
+// ManagedRemoteMcpServerCreateRuntimeKind Runtime kind tag — always “managed_remote“ for this variant
+type ManagedRemoteMcpServerCreateRuntimeKind string
+
+// ManagedRemoteMcpServerDetail Full row for a managed-remote MCP server — detail view.
+type ManagedRemoteMcpServerDetail struct {
+	// ConfigGeneration Monotonic config generation counter bumped on every provisioning-relevant update
+	ConfigGeneration int `json:"config_generation"`
+
+	// CreatedAt When the server was registered
+	CreatedAt time.Time `json:"created_at"`
+
+	// Description Optional free-form description
+	Description *string `json:"description"`
+
+	// DesiredState Control-plane intent for an MCP server.
+	DesiredState McpServerDesiredState `json:"desired_state"`
+
+	// EndpointUrl Managed-remote MCP endpoint URL
+	EndpointUrl string `json:"endpoint_url"`
+
+	// LastError Last reconciler error message, if any
+	LastError *string `json:"last_error"`
+
+	// McpCatalogEntryId Catalog entry this server was created from, if any
+	McpCatalogEntryId *string `json:"mcp_catalog_entry_id"`
+
+	// McpServerId UUID of the MCP server
+	McpServerId string `json:"mcp_server_id"`
+
+	// Name Human-readable label
+	Name string `json:"name"`
+
+	// ObservedState Observed lifecycle state of an org-scoped MCP server pod.
+	//
+	// Mirrors the bot reconciler phase pipeline: a discrete ``pending`` /
+	// ``failed`` / ``stopped`` / ``deleting`` plus ``provisioning:*`` /
+	// ``awaiting_ready`` / ``running`` progression.
+	ObservedState McpServerState `json:"observed_state"`
+
+	// OrgId Organization the MCP server belongs to
+	OrgId string `json:"org_id"`
+
+	// ReconciledGeneration The config_generation the reconciler has most recently applied
+	ReconciledGeneration int `json:"reconciled_generation"`
+
+	// RequestTimeoutSeconds Per-server gateway request-timeout override (seconds); null inherits the gateway default.
+	RequestTimeoutSeconds *int `json:"request_timeout_seconds"`
+
+	// RuntimeKind Runtime kind tag — always ``managed_remote`` for this variant
+	RuntimeKind ManagedRemoteMcpServerDetailRuntimeKind `json:"runtime_kind"`
+
+	// SetupCatalogName Human-readable catalog/template name this server was created from
+	SetupCatalogName *string `json:"setup_catalog_name"`
+
+	// SetupFormSpec Dynamic setup form spec snapshotted when the server was created
+	SetupFormSpec *McpCatalogFormSpec `json:"setup_form_spec"`
+
+	// SetupFormSpecVersion Dynamic form spec version snapshotted when the server was created
+	SetupFormSpecVersion *int `json:"setup_form_spec_version"`
+
+	// SetupFormValues Form-shaped setup values derived from the current server config
+	SetupFormValues *map[string]McpCatalogFormFieldValue `json:"setup_form_values,omitempty"`
+
+	// SetupLogoUrl Logo URL inherited from the setup catalog source, if any
+	SetupLogoUrl *string `json:"setup_logo_url"`
+
+	// SetupSource How an MCP server row was created in the setup flow.
+	SetupSource *McpServerSetupSource `json:"setup_source,omitempty"`
+
+	// Slug URL-safe unique-per-org identifier
+	Slug string `json:"slug"`
+
+	// ToolCount Number of tools in the last successful tools/list snapshot (0 if uncached)
+	ToolCount int `json:"tool_count"`
+
+	// ToolListCached Cached tool descriptors from the last successful tools/list (null if never cached)
+	ToolListCached *[]McpToolSummary `json:"tool_list_cached"`
+
+	// ToolListCachedAt When tool_list_cached was last refreshed
+	ToolListCachedAt *time.Time `json:"tool_list_cached_at"`
+
+	// Transport Wire transport a deployed MCP server exposes to the gateway.
+	Transport McpServerTransport `json:"transport"`
+
+	// UpdatedAt Last update timestamp
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+// ManagedRemoteMcpServerDetailRuntimeKind Runtime kind tag — always “managed_remote“ for this variant
+type ManagedRemoteMcpServerDetailRuntimeKind string
+
+// ManagedRemoteMcpServerSummary Summary projection of a managed-remote MCP server row.
+type ManagedRemoteMcpServerSummary struct {
+	// CreatedAt When the server was registered
+	CreatedAt time.Time `json:"created_at"`
+
+	// Description Optional free-form description
+	Description *string `json:"description"`
+
+	// DesiredState Control-plane intent for an MCP server.
+	DesiredState McpServerDesiredState `json:"desired_state"`
+
+	// EndpointUrl Managed-remote MCP endpoint URL
+	EndpointUrl string `json:"endpoint_url"`
+
+	// LastError Last reconciler error message, if any
+	LastError *string `json:"last_error"`
+
+	// McpCatalogEntryId Catalog entry this server was created from, if any
+	McpCatalogEntryId *string `json:"mcp_catalog_entry_id"`
+
+	// McpServerId UUID of the MCP server
+	McpServerId string `json:"mcp_server_id"`
+
+	// Name Human-readable label
+	Name string `json:"name"`
+
+	// ObservedState Observed lifecycle state of an org-scoped MCP server pod.
+	//
+	// Mirrors the bot reconciler phase pipeline: a discrete ``pending`` /
+	// ``failed`` / ``stopped`` / ``deleting`` plus ``provisioning:*`` /
+	// ``awaiting_ready`` / ``running`` progression.
+	ObservedState McpServerState `json:"observed_state"`
+
+	// OrgId Organization the MCP server belongs to
+	OrgId string `json:"org_id"`
+
+	// RequestTimeoutSeconds Per-server gateway request-timeout override (seconds); null inherits the gateway default.
+	RequestTimeoutSeconds *int `json:"request_timeout_seconds"`
+
+	// RuntimeKind Runtime kind tag — always ``managed_remote`` for this variant
+	RuntimeKind ManagedRemoteMcpServerSummaryRuntimeKind `json:"runtime_kind"`
+
+	// SetupCatalogName Human-readable catalog/template name this server was created from
+	SetupCatalogName *string `json:"setup_catalog_name"`
+
+	// SetupLogoUrl Logo URL inherited from the setup catalog source, if any
+	SetupLogoUrl *string `json:"setup_logo_url"`
+
+	// SetupSource How an MCP server row was created in the setup flow.
+	SetupSource *McpServerSetupSource `json:"setup_source,omitempty"`
+
+	// Slug URL-safe unique-per-org identifier
+	Slug string `json:"slug"`
+
+	// ToolCount Number of tools in the last successful tools/list snapshot (0 if uncached)
+	ToolCount int `json:"tool_count"`
+
+	// Transport Wire transport a deployed MCP server exposes to the gateway.
+	Transport McpServerTransport `json:"transport"`
+
+	// UpdatedAt Last update timestamp
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+// ManagedRemoteMcpServerSummaryRuntimeKind Runtime kind tag — always “managed_remote“ for this variant
+type ManagedRemoteMcpServerSummaryRuntimeKind string
+
+// McpCatalogFormField One field in a template-specific MCP catalog form.
+type McpCatalogFormField struct {
+	// AllowedModes Allowed input modes for text_or_secret_ref fields
+	AllowedModes *[]McpCatalogFormFieldAllowedModes `json:"allowed_modes"`
+
+	// DefaultMode Initial input mode for text_or_secret_ref fields
+	DefaultMode *McpCatalogFormFieldDefaultMode `json:"default_mode"`
+
+	// DefaultValue Optional user-facing default value supplied by the template form spec
+	DefaultValue *string `json:"default_value"`
+
+	// Description Optional help text shown next to the field
+	Description *string `json:"description"`
+
+	// Id Stable field identifier unique within the form spec
+	Id string `json:"id"`
+
+	// Kind Renderer and validation kind
+	Kind McpCatalogFormFieldKind `json:"kind"`
+
+	// Label Human-readable field label
+	Label string `json:"label"`
+
+	// Options Allowed option values for select fields
+	Options *[]string `json:"options"`
+
+	// Placeholder Optional input placeholder
+	Placeholder *string `json:"placeholder"`
+
+	// Required Whether the field must be supplied
+	Required *bool `json:"required,omitempty"`
+
+	// SuggestedSecretPath Suggested dotted secret key path for secret-ref-capable fields
+	SuggestedSecretPath *string `json:"suggested_secret_path"`
+
+	// Target Where a dynamic catalog form field compiles in ``McpServerCreate``.
+	Target McpCatalogFormFieldTarget `json:"target"`
+}
+
+// McpCatalogFormFieldAllowedModes defines model for McpCatalogFormField.AllowedModes.
+type McpCatalogFormFieldAllowedModes string
+
+// McpCatalogFormFieldDefaultMode Initial input mode for text_or_secret_ref fields
+type McpCatalogFormFieldDefaultMode string
+
+// McpCatalogFormFieldKind Renderer and validation kind
+type McpCatalogFormFieldKind string
+
+// McpCatalogFormFieldTarget Where a dynamic catalog form field compiles in “McpServerCreate“.
+type McpCatalogFormFieldTarget struct {
+	// Index Argument index for arg targets when the field replaces an argv slot
+	Index *int `json:"index"`
+
+	// Name Env var name for env targets or argument placeholder name for arg targets
+	Name *string `json:"name"`
+
+	// Property Supported top-level create property for top_level targets
+	Property *McpCatalogFormFieldTargetProperty `json:"property"`
+
+	// Type Compiler target bucket
+	Type McpCatalogFormFieldTargetType `json:"type"`
+}
+
+// McpCatalogFormFieldTargetProperty Supported top-level create property for top_level targets
+type McpCatalogFormFieldTargetProperty string
+
+// McpCatalogFormFieldTargetType Compiler target bucket
+type McpCatalogFormFieldTargetType string
+
+// McpCatalogFormFieldValue Current value for one dynamic MCP catalog form field.
+type McpCatalogFormFieldValue struct {
+	// Mode How this value should be interpreted for secret-capable fields
+	Mode *McpCatalogFormFieldValueMode `json:"mode,omitempty"`
+
+	// Value Plaintext value or secret reference path for the field
+	Value *string `json:"value,omitempty"`
+}
+
+// McpCatalogFormFieldValueMode How this value should be interpreted for secret-capable fields
+type McpCatalogFormFieldValueMode string
+
+// McpCatalogFormSpec Botyard-owned dynamic form spec for curated MCP catalog entries.
+type McpCatalogFormSpec struct {
+	// Fields Ordered dynamic form fields
+	Fields *[]McpCatalogFormField `json:"fields,omitempty"`
+
+	// LockedConfig Low-level create-form sections hidden and fixed by the template. runtime locks runtime kind, image/endpoint, transport, and port; launch locks command/args; environment locks the raw env editor.
+	LockedConfig *[]McpCatalogFormSpecLockedConfig `json:"locked_config,omitempty"`
+
+	// Version Form spec version
+	Version McpCatalogFormSpecVersion `json:"version"`
+}
+
+// McpCatalogFormSpecLockedConfig defines model for McpCatalogFormSpec.LockedConfig.
+type McpCatalogFormSpecLockedConfig string
+
+// McpCatalogFormSpecVersion Form spec version
+type McpCatalogFormSpecVersion int
+
+// McpServerDesiredState Control-plane intent for an MCP server.
+type McpServerDesiredState string
+
+// McpServerSetupSource How an MCP server row was created in the setup flow.
+type McpServerSetupSource string
+
+// McpServerState Observed lifecycle state of an org-scoped MCP server pod.
+//
+// Mirrors the bot reconciler phase pipeline: a discrete “pending“ /
+// “failed“ / “stopped“ / “deleting“ plus “provisioning:*“ /
+// “awaiting_ready“ / “running“ progression.
+type McpServerState string
+
+// McpServerTransport Wire transport a deployed MCP server exposes to the gateway.
+type McpServerTransport string
+
+// McpServerUpdate Request to update mutable fields on an existing MCP server.
+//
+// Stays flat (no discriminated union) because PATCH bodies arrive without
+// the client necessarily knowing the row's runtime_kind. The service
+// layer enforces per-runtime-kind shape after loading the row:
+// container_image rows reject “endpoint_url“, managed_remote rows
+// reject every container-only field.
+//
+// “runtime_kind“ and “transport“ are intentionally absent — changing
+// either requires delete-and-recreate so the reconciler doesn't need to
+// re-plan pod primitives mid-flight.
+type McpServerUpdate struct {
+	// Args Argv-style arguments appended to command. Container-image rows only.
+	Args *[]string `json:"args"`
+
+	// Command Argv-style entrypoint override. Container-image rows only.
+	Command *[]string `json:"command"`
+
+	// Description Free-form description
+	Description *string `json:"description"`
+
+	// EndpointUrl Managed-remote URL. Managed-remote rows only.
+	EndpointUrl *string `json:"endpoint_url"`
+
+	// EnvPlaintext Non-sensitive environment variables (full replacement). Container-image rows only.
+	EnvPlaintext *map[string]string `json:"env_plaintext"`
+
+	// EnvSecretRefs Env-var name → secret_key_path (full replacement). Container-image rows only.
+	EnvSecretRefs *map[string]string `json:"env_secret_refs"`
+
+	// Image Container image reference. Container-image rows only.
+	Image *string `json:"image"`
+
+	// Name Human-readable label (unique per org)
+	Name *string `json:"name"`
+
+	// Port Container port for the streamable-http transport. Container-image rows only.
+	Port *int `json:"port"`
+
+	// RequestTimeoutSeconds Per-server gateway request-timeout override (seconds). Send an explicit null to clear it and inherit the gateway default. Applies to both runtime kinds.
+	RequestTimeoutSeconds *int `json:"request_timeout_seconds"`
+
+	// SecretFileMounts Absolute container file path → secret_key_path mounted as read-only files (full replacement). Container-image rows only.
+	SecretFileMounts *map[string]string `json:"secret_file_mounts"`
+
+	// Slug URL-safe identifier (unique per org among non-deleted servers)
+	Slug *string `json:"slug"`
+}
+
+// McpToolSummary A single tool advertised by an MCP server's “tools/list“ handshake.
+type McpToolSummary struct {
+	// Description Human-readable description of the tool
+	Description *string `json:"description"`
+
+	// InputSchemaJson JSON Schema for the tool's input arguments (dict, not serialized JSON)
+	InputSchemaJson *map[string]interface{} `json:"input_schema_json,omitempty"`
+
+	// Name Tool name as reported by the MCP server
+	Name string `json:"name"`
 }
 
 // MemoryEventCounters defines model for MemoryEventCounters.
@@ -1566,6 +2269,17 @@ type ListBotsV1OrgsOrgIdBotsGetParams struct {
 	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
 }
 
+// ListMcpServersV1OrgsOrgIdMcpServersGetParams defines parameters for ListMcpServersV1OrgsOrgIdMcpServersGet.
+type ListMcpServersV1OrgsOrgIdMcpServersGetParams struct {
+	// State Filter by reconciler-observed lifecycle state
+	State *McpServerState `form:"state,omitempty" json:"state,omitempty"`
+}
+
+// CreateMcpServerV1OrgsOrgIdMcpServersPostJSONBody defines parameters for CreateMcpServerV1OrgsOrgIdMcpServersPost.
+type CreateMcpServerV1OrgsOrgIdMcpServersPostJSONBody struct {
+	union json.RawMessage
+}
+
 // CreateBotV1OrgsOrgIdBotsPostJSONRequestBody defines body for CreateBotV1OrgsOrgIdBotsPost for application/json ContentType.
 type CreateBotV1OrgsOrgIdBotsPostJSONRequestBody = BotCreate
 
@@ -1577,6 +2291,12 @@ type UpdateBotV1OrgsOrgIdBotsBotSlugPatchJSONRequestBody = BotUpdate
 
 // UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchJSONRequestBody defines body for UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatch for application/json ContentType.
 type UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchJSONRequestBody = BotConfigUpdate
+
+// CreateMcpServerV1OrgsOrgIdMcpServersPostJSONRequestBody defines body for CreateMcpServerV1OrgsOrgIdMcpServersPost for application/json ContentType.
+type CreateMcpServerV1OrgsOrgIdMcpServersPostJSONRequestBody CreateMcpServerV1OrgsOrgIdMcpServersPostJSONBody
+
+// UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchJSONRequestBody defines body for UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatch for application/json ContentType.
+type UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchJSONRequestBody = McpServerUpdate
 
 // Getter for additional properties for ProblemDetails. Returns the specified
 // element and whether it was found
@@ -2178,6 +2898,31 @@ type ClientInterface interface {
 
 	// RestartBotV1OrgsOrgIdBotsBotSlugRestartPost request
 	RestartBotV1OrgsOrgIdBotsBotSlugRestartPost(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListMcpServersV1OrgsOrgIdMcpServersGet request
+	ListMcpServersV1OrgsOrgIdMcpServersGet(ctx context.Context, orgId string, params *ListMcpServersV1OrgsOrgIdMcpServersGetParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateMcpServerV1OrgsOrgIdMcpServersPostWithBody request with any body
+	CreateMcpServerV1OrgsOrgIdMcpServersPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateMcpServerV1OrgsOrgIdMcpServersPost(ctx context.Context, orgId string, body CreateMcpServerV1OrgsOrgIdMcpServersPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDelete request
+	DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDelete(ctx context.Context, orgId string, mcpServerId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetMcpServerV1OrgsOrgIdMcpServersMcpServerIdGet request
+	GetMcpServerV1OrgsOrgIdMcpServersMcpServerIdGet(ctx context.Context, orgId string, mcpServerId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchWithBody request with any body
+	UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchWithBody(ctx context.Context, orgId string, mcpServerId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatch(ctx context.Context, orgId string, mcpServerId string, body UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// RefreshMcpServerToolsV1OrgsOrgIdMcpServersMcpServerIdRefreshToolsPost request
+	RefreshMcpServerToolsV1OrgsOrgIdMcpServersMcpServerIdRefreshToolsPost(ctx context.Context, orgId string, mcpServerId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// RestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPost request
+	RestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPost(ctx context.Context, orgId string, mcpServerId string, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
 func (c *Client) ListBotsV1OrgsOrgIdBotsGet(ctx context.Context, orgId string, params *ListBotsV1OrgsOrgIdBotsGetParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -2350,6 +3095,114 @@ func (c *Client) GetBotResourcesV1OrgsOrgIdBotsBotSlugResourcesGet(ctx context.C
 
 func (c *Client) RestartBotV1OrgsOrgIdBotsBotSlugRestartPost(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewRestartBotV1OrgsOrgIdBotsBotSlugRestartPostRequest(c.Server, orgId, botSlug)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListMcpServersV1OrgsOrgIdMcpServersGet(ctx context.Context, orgId string, params *ListMcpServersV1OrgsOrgIdMcpServersGetParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListMcpServersV1OrgsOrgIdMcpServersGetRequest(c.Server, orgId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateMcpServerV1OrgsOrgIdMcpServersPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateMcpServerV1OrgsOrgIdMcpServersPostRequestWithBody(c.Server, orgId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateMcpServerV1OrgsOrgIdMcpServersPost(ctx context.Context, orgId string, body CreateMcpServerV1OrgsOrgIdMcpServersPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateMcpServerV1OrgsOrgIdMcpServersPostRequest(c.Server, orgId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDelete(ctx context.Context, orgId string, mcpServerId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteRequest(c.Server, orgId, mcpServerId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetMcpServerV1OrgsOrgIdMcpServersMcpServerIdGet(ctx context.Context, orgId string, mcpServerId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetMcpServerV1OrgsOrgIdMcpServersMcpServerIdGetRequest(c.Server, orgId, mcpServerId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchWithBody(ctx context.Context, orgId string, mcpServerId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchRequestWithBody(c.Server, orgId, mcpServerId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatch(ctx context.Context, orgId string, mcpServerId string, body UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchRequest(c.Server, orgId, mcpServerId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) RefreshMcpServerToolsV1OrgsOrgIdMcpServersMcpServerIdRefreshToolsPost(ctx context.Context, orgId string, mcpServerId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRefreshMcpServerToolsV1OrgsOrgIdMcpServersMcpServerIdRefreshToolsPostRequest(c.Server, orgId, mcpServerId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) RestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPost(ctx context.Context, orgId string, mcpServerId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPostRequest(c.Server, orgId, mcpServerId)
 	if err != nil {
 		return nil, err
 	}
@@ -2880,6 +3733,327 @@ func NewRestartBotV1OrgsOrgIdBotsBotSlugRestartPostRequest(server string, orgId 
 	return req, nil
 }
 
+// NewListMcpServersV1OrgsOrgIdMcpServersGetRequest generates requests for ListMcpServersV1OrgsOrgIdMcpServersGet
+func NewListMcpServersV1OrgsOrgIdMcpServersGetRequest(server string, orgId string, params *ListMcpServersV1OrgsOrgIdMcpServersGetParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/mcp-servers", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.State != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "state", runtime.ParamLocationQuery, *params.State); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCreateMcpServerV1OrgsOrgIdMcpServersPostRequest calls the generic CreateMcpServerV1OrgsOrgIdMcpServersPost builder with application/json body
+func NewCreateMcpServerV1OrgsOrgIdMcpServersPostRequest(server string, orgId string, body CreateMcpServerV1OrgsOrgIdMcpServersPostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateMcpServerV1OrgsOrgIdMcpServersPostRequestWithBody(server, orgId, "application/json", bodyReader)
+}
+
+// NewCreateMcpServerV1OrgsOrgIdMcpServersPostRequestWithBody generates requests for CreateMcpServerV1OrgsOrgIdMcpServersPost with any type of body
+func NewCreateMcpServerV1OrgsOrgIdMcpServersPostRequestWithBody(server string, orgId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/mcp-servers", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteRequest generates requests for DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDelete
+func NewDeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteRequest(server string, orgId string, mcpServerId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "mcp_server_id", runtime.ParamLocationPath, mcpServerId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/mcp-servers/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetMcpServerV1OrgsOrgIdMcpServersMcpServerIdGetRequest generates requests for GetMcpServerV1OrgsOrgIdMcpServersMcpServerIdGet
+func NewGetMcpServerV1OrgsOrgIdMcpServersMcpServerIdGetRequest(server string, orgId string, mcpServerId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "mcp_server_id", runtime.ParamLocationPath, mcpServerId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/mcp-servers/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchRequest calls the generic UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatch builder with application/json body
+func NewUpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchRequest(server string, orgId string, mcpServerId string, body UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchRequestWithBody(server, orgId, mcpServerId, "application/json", bodyReader)
+}
+
+// NewUpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchRequestWithBody generates requests for UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatch with any type of body
+func NewUpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchRequestWithBody(server string, orgId string, mcpServerId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "mcp_server_id", runtime.ParamLocationPath, mcpServerId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/mcp-servers/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PATCH", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewRefreshMcpServerToolsV1OrgsOrgIdMcpServersMcpServerIdRefreshToolsPostRequest generates requests for RefreshMcpServerToolsV1OrgsOrgIdMcpServersMcpServerIdRefreshToolsPost
+func NewRefreshMcpServerToolsV1OrgsOrgIdMcpServersMcpServerIdRefreshToolsPostRequest(server string, orgId string, mcpServerId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "mcp_server_id", runtime.ParamLocationPath, mcpServerId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/mcp-servers/%s/refresh-tools", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewRestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPostRequest generates requests for RestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPost
+func NewRestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPostRequest(server string, orgId string, mcpServerId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "mcp_server_id", runtime.ParamLocationPath, mcpServerId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/mcp-servers/%s/restart", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 func (c *Client) applyEditors(ctx context.Context, req *http.Request, additionalEditors []RequestEditorFn) error {
 	for _, r := range c.RequestEditors {
 		if err := r(ctx, req); err != nil {
@@ -2963,6 +4137,31 @@ type ClientWithResponsesInterface interface {
 
 	// RestartBotV1OrgsOrgIdBotsBotSlugRestartPostWithResponse request
 	RestartBotV1OrgsOrgIdBotsBotSlugRestartPostWithResponse(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*RestartBotV1OrgsOrgIdBotsBotSlugRestartPostResponse, error)
+
+	// ListMcpServersV1OrgsOrgIdMcpServersGetWithResponse request
+	ListMcpServersV1OrgsOrgIdMcpServersGetWithResponse(ctx context.Context, orgId string, params *ListMcpServersV1OrgsOrgIdMcpServersGetParams, reqEditors ...RequestEditorFn) (*ListMcpServersV1OrgsOrgIdMcpServersGetResponse, error)
+
+	// CreateMcpServerV1OrgsOrgIdMcpServersPostWithBodyWithResponse request with any body
+	CreateMcpServerV1OrgsOrgIdMcpServersPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateMcpServerV1OrgsOrgIdMcpServersPostResponse, error)
+
+	CreateMcpServerV1OrgsOrgIdMcpServersPostWithResponse(ctx context.Context, orgId string, body CreateMcpServerV1OrgsOrgIdMcpServersPostJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateMcpServerV1OrgsOrgIdMcpServersPostResponse, error)
+
+	// DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteWithResponse request
+	DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteWithResponse(ctx context.Context, orgId string, mcpServerId string, reqEditors ...RequestEditorFn) (*DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteResponse, error)
+
+	// GetMcpServerV1OrgsOrgIdMcpServersMcpServerIdGetWithResponse request
+	GetMcpServerV1OrgsOrgIdMcpServersMcpServerIdGetWithResponse(ctx context.Context, orgId string, mcpServerId string, reqEditors ...RequestEditorFn) (*GetMcpServerV1OrgsOrgIdMcpServersMcpServerIdGetResponse, error)
+
+	// UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchWithBodyWithResponse request with any body
+	UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchWithBodyWithResponse(ctx context.Context, orgId string, mcpServerId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchResponse, error)
+
+	UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchWithResponse(ctx context.Context, orgId string, mcpServerId string, body UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchResponse, error)
+
+	// RefreshMcpServerToolsV1OrgsOrgIdMcpServersMcpServerIdRefreshToolsPostWithResponse request
+	RefreshMcpServerToolsV1OrgsOrgIdMcpServersMcpServerIdRefreshToolsPostWithResponse(ctx context.Context, orgId string, mcpServerId string, reqEditors ...RequestEditorFn) (*RefreshMcpServerToolsV1OrgsOrgIdMcpServersMcpServerIdRefreshToolsPostResponse, error)
+
+	// RestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPostWithResponse request
+	RestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPostWithResponse(ctx context.Context, orgId string, mcpServerId string, reqEditors ...RequestEditorFn) (*RestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPostResponse, error)
 }
 
 type ListBotsV1OrgsOrgIdBotsGetResponse struct {
@@ -3218,6 +4417,179 @@ func (r RestartBotV1OrgsOrgIdBotsBotSlugRestartPostResponse) StatusCode() int {
 	return 0
 }
 
+type ListMcpServersV1OrgsOrgIdMcpServersGetResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *[]ListMcpServersV1OrgsOrgIdMcpServersGet_200_Item
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+type ListMcpServersV1OrgsOrgIdMcpServersGet_200_Item struct {
+	union json.RawMessage
+}
+
+// Status returns HTTPResponse.Status
+func (r ListMcpServersV1OrgsOrgIdMcpServersGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListMcpServersV1OrgsOrgIdMcpServersGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateMcpServerV1OrgsOrgIdMcpServersPostResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *struct {
+		union json.RawMessage
+	}
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateMcpServerV1OrgsOrgIdMcpServersPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateMcpServerV1OrgsOrgIdMcpServersPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetMcpServerV1OrgsOrgIdMcpServersMcpServerIdGetResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		union json.RawMessage
+	}
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r GetMcpServerV1OrgsOrgIdMcpServersMcpServerIdGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetMcpServerV1OrgsOrgIdMcpServersMcpServerIdGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		union json.RawMessage
+	}
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type RefreshMcpServerToolsV1OrgsOrgIdMcpServersMcpServerIdRefreshToolsPostResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		union json.RawMessage
+	}
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r RefreshMcpServerToolsV1OrgsOrgIdMcpServersMcpServerIdRefreshToolsPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r RefreshMcpServerToolsV1OrgsOrgIdMcpServersMcpServerIdRefreshToolsPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type RestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPostResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		union json.RawMessage
+	}
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r RestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r RestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 // ListBotsV1OrgsOrgIdBotsGetWithResponse request returning *ListBotsV1OrgsOrgIdBotsGetResponse
 func (c *ClientWithResponses) ListBotsV1OrgsOrgIdBotsGetWithResponse(ctx context.Context, orgId string, params *ListBotsV1OrgsOrgIdBotsGetParams, reqEditors ...RequestEditorFn) (*ListBotsV1OrgsOrgIdBotsGetResponse, error) {
 	rsp, err := c.ListBotsV1OrgsOrgIdBotsGet(ctx, orgId, params, reqEditors...)
@@ -3347,6 +4719,85 @@ func (c *ClientWithResponses) RestartBotV1OrgsOrgIdBotsBotSlugRestartPostWithRes
 		return nil, err
 	}
 	return ParseRestartBotV1OrgsOrgIdBotsBotSlugRestartPostResponse(rsp)
+}
+
+// ListMcpServersV1OrgsOrgIdMcpServersGetWithResponse request returning *ListMcpServersV1OrgsOrgIdMcpServersGetResponse
+func (c *ClientWithResponses) ListMcpServersV1OrgsOrgIdMcpServersGetWithResponse(ctx context.Context, orgId string, params *ListMcpServersV1OrgsOrgIdMcpServersGetParams, reqEditors ...RequestEditorFn) (*ListMcpServersV1OrgsOrgIdMcpServersGetResponse, error) {
+	rsp, err := c.ListMcpServersV1OrgsOrgIdMcpServersGet(ctx, orgId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListMcpServersV1OrgsOrgIdMcpServersGetResponse(rsp)
+}
+
+// CreateMcpServerV1OrgsOrgIdMcpServersPostWithBodyWithResponse request with arbitrary body returning *CreateMcpServerV1OrgsOrgIdMcpServersPostResponse
+func (c *ClientWithResponses) CreateMcpServerV1OrgsOrgIdMcpServersPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateMcpServerV1OrgsOrgIdMcpServersPostResponse, error) {
+	rsp, err := c.CreateMcpServerV1OrgsOrgIdMcpServersPostWithBody(ctx, orgId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateMcpServerV1OrgsOrgIdMcpServersPostResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateMcpServerV1OrgsOrgIdMcpServersPostWithResponse(ctx context.Context, orgId string, body CreateMcpServerV1OrgsOrgIdMcpServersPostJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateMcpServerV1OrgsOrgIdMcpServersPostResponse, error) {
+	rsp, err := c.CreateMcpServerV1OrgsOrgIdMcpServersPost(ctx, orgId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateMcpServerV1OrgsOrgIdMcpServersPostResponse(rsp)
+}
+
+// DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteWithResponse request returning *DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteResponse
+func (c *ClientWithResponses) DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteWithResponse(ctx context.Context, orgId string, mcpServerId string, reqEditors ...RequestEditorFn) (*DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteResponse, error) {
+	rsp, err := c.DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDelete(ctx, orgId, mcpServerId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteResponse(rsp)
+}
+
+// GetMcpServerV1OrgsOrgIdMcpServersMcpServerIdGetWithResponse request returning *GetMcpServerV1OrgsOrgIdMcpServersMcpServerIdGetResponse
+func (c *ClientWithResponses) GetMcpServerV1OrgsOrgIdMcpServersMcpServerIdGetWithResponse(ctx context.Context, orgId string, mcpServerId string, reqEditors ...RequestEditorFn) (*GetMcpServerV1OrgsOrgIdMcpServersMcpServerIdGetResponse, error) {
+	rsp, err := c.GetMcpServerV1OrgsOrgIdMcpServersMcpServerIdGet(ctx, orgId, mcpServerId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetMcpServerV1OrgsOrgIdMcpServersMcpServerIdGetResponse(rsp)
+}
+
+// UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchWithBodyWithResponse request with arbitrary body returning *UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchResponse
+func (c *ClientWithResponses) UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchWithBodyWithResponse(ctx context.Context, orgId string, mcpServerId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchResponse, error) {
+	rsp, err := c.UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchWithBody(ctx, orgId, mcpServerId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchWithResponse(ctx context.Context, orgId string, mcpServerId string, body UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchResponse, error) {
+	rsp, err := c.UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatch(ctx, orgId, mcpServerId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchResponse(rsp)
+}
+
+// RefreshMcpServerToolsV1OrgsOrgIdMcpServersMcpServerIdRefreshToolsPostWithResponse request returning *RefreshMcpServerToolsV1OrgsOrgIdMcpServersMcpServerIdRefreshToolsPostResponse
+func (c *ClientWithResponses) RefreshMcpServerToolsV1OrgsOrgIdMcpServersMcpServerIdRefreshToolsPostWithResponse(ctx context.Context, orgId string, mcpServerId string, reqEditors ...RequestEditorFn) (*RefreshMcpServerToolsV1OrgsOrgIdMcpServersMcpServerIdRefreshToolsPostResponse, error) {
+	rsp, err := c.RefreshMcpServerToolsV1OrgsOrgIdMcpServersMcpServerIdRefreshToolsPost(ctx, orgId, mcpServerId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRefreshMcpServerToolsV1OrgsOrgIdMcpServersMcpServerIdRefreshToolsPostResponse(rsp)
+}
+
+// RestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPostWithResponse request returning *RestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPostResponse
+func (c *ClientWithResponses) RestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPostWithResponse(ctx context.Context, orgId string, mcpServerId string, reqEditors ...RequestEditorFn) (*RestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPostResponse, error) {
+	rsp, err := c.RestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPost(ctx, orgId, mcpServerId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPostResponse(rsp)
 }
 
 // ParseListBotsV1OrgsOrgIdBotsGetResponse parses an HTTP response from a ListBotsV1OrgsOrgIdBotsGetWithResponse call
@@ -3695,6 +5146,240 @@ func ParseRestartBotV1OrgsOrgIdBotsBotSlugRestartPostResponse(rsp *http.Response
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest BotRestartResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListMcpServersV1OrgsOrgIdMcpServersGetResponse parses an HTTP response from a ListMcpServersV1OrgsOrgIdMcpServersGetWithResponse call
+func ParseListMcpServersV1OrgsOrgIdMcpServersGetResponse(rsp *http.Response) (*ListMcpServersV1OrgsOrgIdMcpServersGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListMcpServersV1OrgsOrgIdMcpServersGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []ListMcpServersV1OrgsOrgIdMcpServersGet_200_Item
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateMcpServerV1OrgsOrgIdMcpServersPostResponse parses an HTTP response from a CreateMcpServerV1OrgsOrgIdMcpServersPostWithResponse call
+func ParseCreateMcpServerV1OrgsOrgIdMcpServersPostResponse(rsp *http.Response) (*CreateMcpServerV1OrgsOrgIdMcpServersPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateMcpServerV1OrgsOrgIdMcpServersPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest struct {
+			union json.RawMessage
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteResponse parses an HTTP response from a DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteWithResponse call
+func ParseDeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteResponse(rsp *http.Response) (*DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetMcpServerV1OrgsOrgIdMcpServersMcpServerIdGetResponse parses an HTTP response from a GetMcpServerV1OrgsOrgIdMcpServersMcpServerIdGetWithResponse call
+func ParseGetMcpServerV1OrgsOrgIdMcpServersMcpServerIdGetResponse(rsp *http.Response) (*GetMcpServerV1OrgsOrgIdMcpServersMcpServerIdGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetMcpServerV1OrgsOrgIdMcpServersMcpServerIdGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			union json.RawMessage
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchResponse parses an HTTP response from a UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchWithResponse call
+func ParseUpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchResponse(rsp *http.Response) (*UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			union json.RawMessage
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseRefreshMcpServerToolsV1OrgsOrgIdMcpServersMcpServerIdRefreshToolsPostResponse parses an HTTP response from a RefreshMcpServerToolsV1OrgsOrgIdMcpServersMcpServerIdRefreshToolsPostWithResponse call
+func ParseRefreshMcpServerToolsV1OrgsOrgIdMcpServersMcpServerIdRefreshToolsPostResponse(rsp *http.Response) (*RefreshMcpServerToolsV1OrgsOrgIdMcpServersMcpServerIdRefreshToolsPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &RefreshMcpServerToolsV1OrgsOrgIdMcpServersMcpServerIdRefreshToolsPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			union json.RawMessage
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseRestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPostResponse parses an HTTP response from a RestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPostWithResponse call
+func ParseRestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPostResponse(rsp *http.Response) (*RestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &RestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			union json.RawMessage
+		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}

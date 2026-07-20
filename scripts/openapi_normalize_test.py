@@ -143,6 +143,16 @@ class TestNormalizeSpec(unittest.TestCase):
             },
         }
 
+    def test_exclude_paths(self):
+        spec = self._spec()
+        # Add a second bots-tagged path we want to drop despite the kept tag.
+        spec["paths"]["/v1/orgs/{org_id}/bots/{slug}/catalog"] = {
+            "get": {"tags": ["bots"], "responses": {"200": {"description": "ok"}}}
+        }
+        out = norm.normalize_spec(spec, {"bots"}, ("/catalog",))
+        assert "/v1/orgs/{org_id}/bots/{slug}/catalog" not in out["paths"]
+        assert "/v1/orgs/{org_id}/bots/{slug}" in out["paths"]
+
     def test_full_normalization(self):
         spec = norm.normalize_spec(self._spec(), {"bots"})
         # No residual null branches anywhere.

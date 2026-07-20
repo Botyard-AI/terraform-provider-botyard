@@ -3,10 +3,10 @@
 Manage [Botyard](https://botyard.io) platform resources — bots, skills,
 workforces, credentials, and MCP servers — as code.
 
-> **Status: early scaffold.** This is the provider skeleton (task #785 of the
-> Terraform Provider epic). It ships the provider configuration, a generated API
-> client, authentication, and a single `botyard_bot` data source. Managed
-> resources are added incrementally.
+> **Status: early, in active development.** Ships the provider configuration, a
+> generated API client, authentication, the `botyard_mcp_server` **resource**,
+> and a `botyard_bot` data source. More managed resources are added
+> incrementally (secret policies, bots, …).
 
 ## Usage
 
@@ -27,6 +27,24 @@ provider "botyard" {
 
 data "botyard_bot" "example" {
   slug = "my-bot"
+}
+
+# A container-image MCP server (Botyard runs it as a pod):
+resource "botyard_mcp_server" "search" {
+  runtime_kind = "container_image"
+  name         = "Web Search"
+  image        = "ghcr.io/example/search-mcp:1.2.0"
+  port         = 8080
+  env_secret_refs = {
+    SEARCH_API_KEY = "search.api_key" # vault key-path pointer, not the value
+  }
+}
+
+# A managed-remote MCP server (Botyard proxies to a vendor endpoint):
+resource "botyard_mcp_server" "vendor" {
+  runtime_kind = "managed_remote"
+  name         = "Vendor MCP"
+  endpoint_url = "https://mcp.vendor.example.com"
 }
 
 output "bot_id" {
