@@ -1214,7 +1214,7 @@
           "bots"
         ],
         "summary": "Create Bot",
-        "description": "Create a bot desired-state record and enqueue reconcile notification.",
+        "description": "Create a bot desired-state record and enqueue reconcile notification.\n\nPer-bot resource overrides are available on every plan; the plan's\n``resource_maximums`` still bound how high each dimension may go.",
         "operationId": "create_bot_v1_orgs__org_id__bots_post",
         "parameters": [
           {
@@ -1453,7 +1453,7 @@
           "bots"
         ],
         "summary": "Update Bot",
-        "description": "Update bot metadata, compute overrides, or runtime privilege mode.\n\nTier, resource-override, and runtime privilege changes trigger a full K8s\nreconcile. Avatar changes are metadata-only. For config changes, use PATCH\n/{bot_slug}/config.\n\nResource overrides and privileged runtime mode are gated to enterprise\nplan features; plans without those features receive 403\n``upgrade_required``.",
+        "description": "Update bot metadata, compute overrides, or runtime privilege mode.\n\nTier, resource-override, and runtime privilege changes trigger a full K8s\nreconcile. Avatar changes are metadata-only. For config changes, use PATCH\n/{bot_slug}/config.\n\nPer-bot resource overrides are available on every plan (bounded by the\nplan's ``resource_maximums``). Privileged runtime mode is still gated to\nplans with the ``privileged_mode`` feature; plans without it receive 403\n``upgrade_required``.",
         "operationId": "update_bot_v1_orgs__org_id__bots__bot_slug__patch",
         "parameters": [
           {
@@ -1575,7 +1575,7 @@
           "bots"
         ],
         "summary": "Get Bot Chat Readiness",
-        "description": "Whether the bot has a usable LLM credential configured.\n\nCheap, mount-time signal for chat surfaces (widget/console): lets them warn\nthe end user \u2014 before any send \u2014 that the bot can't respond until a\ncredential is assigned. Visibility-gated exactly like ``get_bot`` so\nrestricted bots stay 404-invisible to actors without access.",
+        "description": "Lightweight readiness signals for chat surfaces (widget/console).\n\nCheap, pollable signal: ``llm_configured`` lets a surface warn \u2014 before any\nsend \u2014 that the bot can't respond until a credential is assigned, and\n``maintenance_restart_pending`` drives a subtle \"restart pending\" indicator\nwhile a workload-aware maintenance restart is in flight. Visibility-gated\nexactly like ``get_bot`` so restricted bots stay 404-invisible to actors\nwithout access.",
         "operationId": "get_bot_chat_readiness_v1_orgs__org_id__bots__bot_slug__chat_readiness_get",
         "parameters": [
           {
@@ -5397,6 +5397,162 @@
         }
       }
     },
+    "/v1/orgs/{org_id}/conversations/{conversation_id}/pin": {
+      "put": {
+        "tags": [
+          "conversations"
+        ],
+        "summary": "Pin Conversation",
+        "description": "Pin a conversation for the authenticated user.\n\nPins are per-user, so only USER actors have them \u2014 API-key/bot callers are\na no-op (mirrors ``mark_conversation_read``). The pin is idempotent.",
+        "operationId": "pin_conversation_v1_orgs__org_id__conversations__conversation_id__pin_put",
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Org Id"
+            }
+          },
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Conversation Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "default": {
+            "description": "RFC 9457 Problem Details error response",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "conversations"
+        ],
+        "summary": "Unpin Conversation",
+        "description": "Unpin a conversation for the authenticated user. A no-op when not pinned.",
+        "operationId": "unpin_conversation_v1_orgs__org_id__conversations__conversation_id__pin_delete",
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Org Id"
+            }
+          },
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Conversation Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "default": {
+            "description": "RFC 9457 Problem Details error response",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "conversations"
+        ],
+        "summary": "Reorder Pinned Conversation",
+        "description": "Reposition a pinned conversation within the authenticated user's pinned section.\n\nThe conversation must already be pinned by this user (404 otherwise). Only\nUSER actors have pins, so API-key/bot callers are a silent no-op.",
+        "operationId": "reorder_pinned_conversation_v1_orgs__org_id__conversations__conversation_id__pin_patch",
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Org Id"
+            }
+          },
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Conversation Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConversationPinReorder"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "default": {
+            "description": "RFC 9457 Problem Details error response",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/orgs/{org_id}/conversations/{conversation_id}": {
       "get": {
         "tags": [
@@ -5939,6 +6095,235 @@
         }
       }
     },
+    "/v1/orgs/{org_id}/conversations/{conversation_id}/content-blocks/payload": {
+      "get": {
+        "tags": [
+          "content-blocks"
+        ],
+        "summary": "Read a content block's payload (validated, typed rows)",
+        "description": "Return a content block's validated payload rows.\n\nAuthorization mirrors the conversation file-list route: the viewer must have\naccess to ``conversation_id``. Storage resolution, the server-side read, and\nvalidation live in ``ContentBlockService`` (shared with the botyard-mcp\ncontent-block tools).",
+        "operationId": "get_content_block_payload_v1_orgs__org_id__conversations__conversation_id__content_blocks_payload_get",
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Org Id"
+            }
+          },
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Conversation Id"
+            }
+          },
+          {
+            "name": "payload_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Opaque ID of the payload document, taken from the content block's ``payload.payload_id``. Storage location is resolved server-side.",
+              "title": "Payload Id"
+            },
+            "description": "Opaque ID of the payload document, taken from the content block's ``payload.payload_id``. Storage location is resolved server-side."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ChartPayload"
+                    },
+                    {
+                      "$ref": "#/components/schemas/TablePayload"
+                    },
+                    {
+                      "$ref": "#/components/schemas/DiagramPayload"
+                    }
+                  ],
+                  "discriminator": {
+                    "propertyName": "kind",
+                    "mapping": {
+                      "chart": "#/components/schemas/ChartPayload",
+                      "table": "#/components/schemas/TablePayload",
+                      "diagram": "#/components/schemas/DiagramPayload"
+                    }
+                  },
+                  "title": "Response Get Content Block Payload V1 Orgs  Org Id  Conversations  Conversation Id  Content Blocks Payload Get"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "RFC 9457 Problem Details error response",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/orgs/{org_id}/conversations/{conversation_id}/vault-input-requests/{request_id}": {
+      "get": {
+        "tags": [
+          "vault-input-requests"
+        ],
+        "summary": "Get Vault Input Request",
+        "description": "Return the live status of a vault input request group (never any value).",
+        "operationId": "get_vault_input_request_v1_orgs__org_id__conversations__conversation_id__vault_input_requests__request_id__get",
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Org Id"
+            }
+          },
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Conversation Id"
+            }
+          },
+          {
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Request Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VaultInputRequestState"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "RFC 9457 Problem Details error response",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/orgs/{org_id}/conversations/{conversation_id}/vault-input-requests/{request_id}/submit": {
+      "post": {
+        "tags": [
+          "vault-input-requests"
+        ],
+        "summary": "Submit Vault Input Request",
+        "description": "Store the user-supplied secret value(s) for a request group and wake the bot.\n\nLocks the whole pending group (one-shot), re-checks conflicts at each (possibly\nuser-edited) key, then for every secret either creates a new bot-owned secret or\n\u2014 when the secret opted into ``allow_update`` and the requesting bot is already\nauthorized for the existing key \u2014 replaces just that key's value, all in one\ntransaction; marks the group submitted; and schedules a single post-commit wake.\nSubmission is **all-or-nothing** and must cover exactly the secrets in the group;\nthe values are never logged or echoed back.\n\nAny user with conversation access may fulfill the request for the requesting\nbot. **Broadening** the secrets to other bots or all bots is a cross-bot\ndistribution decision \u2014 owner-gated exactly like the normal secret modal \u2014 so\n``bot_ids``/``allow_all_bots`` require org-owner role. The pending request only\nauthorizes storing the secrets for the bot that asked.",
+        "operationId": "submit_vault_input_request_v1_orgs__org_id__conversations__conversation_id__vault_input_requests__request_id__submit_post",
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Org Id"
+            }
+          },
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Conversation Id"
+            }
+          },
+          {
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Request Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VaultInputSubmitRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VaultInputRequestState"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "RFC 9457 Problem Details error response",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/orgs/{org_id}/conversations/{conversation_id}/chat": {
       "post": {
         "tags": [
@@ -6127,6 +6512,73 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ChatSteerResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "RFC 9457 Problem Details error response",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/orgs/{org_id}/conversations/{conversation_id}/chat/cancel": {
+      "post": {
+        "tags": [
+          "chat"
+        ],
+        "summary": "Chat Cancel",
+        "description": "Cancel an already-queued message before it runs.\n\nForwards a cancel signal to the bot, which pulls the queued message out of\nits ordering gate and drops it so it never runs (the proxy then marks the\nturn ``cancelled``). Whether the message is still queued (vs. already\ndispatched) is decided by the bot, which no-ops if the cancel arrived too\nlate.\n\n``require_conversation`` enforces access and hands us the row, so we reuse\nits ``bot_id`` instead of re-fetching the conversation.",
+        "operationId": "chat_cancel_v1_orgs__org_id__conversations__conversation_id__chat_cancel_post",
+        "parameters": [
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Conversation Id"
+            }
+          },
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Org Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatCancelRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatCancelResponse"
                 }
               }
             }
@@ -8012,6 +8464,157 @@
         }
       }
     },
+    "/v1/orgs/{org_id}/workforces/{workforce_slug}/tasks/{task_number}/links": {
+      "post": {
+        "tags": [
+          "workforces"
+        ],
+        "summary": "Create Task Link",
+        "description": "Link the path task to another task in the same workforce.\n\nA single link row is shared by both tasks; both boards/detail views update.\n``direction`` decides whether the path task is the ``from`` (outgoing) or\n``to`` (incoming, e.g. \"blocked by\") side. Returns the updated path task.",
+        "operationId": "create_task_link_v1_orgs__org_id__workforces__workforce_slug__tasks__task_number__links_post",
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Org Id"
+            }
+          },
+          {
+            "name": "workforce_slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Workforce Slug"
+            }
+          },
+          {
+            "name": "task_number",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Task Number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TaskLinkCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "RFC 9457 Problem Details error response",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/orgs/{org_id}/workforces/{workforce_slug}/tasks/{task_number}/links/{link_id}": {
+      "delete": {
+        "tags": [
+          "workforces"
+        ],
+        "summary": "Delete Task Link",
+        "description": "Remove a task-to-task link. Returns the updated path task.",
+        "operationId": "delete_task_link_v1_orgs__org_id__workforces__workforce_slug__tasks__task_number__links__link_id__delete",
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Org Id"
+            }
+          },
+          {
+            "name": "workforce_slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Workforce Slug"
+            }
+          },
+          {
+            "name": "task_number",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Task Number"
+            }
+          },
+          {
+            "name": "link_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Link Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "RFC 9457 Problem Details error response",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/orgs/{org_id}/bots/{bot_id}/workforces": {
       "get": {
         "tags": [
@@ -9264,7 +9867,7 @@
           "usage"
         ],
         "summary": "Get Usage History",
-        "description": "Return per-meter quantity time-series for the requested window.\n\nQuantities are pulled from the billing provider, filtered by\n``external_customer_id = org_id`` (set on each customer at checkout)\nso two orgs that share an email can never see each other's usage.\n\nEmpty ``series`` is normal for orgs without a subscription, for\norgs whose customer was created before the ``external_id`` backfill\nran, or in local dev where the metering client isn't configured.",
+        "description": "Return per-meter quantity time-series for the requested window.\n\nCount-meter quantities are pulled from the billing provider, filtered\nby ``external_customer_id = org_id`` (set on each customer at checkout)\nso two orgs that share an email can never see each other's usage.\nResource-overage series are computed from the allocation ledger so the\nchart can show the included baseline alongside the overage.\n\nEmpty ``series`` is normal for orgs without a subscription, for\norgs whose customer was created before the ``external_id`` backfill\nran, or in local dev where the metering client isn't configured.",
         "operationId": "get_usage_history_v1_orgs__org_id__usage_history_get",
         "parameters": [
           {
@@ -10984,6 +11587,325 @@
         }
       }
     },
+    "/v1/orgs/{org_id}/bots/{bot_slug}/inbound-emails": {
+      "get": {
+        "tags": [
+          "inbound-emails"
+        ],
+        "summary": "List Bot Inbound Emails",
+        "description": "List mail received by this bot, newest first, with its own address.",
+        "operationId": "list_bot_inbound_emails_v1_orgs__org_id__bots__bot_slug__inbound_emails_get",
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Org Id"
+            }
+          },
+          {
+            "name": "bot_slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Bot Slug"
+            }
+          },
+          {
+            "name": "from_address",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "From Address"
+            }
+          },
+          {
+            "name": "recipient",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Recipient"
+            }
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Query"
+            }
+          },
+          {
+            "name": "since",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Since"
+            }
+          },
+          {
+            "name": "until",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Until"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/InboundEmailStatus"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BotInboundMailboxPage"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "RFC 9457 Problem Details error response",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/orgs/{org_id}/bots/{bot_slug}/inbound-emails/{inbound_email_id}": {
+      "get": {
+        "tags": [
+          "inbound-emails"
+        ],
+        "summary": "Get Bot Inbound Email",
+        "description": "Fetch one full received message (body + attachment metadata).",
+        "operationId": "get_bot_inbound_email_v1_orgs__org_id__bots__bot_slug__inbound_emails__inbound_email_id__get",
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Org Id"
+            }
+          },
+          {
+            "name": "bot_slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Bot Slug"
+            }
+          },
+          {
+            "name": "inbound_email_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Inbound Email Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InboundEmailRecord"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "RFC 9457 Problem Details error response",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/orgs/{org_id}/bots/{bot_slug}/inbound-emails/{inbound_email_id}/attachments/{attachment_id}/download": {
+      "get": {
+        "tags": [
+          "inbound-emails"
+        ],
+        "summary": "Download Bot Inbound Email Attachment",
+        "description": "Issue a short-lived presigned download for one attachment.",
+        "operationId": "download_bot_inbound_email_attachment_v1_orgs__org_id__bots__bot_slug__inbound_emails__inbound_email_id__attachments__attachment_id__download_get",
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Org Id"
+            }
+          },
+          {
+            "name": "bot_slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Bot Slug"
+            }
+          },
+          {
+            "name": "inbound_email_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Inbound Email Id"
+            }
+          },
+          {
+            "name": "attachment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Attachment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InboundEmailAttachmentDownload"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "RFC 9457 Problem Details error response",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/orgs/{org_id}/bots/{bot_slug}/skills": {
       "get": {
         "tags": [
@@ -11112,6 +12034,64 @@
             }
           }
         }
+      },
+      "delete": {
+        "tags": [
+          "skills"
+        ],
+        "summary": "Unassign Skills",
+        "description": "Remove multiple skill assignments from this bot in one request.\n\nDeletes every assignment in ``skill_ids`` (unknown IDs are ignored \u2014\npartial removal still succeeds); the service removes them from the running\nbot's workspace in a single bridge call and refreshes the system prompt\noverride ONCE for the whole batch. Returns 404 only if none of the given\nskills were assigned to the bot.",
+        "operationId": "unassign_skills_v1_orgs__org_id__bots__bot_slug__skills_delete",
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Org Id"
+            }
+          },
+          {
+            "name": "bot_slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Bot Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BotSkillIds"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "default": {
+            "description": "RFC 9457 Problem Details error response",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/v1/orgs/{org_id}/bots/{bot_slug}/skills/{skill_slug}": {
@@ -11120,7 +12100,7 @@
           "skills"
         ],
         "summary": "Unassign Skill",
-        "description": "Remove a skill assignment from this bot.",
+        "description": "Remove a single skill assignment from this bot.\n\nThin alias over the batch path \u2014 resolves the slug to its skill id and\ndelegates to the same service orchestrator so bridge removal and prompt\nrefresh stay identical.",
         "operationId": "unassign_skill_v1_orgs__org_id__bots__bot_slug__skills__skill_slug__delete",
         "parameters": [
           {
@@ -11309,7 +12289,7 @@
           "bot-tools"
         ],
         "summary": "Assign Tools",
-        "description": "Add tools to a bot (skips already-assigned).\n\nIf the bot is running and OpenClaw tools are involved, pushes the\nupdated tools.allow config to the bridge. Bridge failures propagate\nas 502.",
+        "description": "Add tools to a bot (skips already-assigned).\n\nReturns after the DB write; the bridge push happens in the background via a\ntriggered reconcile. New assignments start ``pending`` on a running bot and\nflip to ``synced``/``failed`` as the reconciler applies them.",
         "operationId": "assign_tools_v1_orgs__org_id__bots__bot_slug__tools_post",
         "parameters": [
           {
@@ -11378,7 +12358,7 @@
           "bot-tools"
         ],
         "summary": "Replace Tools",
-        "description": "Replace all tool assignments for a bot.\n\nIf the bot is running and OpenClaw tools are involved, pushes the\nupdated tools.allow config to the bridge. Bridge failures propagate\nas 502.",
+        "description": "Replace all tool assignments for a bot.\n\nReturns after the DB write; the bridge push happens in the background via a\ntriggered reconcile.",
         "operationId": "replace_tools_v1_orgs__org_id__bots__bot_slug__tools_put",
         "parameters": [
           {
@@ -11447,7 +12427,7 @@
           "bot-tools"
         ],
         "summary": "Unassign Tools",
-        "description": "Remove tools from a bot.\n\nIf the bot is running and OpenClaw tools are involved, pushes the\nupdated tools.allow config to the bridge. Bridge failures propagate\nas 502.",
+        "description": "Remove tools from a bot.\n\nReturns after the DB write; the bridge push (which drops the tool from the\nrunning bot) happens in the background via a triggered reconcile.",
         "operationId": "unassign_tools_v1_orgs__org_id__bots__bot_slug__tools_delete",
         "parameters": [
           {
@@ -11482,6 +12462,77 @@
         "responses": {
           "204": {
             "description": "Successful Response"
+          },
+          "default": {
+            "description": "RFC 9457 Problem Details error response",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/orgs/{org_id}/bots/{bot_slug}/tools/retry-sync": {
+      "post": {
+        "tags": [
+          "bot-tools"
+        ],
+        "summary": "Retry Tool Sync",
+        "description": "Re-queue failed tool-assignment config pushes for another reconcile.\n\nResets the bot's failed assignments (optionally narrowed to ``tool_ids``)\nto ``pending`` under a fresh generation bump, then triggers a reconcile.\n404s if there are no matching failed assignments.",
+        "operationId": "retry_tool_sync_v1_orgs__org_id__bots__bot_slug__tools_retry_sync_post",
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Org Id"
+            }
+          },
+          {
+            "name": "bot_slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Bot Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BotToolRetrySyncRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BotToolAssignmentResponse"
+                  },
+                  "title": "Response Retry Tool Sync V1 Orgs  Org Id  Bots  Bot Slug  Tools Retry Sync Post"
+                }
+              }
+            }
           },
           "default": {
             "description": "RFC 9457 Problem Details error response",
@@ -13597,11 +14648,24 @@
           },
           {
             "$ref": "#/components/schemas/ConversationMessageRedactedContent"
+          },
+          {
+            "$ref": "#/components/schemas/RolloutInitiatedContent"
+          },
+          {
+            "$ref": "#/components/schemas/RolloutCompletedContent"
+          },
+          {
+            "$ref": "#/components/schemas/MaintenanceRestartForceAppliedContent"
+          },
+          {
+            "$ref": "#/components/schemas/BotEmailSentContent"
           }
         ],
         "discriminator": {
           "propertyName": "event_type",
           "mapping": {
+            "bot_email.sent": "#/components/schemas/BotEmailSentContent",
             "bot_runtime.crash_loop.detected": "#/components/schemas/BotRuntimeCrashLoopDetectedContent",
             "bot_runtime.oom.detected": "#/components/schemas/BotRuntimeOomDetectedContent",
             "bot_runtime.oom.killed": "#/components/schemas/BotRuntimeOomKilledContent",
@@ -13612,6 +14676,9 @@
             "bot_runtime.sudo_exec.called": "#/components/schemas/BotRuntimeSudoExecCalledContent",
             "bot_runtime.tool.called": "#/components/schemas/BotRuntimeToolCalledContent",
             "conversation.message.redacted": "#/components/schemas/ConversationMessageRedactedContent",
+            "provisioning.maintenance_restart.force_applied": "#/components/schemas/MaintenanceRestartForceAppliedContent",
+            "rollout.completed": "#/components/schemas/RolloutCompletedContent",
+            "rollout.initiated": "#/components/schemas/RolloutInitiatedContent",
             "secrets.exfiltration.blocked": "#/components/schemas/SecretExfiltrationBlockedContent",
             "secrets.exfiltration.detected": "#/components/schemas/SecretExfiltrationDetectedContent",
             "secrets.exfiltration.redacted": "#/components/schemas/SecretExfiltrationRedactedContent",
@@ -13631,7 +14698,8 @@
           "auth",
           "admin",
           "bot_runtime",
-          "billing"
+          "billing",
+          "provisioning"
         ],
         "title": "AuditEventDomain",
         "description": "Product domain that emitted an audit event."
@@ -14000,6 +15068,7 @@
           "secrets.lease.used",
           "secrets.lease.revoked",
           "secrets.lease.expired",
+          "secrets.ttl.updated",
           "secrets.exfiltration.detected",
           "secrets.exfiltration.redacted",
           "secrets.exfiltration.blocked",
@@ -14017,7 +15086,11 @@
           "auth.login.succeeded",
           "auth.login.failed",
           "auth.mfa.enabled",
-          "auth.mfa.disabled"
+          "auth.mfa.disabled",
+          "rollout.initiated",
+          "rollout.completed",
+          "provisioning.maintenance_restart.force_applied",
+          "bot_email.sent"
         ],
         "title": "AuditEventType",
         "type": "string"
@@ -14392,6 +15465,12 @@
             "type": "boolean",
             "title": "Llm Configured",
             "description": "True when the bot has a usable LLM credential linked. False means the bot's primary model is the unconfigured sentinel and it cannot respond until a credential is assigned."
+          },
+          "maintenance_restart_pending": {
+            "type": "boolean",
+            "title": "Maintenance Restart Pending",
+            "description": "True when a workload-aware maintenance restart is announced / in-flight for this bot (``bots.maintenance_restart`` is set). Chat surfaces show a subtle 'restart pending' indicator while pending; it clears once the restart completes or is released and the record is cleared.",
+            "default": false
           }
         },
         "type": "object",
@@ -14436,6 +15515,19 @@
             ],
             "title": "Avatar Url",
             "description": "Avatar image URL (DiceBear data URI or custom)"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description",
+            "description": "Short human-facing description / role for the bot (e.g. 'Platform developer'). Display metadata only \u2014 not injected into the bot's system prompt."
           },
           "tier": {
             "$ref": "#/components/schemas/BotTier",
@@ -14719,6 +15811,83 @@
         ],
         "title": "BotCredentialReorder",
         "description": "Request to reorder credentials within a scope."
+      },
+      "BotEmailSentContent": {
+        "properties": {
+          "event_type": {
+            "type": "string",
+            "const": "bot_email.sent",
+            "title": "Event Type",
+            "default": "bot_email.sent"
+          },
+          "message_id": {
+            "type": "string",
+            "title": "Message Id"
+          },
+          "from_address": {
+            "type": "string",
+            "title": "From Address"
+          },
+          "to": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "To"
+          },
+          "cc": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Cc",
+            "default": []
+          },
+          "bcc": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Bcc",
+            "default": []
+          },
+          "reply_to": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Reply To",
+            "default": []
+          },
+          "subject": {
+            "type": "string",
+            "title": "Subject"
+          },
+          "has_text": {
+            "type": "boolean",
+            "title": "Has Text"
+          },
+          "has_html": {
+            "type": "boolean",
+            "title": "Has Html"
+          },
+          "attachment_count": {
+            "type": "integer",
+            "title": "Attachment Count",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "required": [
+          "message_id",
+          "from_address",
+          "to",
+          "subject",
+          "has_text",
+          "has_html"
+        ],
+        "title": "BotEmailSentContent",
+        "description": "Typed content for a bot sending a single outbound email via Resend.\n\nEmitted once per successful ``send_email`` MCP tool call. The enforced\n``from_address`` is derived server-side from the bot/org identity \u2014 the\ncaller never supplies it \u2014 so it is recorded here for traceability.\nRecipient addresses and the subject are retained for abuse investigation;\nthe email body is intentionally never stored. ``message_id`` is the Resend\nmessage identifier returned by the provider."
       },
       "BotFileCatalogueCreateRequest": {
         "properties": {
@@ -15161,6 +16330,45 @@
         "title": "BotImageResponse",
         "description": "Bot image registry entry."
       },
+      "BotInboundMailboxPage": {
+        "properties": {
+          "address": {
+            "type": "string",
+            "title": "Address",
+            "description": "The bot's canonical inbound address ({bot_slug}.{org_slug}@{domain})."
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/InboundEmailSearchRow"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total",
+            "description": "Total messages matching the filter, across all pages."
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          }
+        },
+        "type": "object",
+        "required": [
+          "address",
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "BotInboundMailboxPage",
+        "description": "One page of a bot's received mail, plus the bot's own address."
+      },
       "BotListItem": {
         "properties": {
           "id": {
@@ -15191,6 +16399,18 @@
               }
             ],
             "title": "Avatar Url"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description",
+            "description": "Short human-facing description / role for the bot (e.g. 'Platform developer'). Display metadata only \u2014 not injected into the bot's system prompt."
           },
           "tier": {
             "$ref": "#/components/schemas/BotTier"
@@ -15231,6 +16451,12 @@
           "health_status": {
             "$ref": "#/components/schemas/BotHealthStatus",
             "description": "Bot health monitoring status"
+          },
+          "maintenance_restart_pending": {
+            "type": "boolean",
+            "title": "Maintenance Restart Pending",
+            "description": "True when a workload-aware maintenance restart is announced / in-flight for this bot (``bots.maintenance_restart`` is set). A pod-recreating update is queued but gated behind the maintenance engine (deferred to a window or waiting for the bot to go idle), so the bot keeps its old pod and stays running even though ``observed_state`` reads ``updating:infra``. UIs surface this as 'Running \u00b7 update pending' rather than 'Provisioning'.",
+            "default": false
           },
           "reconcile_error": {
             "anyOf": [
@@ -15412,6 +16638,18 @@
             ],
             "title": "Avatar Url"
           },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description",
+            "description": "Short human-facing description / role for the bot (e.g. 'Platform developer'). Display metadata only \u2014 not injected into the bot's system prompt."
+          },
           "namespace": {
             "type": "string",
             "title": "Namespace"
@@ -15548,6 +16786,12 @@
               }
             ],
             "description": "Current rescue escalation stage, if rescue is in progress"
+          },
+          "maintenance_restart_pending": {
+            "type": "boolean",
+            "title": "Maintenance Restart Pending",
+            "description": "True when a workload-aware maintenance restart is announced / in-flight for this bot (``bots.maintenance_restart`` is set). A pod-recreating update is queued but gated behind the maintenance engine (deferred to a window or waiting for the bot to go idle), so the bot keeps its old pod and stays running even though ``observed_state`` reads ``updating:infra``. UIs surface this as 'Running \u00b7 update pending' rather than 'Provisioning'.",
+            "default": false
           },
           "resources": {
             "anyOf": [
@@ -16819,6 +18063,25 @@
         "title": "BotSkillDeploy",
         "description": "Request to deploy skills to a bot."
       },
+      "BotSkillIds": {
+        "properties": {
+          "skill_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Skill Ids",
+            "description": "Skill IDs to unassign"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "skill_ids"
+        ],
+        "title": "BotSkillIds",
+        "description": "Request to unassign skills from a bot (batch)."
+      },
       "BotStorageClass": {
         "type": "string",
         "enum": [
@@ -17014,6 +18277,35 @@
             "format": "date-time",
             "title": "Assigned At",
             "description": "When tool was assigned"
+          },
+          "sync_status": {
+            "$ref": "#/components/schemas/SyncStatus",
+            "description": "Async config-apply status for this assignment on a running bot: pending (waiting for the reconciler to push), synced (live on the bot), or failed (push failed; retryable)"
+          },
+          "sync_error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sync Error",
+            "description": "Error message from the last failed config push"
+          },
+          "synced_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Synced At",
+            "description": "When this assignment was last confirmed applied to the running bot"
           }
         },
         "type": "object",
@@ -17027,7 +18319,8 @@
           "mcp_server",
           "domain",
           "assigned_by",
-          "assigned_at"
+          "assigned_at",
+          "sync_status"
         ],
         "title": "BotToolAssignmentResponse",
         "description": "Tool assigned to a bot."
@@ -17050,6 +18343,28 @@
         "title": "BotToolIds",
         "description": "Request body for tool removal operations."
       },
+      "BotToolRetrySyncRequest": {
+        "properties": {
+          "tool_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Ids",
+            "description": "Tool catalog IDs to retry (null/empty = all failed assignments)"
+          }
+        },
+        "type": "object",
+        "title": "BotToolRetrySyncRequest",
+        "description": "Request body for retrying failed tool-assignment config pushes.\n\nAn empty/omitted ``tool_ids`` retries every failed assignment on the bot."
+      },
       "BotType": {
         "type": "string",
         "enum": [
@@ -17071,6 +18386,19 @@
             ],
             "title": "Avatar Url",
             "description": "Avatar image URL (DiceBear data URI or custom). Send null to clear; omit to leave unchanged."
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description",
+            "description": "Short human-facing description / role for the bot (e.g. 'Platform developer'). Display metadata only \u2014 not injected into the bot's system prompt. Send null to clear; omit to leave unchanged."
           },
           "tier": {
             "anyOf": [
@@ -17253,6 +18581,77 @@
         ],
         "title": "ChallengeResponse",
         "description": "Altcha proof-of-work challenge returned to the client.\n\nThe client must find a number whose SHA-256 hash (combined with the salt)\nmatches the ``challenge`` value.  The HMAC ``signature`` allows the server\nto verify the solution statelessly on submission."
+      },
+      "ChartPayload": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "chart",
+            "title": "Kind",
+            "default": "chart"
+          },
+          "rows": {
+            "items": {
+              "additionalProperties": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Rows",
+            "description": "Chart data rows; each is an object keyed by ``x_key`` and every series ``key``."
+          }
+        },
+        "type": "object",
+        "required": [
+          "rows"
+        ],
+        "title": "ChartPayload",
+        "description": "Validated data rows for a :class:`ChartContentBlock`."
+      },
+      "ChatCancelRequest": {
+        "properties": {
+          "request_id": {
+            "type": "string",
+            "title": "Request Id",
+            "description": "The queued message's request_id (from the chat send 202 ack / its assistant.queued event) to cancel before it runs."
+          }
+        },
+        "type": "object",
+        "required": [
+          "request_id"
+        ],
+        "title": "ChatCancelRequest",
+        "description": "Body for the cancel (drop-queued) endpoint."
+      },
+      "ChatCancelResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "cancelling",
+            "title": "Status",
+            "description": "The cancel signal was forwarded to the bot."
+          }
+        },
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "title": "ChatCancelResponse",
+        "description": "202 ack for a cancel attempt."
       },
       "ChatRequestMode": {
         "type": "string",
@@ -18328,6 +19727,11 @@
             "title": "Port",
             "description": "Container port the streamable-http transport listens on"
           },
+          "pod_host_mode": {
+            "$ref": "#/components/schemas/McpPodHostMode",
+            "description": "HTTP Host strategy for the in-cluster pod. Leave 'natural' (default) for the Service FQDN Host \u2014 correct for the MCP Python SDK / uvx, Node/npx, and first-party images. Set 'pod_localhost' only for servers that enforce a DNS-rebinding host allowlist (mark3labs/mcp-go, e.g. grafana/mcp-grafana), which reject the FQDN with 403 'host not allowed'.",
+            "default": "natural"
+          },
           "command": {
             "anyOf": [
               {
@@ -18606,6 +20010,11 @@
             "type": "integer",
             "title": "Port",
             "description": "Container port for the streamable-http transport"
+          },
+          "pod_host_mode": {
+            "$ref": "#/components/schemas/McpPodHostMode",
+            "description": "HTTP Host strategy for the in-cluster pod: 'natural' (Service FQDN) or 'pod_localhost' (Host: localhost:<port>, for mcp-go DNS-rebinding servers)",
+            "default": "natural"
           },
           "command": {
             "anyOf": [
@@ -19363,6 +20772,22 @@
         "title": "ConversationMessagesPage",
         "description": "A page of messages plus the conversation's in-flight turn descriptor."
       },
+      "ConversationPinReorder": {
+        "properties": {
+          "position": {
+            "type": "number",
+            "title": "Position",
+            "description": "New sort position (ascending; lower is higher up). The client computes this as a fractional midpoint between the drop target's neighbors."
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "position"
+        ],
+        "title": "ConversationPinReorder",
+        "description": "Request to reposition a pinned conversation within the user's pinned section."
+      },
       "ConversationResponse": {
         "properties": {
           "conversation_id": {
@@ -19466,6 +20891,24 @@
             ],
             "title": "Unread Count",
             "description": "Number of unread messages (only present for authenticated users)"
+          },
+          "is_pinned": {
+            "type": "boolean",
+            "title": "Is Pinned",
+            "description": "True when the authenticated user has pinned this conversation. Drives the pinned section in the conversation picker. Always false for API-key/bot viewers (pins are per-user) and on non-enriched responses.",
+            "default": false
+          },
+          "pin_position": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pin Position",
+            "description": "Sort position within the user's pinned section (ascending; lower is higher up). Present only when is_pinned is true. Fractional so pins can be drag-reordered without renumbering."
           },
           "supports_steering": {
             "anyOf": [
@@ -20470,7 +21913,7 @@
               }
             ],
             "title": "Api Key",
-            "description": "New API key \u2014 replaces the existing encrypted value"
+            "description": "New API key \u2014 replaces the existing encrypted value. For Claude Code CLI credentials this is the new setup token; rejected for other OAuth credentials (re-authenticate instead)."
           },
           "enabled": {
             "anyOf": [
@@ -21811,6 +23254,27 @@
         "title": "DesiredState",
         "description": "Control-plane intent for a bot's lifecycle.\n\nSet by the API; the reconciler drives ``observed_state`` toward this value."
       },
+      "DiagramPayload": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "diagram",
+            "title": "Kind",
+            "default": "diagram"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "description": "Mermaid diagram source text."
+          }
+        },
+        "type": "object",
+        "required": [
+          "source"
+        ],
+        "title": "DiagramPayload",
+        "description": "Validated Mermaid source for a :class:`DiagramContentBlock`.\n\nUnlike chart/table payloads (row arrays), a diagram's heavy data is a single\ntext blob \u2014 the Mermaid source. It is not parsed server-side (the Mermaid\nparser is JS-only and diagram syntax evolves); the frontend renderer parses\nit and degrades gracefully on failure."
+      },
       "DocumentUrl-Input": {
         "properties": {
           "url": {
@@ -22581,6 +24045,12 @@
             "$ref": "#/components/schemas/BotHealthStatus",
             "description": "Health monitoring status"
           },
+          "maintenance_restart_pending": {
+            "type": "boolean",
+            "title": "Maintenance Restart Pending",
+            "description": "True when a workload-aware maintenance restart is announced / in-flight for this bot (``bots.maintenance_restart`` is set). A pod-recreating update is queued but gated behind the maintenance engine (deferred to a window or waiting for the bot to go idle), so the bot keeps its old pod and stays running even though ``observed_state`` reads ``updating:infra``. UIs surface this as 'Running \u00b7 update pending' rather than 'Provisioning'.",
+            "default": false
+          },
           "config_generation": {
             "type": "integer",
             "title": "Config Generation",
@@ -22903,6 +24373,12 @@
           "health_status": {
             "$ref": "#/components/schemas/BotHealthStatus",
             "description": "Health monitoring status"
+          },
+          "maintenance_restart_pending": {
+            "type": "boolean",
+            "title": "Maintenance Restart Pending",
+            "description": "True when a workload-aware maintenance restart is announced / in-flight for this bot (``bots.maintenance_restart`` is set). A pod-recreating update is queued but gated behind the maintenance engine (deferred to a window or waiting for the bot to go idle), so the bot keeps its old pod and stays running even though ``observed_state`` reads ``updating:infra``. UIs surface this as 'Running \u00b7 update pending' rather than 'Provisioning'.",
+            "default": false
           },
           "config_generation": {
             "type": "integer",
@@ -24097,6 +25573,396 @@
         ],
         "title": "ImageUrl",
         "description": "A URL to an image."
+      },
+      "InboundEmailAttachmentDownload": {
+        "properties": {
+          "inbound_email_attachment_id": {
+            "type": "string",
+            "title": "Inbound Email Attachment Id"
+          },
+          "filename": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Filename"
+          },
+          "content_type": {
+            "type": "string",
+            "title": "Content Type"
+          },
+          "content_length": {
+            "type": "integer",
+            "title": "Content Length"
+          },
+          "download_url": {
+            "type": "string",
+            "title": "Download Url",
+            "description": "Short-lived presigned GET URL"
+          },
+          "expires_in_seconds": {
+            "type": "integer",
+            "title": "Expires In Seconds"
+          }
+        },
+        "type": "object",
+        "required": [
+          "inbound_email_attachment_id",
+          "filename",
+          "content_type",
+          "content_length",
+          "download_url",
+          "expires_in_seconds"
+        ],
+        "title": "InboundEmailAttachmentDownload",
+        "description": "A short-lived presigned download for a single inbound attachment."
+      },
+      "InboundEmailAttachmentRecord": {
+        "properties": {
+          "inbound_email_attachment_id": {
+            "type": "string",
+            "title": "Inbound Email Attachment Id"
+          },
+          "filename": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Filename"
+          },
+          "content_type": {
+            "type": "string",
+            "title": "Content Type"
+          },
+          "content_length": {
+            "type": "integer",
+            "title": "Content Length"
+          },
+          "content_disposition": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content Disposition"
+          },
+          "content_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content Id"
+          },
+          "content_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content Hash"
+          }
+        },
+        "type": "object",
+        "required": [
+          "inbound_email_attachment_id",
+          "filename",
+          "content_type",
+          "content_length",
+          "content_disposition",
+          "content_id",
+          "content_hash"
+        ],
+        "title": "InboundEmailAttachmentRecord",
+        "description": "Attachment metadata (no content, no raw storage key)."
+      },
+      "InboundEmailRecord": {
+        "properties": {
+          "inbound_email_id": {
+            "type": "string",
+            "title": "Inbound Email Id"
+          },
+          "from_address": {
+            "type": "string",
+            "title": "From Address"
+          },
+          "to_addresses": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "To Addresses"
+          },
+          "cc_addresses": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Cc Addresses"
+          },
+          "bcc_addresses": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Bcc Addresses"
+          },
+          "reply_to_addresses": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Reply To Addresses"
+          },
+          "received_for": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Received For"
+          },
+          "subject": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subject"
+          },
+          "text_body": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Text Body"
+          },
+          "html_body": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Html Body"
+          },
+          "headers": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Headers"
+          },
+          "status": {
+            "$ref": "#/components/schemas/InboundEmailStatus"
+          },
+          "rfc_message_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rfc Message Id"
+          },
+          "provider_message_id": {
+            "type": "string",
+            "title": "Provider Message Id"
+          },
+          "received_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Received At"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "attachments": {
+            "items": {
+              "$ref": "#/components/schemas/InboundEmailAttachmentRecord"
+            },
+            "type": "array",
+            "title": "Attachments"
+          }
+        },
+        "type": "object",
+        "required": [
+          "inbound_email_id",
+          "from_address",
+          "to_addresses",
+          "cc_addresses",
+          "bcc_addresses",
+          "reply_to_addresses",
+          "received_for",
+          "subject",
+          "text_body",
+          "html_body",
+          "headers",
+          "status",
+          "rfc_message_id",
+          "provider_message_id",
+          "received_at",
+          "created_at",
+          "attachments"
+        ],
+        "title": "InboundEmailRecord",
+        "description": "Full captured inbound email including hydrated body + attachment metadata."
+      },
+      "InboundEmailSearchRow": {
+        "properties": {
+          "inbound_email_id": {
+            "type": "string",
+            "title": "Inbound Email Id"
+          },
+          "from_address": {
+            "type": "string",
+            "title": "From Address"
+          },
+          "to_addresses": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "To Addresses"
+          },
+          "cc_addresses": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Cc Addresses"
+          },
+          "subject": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subject"
+          },
+          "snippet": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Snippet",
+            "description": "Truncated plain-text body preview"
+          },
+          "status": {
+            "$ref": "#/components/schemas/InboundEmailStatus"
+          },
+          "rfc_message_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rfc Message Id"
+          },
+          "provider_message_id": {
+            "type": "string",
+            "title": "Provider Message Id"
+          },
+          "received_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Received At"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "attachment_count": {
+            "type": "integer",
+            "title": "Attachment Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "inbound_email_id",
+          "from_address",
+          "to_addresses",
+          "cc_addresses",
+          "subject",
+          "snippet",
+          "status",
+          "rfc_message_id",
+          "provider_message_id",
+          "received_at",
+          "created_at",
+          "attachment_count"
+        ],
+        "title": "InboundEmailSearchRow",
+        "description": "Token-lean projection of one captured inbound email for search results."
+      },
+      "InboundEmailStatus": {
+        "type": "string",
+        "enum": [
+          "pending",
+          "stored",
+          "failed"
+        ],
+        "title": "InboundEmailStatus",
+        "description": "Lifecycle of a captured inbound email's raw dump.\n\n``PENDING`` \u2014 the verified webhook envelope is persisted, but the\nbody/headers/attachments have not yet been hydrated from the\nprovider's pull API. ``STORED`` \u2014 hydration succeeded and all content\nis in S3. ``FAILED`` \u2014 hydration failed permanently; the envelope\nmetadata is retained (dead-letter), only the fetched body/attachments\nare missing."
       },
       "InboxBatchDelete": {
         "properties": {
@@ -26196,6 +28062,150 @@
         "title": "LoadCapabilityReturnPart",
         "description": "Typed `ToolReturnPart` for the `load_capability` tool."
       },
+      "MaintenancePolicyConfig": {
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "default": true
+          },
+          "grace_timeout_s": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Grace Timeout S",
+            "default": 1800
+          },
+          "drain_budget_s": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Drain Budget S",
+            "default": 180
+          },
+          "cordon_before_drain": {
+            "type": "boolean",
+            "title": "Cordon Before Drain",
+            "default": true
+          },
+          "signal_bridge": {
+            "type": "boolean",
+            "title": "Signal Bridge",
+            "default": true
+          },
+          "maintenance_windows": {
+            "items": {
+              "$ref": "#/components/schemas/MaintenanceWindow"
+            },
+            "type": "array",
+            "title": "Maintenance Windows",
+            "default": []
+          }
+        },
+        "type": "object",
+        "title": "MaintenancePolicyConfig",
+        "description": "Editable, persisted maintenance policy (per-org default).\n\nStored as JSONB on ``organizations.maintenance_policy`` (``None`` = no\nconfigured policy, fall back to the hard-coded defaults). Distinct from\n:class:`MaintenanceRestartPolicy`, which is the *resolved per-restart\nsnapshot* the engine consumes: :func:`resolve_restart_policy` turns this\nconfig plus the restart's urgency into that snapshot.\n\n``enabled=False`` opts the org out of workload-aware gating entirely \u2014\nregular restarts then apply immediately (today's blunt behaviour) instead\nof waiting for idle/drain, while critical restarts are always immediate\nregardless of this flag."
+      },
+      "MaintenancePolicyResponse": {
+        "properties": {
+          "org_id": {
+            "type": "string",
+            "title": "Org Id"
+          },
+          "configured": {
+            "type": "boolean",
+            "title": "Configured",
+            "description": "True if a policy is stored for this org; False means the returned policy is the hard-coded default (nothing persisted)"
+          },
+          "policy": {
+            "$ref": "#/components/schemas/MaintenancePolicyConfig"
+          }
+        },
+        "type": "object",
+        "required": [
+          "org_id",
+          "configured",
+          "policy"
+        ],
+        "title": "MaintenancePolicyResponse",
+        "description": "An org's effective maintenance-restart policy."
+      },
+      "MaintenanceRestartForceAppliedContent": {
+        "properties": {
+          "event_type": {
+            "type": "string",
+            "const": "provisioning.maintenance_restart.force_applied",
+            "title": "Event Type",
+            "default": "provisioning.maintenance_restart.force_applied"
+          },
+          "immediate": {
+            "type": "boolean",
+            "title": "Immediate"
+          },
+          "previous_phase": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previous Phase"
+          },
+          "applied": {
+            "type": "boolean",
+            "title": "Applied"
+          }
+        },
+        "type": "object",
+        "required": [
+          "immediate",
+          "applied"
+        ],
+        "title": "MaintenanceRestartForceAppliedContent",
+        "description": "Typed content for an operator force-applying a pending maintenance restart.\n\nEmitted when a platform admin invokes the \"apply pending maintenance restart\nnow\" fleet action, overriding the maintenance-window gate so a deferred /\nparked restart lands immediately instead of waiting for the org's window.\n``immediate`` records whether the operator chose to hard-kill this tick\n(interrupting any active turn) versus a graceful drain; ``previous_phase`` is\nthe maintenance phase the restart was parked in before the override (e.g.\n``deferred``); ``applied`` is whether the pod recreate landed within the\nsynchronous call (a graceful override on a still-busy bot may report ``False``\nand finish draining on a later reconcile tick)."
+      },
+      "MaintenanceWindow": {
+        "properties": {
+          "start_minute": {
+            "type": "integer",
+            "exclusiveMaximum": 1440.0,
+            "minimum": 0.0,
+            "title": "Start Minute"
+          },
+          "end_minute": {
+            "type": "integer",
+            "maximum": 1440.0,
+            "exclusiveMinimum": 0.0,
+            "title": "End Minute"
+          },
+          "timezone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timezone"
+          },
+          "weekdays": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Weekdays",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "start_minute",
+          "end_minute"
+        ],
+        "title": "MaintenanceWindow",
+        "description": "A recurring local-time window during which regular restarts may apply.\n\nA window is a daily ``[start_minute, end_minute)`` range in its own\ntimezone, optionally restricted to certain ISO weekdays. An overnight\nwindow (e.g. 22:00-04:00) is expressed as two entries rather than wrapping\npast midnight, which keeps :func:`is_window_open` a simple containment test."
+      },
       "ManagedCreditsBalanceResponse": {
         "properties": {
           "available": {
@@ -27040,6 +29050,25 @@
             ],
             "title": "Default Value",
             "description": "Optional user-facing default value supplied by the template form spec"
+          },
+          "display": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "dropdown",
+                  "radio",
+                  "segmented",
+                  "switch",
+                  "checkbox"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display",
+            "description": "Optional widget hint for how the setup form renders this field, orthogonal to kind. select fields accept dropdown (default), radio, or segmented; boolean fields accept switch (default) or checkbox. When null the field renders with its kind's default widget, so untagged fields are unchanged."
           }
         },
         "additionalProperties": false,
@@ -27060,7 +29089,8 @@
             "enum": [
               "env",
               "arg",
-              "top_level"
+              "top_level",
+              "file"
             ],
             "title": "Type",
             "description": "Compiler target bucket"
@@ -27107,6 +29137,18 @@
             ],
             "title": "Index",
             "description": "Argument index for arg targets when the field replaces an argv slot"
+          },
+          "path": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Path",
+            "description": "Absolute container file path for file targets. The field's secret reference compiles into secret_file_mounts[path] (mounted read-only) instead of an env var. Validated with the same rules as secret_file_mounts keys."
           }
         },
         "additionalProperties": false,
@@ -27178,6 +29220,15 @@
         ],
         "title": "McpCatalogFormSpec",
         "description": "Botyard-owned dynamic form spec for curated MCP catalog entries."
+      },
+      "McpPodHostMode": {
+        "type": "string",
+        "enum": [
+          "natural",
+          "pod_localhost"
+        ],
+        "title": "McpPodHostMode",
+        "description": "How Botyard sets the HTTP ``Host`` when connecting to an in-cluster MCP pod.\n\nThis is a fixed property of the server's HTTP framework, declared as\nconfiguration (like ``port``) rather than discovered at runtime:\n\n* ``natural`` \u2014 send the pod's in-cluster Service FQDN as ``Host`` (httpx's\n  default). Correct for the MCP Python SDK / uvx, Node/npx, and every\n  first-party ``ghcr.io/botyard-ai/*`` wrapper image. The default.\n* ``pod_localhost`` \u2014 send ``Host: localhost:<port>``. Required by servers\n  that enforce DNS-rebinding host allowlists (``mark3labs/mcp-go``, e.g.\n  ``grafana/mcp-grafana``), which reject the Service FQDN with\n  ``403 forbidden: host not allowed``. Sending it to a server that does not\n  want it (Python SDK) instead breaks the handshake with ``Session\n  terminated`` (the server's ``307`` echoes the forged Host back to the\n  client's own localhost).\n\nOnly meaningful for ``runtime_kind=container_image``; ignored for\n``managed_remote`` (the vendor host is always preserved)."
       },
       "McpServerCatalogEntry": {
         "properties": {
@@ -27605,6 +29656,11 @@
             ],
             "title": "Port",
             "description": "Container port for the streamable-http transport. Container-image rows only."
+          },
+          "pod_host_mode": {
+            "$ref": "#/components/schemas/McpPodHostMode",
+            "description": "HTTP Host strategy: 'natural' (Service FQDN) or 'pod_localhost' (Host: localhost:<port>, for mcp-go DNS-rebinding servers). Container-image rows only.",
+            "default": "natural"
           },
           "env_plaintext": {
             "anyOf": [
@@ -28078,7 +30134,19 @@
           "quantity": {
             "type": "number",
             "title": "Quantity",
-            "description": "Aggregated meter value for the bucket"
+            "description": "Aggregated meter value for the bucket (the *gross* total \u2014 for overage meters this is the whole reservation, included + overage)"
+          },
+          "included": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Included",
+            "description": "Portion of ``quantity`` within the included baseline, when the series carries a per-bucket split (resource-overage meters). The overage portion is ``quantity - included``. Null for count meters, whose included threshold is a flat plan scalar (``OrgUsageMeter.included_units``) the client applies as a cap instead."
           }
         },
         "type": "object",
@@ -28163,7 +30231,7 @@
           "storage_overage"
         ],
         "title": "MeterKey",
-        "description": "Registry meter slugs \u2014 every countable unit a plan can gate on.\n\nAll meters are metered (Polar ``metered_unit`` + optional\n``meter_credit`` benefit for included units). An entry here means the\nslug is recognized by the codebase; an entry in\n``scripts/billing/registry.py::METER_DEFINITIONS`` wires it to the\nprovider.\n\nThe ``*_COUNT`` meters are AVG-over-daily-snapshots counts (bots, seats,\nMCP servers). The ``*_OVERAGE`` meters are SUM-over-daily-rollups of\nresource-overage from the allocation ledger, emitted in **resource-hours**\n(vCore-hours for CPU, GiB-hours for memory/storage) \u2014 the unit cloud and\nKubernetes-cost tooling bill compute on; the \u20ac/month rate converts to a\nper-hour price (rate / 730) at pricing time. Each meters one billable\n:class:`MeteredResource` line-item independently \u2014 the included baseline is\nsubtracted per-interval in the collector, so the event carries net overage\n(Polar prices every emitted unit; no meter-credit benefit). ``memory_request``\nand ``gpu`` are recorded in the ledger but not metered to the provider yet."
+        "description": "Registry meter slugs \u2014 every countable unit a plan can gate on.\n\nAll meters are metered (Polar ``metered_unit`` + optional\n``meter_credit`` benefit for included units). An entry here means the\nslug is recognized by the codebase; an entry in\n``scripts/billing/registry.py::METER_DEFINITIONS`` wires it to the\nprovider.\n\nThe ``*_COUNT`` meters are AVG-over-daily-snapshots counts (bots, seats,\nMCP servers). The ``*_OVERAGE`` meters bill the same way \u2014 AVG over daily\nsnapshots \u2014 but of the day's time-average net resource-overage from the\nallocation ledger (vCore for CPU, GiB for memory/storage), priced at an\ninteger \u20ac/unit-month rate (the \"GB-Month\" convention, calendar-independent).\nEach meters one billable :class:`MeteredResource` line-item independently \u2014\nthe included baseline is subtracted per-interval in the collector, so the\nsnapshot carries net overage (Polar prices the averaged units; no\nmeter-credit benefit). ``memory_request`` and ``gpu`` are recorded in the\nledger but not metered to the provider yet."
       },
       "MeteredResource": {
         "type": "string",
@@ -30796,6 +32864,64 @@
         "title": "OrgUsageSnapshot",
         "description": "Per-org usage view returned by ``GET /v1/orgs/{org_id}/usage``."
       },
+      "OrgUserActivityResponse": {
+        "properties": {
+          "org_id": {
+            "type": "string",
+            "title": "Org Id"
+          },
+          "org_name": {
+            "type": "string",
+            "title": "Org Name"
+          },
+          "org_slug": {
+            "type": "string",
+            "title": "Org Slug"
+          },
+          "last_active_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Active At",
+            "description": "All-time most recent user activity in this org; null if it never had any"
+          },
+          "active_user_count": {
+            "type": "integer",
+            "title": "Active User Count",
+            "description": "Distinct users active within the window"
+          },
+          "member_count": {
+            "type": "integer",
+            "title": "Member Count",
+            "description": "Total members of the org"
+          },
+          "users": {
+            "items": {
+              "$ref": "#/components/schemas/UserActivityEntryResponse"
+            },
+            "type": "array",
+            "title": "Users",
+            "description": "Users active within the window, most recently active first"
+          }
+        },
+        "type": "object",
+        "required": [
+          "org_id",
+          "org_name",
+          "org_slug",
+          "active_user_count",
+          "member_count",
+          "users"
+        ],
+        "title": "OrgUserActivityResponse",
+        "description": "An organization with its window-active user breakdown."
+      },
       "PaginatedResponse_AuditEventResponse_": {
         "properties": {
           "items": {
@@ -31440,7 +33566,6 @@
       "PlanFeature": {
         "type": "string",
         "enum": [
-          "custom_compute",
           "privileged_mode"
         ],
         "title": "PlanFeature",
@@ -31479,7 +33604,7 @@
               }
             ],
             "title": "Unit Price Cents",
-            "description": "Overage price per unit in cents (null = no overage billing)"
+            "description": "Overage price per metered unit, in cents (null = no overage billing)"
           }
         },
         "type": "object",
@@ -31490,7 +33615,7 @@
           "unit_price_cents"
         ],
         "title": "PlanMeterGateItem",
-        "description": "One gate on a plan: included units, optional hard cap, optional overage price."
+        "description": "One gate on a plan: included units, optional hard cap, optional overage price.\n\nCarries every gate on the plan \u2014 both count meters (bots/seats/MCP) and\nresource-overage meters (cpu/memory/storage). Both bill the same way: the\naverage unit held over the billing period x ``unit_price_cents`` (whole-cent\n\u20ac/unit-month). Consumers distinguish the two by ``meter_key`` (overage keys\nare :data:`~botyard_core.models.enums.RESOURCE_OVERAGE_METER_KEYS`); overage\ngates carry no ``hard_cap`` so the count-only consumers already skip them."
       },
       "PlanResponse": {
         "properties": {
@@ -31516,6 +33641,26 @@
             },
             "type": "array",
             "title": "Meter Gates"
+          },
+          "resource_defaults": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ResourceQuantities"
+            },
+            "propertyNames": {
+              "$ref": "#/components/schemas/ResourceConsumerType"
+            },
+            "type": "object",
+            "title": "Resource Defaults"
+          },
+          "resource_maximums": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ResourceQuantities"
+            },
+            "propertyNames": {
+              "$ref": "#/components/schemas/ResourceConsumerType"
+            },
+            "type": "object",
+            "title": "Resource Maximums"
           },
           "features": {
             "items": {
@@ -31613,6 +33758,8 @@
           "slug",
           "description",
           "meter_gates",
+          "resource_defaults",
+          "resource_maximums",
           "features",
           "feature_set",
           "price_monthly",
@@ -31630,7 +33777,7 @@
           "updated_at"
         ],
         "title": "PlanResponse",
-        "description": "Plan response."
+        "description": "Plan response.\n\n``meter_gates`` carries every gate on the plan \u2014 both count meters\n(bots/seats/MCP) and resource-overage meters (cpu/memory/storage), priced\nuniformly in integer cents per unit per month. Consumers distinguish the two\nby ``meter_key`` (overage keys are ``RESOURCE_OVERAGE_METER_KEYS``); overage\ngates carry no ``hard_cap``, so cap/count-only consumers already skip them.\n\n``resource_defaults`` is the plan's per-consumer *included* resource\nbaseline, bucketed by consumer type (e.g. ``{\"bot\": {...}}``). It is the\nfloor billed at no charge: a consumer's metered resource overage is\n``max(0, reserved - included)`` per line-item, so the UI needs this baseline\nto project the overage cost of a resource change before applying it.\n\n``resource_maximums`` is the plan's per-consumer *hard ceiling*, bucketed the\nsame way. It is SPARSE: each set line-item caps that dimension (the API\nrejects a bot whose resolved resources exceed it with a 422); an absent\nline-item \u2014 or an absent consumer, or an empty map \u2014 is uncapped. Distinct\nfrom the overage gates (which *price* allocation above the included baseline)\n\u2014 this is the absolute limit that can't be exceeded at any price, so the UI\nneeds it to warn (and block) before a user tries to save an over-limit value."
       },
       "PlanStatus": {
         "type": "string",
@@ -32247,6 +34394,15 @@
         "title": "RescueStage",
         "description": "Rescue escalation stages."
       },
+      "ResourceConsumerType": {
+        "type": "string",
+        "enum": [
+          "bot",
+          "mcp_server"
+        ],
+        "title": "ResourceConsumerType",
+        "description": "Kind of entity that consumes (reserves) billable resources.\n\nThe allocation ledger is polymorphic over consumers: a bot today, an\norg-scoped MCP server tomorrow. Stored as a native enum; adding a new\nconsumer kind is a one-line ``ALTER TYPE ... ADD VALUE`` migration."
+      },
       "ResourceMetricsResponse": {
         "properties": {
           "storage": {
@@ -32305,6 +34461,15 @@
         ],
         "title": "ResourceQuantity",
         "description": "One resource line-item as a K8s quantity \u2014 ``(metered resource, quantity)``."
+      },
+      "RestartUrgency": {
+        "type": "string",
+        "enum": [
+          "regular",
+          "critical"
+        ],
+        "title": "RestartUrgency",
+        "description": "How aggressively a pod-recreating maintenance restart may proceed.\n\nUsed by the maintenance-restart engine to pick a policy. Hard-coded at the\ntrigger site for now (rollouts/spec changes are not yet tagged with an\nurgency); designed to be set explicitly once rollouts carry it.\n\n* ``REGULAR`` \u2014 honour maintenance windows and the full grace wait.\n* ``CRITICAL`` \u2014 apply as soon as possible: bypass maintenance windows and\n  use a minimal grace (preserves today's immediate-apply behaviour so\n  urgent security/runtime rollouts do not regress)."
       },
       "RetryPromptPart-Input": {
         "properties": {
@@ -32406,6 +34571,69 @@
         "title": "RetryPromptPart",
         "description": "A message back to a model asking it to try again.\n\nThis can be sent for a number of reasons:\n\n* Pydantic validation of tool arguments failed, here content is derived from a Pydantic\n  [`ValidationError`][pydantic_core.ValidationError]\n* a tool raised a [`ModelRetry`][pydantic_ai.exceptions.ModelRetry] exception\n* no tool was found for the tool name\n* the model returned plain text when a structured response was expected\n* Pydantic validation of a structured response failed, here content is derived from a Pydantic\n  [`ValidationError`][pydantic_core.ValidationError]\n* an output validator raised a [`ModelRetry`][pydantic_ai.exceptions.ModelRetry] exception"
       },
+      "RolloutCompletedContent": {
+        "properties": {
+          "event_type": {
+            "type": "string",
+            "const": "rollout.completed",
+            "title": "Event Type",
+            "default": "rollout.completed"
+          },
+          "rollout_id": {
+            "type": "string",
+            "title": "Rollout Id"
+          },
+          "component": {
+            "$ref": "#/components/schemas/ComponentName"
+          },
+          "target_version": {
+            "type": "string",
+            "title": "Target Version"
+          },
+          "strategy": {
+            "$ref": "#/components/schemas/RolloutStrategy"
+          },
+          "final_status": {
+            "$ref": "#/components/schemas/RolloutStatus"
+          },
+          "total_bots": {
+            "type": "integer",
+            "title": "Total Bots"
+          },
+          "completed_bots": {
+            "type": "integer",
+            "title": "Completed Bots"
+          },
+          "failed_bots": {
+            "type": "integer",
+            "title": "Failed Bots"
+          },
+          "duration_seconds": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration Seconds"
+          }
+        },
+        "type": "object",
+        "required": [
+          "rollout_id",
+          "component",
+          "target_version",
+          "strategy",
+          "final_status",
+          "total_bots",
+          "completed_bots",
+          "failed_bots"
+        ],
+        "title": "RolloutCompletedContent",
+        "description": "Typed content for a rollout reaching its terminal COMPLETED state.\n\nEmitted exactly once at the transition into COMPLETED (guarded so the\nrepeatedly-callable advance endpoint never double-emits)."
+      },
       "RolloutCreate": {
         "properties": {
           "component_name": {
@@ -32421,6 +34649,11 @@
             "$ref": "#/components/schemas/RolloutStrategy",
             "description": "Deployment strategy",
             "default": "all"
+          },
+          "urgency": {
+            "$ref": "#/components/schemas/RestartUrgency",
+            "description": "Maintenance-restart urgency: regular honours each org's grace/drain/maintenance windows; critical recreates pods immediately",
+            "default": "regular"
           },
           "target_filter": {
             "anyOf": [
@@ -32450,6 +34683,85 @@
         "title": "RolloutCreate",
         "description": "Request body for creating a rollout."
       },
+      "RolloutInitiatedContent": {
+        "properties": {
+          "event_type": {
+            "type": "string",
+            "const": "rollout.initiated",
+            "title": "Event Type",
+            "default": "rollout.initiated"
+          },
+          "rollout_id": {
+            "type": "string",
+            "title": "Rollout Id"
+          },
+          "component": {
+            "$ref": "#/components/schemas/ComponentName"
+          },
+          "target_version": {
+            "type": "string",
+            "title": "Target Version"
+          },
+          "previous_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previous Version"
+          },
+          "strategy": {
+            "$ref": "#/components/schemas/RolloutStrategy"
+          },
+          "batch_percentage": {
+            "type": "integer",
+            "title": "Batch Percentage"
+          },
+          "total_bots": {
+            "type": "integer",
+            "title": "Total Bots"
+          },
+          "target_tiers": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Tiers"
+          },
+          "target_bot_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Bot Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "rollout_id",
+          "component",
+          "target_version",
+          "strategy",
+          "batch_percentage",
+          "total_bots"
+        ],
+        "title": "RolloutInitiatedContent",
+        "description": "Typed content for a component-version rollout being created/started.\n\nEmitted once when an operator creates a rollout via the admin API. Rollouts\nare platform-wide (cross-org) fleet operations, so the envelope carries no\n``org_id`` and the actor is the initiating platform admin."
+      },
       "RolloutResponse": {
         "properties": {
           "id": {
@@ -32477,6 +34789,9 @@
           },
           "strategy": {
             "$ref": "#/components/schemas/RolloutStrategy"
+          },
+          "urgency": {
+            "$ref": "#/components/schemas/RestartUrgency"
           },
           "status": {
             "$ref": "#/components/schemas/RolloutStatus"
@@ -32540,6 +34855,7 @@
           "component_name",
           "target_version",
           "strategy",
+          "urgency",
           "status",
           "batch_percentage",
           "current_batch",
@@ -32585,13 +34901,13 @@
         "title": "RunMode"
       },
       "RuntimeVaultSensitivity": {
-        "type": "string",
+        "description": "Sensitivity classification for a Runtime Vault entry.",
         "enum": [
           "secret",
           "plain"
         ],
         "title": "RuntimeVaultSensitivity",
-        "description": "Sensitivity classification for a Runtime Vault entry."
+        "type": "string"
       },
       "ScannerSettings": {
         "properties": {
@@ -33124,6 +35440,15 @@
             "minimum": 60.0,
             "title": "Max Ttl Seconds",
             "description": "Maximum TTL in seconds that the policy grants to leases (60-3600)"
+          },
+          "bot_ids": {
+            "items": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+            },
+            "type": "array",
+            "title": "Bot Ids",
+            "description": "Bot IDs to link to this variable on creation. Ignored when allow_all_bots is true. Defaults to no explicit links."
           }
         },
         "additionalProperties": false,
@@ -34301,6 +36626,16 @@
         "title": "SubscriptionStatus",
         "description": "Subscription billing status (synced from payment provider)."
       },
+      "SyncStatus": {
+        "type": "string",
+        "enum": [
+          "pending",
+          "synced",
+          "failed"
+        ],
+        "title": "SyncStatus",
+        "description": "Async config-apply status for a bot tool assignment.\n\nMirrors :class:`DeployStatus`, but tracks the reconciler-owned bridge\n*config* push (``tools.allow`` + the re-baked ``systemPromptOverride``)\nrather than a workspace-file deploy. A tool mutation on a running bot\nbumps ``config_generation`` and marks the affected rows ``pending``; the\nprovisioner's config reconciler flips them to ``synced`` once the push\nlands, or the failure recorder marks them ``failed`` (retryable)."
+      },
       "SystemPromptPart": {
         "properties": {
           "content": {
@@ -34336,6 +36671,49 @@
         ],
         "title": "SystemPromptPart",
         "description": "A system prompt, generally written by the application developer.\n\nThis gives the model context and guidance on how to respond."
+      },
+      "TablePayload": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "table",
+            "title": "Kind",
+            "default": "table"
+          },
+          "rows": {
+            "items": {
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "type": "array"
+            },
+            "type": "array",
+            "title": "Rows",
+            "description": "Table data rows; each is a list of cell values, one per column in order."
+          }
+        },
+        "type": "object",
+        "required": [
+          "rows"
+        ],
+        "title": "TablePayload",
+        "description": "Validated data rows for a :class:`TableContentBlock`."
       },
       "TargetFilter": {
         "properties": {
@@ -34874,8 +37252,90 @@
         "title": "TaskFileUploadResultItem",
         "description": "Presigned URLs for a single file."
       },
+      "TaskLinkCreate": {
+        "properties": {
+          "to_task_number": {
+            "type": "integer",
+            "title": "To Task Number",
+            "description": "The other task's number within this workforce"
+          },
+          "link_type": {
+            "$ref": "#/components/schemas/WorkforceTaskLinkType",
+            "description": "Canonical link type: relates_to (symmetric) or blocks (directional)",
+            "default": "relates_to"
+          },
+          "direction": {
+            "$ref": "#/components/schemas/WorkforceTaskLinkDirection",
+            "description": "Which side the anchor task takes (outgoing = from, incoming = to)",
+            "default": "outgoing"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "to_task_number"
+        ],
+        "title": "TaskLinkCreate",
+        "description": "Request body for linking the path task to another task.\n\nThe path task ``{task_number}`` is the anchor. ``direction`` chooses which\nside the anchor takes: ``outgoing`` (default) makes the anchor the ``from``\nside (it \"relates to\" / \"blocks\" the target); ``incoming`` makes it the\n``to`` side (e.g. the anchor \"is blocked by\" the target). ``direction`` is\nimmaterial for the symmetric ``relates_to`` type."
+      },
+      "TaskLinkSummary": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Link UUID"
+          },
+          "link_type": {
+            "$ref": "#/components/schemas/WorkforceTaskLinkType",
+            "description": "Canonical link type"
+          },
+          "direction": {
+            "$ref": "#/components/schemas/WorkforceTaskLinkDirection",
+            "description": "Viewing task's side: outgoing (from) or incoming (to)"
+          },
+          "task_id": {
+            "type": "string",
+            "title": "Task Id",
+            "description": "The other task's UUID"
+          },
+          "task_number": {
+            "type": "integer",
+            "title": "Task Number",
+            "description": "The other task's number within the workforce"
+          },
+          "task_title": {
+            "type": "string",
+            "title": "Task Title",
+            "description": "The other task's title"
+          },
+          "task_column_id": {
+            "type": "string",
+            "title": "Task Column Id",
+            "description": "The other task's column ID"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "When the link was created"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "link_type",
+          "direction",
+          "task_id",
+          "task_number",
+          "task_title",
+          "task_column_id",
+          "created_at"
+        ],
+        "title": "TaskLinkSummary",
+        "description": "A task-to-task link projected from one task's perspective.\n\n``link_type`` and ``direction`` describe the relationship *as seen from the\ntask this link is attached to*: a ``blocks`` link with ``direction=incoming``\nmeans the viewing task is blocked by ``task_number`` (\"blocked by\"). The\nremaining fields identify the other task for display/navigation."
+      },
       "TaskPriority": {
-        "type": "string",
+        "description": "Workforce task priority level.",
         "enum": [
           "low",
           "medium",
@@ -34883,7 +37343,7 @@
           "urgent"
         ],
         "title": "TaskPriority",
-        "description": "Workforce task priority level."
+        "type": "string"
       },
       "TaskResponse": {
         "properties": {
@@ -35065,6 +37525,21 @@
             ],
             "title": "Linked Conversations",
             "description": "Safe summaries for linked conversations, in linked_conversation_ids order"
+          },
+          "links": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/TaskLinkSummary"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Links",
+            "description": "Task-to-task links from this task's perspective. Populated on task-detail responses; None on list/board responses"
           },
           "created_by_actor_type": {
             "$ref": "#/components/schemas/ActorType",
@@ -36597,10 +39072,11 @@
           "queued",
           "dequeued",
           "steered",
-          "failed"
+          "failed",
+          "cancelled"
         ],
         "title": "TurnStatus",
-        "description": "Lifecycle state of a user message's turn within the steer/queue engine.\n\nPersisted on the user ``conversation_messages`` row so the queue/steer\nlifecycle survives a reload (it is otherwise derived live from Centrifugo\nevents on the client). ``None`` (the column default) means an ordinary turn\nthat was sent and answered without ever queueing or steering \u2014 the common\ncase \u2014 so the column stays sparse.\n\n``QUEUED`` is strictly transient: every queued turn has its own request and\npublish loop, which always reaches a terminal frame, so the row is never\nleft ``QUEUED`` once that loop ends. The stored DB value is the member name\n(e.g. ``QUEUED``); the lowercase value is what serializes to clients.\n\n``DEQUEUED`` is named for the ``chat.dequeued`` frame that triggers it \u2014 a\nturn that *was* queued and has since been released to run. It is distinct\nfrom the frontend's transient ``userTurnStatus=\"picked_up\"`` (the universal\n\"bot is actively processing this turn\" state, re-derived live from the\nactive-turn lease) \u2014 that state is never persisted here."
+        "description": "Lifecycle state of a user message's turn within the steer/queue engine.\n\nPersisted on the user ``conversation_messages`` row so the queue/steer\nlifecycle survives a reload (it is otherwise derived live from Centrifugo\nevents on the client). ``None`` (the column default) means an ordinary turn\nthat was sent and answered without ever queueing or steering \u2014 the common\ncase \u2014 so the column stays sparse.\n\n``QUEUED`` is strictly transient: every queued turn has its own request and\npublish loop, which always reaches a terminal frame, so the row is never\nleft ``QUEUED`` once that loop ends. The stored DB value is the member name\n(e.g. ``QUEUED``); the lowercase value is what serializes to clients.\n\n``DEQUEUED`` is named for the ``chat.dequeued`` frame that triggers it \u2014 a\nturn that *was* queued and has since been released to run. It is distinct\nfrom the frontend's transient ``userTurnStatus=\"picked_up\"`` (the universal\n\"bot is actively processing this turn\" state, re-derived live from the\nactive-turn lease) \u2014 that state is never persisted here.\n\n``CANCELLED`` is terminal: the user cancelled the turn while it was still\n``QUEUED`` (before it ran), so the bot dropped it from its ordering gate and\nit produced no answer of its own. Distinct from ``FAILED`` (which is an\nerror) \u2014 a cancel is a deliberate, non-error dismissal."
       },
       "UnreadSummaryRequest": {
         "properties": {
@@ -36762,6 +39238,167 @@
         ],
         "title": "UsageHistoryWindow",
         "description": "Preset windows for ``GET /v1/orgs/{org_id}/usage/history``.\n\nEach window pairs a duration with a sensible bucket size so the chart\nhas roughly the same number of points (\u224830) regardless of range."
+      },
+      "UserActivityEntryResponse": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "avatar_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avatar Url",
+            "description": "Profile avatar URL, if any"
+          },
+          "role": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Role",
+            "description": "Org role slug, or null if no longer a member"
+          },
+          "last_active_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Last Active At",
+            "description": "Most recent message the user sent in this org"
+          },
+          "message_count": {
+            "type": "integer",
+            "title": "Message Count",
+            "description": "Messages the user sent in this org within the window"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "name",
+          "email",
+          "last_active_at",
+          "message_count"
+        ],
+        "title": "UserActivityEntryResponse",
+        "description": "One user's activity within a single organization (window-scoped)."
+      },
+      "UserActivityOverviewResponse": {
+        "properties": {
+          "summary": {
+            "$ref": "#/components/schemas/UserActivitySummaryResponse"
+          },
+          "orgs": {
+            "items": {
+              "$ref": "#/components/schemas/OrgUserActivityResponse"
+            },
+            "type": "array",
+            "title": "Orgs"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total",
+            "description": "Total organizations available (for pagination)"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          },
+          "has_more": {
+            "type": "boolean",
+            "title": "Has More",
+            "description": "Whether more organizations exist beyond this page"
+          }
+        },
+        "type": "object",
+        "required": [
+          "summary",
+          "orgs",
+          "total",
+          "limit",
+          "offset",
+          "has_more"
+        ],
+        "title": "UserActivityOverviewResponse",
+        "description": "Full user-activity overview: summary plus a page of organizations."
+      },
+      "UserActivitySummaryResponse": {
+        "properties": {
+          "total_users": {
+            "type": "integer",
+            "title": "Total Users",
+            "description": "All registered users"
+          },
+          "total_orgs": {
+            "type": "integer",
+            "title": "Total Orgs",
+            "description": "All non-deleted organizations"
+          },
+          "active_users": {
+            "type": "integer",
+            "title": "Active Users",
+            "description": "Distinct users active within the window"
+          },
+          "active_orgs": {
+            "type": "integer",
+            "title": "Active Orgs",
+            "description": "Distinct orgs with user activity within the window"
+          },
+          "active_users_24h": {
+            "type": "integer",
+            "title": "Active Users 24H",
+            "description": "Distinct users active in the last 24 hours"
+          },
+          "active_users_7d": {
+            "type": "integer",
+            "title": "Active Users 7D",
+            "description": "Distinct users active in the last 7 days"
+          },
+          "messages_in_window": {
+            "type": "integer",
+            "title": "Messages In Window",
+            "description": "Total user messages sent within the window"
+          },
+          "window_days": {
+            "type": "integer",
+            "title": "Window Days",
+            "description": "The activity window applied, in days"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_users",
+          "total_orgs",
+          "active_users",
+          "active_orgs",
+          "active_users_24h",
+          "active_users_7d",
+          "messages_in_window",
+          "window_days"
+        ],
+        "title": "UserActivitySummaryResponse",
+        "description": "Top-line platform user-activity counts."
       },
       "UserOrgCreate": {
         "properties": {
@@ -36998,6 +39635,154 @@
         ],
         "title": "UserResponse",
         "description": "User profile response."
+      },
+      "VaultInputRequestState": {
+        "properties": {
+          "request_id": {
+            "type": "string",
+            "title": "Request Id",
+            "description": "The input request's durable group id."
+          },
+          "status": {
+            "$ref": "#/components/schemas/VaultInputRequestStatus",
+            "description": "Current lifecycle status (whole group)."
+          },
+          "key_paths": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Key Paths",
+            "description": "Resolved Vault keys the secrets were (or will be) written to."
+          }
+        },
+        "type": "object",
+        "required": [
+          "request_id",
+          "status",
+          "key_paths"
+        ],
+        "title": "VaultInputRequestState",
+        "description": "Live state of a request group, returned by the serving endpoint.\n\nThe card polls/fetches this by ``request_id`` (the group id) to decide whether\nto show the editable form (``pending``) or a consumed confirmation\n(``submitted``), without ever exposing any value. The group shares one\nlifecycle status; ``key_paths`` lists every key the secrets were (or will be)\nwritten to."
+      },
+      "VaultInputRequestStatus": {
+        "description": "Lifecycle status of a bot-initiated Runtime Vault input request.\n\n``PENDING`` accepts exactly one submission, which transitions it to\n``SUBMITTED`` (one-shot). ``CANCELLED`` is reserved for a future explicit\nclose/expiry path.",
+        "enum": [
+          "pending",
+          "submitted",
+          "cancelled"
+        ],
+        "title": "VaultInputRequestStatus",
+        "type": "string"
+      },
+      "VaultInputSubmitRequest": {
+        "properties": {
+          "secrets": {
+            "items": {
+              "$ref": "#/components/schemas/VaultSecretSubmission"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Secrets",
+            "description": "One entry per secret in the request group; must cover every secret in the group and no others."
+          },
+          "allow_all_bots": {
+            "type": "boolean",
+            "title": "Allow All Bots",
+            "description": "When true, every bot in the org may lease these secrets. When false, access is limited to the requesting bot plus any bots in ``bot_ids``. Requires org-owner role (cross-bot distribution is owner-gated).",
+            "default": false
+          },
+          "bot_ids": {
+            "items": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+            },
+            "type": "array",
+            "title": "Bot Ids",
+            "description": "Additional bots to grant access to. Ignored when allow_all_bots is true. The requesting bot is always granted access regardless. Granting extra bots requires org-owner role."
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "secrets"
+        ],
+        "title": "VaultInputSubmitRequest",
+        "description": "Body for submitting a bot-requested batch of Runtime Vault secret values.\n\nCarries one ``VaultSecretSubmission`` per secret in the request group \u2014 and it\nmust be **all of them** (submission is all-or-nothing: every secret is stored\nin one transaction, or none is). Bot scoping (``allow_all_bots``/``bot_ids``)\napplies to the whole group and is owner-gated, the same choice as the normal\n\"create secret\" modal, just without setting the values blind."
+      },
+      "VaultSecretSubmission": {
+        "properties": {
+          "request_id": {
+            "type": "string",
+            "title": "Request Id",
+            "description": "Id of this secret's row within the request group (from the card)."
+          },
+          "value": {
+            "type": "string",
+            "format": "password",
+            "title": "Value",
+            "description": "The secret value to store in the Runtime Vault.",
+            "writeOnly": true
+          },
+          "key_path": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Key Path",
+            "description": "Optional edited full Vault key path (validated as a SecretKeyPath). Omit to keep the key the bot requested. Whether an existing key may be updated is fixed by the bot's original request, not this body: a committed secret at the resolved key is rejected unless the bot's pending request opted into an update AND the requesting bot is authorized for it."
+          },
+          "display_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display Name",
+            "description": "Optional override for the secret's display name."
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description",
+            "description": "Optional override for the secret's description."
+          },
+          "max_ttl_seconds": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 3600.0,
+                "minimum": 60.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Ttl Seconds",
+            "description": "Optional override for the maximum lease TTL."
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "request_id",
+          "value"
+        ],
+        "title": "VaultSecretSubmission",
+        "description": "One secret's user-supplied value (plus any edited metadata) within a submit.\n\n``request_id`` identifies which secret of the request group this value is for\n(the id the card carried on each field). ``value`` is required; the rest let\nthe user tweak the bot-suggested entry metadata before it is written. Omitted\nfields fall back to what the bot originally requested. ``value`` is a\n``SecretStr`` so it is never rendered in logs or error reprs."
       },
       "VersionPruneDecisionResponse": {
         "properties": {
@@ -37450,6 +40235,24 @@
         "title": "WorkforceTaskFilterField",
         "description": "Filterable fields for workforce task search."
       },
+      "WorkforceTaskLinkDirection": {
+        "type": "string",
+        "enum": [
+          "outgoing",
+          "incoming"
+        ],
+        "title": "WorkforceTaskLinkDirection",
+        "description": "A task link as seen from one task's perspective.\n\nNot stored: computed when projecting a task's links. ``OUTGOING`` means the\nviewing task is the ``from`` side of the link row; ``INCOMING`` means it is\nthe ``to`` side. Combined with the link type this yields the display label \u2014\ne.g. ``BLOCKS`` + ``INCOMING`` renders as \"blocked by\". On writes it lets a\ntask express an incoming link (e.g. \"this task is blocked by X\") without a\nredundant inverse enum member."
+      },
+      "WorkforceTaskLinkType": {
+        "type": "string",
+        "enum": [
+          "relates_to",
+          "blocks"
+        ],
+        "title": "WorkforceTaskLinkType",
+        "description": "Canonical type of a directed link between two workforce tasks.\n\nStored on ``workforce_task_links.link_type``. ``RELATES_TO`` is symmetric\n(order-independent \u2014 a pair is stored once, in a canonical task-id order);\n``BLOCKS`` is directional \u2014 the ``from`` task blocks the ``to`` task.\n\nThe reverse \"blocked by\" relationship is a *derived view* of a ``BLOCKS``\nrow seen from the ``to`` task's side (see ``WorkforceTaskLinkDirection``),\nnever a stored value \u2014 one relationship is always exactly one row."
+      },
       "WorkforceTaskSearchRequest": {
         "properties": {
           "where": {
@@ -37545,24 +40348,52 @@
             "description": "Filesystem path sampled by statfs"
           },
           "total_bytes": {
-            "type": "integer",
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Total Bytes",
-            "description": "Total filesystem capacity in bytes"
+            "description": "Total filesystem capacity in bytes, or null when unavailable"
           },
           "available_bytes": {
-            "type": "integer",
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Available Bytes",
-            "description": "Bytes available to an unprivileged process"
+            "description": "Bytes available to an unprivileged process, or null when unavailable"
           },
           "free_bytes": {
-            "type": "integer",
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Free Bytes",
-            "description": "Total free bytes on the filesystem"
+            "description": "Total free bytes on the filesystem, or null when unavailable"
           },
           "used_bytes": {
-            "type": "integer",
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Used Bytes",
-            "description": "Used bytes, computed as total - free"
+            "description": "Used bytes, computed as total - free, or null when unavailable"
           }
         },
         "additionalProperties": false,
@@ -37626,6 +40457,19 @@
       "AssistantAbortedEvent": {
         "description": "The in-flight assistant turn was aborted by a /stop (or one of the\nother abort triggers \u2014 bare ``stop``, ``abort``, ``cancel``, etc.).\n\nNon-terminal \u2014 a follow-up ``assistant.error`` (or ``assistant.end``)\ncloses the turn out for real. The dedicated event exists so clients\ncan distinguish \"stopped on purpose\" from \"network failure / timeout\"\nand render a \"Stopped\" badge instead of an error toast.\n\n``request_id`` identifies the message being aborted (NOT the /stop\nmessage that triggered the abort). The /stop message is its own\nchat.request with its own request_id.",
         "properties": {
+          "conversation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "ID of the conversation channel this event was published to. Lets a client verify a realtime frame belongs to the channel it subscribed for and drop cross-channel misdeliveries. Optional so the field can roll out ahead of every publisher and consumer without a lockstep deploy; real publishers always set it.",
+            "title": "Conversation Id"
+          },
           "type": {
             "const": "assistant.aborted",
             "default": "assistant.aborted",
@@ -37662,9 +40506,55 @@
         "title": "AssistantAbortedEvent",
         "type": "object"
       },
+      "AssistantCancelledEvent": {
+        "description": "A still-queued request was cancelled by the user before it ever ran.\n\nTerminal \u2014 the bot pulled it out of the ordering gate and dropped it (it\nnever dispatched, so there is no visible assistant response of its own). The\ndedicated event lets connected clients drop the message from the queued tray\nand render a \"Cancelled\" marker immediately, without a refetch. The durable\ntruth is the persisted ``turn_status='cancelled'``.\n\n``request_id`` identifies the cancelled queued message.",
+        "properties": {
+          "conversation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "ID of the conversation channel this event was published to. Lets a client verify a realtime frame belongs to the channel it subscribed for and drop cross-channel misdeliveries. Optional so the field can roll out ahead of every publisher and consumer without a lockstep deploy; real publishers always set it.",
+            "title": "Conversation Id"
+          },
+          "type": {
+            "const": "assistant.cancelled",
+            "default": "assistant.cancelled",
+            "title": "Type",
+            "type": "string"
+          },
+          "request_id": {
+            "title": "Request Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "request_id"
+        ],
+        "title": "AssistantCancelledEvent",
+        "type": "object"
+      },
       "AssistantDeltaEvent": {
         "description": "One pydantic-ai stream-event frame from the bot.\n\n``frame`` is the raw JSON payload (the same string the SSE relay yields\nin the ``data:`` field), so phase-3 clients can parse it with the same\ncode that handles SSE today. ``seq`` is monotonic per ``request_id``\nstarting at 0 \u2014 lets the client detect gaps within a single turn,\ndistinct from Centrifugo's per-channel offset.",
         "properties": {
+          "conversation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "ID of the conversation channel this event was published to. Lets a client verify a realtime frame belongs to the channel it subscribed for and drop cross-channel misdeliveries. Optional so the field can roll out ahead of every publisher and consumer without a lockstep deploy; real publishers always set it.",
+            "title": "Conversation Id"
+          },
           "type": {
             "const": "assistant.delta",
             "default": "assistant.delta",
@@ -37710,6 +40600,19 @@
       "AssistantDequeuedEvent": {
         "description": "Previously queued request is now in flight; deltas follow.",
         "properties": {
+          "conversation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "ID of the conversation channel this event was published to. Lets a client verify a realtime frame belongs to the channel it subscribed for and drop cross-channel misdeliveries. Optional so the field can roll out ahead of every publisher and consumer without a lockstep deploy; real publishers always set it.",
+            "title": "Conversation Id"
+          },
           "type": {
             "const": "assistant.dequeued",
             "default": "assistant.dequeued",
@@ -37743,6 +40646,19 @@
       "AssistantEndEvent": {
         "description": "Bot finished streaming (chat.done).\n\n``message_id`` and ``ordinal`` identify the cold-started answer row (claimed\nat ``chat.picked_up``, before any content). Carrying both here lets a client\nplace the just-completed answer at its real consumed-order position\nimmediately \u2014 without waiting on the follow-up ``message.new`` or a refetch\nto settle the synthetic streaming bubble (which, for runtimes whose terminal\nframe has no id, never binds by id). Both are null only if the row was never\npersisted (cold-start failed and no content arrived).",
         "properties": {
+          "conversation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "ID of the conversation channel this event was published to. Lets a client verify a realtime frame belongs to the channel it subscribed for and drop cross-channel misdeliveries. Optional so the field can roll out ahead of every publisher and consumer without a lockstep deploy; real publishers always set it.",
+            "title": "Conversation Id"
+          },
           "type": {
             "const": "assistant.end",
             "default": "assistant.end",
@@ -37789,6 +40705,19 @@
       "AssistantErrorEvent": {
         "description": "Bot raised chat.error, the relay timed out, or the bot pod is gone.",
         "properties": {
+          "conversation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "ID of the conversation channel this event was published to. Lets a client verify a realtime frame belongs to the channel it subscribed for and drop cross-channel misdeliveries. Optional so the field can roll out ahead of every publisher and consumer without a lockstep deploy; real publishers always set it.",
+            "title": "Conversation Id"
+          },
           "type": {
             "const": "assistant.error",
             "default": "assistant.error",
@@ -37819,6 +40748,19 @@
       "AssistantPickedUpEvent": {
         "description": "Bot runtime has accepted the request into the channel/OpenClaw path.",
         "properties": {
+          "conversation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "ID of the conversation channel this event was published to. Lets a client verify a realtime frame belongs to the channel it subscribed for and drop cross-channel misdeliveries. Optional so the field can roll out ahead of every publisher and consumer without a lockstep deploy; real publishers always set it.",
+            "title": "Conversation Id"
+          },
           "type": {
             "const": "assistant.picked_up",
             "default": "assistant.picked_up",
@@ -37839,6 +40781,19 @@
       "AssistantQueuedEvent": {
         "description": "Request is parked behind another in-flight turn on the same conversation.",
         "properties": {
+          "conversation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "ID of the conversation channel this event was published to. Lets a client verify a realtime frame belongs to the channel it subscribed for and drop cross-channel misdeliveries. Optional so the field can roll out ahead of every publisher and consumer without a lockstep deploy; real publishers always set it.",
+            "title": "Conversation Id"
+          },
           "type": {
             "const": "assistant.queued",
             "default": "assistant.queued",
@@ -37877,6 +40832,19 @@
       "AssistantStartEvent": {
         "description": "Bot acked the chat.request and is about to stream a response.",
         "properties": {
+          "conversation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "ID of the conversation channel this event was published to. Lets a client verify a realtime frame belongs to the channel it subscribed for and drop cross-channel misdeliveries. Optional so the field can roll out ahead of every publisher and consumer without a lockstep deploy; real publishers always set it.",
+            "title": "Conversation Id"
+          },
           "type": {
             "const": "assistant.start",
             "default": "assistant.start",
@@ -37911,6 +40879,19 @@
       "AssistantSteerPickedUpEvent": {
         "description": "A steered request was actually drained into the model's input at a turn\nboundary \u2014 the authoritative confirmation that the steer landed (vs. merely\nbeing accepted into the run's steering queue).",
         "properties": {
+          "conversation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "ID of the conversation channel this event was published to. Lets a client verify a realtime frame belongs to the channel it subscribed for and drop cross-channel misdeliveries. Optional so the field can roll out ahead of every publisher and consumer without a lockstep deploy; real publishers always set it.",
+            "title": "Conversation Id"
+          },
           "type": {
             "const": "assistant.steer_picked_up",
             "default": "assistant.steer_picked_up",
@@ -37931,6 +40912,19 @@
       "AssistantSteeredEvent": {
         "description": "Request was folded into an active OpenClaw turn instead of starting\nits own visible assistant response.",
         "properties": {
+          "conversation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "ID of the conversation channel this event was published to. Lets a client verify a realtime frame belongs to the channel it subscribed for and drop cross-channel misdeliveries. Optional so the field can roll out ahead of every publisher and consumer without a lockstep deploy; real publishers always set it.",
+            "title": "Conversation Id"
+          },
           "type": {
             "const": "assistant.steered",
             "default": "assistant.steered",
@@ -37963,17 +40957,72 @@
       "BotDomainEvent": {
         "discriminator": {
           "mapping": {
-            "bot.runtime.audit_event.created": "#/components/schemas/BotDomainEventPayload"
+            "bot.onboarding.completed": "#/components/schemas/BotOnboardingCompletedEvent",
+            "bot.runtime.audit_event.created": "#/components/schemas/BotRuntimeAuditEventCreatedEvent"
           },
           "propertyName": "type"
         },
         "oneOf": [
           {
-            "$ref": "#/components/schemas/BotDomainEventPayload"
+            "$ref": "#/components/schemas/BotRuntimeAuditEventCreatedEvent"
+          },
+          {
+            "$ref": "#/components/schemas/BotOnboardingCompletedEvent"
           }
         ]
       },
-      "BotDomainEventPayload": {
+      "BotOnboardingCompletedEvent": {
+        "description": "Advisory event emitted after a bot's guided setup (\"onboarding\") completes.\n\nGuided setup ends when the bot calls the ``finish_onboarding`` MCP tool or a\nhuman opts out via the app; either way ``onboarding_state`` flips\n``pending -> complete``. Chat surfaces show a \"setup mode\" banner driven by\nthe bot's ``onboarding_state``, so subscribers should use this to\ninvalidate/refetch bot detail and drop the banner without a hard refresh.\nThe bot record remains the source of truth.",
+        "properties": {
+          "actor": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RealtimeActor"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "occurred_at": {
+            "description": "ISO-8601 timestamp for when the event was emitted.",
+            "title": "Occurred At",
+            "type": "string"
+          },
+          "type": {
+            "const": "bot.onboarding.completed",
+            "default": "bot.onboarding.completed",
+            "title": "Type",
+            "type": "string"
+          },
+          "org_id": {
+            "title": "Org Id",
+            "type": "string"
+          },
+          "bot_id": {
+            "title": "Bot Id",
+            "type": "string"
+          },
+          "bot_slug": {
+            "title": "Bot Slug",
+            "type": "string"
+          }
+        },
+        "required": [
+          "org_id",
+          "bot_id",
+          "bot_slug"
+        ],
+        "title": "BotOnboardingCompletedEvent",
+        "type": "object"
+      },
+      "BotRealtimeEvent": {
+        "$ref": "#/components/schemas/BotDomainEvent",
+        "description": "Schema-only union of events published to bot channels.",
+        "title": "BotRealtimeEvent"
+      },
+      "BotRuntimeAuditEventCreatedEvent": {
         "description": "Advisory event emitted after a bot runtime audit event is persisted.\n\nThe audit log remains the source of truth. Subscribers should use this\ncompact payload to invalidate/refetch bot-scoped audit/resource queries.",
         "properties": {
           "actor": {
@@ -38038,11 +41087,6 @@
         "title": "BotRuntimeAuditEventCreatedEvent",
         "type": "object"
       },
-      "BotRealtimeEvent": {
-        "$ref": "#/components/schemas/BotDomainEvent",
-        "description": "Schema-only union of events published to bot channels.",
-        "title": "BotRealtimeEvent"
-      },
       "ConversationActivityEvent": {
         "description": "Published to personal:{user_id} or org:{org_id}.",
         "properties": {
@@ -38075,10 +41119,32 @@
         "title": "ConversationActivityEvent",
         "type": "object"
       },
+      "ConversationDeletedEvent": {
+        "description": "Published when a conversation disappears from an audience's view.\n\nEmitted when a conversation is deleted \u2014 and also to the **org** channel\nwhen an org-shared conversation is made private, because from the org\naudience's perspective the conversation is gone (they lost access and\ncannot refetch it). Routed by scope like :class:`ConversationUpdatedEvent`:\norg-scoped conversations reach the whole org's sidebar via the org channel;\nuser-scoped ones reach only the owner's personal channel. Clients treat it\nas a list-invalidation signal \u2014 refetching drops the row.",
+        "properties": {
+          "type": {
+            "const": "conversation.deleted",
+            "default": "conversation.deleted",
+            "title": "Type",
+            "type": "string"
+          },
+          "conversation_id": {
+            "description": "ID of the deleted (or no-longer-visible) conversation",
+            "title": "Conversation Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "conversation_id"
+        ],
+        "title": "ConversationDeletedEvent",
+        "type": "object"
+      },
       "ConversationDomainEvent": {
         "discriminator": {
           "mapping": {
             "assistant.aborted": "#/components/schemas/AssistantAbortedEvent",
+            "assistant.cancelled": "#/components/schemas/AssistantCancelledEvent",
             "assistant.delta": "#/components/schemas/AssistantDeltaEvent",
             "assistant.dequeued": "#/components/schemas/AssistantDequeuedEvent",
             "assistant.end": "#/components/schemas/AssistantEndEvent",
@@ -38117,6 +41183,9 @@
           },
           {
             "$ref": "#/components/schemas/AssistantSteerPickedUpEvent"
+          },
+          {
+            "$ref": "#/components/schemas/AssistantCancelledEvent"
           },
           {
             "$ref": "#/components/schemas/AssistantDeltaEvent"
@@ -38195,7 +41264,7 @@
         "type": "object"
       },
       "ConversationNewEvent": {
-        "description": "Published to org:{org_id} when a new conversation is created.",
+        "description": "Published when a new conversation is created.\n\nRouted by scope like :class:`ConversationActivityEvent`: org-scoped\nconversations reach the whole org's sidebar via the org channel;\nuser-scoped ones reach only the owner's personal channel.",
         "properties": {
           "type": {
             "const": "conversation.new",
@@ -38331,6 +41400,19 @@
       "ConversationSecurityRedactionEvent": {
         "description": "Best-effort live UX event for a user-message ingress redaction.\n\nReload rendering uses the persisted ``TextContent.metadata`` on the message;\nthis event is just the immediate Centrifugo path.",
         "properties": {
+          "conversation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "ID of the conversation channel this event was published to. Lets a client verify a realtime frame belongs to the channel it subscribed for and drop cross-channel misdeliveries. Optional so the field can roll out ahead of every publisher and consumer without a lockstep deploy; real publishers always set it.",
+            "title": "Conversation Id"
+          },
           "type": {
             "const": "conversation.security.redaction",
             "default": "conversation.security.redaction",
@@ -38352,6 +41434,40 @@
           "redaction"
         ],
         "title": "ConversationSecurityRedactionEvent",
+        "type": "object"
+      },
+      "ConversationUpdatedEvent": {
+        "description": "Published when a conversation's own fields change \u2014 e.g. its title is\nauto-generated from the first user message, or a user renames it.\n\nLets sidebar/list views refresh without a manual reload. Routed like\n:class:`ConversationActivityEvent`: to the org channel for org-scoped\nconversations and the owner's personal channel for user-scoped ones. The\nnew ``title`` rides along so clients can patch cached rows directly, though\nthe conversation-list refetch remains the canonical source of truth.",
+        "properties": {
+          "type": {
+            "const": "conversation.updated",
+            "default": "conversation.updated",
+            "title": "Type",
+            "type": "string"
+          },
+          "conversation_id": {
+            "description": "ID of the updated conversation",
+            "title": "Conversation Id",
+            "type": "string"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The conversation's title after the update, or null if still untitled.",
+            "title": "Title"
+          }
+        },
+        "required": [
+          "conversation_id"
+        ],
+        "title": "ConversationUpdatedEvent",
         "type": "object"
       },
       "InboxDomainEvent": {
@@ -38404,6 +41520,19 @@
       "MessageNewEvent": {
         "description": "Published to conversation:{org_id}:{conversation_id}.",
         "properties": {
+          "conversation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "ID of the conversation channel this event was published to. Lets a client verify a realtime frame belongs to the channel it subscribed for and drop cross-channel misdeliveries. Optional so the field can roll out ahead of every publisher and consumer without a lockstep deploy; real publishers always set it.",
+            "title": "Conversation Id"
+          },
           "type": {
             "const": "message.new",
             "default": "message.new",
@@ -38437,7 +41566,9 @@
         "discriminator": {
           "mapping": {
             "conversation.activity": "#/components/schemas/ConversationActivityEvent",
+            "conversation.deleted": "#/components/schemas/ConversationDeletedEvent",
             "conversation.new": "#/components/schemas/ConversationNewEvent",
+            "conversation.updated": "#/components/schemas/ConversationUpdatedEvent",
             "skill.created": "#/components/schemas/SkillCreatedEvent",
             "skill.deleted": "#/components/schemas/SkillDeletedEvent",
             "skill.updated": "#/components/schemas/SkillUpdatedEvent",
@@ -38454,7 +41585,13 @@
             "$ref": "#/components/schemas/ConversationActivityEvent"
           },
           {
+            "$ref": "#/components/schemas/ConversationDeletedEvent"
+          },
+          {
             "$ref": "#/components/schemas/ConversationNewEvent"
+          },
+          {
+            "$ref": "#/components/schemas/ConversationUpdatedEvent"
           },
           {
             "$ref": "#/components/schemas/SkillCreatedEvent"
@@ -38488,36 +41625,29 @@
         "title": "OrgRealtimeEvent"
       },
       "PersonalDomainEvent": {
-        "description": "Published to personal:{user_id} or org:{org_id}.",
-        "properties": {
-          "type": {
-            "const": "conversation.activity",
-            "default": "conversation.activity",
-            "title": "Type",
-            "type": "string"
+        "discriminator": {
+          "mapping": {
+            "conversation.activity": "#/components/schemas/ConversationActivityEvent",
+            "conversation.deleted": "#/components/schemas/ConversationDeletedEvent",
+            "conversation.new": "#/components/schemas/ConversationNewEvent",
+            "conversation.updated": "#/components/schemas/ConversationUpdatedEvent"
           },
-          "conversation_id": {
-            "description": "Conversation with new activity",
-            "title": "Conversation Id",
-            "type": "string"
-          },
-          "bot_id": {
-            "description": "Bot the conversation belongs to",
-            "title": "Bot Id",
-            "type": "string"
-          },
-          "message_kind": {
-            "$ref": "#/components/schemas/MessageKind",
-            "description": "Message kind"
-          }
+          "propertyName": "type"
         },
-        "required": [
-          "conversation_id",
-          "bot_id",
-          "message_kind"
-        ],
-        "title": "ConversationActivityEvent",
-        "type": "object"
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/ConversationActivityEvent"
+          },
+          {
+            "$ref": "#/components/schemas/ConversationDeletedEvent"
+          },
+          {
+            "$ref": "#/components/schemas/ConversationNewEvent"
+          },
+          {
+            "$ref": "#/components/schemas/ConversationUpdatedEvent"
+          }
+        ]
       },
       "PersonalRealtimeEvent": {
         "$ref": "#/components/schemas/PersonalDomainEvent",
@@ -39179,6 +42309,643 @@
         ],
         "title": "WorkforceTaskUpdatedEvent",
         "type": "object"
+      },
+      "ChartContentBlock": {
+        "description": "An interactive chart. Data rows live in the referenced payload file.\n\nEverything needed to draw the frame + legend (kind, title, axes, series\nconfig) is inline and small; only the potentially-large ``rows`` array\n(``list[dict[str, str | int | float | None]]``, keyed by ``x_key`` and each\nseries ``key``) is stored in ``payload``.",
+        "properties": {
+          "type": {
+            "const": "chart",
+            "default": "chart",
+            "title": "Type",
+            "type": "string"
+          },
+          "chart_type": {
+            "description": "Default chart kind (per-series overridable).",
+            "enum": [
+              "line",
+              "bar",
+              "area",
+              "pie",
+              "scatter"
+            ],
+            "title": "Chart Type",
+            "type": "string"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional title shown above the chart.",
+            "title": "Title"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional subtitle/description.",
+            "title": "Description"
+          },
+          "x_key": {
+            "description": "Row key for the x-axis (category/time).",
+            "title": "X Key",
+            "type": "string"
+          },
+          "series": {
+            "description": "Series configuration.",
+            "items": {
+              "$ref": "#/components/schemas/ChartSeries"
+            },
+            "minItems": 1,
+            "title": "Series",
+            "type": "array"
+          },
+          "x_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional x-axis label.",
+            "title": "X Label"
+          },
+          "y_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional (left) y-axis label.",
+            "title": "Y Label"
+          },
+          "y2_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional right y-axis label. Only meaningful when at least one series sets ``y_axis='right'``; the axis itself only renders when such a series exists.",
+            "title": "Y2 Label"
+          },
+          "stacked": {
+            "default": false,
+            "description": "Stack series (bar/area).",
+            "title": "Stacked",
+            "type": "boolean"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/ContentBlockPayloadRef",
+            "description": "Conversation file holding the data rows."
+          }
+        },
+        "required": [
+          "chart_type",
+          "x_key",
+          "series",
+          "payload"
+        ],
+        "title": "ChartContentBlock",
+        "type": "object"
+      },
+      "ChartSeries": {
+        "description": "One data series in a chart.\n\n``key`` selects the value from each payload row; ``label`` is what the\nlegend/tooltip shows. ``type`` overrides the chart kind for this series to\nbuild combo charts (e.g. bars + a line) \u2014 otherwise the block's\n``chart_type`` applies.",
+        "properties": {
+          "key": {
+            "description": "Row key holding this series' value (Recharts dataKey).",
+            "title": "Key",
+            "type": "string"
+          },
+          "label": {
+            "description": "Human-readable series label for legend/tooltip.",
+            "title": "Label",
+            "type": "string"
+          },
+          "color": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional CSS color; defaults to a theme color.",
+            "title": "Color"
+          },
+          "type": {
+            "anyOf": [
+              {
+                "enum": [
+                  "line",
+                  "bar",
+                  "area",
+                  "pie",
+                  "scatter"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Per-series kind override for combo charts.",
+            "title": "Type"
+          },
+          "y_axis": {
+            "anyOf": [
+              {
+                "enum": [
+                  "left",
+                  "right"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Which y-axis this series plots against. Omitted/``left`` uses the chart's single shared axis (existing behavior); ``right`` opts this series into a second, independently-scaled axis \u2014 pair with ``ChartContentBlock.y2_label`` to label it.",
+            "title": "Y Axis"
+          }
+        },
+        "required": [
+          "key",
+          "label"
+        ],
+        "title": "ChartSeries",
+        "type": "object"
+      },
+      "ContentBlockPayloadRef": {
+        "description": "Reference to the conversation-scoped file holding a block's heavy data.\n\nThe bytes live in conversation-scoped storage owned end-to-end by\n``ContentBlockService`` and are served at read time by the content-block\nserving endpoint, exactly like conversation attachments \u2014 so access is\ngated by access to the conversation. The block persists an opaque, durable\n``payload_id`` (never a storage key or presigned URL): the service *derives*\nthe storage location from the caller's already-authorized\n``(org, conversation, payload_id)`` context, so clients never see \u2014 and can\nnever supply \u2014 a raw object key. The message read path's re-signers only\nrefresh user-prompt parts and the ``media`` column, not tool-return\nmetadata, so an ID that is resolved server-side on every read is also what\nkeeps references from going stale.",
+        "properties": {
+          "payload_id": {
+            "description": "Opaque durable ID of the payload document (a UUID). Hand it back to the content-block serving endpoint / read tool together with the conversation to fetch the rows \u2014 storage location is server-internal.",
+            "title": "Payload Id",
+            "type": "string"
+          },
+          "conversation_id": {
+            "description": "Conversation the payload file is scoped to; gates read access.",
+            "title": "Conversation Id",
+            "type": "string"
+          },
+          "content_type": {
+            "description": "MIME type of the payload file (``application/json`` for chart/table data).",
+            "title": "Content Type",
+            "type": "string"
+          },
+          "byte_size": {
+            "description": "Payload size in bytes \u2014 lets the frontend show a size hint / guard huge fetches.",
+            "title": "Byte Size",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "payload_id",
+          "conversation_id",
+          "content_type",
+          "byte_size"
+        ],
+        "title": "ContentBlockPayloadRef",
+        "type": "object"
+      },
+      "ContentBlockResult": {
+        "description": "What ``emit_content_block`` returns.\n\n``block`` is the slim reference the frontend renders (carried on the tool\nreturn's structured output). ``summary`` is the only part the model reads\nback \u2014 a one-line description so the agent can refer to what it emitted\nwithout re-ingesting the payload.",
+        "properties": {
+          "block": {
+            "description": "The content block the frontend renders.",
+            "discriminator": {
+              "mapping": {
+                "chart": "#/components/schemas/ChartContentBlock",
+                "diagram": "#/components/schemas/DiagramContentBlock",
+                "table": "#/components/schemas/TableContentBlock",
+                "task": "#/components/schemas/TaskContentBlock"
+              },
+              "propertyName": "type"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ChartContentBlock"
+              },
+              {
+                "$ref": "#/components/schemas/TableContentBlock"
+              },
+              {
+                "$ref": "#/components/schemas/DiagramContentBlock"
+              },
+              {
+                "$ref": "#/components/schemas/TaskContentBlock"
+              }
+            ],
+            "title": "Block"
+          },
+          "summary": {
+            "description": "One-line summary for the model (the only part it re-reads).",
+            "title": "Summary",
+            "type": "string"
+          }
+        },
+        "required": [
+          "block",
+          "summary"
+        ],
+        "title": "ContentBlockResult",
+        "type": "object"
+      },
+      "DiagramContentBlock": {
+        "description": "A rendered diagram (Mermaid). The diagram source lives in the payload file.\n\nThe inline block carries only tiny frame metadata (title/description/height);\nthe potentially-large Mermaid source text is the heavy payload, stored in the\nreferenced file exactly like a chart's rows \u2014 so the diagram source never\ncrosses the chat/LLM boundary. The frontend fetches the source by\n``payload_id`` and renders it with Mermaid (lazy-loaded, console-side); the\nwidget/embed bundle, which excludes the heavy renderer, falls back to showing\nthe source text.\n\n``height`` is an optional max render height in px; the emit tool clamps a\nsupplied value into ``[DIAGRAM_HEIGHT_MIN_PX, DIAGRAM_HEIGHT_MAX_PX]`` so a\nstored block can't request an absurd card size. ``None`` means auto-size.",
+        "properties": {
+          "type": {
+            "const": "diagram",
+            "default": "diagram",
+            "title": "Type",
+            "type": "string"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional title shown above the diagram.",
+            "title": "Title"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional subtitle/description.",
+            "title": "Description"
+          },
+          "height": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional max render height in px (auto-size when omitted). Clamped by the emit tool to a sane bounded range.",
+            "title": "Height"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/ContentBlockPayloadRef",
+            "description": "Conversation file holding the Mermaid source text."
+          }
+        },
+        "required": [
+          "payload"
+        ],
+        "title": "DiagramContentBlock",
+        "type": "object"
+      },
+      "TableContentBlock": {
+        "description": "A data table. Rows live in the referenced payload file.\n\nColumn headers are inline (small, needed to render the header + column\norder); the ``rows`` array (``list[list[str | int | float | bool | None]]``)\nis stored in ``payload``.",
+        "properties": {
+          "type": {
+            "const": "table",
+            "default": "table",
+            "title": "Type",
+            "type": "string"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional table title.",
+            "title": "Title"
+          },
+          "columns": {
+            "description": "Column headers, in display order.",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Columns",
+            "type": "array"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/ContentBlockPayloadRef",
+            "description": "Conversation file holding the row data."
+          }
+        },
+        "required": [
+          "columns",
+          "payload"
+        ],
+        "title": "TableContentBlock",
+        "type": "object"
+      },
+      "TaskContentBlock": {
+        "description": "A snapshot of a workforce board task, rendered as a first-class card.\n\nUnlike ``chart`` / ``table`` / ``diagram`` (whose heavy data lives in a\nreferenced payload file), a task is bounded and small, so its fields are\ncaptured **inline** at emit time \u2014 no payload file, no serving round-trip.\nThe snapshot is server-resolved from the real task (the bot only references\nit by ``workforce_slug`` + ``task_number``), so the values are trustworthy\nrather than bot-supplied. Fields freeze at emit time; live auto-refresh is a\ndeliberate follow-up.\n\n``org_slug`` + ``workforce_slug`` + ``task_number`` drive the \"Open in board\"\ndeeplink to the live task.",
+        "properties": {
+          "type": {
+            "const": "task",
+            "default": "task",
+            "title": "Type",
+            "type": "string"
+          },
+          "org_slug": {
+            "description": "Org slug of the task's board, for the board deeplink.",
+            "title": "Org Slug",
+            "type": "string"
+          },
+          "workforce_slug": {
+            "description": "Slug of the workforce board the task lives on.",
+            "title": "Workforce Slug",
+            "type": "string"
+          },
+          "workforce_name": {
+            "description": "Display name of the workforce board (header crumb).",
+            "title": "Workforce Name",
+            "type": "string"
+          },
+          "task_number": {
+            "description": "The task's human-friendly number within the workforce.",
+            "title": "Task Number",
+            "type": "integer"
+          },
+          "title": {
+            "description": "Task title.",
+            "title": "Title",
+            "type": "string"
+          },
+          "status": {
+            "description": "Display name of the task's current column (e.g. 'In Review').",
+            "title": "Status",
+            "type": "string"
+          },
+          "priority": {
+            "$ref": "#/components/schemas/TaskPriority",
+            "description": "Task priority (low/medium/high/urgent)."
+          },
+          "description_preview": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Short, truncated preview of the task description (may be null).",
+            "title": "Description Preview"
+          },
+          "tags": {
+            "description": "Task tags.",
+            "items": {
+              "type": "string"
+            },
+            "title": "Tags",
+            "type": "array"
+          },
+          "assignee_kind": {
+            "anyOf": [
+              {
+                "enum": [
+                  "bot",
+                  "user"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Whether a bot or a human is assigned, or null when unassigned.",
+            "title": "Assignee Kind"
+          },
+          "due_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "ISO 8601 due date, or null.",
+            "title": "Due Date"
+          },
+          "github_pr_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Linked GitHub PR URL, or null.",
+            "title": "Github Pr Url"
+          },
+          "linked_conversation_count": {
+            "default": 0,
+            "description": "Number of conversations linked to the task.",
+            "title": "Linked Conversation Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "org_slug",
+          "workforce_slug",
+          "workforce_name",
+          "task_number",
+          "title",
+          "status",
+          "priority"
+        ],
+        "title": "TaskContentBlock",
+        "type": "object"
+      },
+      "VaultInputRequest": {
+        "description": "A bot-initiated request for the user to supply a Runtime Vault secret value.\n\nRendered as an interactive form card. The ``reason`` is shown prominently so\nthe user can judge *why* their own bot is asking for a secret before typing\none (the consent surface). The value is entered into a masked field and\nwritten directly to the Vault \u2014 never into this block, the transcript, or any\nrealtime event.",
+        "properties": {
+          "type": {
+            "const": "vault_input_request",
+            "default": "vault_input_request",
+            "title": "Type",
+            "type": "string"
+          },
+          "request_id": {
+            "description": "Durable group id of the backing ``vault_input_requests`` rows (one per secret, sharing this id). The card fetches live status by this id and submits the whole group against it.",
+            "title": "Request Id",
+            "type": "string"
+          },
+          "reason": {
+            "description": "Why the bot needs these secret(s) \u2014 shown prominently to the user as the consent prompt for the whole request. Should name the purpose, not free-form 'paste anything'.",
+            "title": "Reason",
+            "type": "string"
+          },
+          "secrets": {
+            "description": "The pre-filled Vault entries to complete (one or more).",
+            "items": {
+              "$ref": "#/components/schemas/VaultSecretField"
+            },
+            "minItems": 1,
+            "title": "Secrets",
+            "type": "array"
+          },
+          "status": {
+            "$ref": "#/components/schemas/VaultInputRequestStatus",
+            "default": "pending",
+            "description": "Status at emit time (always ``pending``). The live status is fetched from the serving endpoint by ``request_id``; the transcript copy is immutable."
+          }
+        },
+        "required": [
+          "request_id",
+          "reason",
+          "secrets"
+        ],
+        "title": "VaultInputRequest",
+        "type": "object"
+      },
+      "VaultInputRequestResult": {
+        "description": "What ``request_vault_input`` returns.\n\n``block`` is the slim reference the frontend renders (carried on the tool\nreturn's structured output). ``summary`` is the only part the model reads\nback \u2014 a one-line description so the agent can refer to what it asked for\nwithout re-deriving it.",
+        "properties": {
+          "block": {
+            "$ref": "#/components/schemas/VaultInputRequest",
+            "description": "The input-request card the frontend renders."
+          },
+          "summary": {
+            "description": "One-line summary for the model (the only part it re-reads).",
+            "title": "Summary",
+            "type": "string"
+          }
+        },
+        "required": [
+          "block",
+          "summary"
+        ],
+        "title": "VaultInputRequestResult",
+        "type": "object"
+      },
+      "VaultSecretField": {
+        "description": "One pre-filled Runtime Vault entry the user is asked to complete.\n\nCarries everything ``create_secret`` needs **except** the value: the full\n``key_path`` (bot-suggested, user-editable) and the metadata the bot suggests.\nThe value is supplied by the user at submit time and written straight to the\nVault. ``request_id`` is this secret's stable id within the request group \u2014 the\ncard echoes it back on submit so each entered value is matched to the right row.",
+        "properties": {
+          "request_id": {
+            "description": "Stable id of this secret's backing row within the request group. The card submits each value tagged with this id.",
+            "title": "Request Id",
+            "type": "string"
+          },
+          "key_path": {
+            "description": "The Runtime Vault key path the secret will be written to (e.g. ``garmin.password``). Bot-suggested; the user may edit it before submitting.",
+            "maxLength": 500,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_\\-]+(?:\\.[A-Za-z0-9_\\-]+)*$",
+            "title": "Key Path",
+            "type": "string"
+          },
+          "display_name": {
+            "description": "Human-readable name for the secret (bot-suggested).",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Display Name",
+            "type": "string"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional description of what the secret is for (bot-suggested).",
+            "title": "Description"
+          },
+          "max_ttl_seconds": {
+            "description": "Maximum lease TTL bots may later request for this secret.",
+            "maximum": 3600,
+            "minimum": 60,
+            "title": "Max Ttl Seconds",
+            "type": "integer"
+          },
+          "sensitivity": {
+            "$ref": "#/components/schemas/RuntimeVaultSensitivity",
+            "default": "secret",
+            "description": "How the stored value is classified: ``secret`` (masked in the UI and checked by the exfiltration scanner) or ``plain`` (a non-sensitive config value). Bot-fixed at request time \u2014 the card surfaces it read-only so the user can see how their value will be treated, and it is not sent back on submit; the submit path resolves it from the pending record."
+          },
+          "allow_update": {
+            "default": false,
+            "description": "Whether this secret targets an *existing* Vault key whose value the bot asked to replace, rather than a brand-new key. The card surfaces this only to render the 'replaces an existing secret' badge \u2014 it is not sent back on submit; the bot's intent is bound to the pending record and the submit path resolves it from there, writing to an existing key only when the requesting bot is already authorized for it.",
+            "title": "Allow Update",
+            "type": "boolean"
+          },
+          "secret_ttl_seconds": {
+            "anyOf": [
+              {
+                "maximum": 2592000,
+                "minimum": 60,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional whole-secret lifetime: the stored secret auto-expires this many seconds after it is submitted, then is lazily deleted. None means it never expires. Shown to the user as part of the consent prompt.",
+            "title": "Secret Ttl Seconds"
+          }
+        },
+        "required": [
+          "request_id",
+          "key_path",
+          "display_name",
+          "max_ttl_seconds"
+        ],
+        "title": "VaultSecretField",
+        "type": "object"
       }
     },
     "securitySchemes": {
@@ -39262,6 +43029,12 @@
       "name": "conversations"
     },
     {
+      "name": "content-blocks"
+    },
+    {
+      "name": "vault-input-requests"
+    },
+    {
       "name": "chat"
     },
     {
@@ -39311,6 +43084,9 @@
     },
     {
       "name": "bot-files"
+    },
+    {
+      "name": "inbound-emails"
     },
     {
       "name": "bot-tools"

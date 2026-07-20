@@ -149,9 +149,12 @@ def _strip_default_json(op: dict[str, Any]) -> None:
             responses.pop("default", None)
 
 
-def prune(spec: dict[str, Any], keep_tags: set[str]) -> None:
+def prune(spec: dict[str, Any], keep_tags: set[str], exclude_paths: tuple[str, ...] = ()) -> None:
+    excluded = set(exclude_paths)
     new_paths: dict[str, Any] = {}
     for path, item in spec.get("paths", {}).items():
+        if path in excluded:
+            continue  # explicitly excluded (e.g. endpoints whose schemas trip codegen)
         kept = {m: op for m, op in item.items() if m in HTTP_METHODS and keep_tags & set(op.get("tags", []))}
         if not kept:
             continue
@@ -194,11 +197,13 @@ def prune(spec: dict[str, Any], keep_tags: set[str]) -> None:
     spec["components"] = components
 
 
-def normalize_spec(spec: dict[str, Any], keep_tags: set[str]) -> dict[str, Any]:
+def normalize_spec(
+    spec: dict[str, Any], keep_tags: set[str], exclude_paths: tuple[str, ...] = ()
+) -> dict[str, Any]:
     """Full in-place normalization; returns the same spec for convenience."""
     collapse_nullable(spec)
     fix_scalars(spec)
-    prune(spec, keep_tags)
+    prune(spec, keep_tags, exclude_paths)
     return spec
 
 
@@ -207,10 +212,17 @@ def main() -> None:
     ap.add_argument("src")
     ap.add_argument("dst")
     ap.add_argument("--keep-tags", nargs="+", required=True)
+    ap.add_argument(
+        "--exclude-paths",
+        nargs="*",
+        default=[],
+        help="Exact OpenAPI path templates to drop even when tag-matched "
+        "(e.g. schemas that trip codegen).",
+    )
     args = ap.parse_args()
 
     spec = json.load(open(args.src))
-    normalize_spec(spec, set(args.keep_tags))
+    normalize_spec(spec, set(args.keep_tags), tuple(args.exclude_paths))
     json.dump(spec, open(args.dst, "w"))
     n_schemas = len(spec.get("components", {}).get("schemas", {}))
     print(f"normalized+pruned -> {args.dst} ({len(spec['paths'])} paths, {n_schemas} schemas)")
