@@ -1,0 +1,25 @@
+# Compiled provider binary
+terraform-provider-botyard
+dist/
+
+# Go test / build artifacts
+*.test
+*.out
+coverage.txt
+
+# Terraform working files
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+
+# Local terraform CLI dev overrides
+.terraformrc
+terraform.rc
+
+# Editors / OS
+.idea/
+.vscode/
+.DS_Store

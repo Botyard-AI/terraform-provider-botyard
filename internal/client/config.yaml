@@ -1,0 +1,18 @@
+# oapi-codegen configuration for the Botyard API client.
+#
+# Regenerate with `make generate` (scripts/generate-client.sh), which feeds a
+# normalized + tag-pruned + 3.0-down-converted spec into oapi-codegen. The
+# scoping (which tags/operations are included) lives in generate-client.sh's
+# KEEP_TAGS, not here — by the time oapi-codegen runs, the spec is already
+# pruned to the covered surface. Never hand-edit botyard.gen.go.
+package: client
+output: botyard.gen.go
+generate:
+  models: true
+  client: true
+compatibility:
+  # Prefix enum value constants with their type name (e.g.
+  # BotFilterFieldDesiredState) so enum values can't collide with same-named
+  # schema types (DesiredState/ObservedState are both a lifecycle enum type and
+  # a BotFilterField value).
+  always-prefix-enum-values: true
