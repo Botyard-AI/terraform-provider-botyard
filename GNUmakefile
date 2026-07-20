@@ -1,7 +1,9 @@
 BINARY := terraform-provider-botyard
 
-# Pinned tfplugindocs version. Keep in sync with .github/workflows/test.yml.
+# Pinned tool versions for documentation generation. Keep in sync with
+# .github/workflows/test.yml so `make docs` mirrors the deterministic CI path.
 TFPLUGINDOCS_VERSION := v0.25.0
+TERRAFORM_VERSION := 1.9.8
 
 default: build
 
@@ -46,17 +48,22 @@ vet:
 	go vet ./...
 
 # Regenerate the Terraform Registry documentation (docs/) from the provider
-# schema and the examples/ directory using tfplugindocs. Uses a terraform
-# binary from PATH when available. Run this whenever the schema or examples
-# change and commit the result; CI fails if docs/ drifts from the schema.
+# schema and the examples/ directory using tfplugindocs. --tf-version pins the
+# terraform binary tfplugindocs downloads so example formatting is deterministic
+# and matches CI. Run this whenever the schema or examples change and commit the
+# result; CI fails if docs/ drifts from the schema.
 docs:
 	go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs@$(TFPLUGINDOCS_VERSION) \
-		generate --provider-name botyard --rendered-provider-name Botyard
+		generate --provider-name botyard --rendered-provider-name Botyard --tf-version $(TERRAFORM_VERSION)
 
 # Verify docs/ is in sync with the current schema + examples. Regenerates and
-# fails if anything changed. Mirrors the CI drift check.
+# fails if anything changed. Uses `git status --porcelain` (not `git diff`) so
+# that newly generated but untracked pages also count as drift. Mirrors CI.
 docs-check: docs
-	@git diff --exit-code -- docs/ || { \
-		echo "docs/ is out of date; run 'make docs' and commit the result."; exit 1; }
+	@drift="$$(git status --porcelain -- docs/)"; \
+	if [ -n "$$drift" ]; then \
+		echo "docs/ is out of date; run 'make docs' and commit the result:"; \
+		echo "$$drift"; exit 1; \
+	fi
 
 .PHONY: default build install test testacc generate sync-spec fmt fmtcheck vet docs docs-check

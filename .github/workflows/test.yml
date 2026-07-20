@@ -67,9 +67,14 @@ jobs:
         run: |
           go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs@v0.25.0 \
             generate --provider-name botyard --rendered-provider-name Botyard --tf-version 1.9.8
+      # Use `git status --porcelain` (not `git diff --exit-code`) so newly
+      # generated but untracked pages — e.g. docs for a resource added without a
+      # regenerated page — also count as drift; `git diff` ignores untracked files.
       - name: check docs drift
         run: |
-          if ! git diff --exit-code -- docs/; then
+          drift="$(git status --porcelain -- docs/)"
+          if [ -n "$drift" ]; then
             echo "::error::docs/ is out of date. Run 'make docs' and commit the result." >&2
+            echo "$drift" >&2
             exit 1
           fi
