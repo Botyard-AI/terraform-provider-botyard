@@ -76,13 +76,13 @@ func TestCreateMcpServerTyped_ContainerImage(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	create := ContainerImageMcpServerCreate{
+	create, _ := json.Marshal(ContainerImageMcpServerCreate{
 		RuntimeKind: ContainerImageMcpServerCreateRuntimeKind(McpRuntimeContainerImage),
 		Name:        "My MCP",
 		Image:       "ghcr.io/x:1",
 		Port:        8080,
-	}
-	detail, status, body, err := c.CreateMcpServerTyped(context.Background(), "org-1", create)
+	})
+	detail, status, body, err := c.CreateMcpServer(context.Background(), "org-1", create)
 	if err != nil {
 		t.Fatalf("create: %v (status %d body %s)", err, status, body)
 	}

@@ -150,9 +150,10 @@ def _strip_default_json(op: dict[str, Any]) -> None:
 
 
 def prune(spec: dict[str, Any], keep_tags: set[str], exclude_paths: tuple[str, ...] = ()) -> None:
+    excluded = set(exclude_paths)
     new_paths: dict[str, Any] = {}
     for path, item in spec.get("paths", {}).items():
-        if any(frag in path for frag in exclude_paths):
+        if path in excluded:
             continue  # explicitly excluded (e.g. endpoints whose schemas trip codegen)
         kept = {m: op for m, op in item.items() if m in HTTP_METHODS and keep_tags & set(op.get("tags", []))}
         if not kept:
@@ -215,7 +216,8 @@ def main() -> None:
         "--exclude-paths",
         nargs="*",
         default=[],
-        help="Path substrings to drop even when tag-matched (schemas that trip codegen).",
+        help="Exact OpenAPI path templates to drop even when tag-matched "
+        "(e.g. schemas that trip codegen).",
     )
     args = ap.parse_args()
 

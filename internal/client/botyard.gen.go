@@ -258,6 +258,15 @@ const (
 	McpCatalogFormFieldDefaultModeSecretRef McpCatalogFormFieldDefaultMode = "secret_ref"
 )
 
+// Defines values for McpCatalogFormFieldDisplay.
+const (
+	McpCatalogFormFieldDisplayCheckbox  McpCatalogFormFieldDisplay = "checkbox"
+	McpCatalogFormFieldDisplayDropdown  McpCatalogFormFieldDisplay = "dropdown"
+	McpCatalogFormFieldDisplayRadio     McpCatalogFormFieldDisplay = "radio"
+	McpCatalogFormFieldDisplaySegmented McpCatalogFormFieldDisplay = "segmented"
+	McpCatalogFormFieldDisplaySwitch    McpCatalogFormFieldDisplay = "switch"
+)
+
 // Defines values for McpCatalogFormFieldKind.
 const (
 	McpCatalogFormFieldKindBoolean         McpCatalogFormFieldKind = "boolean"
@@ -282,6 +291,7 @@ const (
 const (
 	McpCatalogFormFieldTargetTypeArg      McpCatalogFormFieldTargetType = "arg"
 	McpCatalogFormFieldTargetTypeEnv      McpCatalogFormFieldTargetType = "env"
+	McpCatalogFormFieldTargetTypeFile     McpCatalogFormFieldTargetType = "file"
 	McpCatalogFormFieldTargetTypeTopLevel McpCatalogFormFieldTargetType = "top_level"
 )
 
@@ -301,6 +311,12 @@ const (
 // Defines values for McpCatalogFormSpecVersion.
 const (
 	McpCatalogFormSpecVersionN1 McpCatalogFormSpecVersion = 1
+)
+
+// Defines values for McpPodHostMode.
+const (
+	McpPodHostModeNatural      McpPodHostMode = "natural"
+	McpPodHostModePodLocalhost McpPodHostMode = "pod_localhost"
 )
 
 // Defines values for McpServerDesiredState.
@@ -548,6 +564,9 @@ type BotAccess string
 type BotChatReadiness struct {
 	// LlmConfigured True when the bot has a usable LLM credential linked. False means the bot's primary model is the unconfigured sentinel and it cannot respond until a credential is assigned.
 	LlmConfigured bool `json:"llm_configured"`
+
+	// MaintenanceRestartPending True when a workload-aware maintenance restart is announced / in-flight for this bot (``bots.maintenance_restart`` is set). Chat surfaces show a subtle 'restart pending' indicator while pending; it clears once the restart completes or is released and the record is cleared.
+	MaintenanceRestartPending *bool `json:"maintenance_restart_pending,omitempty"`
 }
 
 // BotConfigUpdate Request to update bot config via hot-reload.
@@ -573,6 +592,9 @@ type BotCreate struct {
 	// fields are applied. Use ``model_fields_set`` to distinguish unset
 	// from explicitly-set-to-None.
 	Config OpenClawConfigPatch `json:"config"`
+
+	// Description Short human-facing description / role for the bot (e.g. 'Platform developer'). Display metadata only — not injected into the bot's system prompt.
+	Description *string `json:"description"`
 
 	// Files Initial workspace files keyed by file type (soul, heartbeat, agents, tools). Deployed by the reconciler on first provision.
 	Files *map[string]string `json:"files,omitempty"`
@@ -611,6 +633,9 @@ type BotListItem struct {
 	// CanUse Whether the calling actor can chat with this bot
 	CanUse *bool `json:"can_use,omitempty"`
 
+	// Description Short human-facing description / role for the bot (e.g. 'Platform developer'). Display metadata only — not injected into the bot's system prompt.
+	Description *string `json:"description"`
+
 	// DesiredState Control-plane intent for a bot's lifecycle.
 	//
 	// Set by the API; the reconciler drives ``observed_state`` toward this value.
@@ -620,8 +645,11 @@ type BotListItem struct {
 	HealthStatus BotHealthStatus `json:"health_status"`
 
 	// Id Unique bot identifier (UUID)
-	Id   string `json:"id"`
-	Name string `json:"name"`
+	Id string `json:"id"`
+
+	// MaintenanceRestartPending True when a workload-aware maintenance restart is announced / in-flight for this bot (``bots.maintenance_restart`` is set). A pod-recreating update is queued but gated behind the maintenance engine (deferred to a window or waiting for the bot to go idle), so the bot keeps its old pod and stays running even though ``observed_state`` reads ``updating:infra``. UIs surface this as 'Running · update pending' rather than 'Provisioning'.
+	MaintenanceRestartPending *bool  `json:"maintenance_restart_pending,omitempty"`
+	Name                      string `json:"name"`
 
 	// ObservedState Operator's view of where a bot is in the reconciler phase pipeline.
 	//
@@ -671,6 +699,9 @@ type BotResponse struct {
 	ConfigGeneration int       `json:"config_generation"`
 	CreatedAt        time.Time `json:"created_at"`
 
+	// Description Short human-facing description / role for the bot (e.g. 'Platform developer'). Display metadata only — not injected into the bot's system prompt.
+	Description *string `json:"description"`
+
 	// DesiredConfig Platform-level bot config — the input to version-specific serialization.
 	//
 	// Only includes fields that are platform-specific or that we explicitly
@@ -700,6 +731,9 @@ type BotResponse struct {
 	// LastHealthCheckAt Timestamp of the last health check
 	LastHealthCheckAt *time.Time `json:"last_health_check_at"`
 	LastReconciledAt  *time.Time `json:"last_reconciled_at"`
+
+	// MaintenanceRestartPending True when a workload-aware maintenance restart is announced / in-flight for this bot (``bots.maintenance_restart`` is set). A pod-recreating update is queued but gated behind the maintenance engine (deferred to a window or waiting for the bot to go idle), so the bot keeps its old pod and stays running even though ``observed_state`` reads ``updating:infra``. UIs surface this as 'Running · update pending' rather than 'Provisioning'.
+	MaintenanceRestartPending *bool `json:"maintenance_restart_pending,omitempty"`
 
 	// MemberRole The calling user's role on this bot (null when not a member)
 	MemberRole *BotMemberRole `json:"member_role"`
@@ -798,6 +832,9 @@ type BotTier string
 type BotUpdate struct {
 	// AvatarUrl Avatar image URL (DiceBear data URI or custom). Send null to clear; omit to leave unchanged.
 	AvatarUrl *string `json:"avatar_url"`
+
+	// Description Short human-facing description / role for the bot (e.g. 'Platform developer'). Display metadata only — not injected into the bot's system prompt. Send null to clear; omit to leave unchanged.
+	Description *string `json:"description"`
 
 	// Resources Per-bot resource customisation — a sparse list of MeteredResource line-items (only the resources being changed). Send a block to set resources on top of the tier defaults; send null to reset to the tier defaults; omit to leave unchanged. Enterprise plan only.
 	Resources *ResourceQuantities `json:"resources"`
@@ -1042,6 +1079,26 @@ type ContainerImageMcpServerCreate struct {
 	// Name Human-readable label for the MCP server (unique per org)
 	Name string `json:"name"`
 
+	// PodHostMode How Botyard sets the HTTP ``Host`` when connecting to an in-cluster MCP pod.
+	//
+	// This is a fixed property of the server's HTTP framework, declared as
+	// configuration (like ``port``) rather than discovered at runtime:
+	//
+	// * ``natural`` — send the pod's in-cluster Service FQDN as ``Host`` (httpx's
+	//   default). Correct for the MCP Python SDK / uvx, Node/npx, and every
+	//   first-party ``ghcr.io/botyard-ai/*`` wrapper image. The default.
+	// * ``pod_localhost`` — send ``Host: localhost:<port>``. Required by servers
+	//   that enforce DNS-rebinding host allowlists (``mark3labs/mcp-go``, e.g.
+	//   ``grafana/mcp-grafana``), which reject the Service FQDN with
+	//   ``403 forbidden: host not allowed``. Sending it to a server that does not
+	//   want it (Python SDK) instead breaks the handshake with ``Session
+	//   terminated`` (the server's ``307`` echoes the forged Host back to the
+	//   client's own localhost).
+	//
+	// Only meaningful for ``runtime_kind=container_image``; ignored for
+	// ``managed_remote`` (the vendor host is always preserved).
+	PodHostMode *McpPodHostMode `json:"pod_host_mode,omitempty"`
+
 	// Port Container port the streamable-http transport listens on
 	Port int `json:"port"`
 
@@ -1114,6 +1171,26 @@ type ContainerImageMcpServerDetail struct {
 
 	// OrgId Organization the MCP server belongs to
 	OrgId string `json:"org_id"`
+
+	// PodHostMode How Botyard sets the HTTP ``Host`` when connecting to an in-cluster MCP pod.
+	//
+	// This is a fixed property of the server's HTTP framework, declared as
+	// configuration (like ``port``) rather than discovered at runtime:
+	//
+	// * ``natural`` — send the pod's in-cluster Service FQDN as ``Host`` (httpx's
+	//   default). Correct for the MCP Python SDK / uvx, Node/npx, and every
+	//   first-party ``ghcr.io/botyard-ai/*`` wrapper image. The default.
+	// * ``pod_localhost`` — send ``Host: localhost:<port>``. Required by servers
+	//   that enforce DNS-rebinding host allowlists (``mark3labs/mcp-go``, e.g.
+	//   ``grafana/mcp-grafana``), which reject the Service FQDN with
+	//   ``403 forbidden: host not allowed``. Sending it to a server that does not
+	//   want it (Python SDK) instead breaks the handshake with ``Session
+	//   terminated`` (the server's ``307`` echoes the forged Host back to the
+	//   client's own localhost).
+	//
+	// Only meaningful for ``runtime_kind=container_image``; ignored for
+	// ``managed_remote`` (the vendor host is always preserved).
+	PodHostMode *McpPodHostMode `json:"pod_host_mode,omitempty"`
 
 	// Port Container port for the streamable-http transport
 	Port int `json:"port"`
@@ -1606,6 +1683,9 @@ type McpCatalogFormField struct {
 	// Description Optional help text shown next to the field
 	Description *string `json:"description"`
 
+	// Display Optional widget hint for how the setup form renders this field, orthogonal to kind. select fields accept dropdown (default), radio, or segmented; boolean fields accept switch (default) or checkbox. When null the field renders with its kind's default widget, so untagged fields are unchanged.
+	Display *McpCatalogFormFieldDisplay `json:"display"`
+
 	// Id Stable field identifier unique within the form spec
 	Id string `json:"id"`
 
@@ -1637,6 +1717,9 @@ type McpCatalogFormFieldAllowedModes string
 // McpCatalogFormFieldDefaultMode Initial input mode for text_or_secret_ref fields
 type McpCatalogFormFieldDefaultMode string
 
+// McpCatalogFormFieldDisplay Optional widget hint for how the setup form renders this field, orthogonal to kind. select fields accept dropdown (default), radio, or segmented; boolean fields accept switch (default) or checkbox. When null the field renders with its kind's default widget, so untagged fields are unchanged.
+type McpCatalogFormFieldDisplay string
+
 // McpCatalogFormFieldKind Renderer and validation kind
 type McpCatalogFormFieldKind string
 
@@ -1647,6 +1730,9 @@ type McpCatalogFormFieldTarget struct {
 
 	// Name Env var name for env targets or argument placeholder name for arg targets
 	Name *string `json:"name"`
+
+	// Path Absolute container file path for file targets. The field's secret reference compiles into secret_file_mounts[path] (mounted read-only) instead of an env var. Validated with the same rules as secret_file_mounts keys.
+	Path *string `json:"path"`
 
 	// Property Supported top-level create property for top_level targets
 	Property *McpCatalogFormFieldTargetProperty `json:"property"`
@@ -1690,6 +1776,26 @@ type McpCatalogFormSpecLockedConfig string
 
 // McpCatalogFormSpecVersion Form spec version
 type McpCatalogFormSpecVersion int
+
+// McpPodHostMode How Botyard sets the HTTP “Host“ when connecting to an in-cluster MCP pod.
+//
+// This is a fixed property of the server's HTTP framework, declared as
+// configuration (like “port“) rather than discovered at runtime:
+//
+//   - “natural“ — send the pod's in-cluster Service FQDN as “Host“ (httpx's
+//     default). Correct for the MCP Python SDK / uvx, Node/npx, and every
+//     first-party “ghcr.io/botyard-ai/*“ wrapper image. The default.
+//   - “pod_localhost“ — send “Host: localhost:<port>“. Required by servers
+//     that enforce DNS-rebinding host allowlists (“mark3labs/mcp-go“, e.g.
+//     “grafana/mcp-grafana“), which reject the Service FQDN with
+//     “403 forbidden: host not allowed“. Sending it to a server that does not
+//     want it (Python SDK) instead breaks the handshake with “Session
+//     terminated“ (the server's “307“ echoes the forged Host back to the
+//     client's own localhost).
+//
+// Only meaningful for “runtime_kind=container_image“; ignored for
+// “managed_remote“ (the vendor host is always preserved).
+type McpPodHostMode string
 
 // McpServerDesiredState Control-plane intent for an MCP server.
 type McpServerDesiredState string
@@ -1742,6 +1848,26 @@ type McpServerUpdate struct {
 
 	// Name Human-readable label (unique per org)
 	Name *string `json:"name"`
+
+	// PodHostMode How Botyard sets the HTTP ``Host`` when connecting to an in-cluster MCP pod.
+	//
+	// This is a fixed property of the server's HTTP framework, declared as
+	// configuration (like ``port``) rather than discovered at runtime:
+	//
+	// * ``natural`` — send the pod's in-cluster Service FQDN as ``Host`` (httpx's
+	//   default). Correct for the MCP Python SDK / uvx, Node/npx, and every
+	//   first-party ``ghcr.io/botyard-ai/*`` wrapper image. The default.
+	// * ``pod_localhost`` — send ``Host: localhost:<port>``. Required by servers
+	//   that enforce DNS-rebinding host allowlists (``mark3labs/mcp-go``, e.g.
+	//   ``grafana/mcp-grafana``), which reject the Service FQDN with
+	//   ``403 forbidden: host not allowed``. Sending it to a server that does not
+	//   want it (Python SDK) instead breaks the handshake with ``Session
+	//   terminated`` (the server's ``307`` echoes the forged Host back to the
+	//   client's own localhost).
+	//
+	// Only meaningful for ``runtime_kind=container_image``; ignored for
+	// ``managed_remote`` (the vendor host is always preserved).
+	PodHostMode *McpPodHostMode `json:"pod_host_mode,omitempty"`
 
 	// Port Container port for the streamable-http transport. Container-image rows only.
 	Port *int `json:"port"`
@@ -2247,20 +2373,20 @@ type ToolsConfigExecSecurity string
 
 // WorkspaceStorageMetrics defines model for WorkspaceStorageMetrics.
 type WorkspaceStorageMetrics struct {
-	// AvailableBytes Bytes available to an unprivileged process
-	AvailableBytes int `json:"available_bytes"`
+	// AvailableBytes Bytes available to an unprivileged process, or null when unavailable
+	AvailableBytes *int `json:"available_bytes"`
 
-	// FreeBytes Total free bytes on the filesystem
-	FreeBytes int `json:"free_bytes"`
+	// FreeBytes Total free bytes on the filesystem, or null when unavailable
+	FreeBytes *int `json:"free_bytes"`
 
 	// Path Filesystem path sampled by statfs
 	Path string `json:"path"`
 
-	// TotalBytes Total filesystem capacity in bytes
-	TotalBytes int `json:"total_bytes"`
+	// TotalBytes Total filesystem capacity in bytes, or null when unavailable
+	TotalBytes *int `json:"total_bytes"`
 
-	// UsedBytes Used bytes, computed as total - free
-	UsedBytes int `json:"used_bytes"`
+	// UsedBytes Used bytes, computed as total - free, or null when unavailable
+	UsedBytes *int `json:"used_bytes"`
 }
 
 // ListBotsV1OrgsOrgIdBotsGetParams defines parameters for ListBotsV1OrgsOrgIdBotsGet.

@@ -149,9 +149,9 @@ class TestNormalizeSpec(unittest.TestCase):
         spec["paths"]["/v1/orgs/{org_id}/bots/{slug}/catalog"] = {
             "get": {"tags": ["bots"], "responses": {"200": {"description": "ok"}}}
         }
-        out = norm.normalize_spec(spec, {"bots"}, ("/catalog",))
+        out = norm.normalize_spec(spec, {"bots"}, ("/v1/orgs/{org_id}/bots/{slug}/catalog",))
         assert "/v1/orgs/{org_id}/bots/{slug}/catalog" not in out["paths"]
-        assert "/v1/orgs/{org_id}/bots/{slug}" in out["paths"]
+        assert "/v1/orgs/{org_id}/bots/{slug}" in out["paths"]  # exact match: sibling kept
 
     def test_full_normalization(self):
         spec = norm.normalize_spec(self._spec(), {"bots"})

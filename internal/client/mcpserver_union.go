@@ -12,7 +12,8 @@ import (
 // `runtime_kind`. oapi-codegen models these as a struct with an unexported
 // `union json.RawMessage` field and does not generate As*/From* helpers, so we
 // orchestrate the union here using the generated concrete variant types
-// (ContainerImage*/ManagedRemote*) — no hand-typed API shapes.
+// (ContainerImage*/ManagedRemote*): callers marshal a concrete variant and pass
+// the bytes; responses are decoded by their `runtime_kind` discriminator.
 
 // McpServerRuntimeContainerImage / ...ManagedRemote are the discriminator values.
 const (
@@ -57,19 +58,15 @@ func DecodeMcpServerDetail(body []byte) (*McpServerDetail, error) {
 	return out, nil
 }
 
-// CreateMcpServerTyped marshals a concrete create variant
-// (ContainerImageMcpServerCreate or ManagedRemoteMcpServerCreate) and POSTs it,
-// returning the decoded detail on 201. On a non-201 status it returns a nil
-// detail with the status code and raw body so callers can surface the error.
-func (c *ClientWithResponses) CreateMcpServerTyped(
-	ctx context.Context, orgID string, create any,
-) (detail *McpServerDetail, status int, body []byte, err error) {
-	data, err := json.Marshal(create)
-	if err != nil {
-		return nil, 0, nil, fmt.Errorf("marshaling mcp server create: %w", err)
-	}
+// CreateMcpServer POSTs a pre-marshaled create body (a concrete
+// ContainerImageMcpServerCreate or ManagedRemoteMcpServerCreate) and decodes the
+// created server on 201. A non-201 status returns a nil detail with the status
+// and raw body so callers can surface the error.
+func (c *ClientWithResponses) CreateMcpServer(
+	ctx context.Context, orgID string, body []byte,
+) (detail *McpServerDetail, status int, respBody []byte, err error) {
 	resp, err := c.CreateMcpServerV1OrgsOrgIdMcpServersPostWithBodyWithResponse(
-		ctx, orgID, "application/json", bytes.NewReader(data))
+		ctx, orgID, "application/json", bytes.NewReader(body))
 	if err != nil {
 		return nil, 0, nil, err
 	}
@@ -80,11 +77,28 @@ func (c *ClientWithResponses) CreateMcpServerTyped(
 	return detail, resp.StatusCode(), resp.Body, err
 }
 
+// UpdateMcpServer PATCHes a pre-marshaled sparse update body and decodes the
+// updated server on 200.
+func (c *ClientWithResponses) UpdateMcpServer(
+	ctx context.Context, orgID, mcpServerID string, body []byte,
+) (detail *McpServerDetail, status int, respBody []byte, err error) {
+	resp, err := c.UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchWithBodyWithResponse(
+		ctx, orgID, mcpServerID, "application/json", bytes.NewReader(body))
+	if err != nil {
+		return nil, 0, nil, err
+	}
+	if resp.StatusCode() != http.StatusOK {
+		return nil, resp.StatusCode(), resp.Body, nil
+	}
+	detail, err = DecodeMcpServerDetail(resp.Body)
+	return detail, resp.StatusCode(), resp.Body, err
+}
+
 // GetMcpServerTyped fetches a server by id and decodes the variant. A nil detail
 // with status 404 signals the server no longer exists.
 func (c *ClientWithResponses) GetMcpServerTyped(
 	ctx context.Context, orgID, mcpServerID string,
-) (detail *McpServerDetail, status int, body []byte, err error) {
+) (detail *McpServerDetail, status int, respBody []byte, err error) {
 	resp, err := c.GetMcpServerV1OrgsOrgIdMcpServersMcpServerIdGetWithResponse(ctx, orgID, mcpServerID)
 	if err != nil {
 		return nil, 0, nil, err

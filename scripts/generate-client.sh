@@ -20,7 +20,10 @@ KEEP_TAGS=(bots mcp-servers)
 # McpCatalogFormField schemas whose inline enums trip an oapi-codegen
 # duplicate-typename bug, and catalog-instantiation isn't part of the
 # botyard_mcp_server resource. Re-include when the catalog data source lands.
-EXCLUDE_PATHS=(/mcp-servers/catalog /mcp-servers/from-catalog)
+EXCLUDE_PATHS=(
+  "/v1/orgs/{org_id}/mcp-servers/catalog"
+  "/v1/orgs/{org_id}/mcp-servers/from-catalog"
+)
 
 OAPI_CODEGEN_VERSION="v2.4.1"
 DOWN_CONVERT_VERSION="0.14.1"

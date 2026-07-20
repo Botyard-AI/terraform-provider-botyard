@@ -2,6 +2,7 @@ package provider
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -46,6 +47,7 @@ type McpServerResourceModel struct {
 	EnvPlaintext     types.Map    `tfsdk:"env_plaintext"`
 	EnvSecretRefs    types.Map    `tfsdk:"env_secret_refs"`
 	SecretFileMounts types.Map    `tfsdk:"secret_file_mounts"`
+	PodHostMode      types.String `tfsdk:"pod_host_mode"`
 	// managed_remote variant
 	EndpointURL types.String `tfsdk:"endpoint_url"`
 	// computed
@@ -62,10 +64,12 @@ func NewMcpServerResource() resource.Resource {
 	return &McpServerResource{}
 }
 
+// Metadata sets the resource type name.
 func (r *McpServerResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_mcp_server"
 }
 
+// Schema defines the botyard_mcp_server resource schema.
 func (r *McpServerResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "Manages an organization-scoped Botyard MCP server. Two runtime kinds are supported: " +
@@ -102,9 +106,11 @@ func (r *McpServerResource) Schema(_ context.Context, _ resource.SchemaRequest, 
 				MarkdownDescription: "Optional free-form description.",
 			},
 			"transport": schema.StringAttribute{
-				Optional:            true,
-				Computed:            true,
-				MarkdownDescription: "Wire transport. Defaults to `streamable_http`.",
+				Optional: true,
+				Computed: true,
+				MarkdownDescription: "Wire transport. Defaults to `streamable_http`. Immutable — changing it forces " +
+					"replacement.",
+				PlanModifiers: []planmodifier.String{stringplanmodifier.RequiresReplace()},
 			},
 			"request_timeout_seconds": schema.Int64Attribute{
 				Optional:            true,
@@ -149,6 +155,12 @@ func (r *McpServerResource) Schema(_ context.Context, _ resource.SchemaRequest, 
 				ElementType:         types.StringType,
 				MarkdownDescription: "Absolute container path → secret_key_path mounts, read-only (container_image only).",
 			},
+			"pod_host_mode": schema.StringAttribute{
+				Optional: true,
+				MarkdownDescription: "HTTP `Host` strategy for the in-cluster pod: `natural` (default) or `pod_localhost` " +
+					"(container_image only). Write-only: the API does not return it, so it is preserved from configuration " +
+					"and not refreshed on read.",
+			},
 			"endpoint_url": schema.StringAttribute{
 				Optional:            true,
 				MarkdownDescription: "Vendor-hosted MCP URL. Required when `runtime_kind = managed_remote`.",
@@ -167,6 +179,7 @@ func (r *McpServerResource) Schema(_ context.Context, _ resource.SchemaRequest, 
 	}
 }
 
+// Configure receives the shared provider data.
 func (r *McpServerResource) Configure(_ context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
@@ -180,50 +193,57 @@ func (r *McpServerResource) Configure(_ context.Context, req resource.ConfigureR
 	r.data = data
 }
 
-// ValidateConfig enforces the per-runtime-kind required/forbidden fields that
-// the discriminated API schema encodes.
+// ValidateConfig enforces per-runtime-kind field requirements.
 func (r *McpServerResource) ValidateConfig(ctx context.Context, req resource.ValidateConfigRequest, resp *resource.ValidateConfigResponse) {
 	var cfg McpServerResourceModel
 	resp.Diagnostics.Append(req.Config.Get(ctx, &cfg)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
+	resp.Diagnostics.Append(validateMcpServerConfig(cfg)...)
+}
+
+// validateMcpServerConfig is the pure, unit-testable validation for the
+// discriminated fields.
+func validateMcpServerConfig(cfg McpServerResourceModel) diag.Diagnostics {
+	var diags diag.Diagnostics
+	forbid := func(attr string, set bool, kind string) {
+		if set {
+			diags.AddAttributeError(path.Root(attr), "Unexpected "+attr,
+				"`"+attr+"` is only valid when runtime_kind = "+kind+".")
+		}
+	}
 	switch cfg.RuntimeKind.ValueString() {
 	case client.McpRuntimeContainerImage:
 		if cfg.Image.IsNull() {
-			resp.Diagnostics.AddAttributeError(path.Root("image"), "Missing image",
+			diags.AddAttributeError(path.Root("image"), "Missing image",
 				"`image` is required when runtime_kind = container_image.")
 		}
 		if cfg.Port.IsNull() {
-			resp.Diagnostics.AddAttributeError(path.Root("port"), "Missing port",
+			diags.AddAttributeError(path.Root("port"), "Missing port",
 				"`port` is required when runtime_kind = container_image.")
 		}
-		if !cfg.EndpointURL.IsNull() {
-			resp.Diagnostics.AddAttributeError(path.Root("endpoint_url"), "Unexpected endpoint_url",
-				"`endpoint_url` is only valid when runtime_kind = managed_remote.")
-		}
+		forbid("endpoint_url", !cfg.EndpointURL.IsNull(), "managed_remote")
 	case client.McpRuntimeManagedRemote:
 		if cfg.EndpointURL.IsNull() {
-			resp.Diagnostics.AddAttributeError(path.Root("endpoint_url"), "Missing endpoint_url",
+			diags.AddAttributeError(path.Root("endpoint_url"), "Missing endpoint_url",
 				"`endpoint_url` is required when runtime_kind = managed_remote.")
 		}
-		for attr, isSet := range map[string]bool{
-			"image": !cfg.Image.IsNull(), "port": !cfg.Port.IsNull(),
-			"command": !cfg.Command.IsNull(), "args": !cfg.Args.IsNull(),
-			"env_plaintext": !cfg.EnvPlaintext.IsNull(), "env_secret_refs": !cfg.EnvSecretRefs.IsNull(),
-			"secret_file_mounts": !cfg.SecretFileMounts.IsNull(),
-		} {
-			if isSet {
-				resp.Diagnostics.AddAttributeError(path.Root(attr), "Unexpected "+attr,
-					"`"+attr+"` is only valid when runtime_kind = container_image.")
-			}
-		}
+		forbid("image", !cfg.Image.IsNull(), "container_image")
+		forbid("port", !cfg.Port.IsNull(), "container_image")
+		forbid("command", !cfg.Command.IsNull(), "container_image")
+		forbid("args", !cfg.Args.IsNull(), "container_image")
+		forbid("env_plaintext", !cfg.EnvPlaintext.IsNull(), "container_image")
+		forbid("env_secret_refs", !cfg.EnvSecretRefs.IsNull(), "container_image")
+		forbid("secret_file_mounts", !cfg.SecretFileMounts.IsNull(), "container_image")
+		forbid("pod_host_mode", !cfg.PodHostMode.IsNull(), "container_image")
 	case "":
-		// unknown/interpolated runtime_kind — skip; caught at apply.
+		// unknown/interpolated runtime_kind — validated at apply.
 	default:
-		resp.Diagnostics.AddAttributeError(path.Root("runtime_kind"), "Invalid runtime_kind",
+		diags.AddAttributeError(path.Root("runtime_kind"), "Invalid runtime_kind",
 			"runtime_kind must be `container_image` or `managed_remote`.")
 	}
+	return diags
 }
 
 func (r *McpServerResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
@@ -233,12 +253,13 @@ func (r *McpServerResource) Create(ctx context.Context, req resource.CreateReque
 		return
 	}
 
-	body := r.buildCreate(ctx, &plan, &resp.Diagnostics)
+	body, diags := buildCreateJSON(ctx, plan)
+	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	detail, status, raw, err := r.data.client.CreateMcpServerTyped(ctx, r.data.orgID, body)
+	detail, status, raw, err := r.data.client.CreateMcpServer(ctx, r.data.orgID, body)
 	if err != nil {
 		resp.Diagnostics.AddError("Error creating MCP server", err.Error())
 		return
@@ -248,7 +269,7 @@ func (r *McpServerResource) Create(ctx context.Context, req resource.CreateReque
 			fmt.Sprintf("Create returned HTTP %d: %s", status, describeAPIError(raw)))
 		return
 	}
-	r.mapDetail(ctx, detail, &plan, &resp.Diagnostics)
+	mapDetail(ctx, detail, &plan, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
@@ -273,52 +294,37 @@ func (r *McpServerResource) Read(ctx context.Context, req resource.ReadRequest, 
 			fmt.Sprintf("Read returned HTTP %d: %s", status, describeAPIError(raw)))
 		return
 	}
-	r.mapDetail(ctx, detail, &state, &resp.Diagnostics)
+	// pod_host_mode is write-only (absent from the detail response); mapDetail
+	// preserves the prior state value.
+	mapDetail(ctx, detail, &state, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
 func (r *McpServerResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	var plan McpServerResourceModel
+	var plan, state McpServerResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	update := client.McpServerUpdate{
-		Name:                  strToPtr(plan.Name),
-		Slug:                  strToPtr(plan.Slug),
-		Description:           strToPtr(plan.Description),
-		RequestTimeoutSeconds: int64ToIntPtr(plan.RequestTimeoutSeconds),
-		Image:                 strToPtr(plan.Image),
-		EndpointUrl:           strToPtr(plan.EndpointURL),
-		Port:                  int64ToIntPtr(plan.Port),
-		Command:               listToStrSlicePtr(ctx, plan.Command, &resp.Diagnostics),
-		Args:                  listToStrSlicePtr(ctx, plan.Args, &resp.Diagnostics),
-		EnvPlaintext:          mapToStrMapPtr(ctx, plan.EnvPlaintext, &resp.Diagnostics),
-		EnvSecretRefs:         mapToStrMapPtr(ctx, plan.EnvSecretRefs, &resp.Diagnostics),
-		SecretFileMounts:      mapToStrMapPtr(ctx, plan.SecretFileMounts, &resp.Diagnostics),
-	}
+	body, diags := buildUpdateJSON(ctx, plan, state.RuntimeKind.ValueString())
+	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	apiResp, err := r.data.client.UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchWithResponse(
-		ctx, r.data.orgID, plan.ID.ValueString(), update)
+	detail, status, raw, err := r.data.client.UpdateMcpServer(ctx, r.data.orgID, state.ID.ValueString(), body)
 	if err != nil {
 		resp.Diagnostics.AddError("Error updating MCP server", err.Error())
 		return
 	}
-	if apiResp.StatusCode() != 200 {
+	if detail == nil {
 		resp.Diagnostics.AddError("Unexpected response updating MCP server",
-			fmt.Sprintf("Update returned HTTP %d: %s", apiResp.StatusCode(), describeAPIError(apiResp.Body)))
+			fmt.Sprintf("Update returned HTTP %d: %s", status, describeAPIError(raw)))
 		return
 	}
-	detail, err := client.DecodeMcpServerDetail(apiResp.Body)
-	if err != nil {
-		resp.Diagnostics.AddError("Error decoding updated MCP server", err.Error())
-		return
-	}
-	r.mapDetail(ctx, detail, &plan, &resp.Diagnostics)
+	mapDetail(ctx, detail, &plan, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
@@ -343,15 +349,17 @@ func (r *McpServerResource) Delete(ctx context.Context, req resource.DeleteReque
 	}
 }
 
+// ImportState imports an existing server by ID.
 func (r *McpServerResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }
 
-// buildCreate constructs the concrete per-kind create struct.
-func (r *McpServerResource) buildCreate(ctx context.Context, plan *McpServerResourceModel, diags *diag.Diagnostics) any {
+// buildCreateJSON marshals the concrete per-kind create variant to JSON.
+func buildCreateJSON(ctx context.Context, plan McpServerResourceModel) ([]byte, diag.Diagnostics) {
+	var diags diag.Diagnostics
 	switch plan.RuntimeKind.ValueString() {
 	case client.McpRuntimeManagedRemote:
-		return client.ManagedRemoteMcpServerCreate{
+		body := client.ManagedRemoteMcpServerCreate{
 			RuntimeKind:           client.ManagedRemoteMcpServerCreateRuntimeKind(client.McpRuntimeManagedRemote),
 			Name:                  plan.Name.ValueString(),
 			Slug:                  strToPtr(plan.Slug),
@@ -360,8 +368,13 @@ func (r *McpServerResource) buildCreate(ctx context.Context, plan *McpServerReso
 			RequestTimeoutSeconds: int64ToIntPtr(plan.RequestTimeoutSeconds),
 			EndpointUrl:           plan.EndpointURL.ValueString(),
 		}
+		out, err := json.Marshal(body)
+		if err != nil {
+			diags.AddError("Error encoding MCP server", err.Error())
+		}
+		return out, diags
 	default: // container_image
-		return client.ContainerImageMcpServerCreate{
+		body := client.ContainerImageMcpServerCreate{
 			RuntimeKind:           client.ContainerImageMcpServerCreateRuntimeKind(client.McpRuntimeContainerImage),
 			Name:                  plan.Name.ValueString(),
 			Slug:                  strToPtr(plan.Slug),
@@ -370,17 +383,59 @@ func (r *McpServerResource) buildCreate(ctx context.Context, plan *McpServerReso
 			RequestTimeoutSeconds: int64ToIntPtr(plan.RequestTimeoutSeconds),
 			Image:                 plan.Image.ValueString(),
 			Port:                  int(plan.Port.ValueInt64()),
-			Command:               listToStrSlicePtr(ctx, plan.Command, diags),
-			Args:                  listToStrSlicePtr(ctx, plan.Args, diags),
-			EnvPlaintext:          mapToStrMapPtr(ctx, plan.EnvPlaintext, diags),
-			EnvSecretRefs:         mapToStrMapPtr(ctx, plan.EnvSecretRefs, diags),
-			SecretFileMounts:      mapToStrMapPtr(ctx, plan.SecretFileMounts, diags),
+			Command:               listToStrSlicePtr(ctx, plan.Command, &diags),
+			Args:                  listToStrSlicePtr(ctx, plan.Args, &diags),
+			EnvPlaintext:          mapToStrMapPtr(ctx, plan.EnvPlaintext, &diags),
+			EnvSecretRefs:         mapToStrMapPtr(ctx, plan.EnvSecretRefs, &diags),
+			SecretFileMounts:      mapToStrMapPtr(ctx, plan.SecretFileMounts, &diags),
+			PodHostMode:           podHostModePtr(plan.PodHostMode),
 		}
+		out, err := json.Marshal(body)
+		if err != nil {
+			diags.AddError("Error encoding MCP server", err.Error())
+		}
+		return out, diags
 	}
 }
 
-// mapDetail writes an API detail into the resource model.
-func (r *McpServerResource) mapDetail(ctx context.Context, d *client.McpServerDetail, m *McpServerResourceModel, diags *diag.Diagnostics) {
+// buildUpdateJSON builds a SPARSE PATCH body containing only the common fields
+// plus the fields valid for the (immutable) runtime kind. The generated
+// McpServerUpdate type has no `omitempty`, so a nil field would serialize as an
+// explicit JSON null; the API rejects cross-kind fields being present, hence the
+// dynamic body limited to the active kind.
+func buildUpdateJSON(ctx context.Context, plan McpServerResourceModel, kind string) ([]byte, diag.Diagnostics) {
+	var diags diag.Diagnostics
+	body := map[string]any{
+		"name":                    plan.Name.ValueString(),
+		"slug":                    strOrNil(plan.Slug),
+		"description":             strOrNil(plan.Description),
+		"request_timeout_seconds": int64OrNil(plan.RequestTimeoutSeconds),
+	}
+	switch kind {
+	case client.McpRuntimeManagedRemote:
+		body["endpoint_url"] = plan.EndpointURL.ValueString()
+	default: // container_image
+		body["image"] = plan.Image.ValueString()
+		body["port"] = plan.Port.ValueInt64()
+		body["command"] = listOrNil(ctx, plan.Command, &diags)
+		body["args"] = listOrNil(ctx, plan.Args, &diags)
+		body["env_plaintext"] = mapOrNil(ctx, plan.EnvPlaintext, &diags)
+		body["env_secret_refs"] = mapOrNil(ctx, plan.EnvSecretRefs, &diags)
+		body["secret_file_mounts"] = mapOrNil(ctx, plan.SecretFileMounts, &diags)
+		if !plan.PodHostMode.IsNull() {
+			body["pod_host_mode"] = plan.PodHostMode.ValueString()
+		}
+	}
+	out, err := json.Marshal(body)
+	if err != nil {
+		diags.AddError("Error encoding MCP server update", err.Error())
+	}
+	return out, diags
+}
+
+// mapDetail writes an API detail into the resource model. pod_host_mode is not
+// set (it is absent from the response and preserved from config/state).
+func mapDetail(ctx context.Context, d *client.McpServerDetail, m *McpServerResourceModel, diags *diag.Diagnostics) {
 	if d.Container != nil {
 		c := d.Container
 		m.ID = types.StringValue(c.McpServerId)
@@ -426,6 +481,7 @@ func (r *McpServerResource) mapDetail(ctx context.Context, d *client.McpServerDe
 		m.EnvPlaintext = types.MapNull(types.StringType)
 		m.EnvSecretRefs = types.MapNull(types.StringType)
 		m.SecretFileMounts = types.MapNull(types.StringType)
+		m.PodHostMode = types.StringNull()
 		m.DesiredState = types.StringValue(string(c.DesiredState))
 		m.ObservedState = types.StringValue(string(c.ObservedState))
 		m.ToolCount = types.Int64Value(int64(c.ToolCount))
@@ -477,6 +533,14 @@ func transportPtr(s types.String) *client.McpServerTransport {
 	return &t
 }
 
+func podHostModePtr(s types.String) *client.McpPodHostMode {
+	if s.IsNull() || s.IsUnknown() {
+		return nil
+	}
+	m := client.McpPodHostMode(s.ValueString())
+	return &m
+}
+
 func listToStrSlicePtr(ctx context.Context, l types.List, diags *diag.Diagnostics) *[]string {
 	if l.IsNull() || l.IsUnknown() {
 		return nil
@@ -511,4 +575,37 @@ func strMapToMap(ctx context.Context, p *map[string]string, diags *diag.Diagnost
 	v, d := types.MapValueFrom(ctx, types.StringType, *p)
 	diags.Append(d...)
 	return v
+}
+
+// strOrNil / int64OrNil / listOrNil / mapOrNil return the value for a set
+// attribute or nil (JSON null) for an unset one, for building the sparse PATCH
+// body. `any` here is intrinsic to constructing dynamic JSON.
+func strOrNil(s types.String) any {
+	if s.IsNull() || s.IsUnknown() {
+		return nil
+	}
+	return s.ValueString()
+}
+
+func int64OrNil(v types.Int64) any {
+	if v.IsNull() || v.IsUnknown() {
+		return nil
+	}
+	return v.ValueInt64()
+}
+
+func listOrNil(ctx context.Context, l types.List, diags *diag.Diagnostics) any {
+	p := listToStrSlicePtr(ctx, l, diags)
+	if p == nil {
+		return nil
+	}
+	return *p
+}
+
+func mapOrNil(ctx context.Context, m types.Map, diags *diag.Diagnostics) any {
+	p := mapToStrMapPtr(ctx, m, diags)
+	if p == nil {
+		return nil
+	}
+	return *p
 }
