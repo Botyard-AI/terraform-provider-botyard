@@ -4,12 +4,12 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
-	"encoding/json"
 	"testing"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	"github.com/Botyard-AI/terraform-provider-botyard/internal/client"
@@ -92,7 +92,7 @@ func TestValidateVaultSecretConfig(t *testing.T) {
 func TestBuildCreateBody(t *testing.T) {
 	m := vaultModel()
 	m.BotIDs = strSet("11111111-1111-1111-1111-111111111111", "22222222-2222-2222-2222-222222222222")
-	body, diags := buildCreateBody(context.Background(), m, "s3cr3t")
+	body, diags := buildCreateBody(m, "s3cr3t")
 	if diags.HasError() {
 		t.Fatalf("diags: %v", diags)
 	}
@@ -115,9 +115,10 @@ func TestBuildCreateBody(t *testing.T) {
 	if string(obj["max_ttl_seconds"]) != "300" {
 		t.Errorf("max_ttl_seconds = %s", obj["max_ttl_seconds"])
 	}
-	var ids []string
-	if err := json.Unmarshal(obj["bot_ids"], &ids); err != nil || len(ids) != 2 {
-		t.Errorf("bot_ids = %s (err %v)", obj["bot_ids"], err)
+	// Bot links are managed authoritatively via the bot-links endpoint, never
+	// the create body.
+	if _, ok := obj["bot_ids"]; ok {
+		t.Errorf("create body must not carry bot_ids; got %s", obj["bot_ids"])
 	}
 }
 
@@ -192,12 +193,13 @@ func TestMapPolicy_DoesNotTouchWriteOnlyOrLinks(t *testing.T) {
 		CreatedAt:      ts,
 		UpdatedAt:      ts,
 	}
-	// Sentinels prove mapPolicy leaves the write-only value, its hash, and the
-	// bot-links set untouched (those are owned elsewhere).
+	// Sentinels prove mapPolicy leaves the write-only value, its hash, the
+	// bot-links set, and the derived count untouched (those are owned elsewhere).
 	m := VaultSecretResourceModel{
 		SecretValue:     types.StringValue("SENTINEL-VALUE"),
 		SecretValueHash: types.StringValue("SENTINEL-HASH"),
 		BotIDs:          strSet("keep-me"),
+		LinkedBotCount:  types.Int64Value(99),
 	}
 	mapPolicy(resp, &m)
 
@@ -207,9 +209,6 @@ func TestMapPolicy_DoesNotTouchWriteOnlyOrLinks(t *testing.T) {
 	if m.Description.ValueString() != "read-only token" || m.MaxTTLSeconds.ValueInt64() != 600 {
 		t.Errorf("description/ttl = %q/%d", m.Description.ValueString(), m.MaxTTLSeconds.ValueInt64())
 	}
-	if m.LinkedBotCount.ValueInt64() != 2 {
-		t.Errorf("linked_bot_count = %d", m.LinkedBotCount.ValueInt64())
-	}
 	if m.SecretValue.ValueString() != "SENTINEL-VALUE" {
 		t.Error("mapPolicy must not write secret_value")
 	}
@@ -218,6 +217,9 @@ func TestMapPolicy_DoesNotTouchWriteOnlyOrLinks(t *testing.T) {
 	}
 	if elems := m.BotIDs.Elements(); len(elems) != 1 {
 		t.Error("mapPolicy must not overwrite bot_ids")
+	}
+	if m.LinkedBotCount.ValueInt64() != 99 {
+		t.Error("mapPolicy must not overwrite linked_bot_count (owned by applyBotLinks)")
 	}
 }
 
@@ -251,27 +253,107 @@ func TestSecretValueNeverInState(t *testing.T) {
 	}
 }
 
-func TestBotIDsEqual(t *testing.T) {
+func TestBotLinksEqual(t *testing.T) {
+	if !botLinksEqual([]string{"a", "b"}, []string{"b", "a"}) {
+		t.Error("order should not matter")
+	}
+	if botLinksEqual([]string{"a"}, []string{"a", "b"}) {
+		t.Error("different lengths should be unequal")
+	}
+	if botLinksEqual([]string{"a"}, []string{"b"}) {
+		t.Error("different members should be unequal")
+	}
+	if !botLinksEqual(nil, []string{}) {
+		t.Error("nil and empty should be equal")
+	}
+}
+
+// TestPlannedBotIDs covers finding #2: allow_all_bots=true must collapse the
+// planned bot_ids to empty so Apply clears stale links; unknown stays unknown;
+// otherwise the current value is preserved.
+func TestPlannedBotIDs(t *testing.T) {
+	current := strSet("a", "b")
+
+	// allow_all_bots=true → empty set (not the retained prior set).
+	got := plannedBotIDs(types.BoolValue(true), current)
+	if got.IsNull() || got.IsUnknown() || len(got.Elements()) != 0 {
+		t.Errorf("allow_all_bots=true should force empty set, got %v", got)
+	}
+	// allow_all_bots=false → current preserved.
+	got = plannedBotIDs(types.BoolValue(false), current)
+	if len(got.Elements()) != 2 {
+		t.Errorf("allow_all_bots=false should preserve current set, got %v", got)
+	}
+	// allow_all_bots unknown → unknown (known after apply).
+	if got = plannedBotIDs(types.BoolUnknown(), current); !got.IsUnknown() {
+		t.Errorf("unknown allow_all_bots should yield unknown bot_ids, got %v", got)
+	}
+}
+
+// TestDesiredBotLinks covers finding #2's reconciliation input: the pushed set
+// is empty when allow_all_bots is true, else the configured bot_ids.
+func TestDesiredBotLinks(t *testing.T) {
 	var diags diag.Diagnostics
 	ctx := context.Background()
 
-	if !botIDsEqual(ctx, strSet("a", "b"), strSet("b", "a"), &diags) {
-		t.Error("order should not matter")
+	if got := desiredBotLinks(ctx, true, strSet("a", "b"), &diags); len(got) != 0 {
+		t.Errorf("allow_all_bots=true must yield empty desired links, got %v", got)
 	}
-	if botIDsEqual(ctx, strSet("a"), strSet("a", "b"), &diags) {
-		t.Error("different lengths should be unequal")
+	if got := desiredBotLinks(ctx, false, strSet("a", "b"), &diags); len(got) != 2 {
+		t.Errorf("allow_all_bots=false must yield configured links, got %v", got)
 	}
-	if botIDsEqual(ctx, strSet("a"), strSet("b"), &diags) {
-		t.Error("different members should be unequal")
-	}
-	if !botIDsEqual(ctx, types.SetNull(types.StringType), types.SetNull(types.StringType), &diags) {
-		t.Error("two null sets should be equal")
-	}
-	// an unknown planned set is treated as equal (no spurious bot-links write).
-	if !botIDsEqual(ctx, types.SetUnknown(types.StringType), strSet("a"), &diags) {
-		t.Error("unknown planned set should be treated as equal")
+	if got := desiredBotLinks(ctx, false, types.SetNull(types.StringType), &diags); len(got) != 0 {
+		t.Errorf("null bot_ids must yield empty desired links, got %v", got)
 	}
 	if diags.HasError() {
 		t.Fatalf("diags: %v", diags)
+	}
+}
+
+// TestApplyBotLinks covers finding #3: linked_bot_count is derived from the
+// authoritative bot-links set, not the (pre-PUT) policy response.
+func TestApplyBotLinks(t *testing.T) {
+	var diags diag.Diagnostics
+	ctx := context.Background()
+
+	var m VaultSecretResourceModel
+	applyBotLinks(ctx, &m, []string{"a", "b", "c"}, &diags)
+	if diags.HasError() {
+		t.Fatalf("diags: %v", diags)
+	}
+	if m.LinkedBotCount.ValueInt64() != 3 {
+		t.Errorf("linked_bot_count = %d, want 3", m.LinkedBotCount.ValueInt64())
+	}
+	if len(m.BotIDs.Elements()) != 3 {
+		t.Errorf("bot_ids len = %d, want 3", len(m.BotIDs.Elements()))
+	}
+
+	// empty links → zero count, empty (non-null) set.
+	m = VaultSecretResourceModel{}
+	applyBotLinks(ctx, &m, []string{}, &diags)
+	if m.LinkedBotCount.ValueInt64() != 0 || m.BotIDs.IsNull() || len(m.BotIDs.Elements()) != 0 {
+		t.Errorf("empty links → count 0 / empty set, got count=%d set=%v", m.LinkedBotCount.ValueInt64(), m.BotIDs)
+	}
+}
+
+// TestDescriptionIsOptionalComputed covers finding #1: because the update API
+// treats null description as "preserve", the attribute must be Optional+Computed
+// to converge (no perpetual diff) when omitted.
+func TestDescriptionIsOptionalComputed(t *testing.T) {
+	var resp resource.SchemaResponse
+	(&VaultSecretResource{}).Schema(context.Background(), resource.SchemaRequest{}, &resp)
+	descAttr, ok := resp.Schema.Attributes["description"]
+	if !ok {
+		t.Fatal("description attribute missing")
+	}
+	if !descAttr.IsOptional() || !descAttr.IsComputed() {
+		t.Errorf("description must be Optional+Computed, got optional=%v computed=%v",
+			descAttr.IsOptional(), descAttr.IsComputed())
+	}
+	// secret_value must remain write-only and never computed.
+	sv := resp.Schema.Attributes["secret_value"]
+	if !sv.IsWriteOnly() || sv.IsComputed() {
+		t.Errorf("secret_value must be write-only and not computed, got writeOnly=%v computed=%v",
+			sv.IsWriteOnly(), sv.IsComputed())
 	}
 }

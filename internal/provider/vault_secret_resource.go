@@ -10,6 +10,7 @@ import (
 	"sort"
 	"time"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -101,8 +102,12 @@ func (r *VaultSecretResource) Schema(_ context.Context, _ resource.SchemaRequest
 				MarkdownDescription: "Human-readable name shown to bots and admins.",
 			},
 			"description": schema.StringAttribute{
-				Optional:            true,
-				MarkdownDescription: "Optional description explaining the vault entry's purpose.",
+				Optional: true,
+				Computed: true,
+				MarkdownDescription: "Optional description explaining the vault entry's purpose. The update API " +
+					"treats an omitted or null description as *unchanged*, so once set a description cannot be cleared " +
+					"back to null in place (remove and recreate the resource to clear it); this attribute is therefore " +
+					"`Computed` to converge without a perpetual diff when omitted.",
 			},
 			"sensitivity": schema.StringAttribute{
 				Optional:            true,
@@ -220,10 +225,17 @@ func validateVaultSecretConfig(cfg VaultSecretResourceModel) diag.Diagnostics {
 	return diags
 }
 
-// ModifyPlan hashes the write-only secret_value from configuration into the
-// computed secret_value_hash. This is what surfaces a value change as a plan
-// diff (the write-only value itself is nullified in plan/state), driving an
-// update-in-place rotation without ever persisting the secret.
+// ModifyPlan does two things:
+//
+//  1. Hashes the write-only secret_value from configuration into the computed
+//     secret_value_hash. This surfaces a value change as a plan diff (the
+//     write-only value itself is nullified in plan/state), driving an
+//     update-in-place rotation without ever persisting the secret.
+//  2. Forces the planned bot_ids to the empty set when allow_all_bots is true,
+//     so the plan matches what Apply reconciles (the API ignores explicit links
+//     while allow_all_bots is on). Without this, an omitted bot_ids would retain
+//     the prior set via UseStateForUnknown and leave stale grants that revive
+//     when allow_all_bots is later turned off.
 func (r *VaultSecretResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
 	if req.Plan.Raw.IsNull() {
 		return // resource is being destroyed; no plan to modify.
@@ -234,6 +246,15 @@ func (r *VaultSecretResource) ModifyPlan(ctx context.Context, req resource.Modif
 		return
 	}
 	resp.Diagnostics.Append(resp.Plan.SetAttribute(ctx, path.Root("secret_value_hash"), hashSecretValue(secret))...)
+
+	var allowAll types.Bool
+	var botIDs types.Set
+	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, path.Root("allow_all_bots"), &allowAll)...)
+	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, path.Root("bot_ids"), &botIDs)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	resp.Diagnostics.Append(resp.Plan.SetAttribute(ctx, path.Root("bot_ids"), plannedBotIDs(allowAll, botIDs))...)
 }
 
 func (r *VaultSecretResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
@@ -251,7 +272,7 @@ func (r *VaultSecretResource) Create(ctx context.Context, req resource.CreateReq
 		return
 	}
 
-	body, diags := buildCreateBody(ctx, plan, secret.ValueString())
+	body, diags := buildCreateBody(plan, secret.ValueString())
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -271,9 +292,19 @@ func (r *VaultSecretResource) Create(ctx context.Context, req resource.CreateReq
 	mapPolicy(apiResp.JSON201, &plan)
 	plan.SecretValueHash = hashSecretValue(secret)
 
-	// The create body carried bot_ids, but the authoritative linked set (empty
-	// when allow_all_bots is true) is read back from the bot-links endpoint.
-	if !r.readBotLinks(ctx, apiResp.JSON201.PolicyId, &plan, &resp.Diagnostics) {
+	// Bot links are managed authoritatively through the bot-links endpoint (not
+	// the create body), so the same reconciliation path serves create and update.
+	policyID := apiResp.JSON201.PolicyId
+	desired := desiredBotLinks(ctx, plan.AllowAllBots.ValueBool(), plan.BotIDs, &resp.Diagnostics)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	if len(desired) > 0 {
+		if !r.putBotLinks(ctx, policyID, desired, &resp.Diagnostics) {
+			return
+		}
+	}
+	if !r.readBotLinks(ctx, policyID, &plan, &resp.Diagnostics) {
 		return
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
@@ -344,12 +375,17 @@ func (r *VaultSecretResource) Update(ctx context.Context, req resource.UpdateReq
 	mapPolicy(apiResp.JSON200, &plan)
 	plan.SecretValueHash = newHash
 
-	// Reconcile the authoritative bot-links set when it changed.
-	if !botIDsEqual(ctx, plan.BotIDs, state.BotIDs, &resp.Diagnostics) {
-		if resp.Diagnostics.HasError() {
-			return
-		}
-		if !r.putBotLinks(ctx, state.ID.ValueString(), plan.BotIDs, &resp.Diagnostics) {
+	// Reconcile the authoritative bot-links set. The desired set collapses to
+	// empty when allow_all_bots is true, so flipping it on actively clears any
+	// prior explicit links (rather than leaving stale grants). Compare against
+	// the prior state links so a metadata-only update skips a redundant PUT.
+	desired := desiredBotLinks(ctx, plan.AllowAllBots.ValueBool(), plan.BotIDs, &resp.Diagnostics)
+	stateLinks := setToStrSlice(ctx, state.BotIDs, &resp.Diagnostics)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	if !botLinksEqual(desired, stateLinks) {
+		if !r.putBotLinks(ctx, state.ID.ValueString(), desired, &resp.Diagnostics) {
 			return
 		}
 	}
@@ -387,8 +423,11 @@ func (r *VaultSecretResource) ImportState(ctx context.Context, req resource.Impo
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }
 
-// readBotLinks fetches the authoritative linked-bot set and writes it into the
-// model. Returns false (with diagnostics appended) on error.
+// readBotLinks fetches the authoritative linked-bot set and writes it (and the
+// derived linked_bot_count) into the model. The count is derived from this
+// authoritative set rather than the policy response, whose linked_bot_count
+// reflects the pre-PUT state during a create/update. Returns false (with
+// diagnostics appended) on error.
 func (r *VaultSecretResource) readBotLinks(ctx context.Context, policyID string, m *VaultSecretResourceModel, diags *diag.Diagnostics) bool {
 	apiResp, err := r.data.client.GetSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksGetWithResponse(
 		ctx, r.data.orgID, policyID)
@@ -401,16 +440,19 @@ func (r *VaultSecretResource) readBotLinks(ctx context.Context, policyID string,
 			fmt.Sprintf("Bot-links read returned HTTP %d: %s", apiResp.StatusCode(), describeAPIError(apiResp.Body)))
 		return false
 	}
-	m.BotIDs = strSliceToSet(ctx, apiResp.JSON200.BotIds, diags)
+	applyBotLinks(ctx, m, apiResp.JSON200.BotIds, diags)
 	return !diags.HasError()
 }
 
+// applyBotLinks writes the authoritative linked-bot set and its derived count
+// into the model. Kept separate (and pure) so the derivation is unit-testable.
+func applyBotLinks(ctx context.Context, m *VaultSecretResourceModel, ids []string, diags *diag.Diagnostics) {
+	m.BotIDs = strSliceToSet(ctx, ids, diags)
+	m.LinkedBotCount = types.Int64Value(int64(len(ids)))
+}
+
 // putBotLinks replaces the full linked-bot set for the policy.
-func (r *VaultSecretResource) putBotLinks(ctx context.Context, policyID string, set types.Set, diags *diag.Diagnostics) bool {
-	ids := setToStrSlice(ctx, set, diags)
-	if diags.HasError() {
-		return false
-	}
+func (r *VaultSecretResource) putBotLinks(ctx context.Context, policyID string, ids []string, diags *diag.Diagnostics) bool {
 	if ids == nil {
 		ids = []string{}
 	}
@@ -430,8 +472,10 @@ func (r *VaultSecretResource) putBotLinks(ctx context.Context, policyID string, 
 
 // buildCreateBody marshals the create request. The secret value is passed
 // explicitly (read from configuration, not plan) to make it obvious the
-// write-only value never flows through the state model.
-func buildCreateBody(ctx context.Context, plan VaultSecretResourceModel, secretValue string) ([]byte, diag.Diagnostics) {
+// write-only value never flows through the state model. Bot links are omitted
+// here and reconciled through the bot-links endpoint after create, so the
+// create and update paths share one authoritative link-management path.
+func buildCreateBody(plan VaultSecretResourceModel, secretValue string) ([]byte, diag.Diagnostics) {
 	var diags diag.Diagnostics
 	body := client.SecretPolicyCreateRequest{
 		KeyPath:       plan.KeyPath.ValueString(),
@@ -441,7 +485,6 @@ func buildCreateBody(ctx context.Context, plan VaultSecretResourceModel, secretV
 		Sensitivity:   sensitivityPtr(plan.Sensitivity),
 		AllowAllBots:  plan.AllowAllBots.ValueBool(),
 		MaxTtlSeconds: int(plan.MaxTTLSeconds.ValueInt64()),
-		BotIds:        setToStrSlicePtr(ctx, plan.BotIDs, &diags),
 	}
 	out, err := json.Marshal(body)
 	if err != nil {
@@ -479,9 +522,10 @@ func buildUpdateBody(plan VaultSecretResourceModel, secretValue string, secretCh
 }
 
 // mapPolicy writes an API policy response into the model. It deliberately does
-// not touch SecretValue, SecretValueHash, or BotIDs: the secret is write-only,
-// its hash is owned by ModifyPlan/Create/Update, and the linked-bot set is read
-// from the bot-links endpoint.
+// not touch SecretValue, SecretValueHash, BotIDs, or LinkedBotCount: the secret
+// is write-only, its hash is owned by ModifyPlan/Create/Update, and the
+// linked-bot set and its derived count are owned by applyBotLinks (the policy
+// response's linked_bot_count is stale during a create/update, pre-PUT).
 func mapPolicy(p *client.SecretPolicyResponse, m *VaultSecretResourceModel) {
 	m.ID = types.StringValue(p.PolicyId)
 	m.KeyPath = types.StringValue(p.KeyPath)
@@ -490,7 +534,6 @@ func mapPolicy(p *client.SecretPolicyResponse, m *VaultSecretResourceModel) {
 	m.Sensitivity = types.StringValue(string(p.Sensitivity))
 	m.AllowAllBots = types.BoolValue(p.AllowAllBots)
 	m.MaxTTLSeconds = types.Int64Value(int64(p.MaxTtlSeconds))
-	m.LinkedBotCount = types.Int64Value(int64(p.LinkedBotCount))
 	m.CreatedAt = types.StringValue(p.CreatedAt.Format(time.RFC3339))
 	m.UpdatedAt = types.StringValue(p.UpdatedAt.Format(time.RFC3339))
 }
@@ -527,32 +570,47 @@ func setToStrSlice(ctx context.Context, s types.Set, diags *diag.Diagnostics) []
 	return out
 }
 
-func setToStrSlicePtr(ctx context.Context, s types.Set, diags *diag.Diagnostics) *[]string {
-	out := setToStrSlice(ctx, s, diags)
-	if out == nil {
-		return nil
-	}
-	return &out
-}
-
 func strSliceToSet(ctx context.Context, ids []string, diags *diag.Diagnostics) types.Set {
 	v, d := types.SetValueFrom(ctx, types.StringType, ids)
 	diags.Append(d...)
 	return v
 }
 
-// botIDsEqual reports whether two bot-id sets are order-independently equal. An
-// unknown planned set (e.g. UseStateForUnknown not yet resolved) is treated as
-// equal so it does not force a spurious bot-links write.
-func botIDsEqual(ctx context.Context, a, b types.Set, diags *diag.Diagnostics) bool {
-	if a.IsUnknown() {
-		return true
+// plannedBotIDs computes the planned bot_ids value given allow_all_bots. When
+// allow_all_bots is true the explicit set collapses to empty (the API ignores
+// links); when unknown it stays unknown ("known after apply") so Apply can
+// reconcile any value without a "provider produced inconsistent result" error;
+// otherwise the current planned value is preserved.
+func plannedBotIDs(allowAllBots types.Bool, current types.Set) types.Set {
+	switch {
+	case allowAllBots.IsUnknown():
+		return types.SetUnknown(types.StringType)
+	case allowAllBots.ValueBool():
+		return types.SetValueMust(types.StringType, []attr.Value{})
+	default:
+		return current
 	}
-	as := setToStrSlice(ctx, a, diags)
-	bs := setToStrSlice(ctx, b, diags)
-	if len(as) != len(bs) {
+}
+
+// desiredBotLinks is the authoritative link set to push: empty when
+// allow_all_bots is true, otherwise the configured bot_ids.
+func desiredBotLinks(ctx context.Context, allowAllBots bool, botIDs types.Set, diags *diag.Diagnostics) []string {
+	if allowAllBots {
+		return []string{}
+	}
+	if ids := setToStrSlice(ctx, botIDs, diags); ids != nil {
+		return ids
+	}
+	return []string{}
+}
+
+// botLinksEqual reports whether two link sets are order-independently equal.
+func botLinksEqual(a, b []string) bool {
+	if len(a) != len(b) {
 		return false
 	}
+	as := append([]string(nil), a...)
+	bs := append([]string(nil), b...)
 	sort.Strings(as)
 	sort.Strings(bs)
 	for i := range as {
