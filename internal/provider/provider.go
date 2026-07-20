@@ -1,3 +1,5 @@
+// Package provider implements the Botyard Terraform provider: the provider
+// configuration, its resources, and data sources.
 package provider
 
 import (

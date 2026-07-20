@@ -1,0 +1,48 @@
+# golangci-lint v2 configuration.
+# The default suite (errcheck, govet, ineffassign, staticcheck, unused) plus a
+# curated set of high-signal linters. golangci-lint auto-skips generated files
+# (internal/client/botyard.gen.go carries the "DO NOT EDIT" header).
+version: "2"
+
+run:
+  timeout: 5m
+
+linters:
+  default: standard
+  enable:
+    - gosec # security issues
+    - gocritic # opinionated correctness/style checks
+    - misspell # spelling in comments/strings
+    - unconvert # redundant type conversions
+    - unparam # unused function parameters/results
+    - revive # golint successor
+  settings:
+    revive:
+      # revive's default rule set, minus `exported` — that rule only fires on the
+      # standard Terraform framework interface methods (Metadata/Schema/CRUD),
+      # which are self-describing boilerplate.
+      rules:
+        - name: blank-imports
+        - name: context-as-argument
+        - name: context-keys-type
+        - name: dot-imports
+        - name: empty-block
+        - name: error-naming
+        - name: error-return
+        - name: error-strings
+        - name: errorf
+        - name: exported
+          disabled: true
+        - name: increment-decrement
+        - name: indent-error-flow
+        - name: package-comments
+        - name: range
+        - name: receiver-naming
+        - name: redefines-builtin-id
+        - name: superfluous-else
+        - name: time-naming
+        - name: unexported-return
+        - name: unreachable-code
+        - name: unused-parameter
+        - name: var-declaration
+        - name: var-naming
