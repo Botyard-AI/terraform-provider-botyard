@@ -11,7 +11,6 @@ import (
 )
 
 func strp(s string) *string { return &s }
-func intp(i int) *int       { return &i }
 
 func TestMcpServerMapDetail_ContainerImage(t *testing.T) {
 	ts := time.Date(2026, 7, 20, 10, 0, 0, 0, time.UTC)
