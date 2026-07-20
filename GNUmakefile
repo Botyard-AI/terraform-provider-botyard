@@ -1,5 +1,8 @@
 BINARY := terraform-provider-botyard
 
+# Pinned tfplugindocs version. Keep in sync with .github/workflows/test.yml.
+TFPLUGINDOCS_VERSION := v0.25.0
+
 default: build
 
 # Compile the provider and all packages.
@@ -42,4 +45,18 @@ fmtcheck:
 vet:
 	go vet ./...
 
-.PHONY: default build install test testacc generate sync-spec fmt fmtcheck vet
+# Regenerate the Terraform Registry documentation (docs/) from the provider
+# schema and the examples/ directory using tfplugindocs. Uses a terraform
+# binary from PATH when available. Run this whenever the schema or examples
+# change and commit the result; CI fails if docs/ drifts from the schema.
+docs:
+	go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs@$(TFPLUGINDOCS_VERSION) \
+		generate --provider-name botyard --rendered-provider-name Botyard
+
+# Verify docs/ is in sync with the current schema + examples. Regenerates and
+# fails if anything changed. Mirrors the CI drift check.
+docs-check: docs
+	@git diff --exit-code -- docs/ || { \
+		echo "docs/ is out of date; run 'make docs' and commit the result."; exit 1; }
+
+.PHONY: default build install test testacc generate sync-spec fmt fmtcheck vet docs docs-check
