@@ -38,6 +38,9 @@ concurrency:
 jobs:
   release:
     runs-on: ubuntu-latest
+    # GPG_PRIVATE_KEY + PASSPHRASE are stored as secrets on the `public` GitHub
+    # Environment, so the job must target it to read them.
+    environment: public
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
