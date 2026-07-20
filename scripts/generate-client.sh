@@ -14,15 +14,21 @@ CLIENT_DIR="$ROOT/internal/client"
 SPEC="$CLIENT_DIR/openapi.json"
 
 # Tags the generated client covers. Widen as resources are added.
-KEEP_TAGS=(bots mcp-servers)
+KEEP_TAGS=(bots mcp-servers secret-policies)
 
-# Paths dropped even though their tag is kept: the MCP catalog endpoints pull in
-# McpCatalogFormField schemas whose inline enums trip an oapi-codegen
-# duplicate-typename bug, and catalog-instantiation isn't part of the
-# botyard_mcp_server resource. Re-include when the catalog data source lands.
+# Paths dropped even though their tag is kept:
+#   - The MCP catalog endpoints pull in McpCatalogFormField schemas whose inline
+#     enums trip an oapi-codegen duplicate-typename bug, and catalog
+#     instantiation isn't part of the botyard_mcp_server resource.
+#   - The bot-scoped secret-policies endpoints model a bot reading its own
+#     variables (a different access pattern); the botyard_vault_secret resource
+#     only needs the org-scoped policy CRUD + bot-links endpoints.
+# Re-include either when the corresponding surface is built.
 EXCLUDE_PATHS=(
   "/v1/orgs/{org_id}/mcp-servers/catalog"
   "/v1/orgs/{org_id}/mcp-servers/from-catalog"
+  "/v1/orgs/{org_id}/bots/{bot_slug}/secret-policies"
+  "/v1/orgs/{org_id}/bots/{bot_slug}/secret-policies/{policy_id}"
 )
 
 OAPI_CODEGEN_VERSION="v2.4.1"

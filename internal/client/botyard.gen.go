@@ -472,6 +472,12 @@ const (
 	RescueStageSoft      RescueStage = "soft"
 )
 
+// Defines values for RuntimeVaultSensitivity.
+const (
+	RuntimeVaultSensitivityPlain  RuntimeVaultSensitivity = "plain"
+	RuntimeVaultSensitivitySecret RuntimeVaultSensitivity = "secret"
+)
+
 // Defines values for ToolsConfigExecAsk.
 const (
 	ToolsConfigExecAskAlways ToolsConfigExecAsk = "always"
@@ -2290,6 +2296,9 @@ type ResourceQuantity struct {
 	ResourceType MeteredResource `json:"resource_type"`
 }
 
+// RuntimeVaultSensitivity Sensitivity classification for a Runtime Vault entry.
+type RuntimeVaultSensitivity string
+
 // SecretExecProviderConfig OpenClaw exec secret provider configuration for Botyard Runtime Vault leases.
 type SecretExecProviderConfig struct {
 	Args              *[]string `json:"args,omitempty"`
@@ -2301,6 +2310,108 @@ type SecretExecProviderConfig struct {
 	PassEnv           *[]string `json:"pass_env,omitempty"`
 	TimeoutMs         *int      `json:"timeout_ms,omitempty"`
 	TrustedDirs       *[]string `json:"trusted_dirs,omitempty"`
+}
+
+// SecretPolicyBotLinksRequest Request to replace the full set of bot links for a policy.
+type SecretPolicyBotLinksRequest struct {
+	// BotIds Full replacement set of bot IDs to link to this policy
+	BotIds []string `json:"bot_ids"`
+}
+
+// SecretPolicyBotLinksResponse Current set of bots explicitly linked to a policy.
+type SecretPolicyBotLinksResponse struct {
+	// BotIds Bot IDs explicitly linked to this policy (empty when allow_all_bots=True)
+	BotIds []string `json:"bot_ids"`
+}
+
+// SecretPolicyCreateRequest Request to create a new Runtime Vault policy with an initial plaintext value.
+type SecretPolicyCreateRequest struct {
+	// AllowAllBots When true, every bot in the org may request this variable without an explicit link
+	AllowAllBots bool `json:"allow_all_bots"`
+
+	// BotIds Bot IDs to link to this variable on creation. Ignored when allow_all_bots is true. Defaults to no explicit links.
+	BotIds *[]string `json:"bot_ids,omitempty"`
+
+	// Description Optional description explaining the vault entry's purpose
+	Description *string `json:"description"`
+
+	// DisplayName Human-readable name shown to bots and admins
+	DisplayName string `json:"display_name"`
+
+	// KeyPath Dot-delimited path for the variable, e.g. github.tokens.read_only
+	KeyPath string `json:"key_path"`
+
+	// MaxTtlSeconds Maximum TTL in seconds that the policy grants to leases (60-3600)
+	MaxTtlSeconds int `json:"max_ttl_seconds"`
+
+	// Sensitivity Sensitivity classification for a Runtime Vault entry.
+	Sensitivity *RuntimeVaultSensitivity `json:"sensitivity,omitempty"`
+
+	// Value Plaintext vault value — encrypted immediately, never returned in responses
+	Value *string `json:"value,omitempty"`
+}
+
+// SecretPolicyListResponse Paginated list of secret policies.
+type SecretPolicyListResponse struct {
+	// Policies Secret policies for the organization
+	Policies []SecretPolicyResponse `json:"policies"`
+
+	// Total Total number of policies in this organization
+	Total int `json:"total"`
+}
+
+// SecretPolicyResponse Secret policy response. The plaintext value is never included.
+type SecretPolicyResponse struct {
+	// AllowAllBots When true, every bot in the org may access this variable
+	AllowAllBots bool `json:"allow_all_bots"`
+
+	// CreatedAt When the policy was created
+	CreatedAt time.Time `json:"created_at"`
+
+	// Description Optional description of the vault entry's purpose
+	Description *string `json:"description"`
+
+	// DisplayName Human-readable name shown to bots and admins
+	DisplayName string `json:"display_name"`
+
+	// KeyPath Dot-delimited Runtime Vault key path
+	KeyPath string `json:"key_path"`
+
+	// LinkedBotCount Number of bots explicitly linked to this policy via bot-links
+	LinkedBotCount int `json:"linked_bot_count"`
+
+	// MaxTtlSeconds Maximum TTL in seconds that the policy grants to leases
+	MaxTtlSeconds int `json:"max_ttl_seconds"`
+
+	// PolicyId Unique policy identifier (UUID)
+	PolicyId string `json:"policy_id"`
+
+	// Sensitivity Sensitivity classification for a Runtime Vault entry.
+	Sensitivity RuntimeVaultSensitivity `json:"sensitivity"`
+
+	// UpdatedAt When the policy was last updated
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+// SecretPolicyUpdateRequest Request to update an existing Runtime Vault policy. All fields are optional.
+type SecretPolicyUpdateRequest struct {
+	// AllowAllBots Update whether all bots may access this secret (unchanged if omitted)
+	AllowAllBots *bool `json:"allow_all_bots"`
+
+	// Description New description (unchanged if omitted)
+	Description *string `json:"description"`
+
+	// DisplayName New human-readable name (unchanged if omitted)
+	DisplayName *string `json:"display_name"`
+
+	// MaxTtlSeconds New maximum TTL in seconds (60-3600, unchanged if omitted)
+	MaxTtlSeconds *int `json:"max_ttl_seconds"`
+
+	// Sensitivity New sensitivity classification (unchanged if omitted)
+	Sensitivity *RuntimeVaultSensitivity `json:"sensitivity"`
+
+	// Value New plaintext vault value — encrypted immediately, never returned (unchanged if omitted)
+	Value *string `json:"value"`
 }
 
 // SecretResolutionConfig OpenClaw secret resolution limits for Botyard Runtime Vault references.
@@ -2423,6 +2534,15 @@ type CreateMcpServerV1OrgsOrgIdMcpServersPostJSONRequestBody CreateMcpServerV1Or
 
 // UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchJSONRequestBody defines body for UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatch for application/json ContentType.
 type UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchJSONRequestBody = McpServerUpdate
+
+// CreateSecretPolicyV1OrgsOrgIdSecretPoliciesPostJSONRequestBody defines body for CreateSecretPolicyV1OrgsOrgIdSecretPoliciesPost for application/json ContentType.
+type CreateSecretPolicyV1OrgsOrgIdSecretPoliciesPostJSONRequestBody = SecretPolicyCreateRequest
+
+// UpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatchJSONRequestBody defines body for UpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatch for application/json ContentType.
+type UpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatchJSONRequestBody = SecretPolicyUpdateRequest
+
+// PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutJSONRequestBody defines body for PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPut for application/json ContentType.
+type PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutJSONRequestBody = SecretPolicyBotLinksRequest
 
 // Getter for additional properties for ProblemDetails. Returns the specified
 // element and whether it was found
@@ -3049,6 +3169,33 @@ type ClientInterface interface {
 
 	// RestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPost request
 	RestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPost(ctx context.Context, orgId string, mcpServerId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListSecretPoliciesV1OrgsOrgIdSecretPoliciesGet request
+	ListSecretPoliciesV1OrgsOrgIdSecretPoliciesGet(ctx context.Context, orgId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateSecretPolicyV1OrgsOrgIdSecretPoliciesPostWithBody request with any body
+	CreateSecretPolicyV1OrgsOrgIdSecretPoliciesPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateSecretPolicyV1OrgsOrgIdSecretPoliciesPost(ctx context.Context, orgId string, body CreateSecretPolicyV1OrgsOrgIdSecretPoliciesPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdDelete request
+	DeleteSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdDelete(ctx context.Context, orgId string, policyId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdGet request
+	GetSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdGet(ctx context.Context, orgId string, policyId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatchWithBody request with any body
+	UpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatchWithBody(ctx context.Context, orgId string, policyId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatch(ctx context.Context, orgId string, policyId string, body UpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksGet request
+	GetSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksGet(ctx context.Context, orgId string, policyId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutWithBody request with any body
+	PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutWithBody(ctx context.Context, orgId string, policyId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPut(ctx context.Context, orgId string, policyId string, body PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
 func (c *Client) ListBotsV1OrgsOrgIdBotsGet(ctx context.Context, orgId string, params *ListBotsV1OrgsOrgIdBotsGetParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -3329,6 +3476,126 @@ func (c *Client) RefreshMcpServerToolsV1OrgsOrgIdMcpServersMcpServerIdRefreshToo
 
 func (c *Client) RestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPost(ctx context.Context, orgId string, mcpServerId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewRestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPostRequest(c.Server, orgId, mcpServerId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListSecretPoliciesV1OrgsOrgIdSecretPoliciesGet(ctx context.Context, orgId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListSecretPoliciesV1OrgsOrgIdSecretPoliciesGetRequest(c.Server, orgId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateSecretPolicyV1OrgsOrgIdSecretPoliciesPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateSecretPolicyV1OrgsOrgIdSecretPoliciesPostRequestWithBody(c.Server, orgId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateSecretPolicyV1OrgsOrgIdSecretPoliciesPost(ctx context.Context, orgId string, body CreateSecretPolicyV1OrgsOrgIdSecretPoliciesPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateSecretPolicyV1OrgsOrgIdSecretPoliciesPostRequest(c.Server, orgId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdDelete(ctx context.Context, orgId string, policyId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdDeleteRequest(c.Server, orgId, policyId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdGet(ctx context.Context, orgId string, policyId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdGetRequest(c.Server, orgId, policyId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatchWithBody(ctx context.Context, orgId string, policyId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatchRequestWithBody(c.Server, orgId, policyId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatch(ctx context.Context, orgId string, policyId string, body UpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatchRequest(c.Server, orgId, policyId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksGet(ctx context.Context, orgId string, policyId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksGetRequest(c.Server, orgId, policyId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutWithBody(ctx context.Context, orgId string, policyId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutRequestWithBody(c.Server, orgId, policyId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPut(ctx context.Context, orgId string, policyId string, body PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutRequest(c.Server, orgId, policyId, body)
 	if err != nil {
 		return nil, err
 	}
@@ -4180,6 +4447,318 @@ func NewRestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPostRequest(serve
 	return req, nil
 }
 
+// NewListSecretPoliciesV1OrgsOrgIdSecretPoliciesGetRequest generates requests for ListSecretPoliciesV1OrgsOrgIdSecretPoliciesGet
+func NewListSecretPoliciesV1OrgsOrgIdSecretPoliciesGetRequest(server string, orgId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/secret-policies", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCreateSecretPolicyV1OrgsOrgIdSecretPoliciesPostRequest calls the generic CreateSecretPolicyV1OrgsOrgIdSecretPoliciesPost builder with application/json body
+func NewCreateSecretPolicyV1OrgsOrgIdSecretPoliciesPostRequest(server string, orgId string, body CreateSecretPolicyV1OrgsOrgIdSecretPoliciesPostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateSecretPolicyV1OrgsOrgIdSecretPoliciesPostRequestWithBody(server, orgId, "application/json", bodyReader)
+}
+
+// NewCreateSecretPolicyV1OrgsOrgIdSecretPoliciesPostRequestWithBody generates requests for CreateSecretPolicyV1OrgsOrgIdSecretPoliciesPost with any type of body
+func NewCreateSecretPolicyV1OrgsOrgIdSecretPoliciesPostRequestWithBody(server string, orgId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/secret-policies", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdDeleteRequest generates requests for DeleteSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdDelete
+func NewDeleteSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdDeleteRequest(server string, orgId string, policyId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "policy_id", runtime.ParamLocationPath, policyId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/secret-policies/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdGetRequest generates requests for GetSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdGet
+func NewGetSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdGetRequest(server string, orgId string, policyId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "policy_id", runtime.ParamLocationPath, policyId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/secret-policies/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatchRequest calls the generic UpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatch builder with application/json body
+func NewUpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatchRequest(server string, orgId string, policyId string, body UpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatchJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatchRequestWithBody(server, orgId, policyId, "application/json", bodyReader)
+}
+
+// NewUpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatchRequestWithBody generates requests for UpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatch with any type of body
+func NewUpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatchRequestWithBody(server string, orgId string, policyId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "policy_id", runtime.ParamLocationPath, policyId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/secret-policies/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PATCH", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksGetRequest generates requests for GetSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksGet
+func NewGetSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksGetRequest(server string, orgId string, policyId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "policy_id", runtime.ParamLocationPath, policyId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/secret-policies/%s/bot-links", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutRequest calls the generic PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPut builder with application/json body
+func NewPutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutRequest(server string, orgId string, policyId string, body PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutRequestWithBody(server, orgId, policyId, "application/json", bodyReader)
+}
+
+// NewPutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutRequestWithBody generates requests for PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPut with any type of body
+func NewPutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutRequestWithBody(server string, orgId string, policyId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "policy_id", runtime.ParamLocationPath, policyId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/secret-policies/%s/bot-links", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 func (c *Client) applyEditors(ctx context.Context, req *http.Request, additionalEditors []RequestEditorFn) error {
 	for _, r := range c.RequestEditors {
 		if err := r(ctx, req); err != nil {
@@ -4288,6 +4867,33 @@ type ClientWithResponsesInterface interface {
 
 	// RestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPostWithResponse request
 	RestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPostWithResponse(ctx context.Context, orgId string, mcpServerId string, reqEditors ...RequestEditorFn) (*RestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPostResponse, error)
+
+	// ListSecretPoliciesV1OrgsOrgIdSecretPoliciesGetWithResponse request
+	ListSecretPoliciesV1OrgsOrgIdSecretPoliciesGetWithResponse(ctx context.Context, orgId string, reqEditors ...RequestEditorFn) (*ListSecretPoliciesV1OrgsOrgIdSecretPoliciesGetResponse, error)
+
+	// CreateSecretPolicyV1OrgsOrgIdSecretPoliciesPostWithBodyWithResponse request with any body
+	CreateSecretPolicyV1OrgsOrgIdSecretPoliciesPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateSecretPolicyV1OrgsOrgIdSecretPoliciesPostResponse, error)
+
+	CreateSecretPolicyV1OrgsOrgIdSecretPoliciesPostWithResponse(ctx context.Context, orgId string, body CreateSecretPolicyV1OrgsOrgIdSecretPoliciesPostJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateSecretPolicyV1OrgsOrgIdSecretPoliciesPostResponse, error)
+
+	// DeleteSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdDeleteWithResponse request
+	DeleteSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdDeleteWithResponse(ctx context.Context, orgId string, policyId string, reqEditors ...RequestEditorFn) (*DeleteSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdDeleteResponse, error)
+
+	// GetSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdGetWithResponse request
+	GetSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdGetWithResponse(ctx context.Context, orgId string, policyId string, reqEditors ...RequestEditorFn) (*GetSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdGetResponse, error)
+
+	// UpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatchWithBodyWithResponse request with any body
+	UpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatchWithBodyWithResponse(ctx context.Context, orgId string, policyId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatchResponse, error)
+
+	UpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatchWithResponse(ctx context.Context, orgId string, policyId string, body UpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatchResponse, error)
+
+	// GetSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksGetWithResponse request
+	GetSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksGetWithResponse(ctx context.Context, orgId string, policyId string, reqEditors ...RequestEditorFn) (*GetSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksGetResponse, error)
+
+	// PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutWithBodyWithResponse request with any body
+	PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutWithBodyWithResponse(ctx context.Context, orgId string, policyId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutResponse, error)
+
+	PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutWithResponse(ctx context.Context, orgId string, policyId string, body PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutJSONRequestBody, reqEditors ...RequestEditorFn) (*PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutResponse, error)
 }
 
 type ListBotsV1OrgsOrgIdBotsGetResponse struct {
@@ -4716,6 +5322,166 @@ func (r RestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPostResponse) Sta
 	return 0
 }
 
+type ListSecretPoliciesV1OrgsOrgIdSecretPoliciesGetResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *SecretPolicyListResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r ListSecretPoliciesV1OrgsOrgIdSecretPoliciesGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListSecretPoliciesV1OrgsOrgIdSecretPoliciesGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateSecretPolicyV1OrgsOrgIdSecretPoliciesPostResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON201                       *SecretPolicyResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateSecretPolicyV1OrgsOrgIdSecretPoliciesPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateSecretPolicyV1OrgsOrgIdSecretPoliciesPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdDeleteResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdDeleteResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdDeleteResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdGetResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *SecretPolicyResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r GetSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatchResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *SecretPolicyResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatchResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatchResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksGetResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *SecretPolicyBotLinksResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r GetSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *SecretPolicyBotLinksResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 // ListBotsV1OrgsOrgIdBotsGetWithResponse request returning *ListBotsV1OrgsOrgIdBotsGetResponse
 func (c *ClientWithResponses) ListBotsV1OrgsOrgIdBotsGetWithResponse(ctx context.Context, orgId string, params *ListBotsV1OrgsOrgIdBotsGetParams, reqEditors ...RequestEditorFn) (*ListBotsV1OrgsOrgIdBotsGetResponse, error) {
 	rsp, err := c.ListBotsV1OrgsOrgIdBotsGet(ctx, orgId, params, reqEditors...)
@@ -4924,6 +5690,93 @@ func (c *ClientWithResponses) RestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRe
 		return nil, err
 	}
 	return ParseRestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPostResponse(rsp)
+}
+
+// ListSecretPoliciesV1OrgsOrgIdSecretPoliciesGetWithResponse request returning *ListSecretPoliciesV1OrgsOrgIdSecretPoliciesGetResponse
+func (c *ClientWithResponses) ListSecretPoliciesV1OrgsOrgIdSecretPoliciesGetWithResponse(ctx context.Context, orgId string, reqEditors ...RequestEditorFn) (*ListSecretPoliciesV1OrgsOrgIdSecretPoliciesGetResponse, error) {
+	rsp, err := c.ListSecretPoliciesV1OrgsOrgIdSecretPoliciesGet(ctx, orgId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListSecretPoliciesV1OrgsOrgIdSecretPoliciesGetResponse(rsp)
+}
+
+// CreateSecretPolicyV1OrgsOrgIdSecretPoliciesPostWithBodyWithResponse request with arbitrary body returning *CreateSecretPolicyV1OrgsOrgIdSecretPoliciesPostResponse
+func (c *ClientWithResponses) CreateSecretPolicyV1OrgsOrgIdSecretPoliciesPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateSecretPolicyV1OrgsOrgIdSecretPoliciesPostResponse, error) {
+	rsp, err := c.CreateSecretPolicyV1OrgsOrgIdSecretPoliciesPostWithBody(ctx, orgId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateSecretPolicyV1OrgsOrgIdSecretPoliciesPostResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateSecretPolicyV1OrgsOrgIdSecretPoliciesPostWithResponse(ctx context.Context, orgId string, body CreateSecretPolicyV1OrgsOrgIdSecretPoliciesPostJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateSecretPolicyV1OrgsOrgIdSecretPoliciesPostResponse, error) {
+	rsp, err := c.CreateSecretPolicyV1OrgsOrgIdSecretPoliciesPost(ctx, orgId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateSecretPolicyV1OrgsOrgIdSecretPoliciesPostResponse(rsp)
+}
+
+// DeleteSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdDeleteWithResponse request returning *DeleteSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdDeleteResponse
+func (c *ClientWithResponses) DeleteSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdDeleteWithResponse(ctx context.Context, orgId string, policyId string, reqEditors ...RequestEditorFn) (*DeleteSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdDeleteResponse, error) {
+	rsp, err := c.DeleteSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdDelete(ctx, orgId, policyId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdDeleteResponse(rsp)
+}
+
+// GetSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdGetWithResponse request returning *GetSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdGetResponse
+func (c *ClientWithResponses) GetSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdGetWithResponse(ctx context.Context, orgId string, policyId string, reqEditors ...RequestEditorFn) (*GetSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdGetResponse, error) {
+	rsp, err := c.GetSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdGet(ctx, orgId, policyId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdGetResponse(rsp)
+}
+
+// UpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatchWithBodyWithResponse request with arbitrary body returning *UpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatchResponse
+func (c *ClientWithResponses) UpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatchWithBodyWithResponse(ctx context.Context, orgId string, policyId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatchResponse, error) {
+	rsp, err := c.UpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatchWithBody(ctx, orgId, policyId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatchResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatchWithResponse(ctx context.Context, orgId string, policyId string, body UpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatchResponse, error) {
+	rsp, err := c.UpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatch(ctx, orgId, policyId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatchResponse(rsp)
+}
+
+// GetSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksGetWithResponse request returning *GetSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksGetResponse
+func (c *ClientWithResponses) GetSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksGetWithResponse(ctx context.Context, orgId string, policyId string, reqEditors ...RequestEditorFn) (*GetSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksGetResponse, error) {
+	rsp, err := c.GetSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksGet(ctx, orgId, policyId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksGetResponse(rsp)
+}
+
+// PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutWithBodyWithResponse request with arbitrary body returning *PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutResponse
+func (c *ClientWithResponses) PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutWithBodyWithResponse(ctx context.Context, orgId string, policyId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutResponse, error) {
+	rsp, err := c.PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutWithBody(ctx, orgId, policyId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutResponse(rsp)
+}
+
+func (c *ClientWithResponses) PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutWithResponse(ctx context.Context, orgId string, policyId string, body PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutJSONRequestBody, reqEditors ...RequestEditorFn) (*PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutResponse, error) {
+	rsp, err := c.PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPut(ctx, orgId, policyId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutResponse(rsp)
 }
 
 // ParseListBotsV1OrgsOrgIdBotsGetResponse parses an HTTP response from a ListBotsV1OrgsOrgIdBotsGetWithResponse call
@@ -5506,6 +6359,230 @@ func ParseRestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPostResponse(rs
 		var dest struct {
 			union json.RawMessage
 		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListSecretPoliciesV1OrgsOrgIdSecretPoliciesGetResponse parses an HTTP response from a ListSecretPoliciesV1OrgsOrgIdSecretPoliciesGetWithResponse call
+func ParseListSecretPoliciesV1OrgsOrgIdSecretPoliciesGetResponse(rsp *http.Response) (*ListSecretPoliciesV1OrgsOrgIdSecretPoliciesGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListSecretPoliciesV1OrgsOrgIdSecretPoliciesGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SecretPolicyListResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateSecretPolicyV1OrgsOrgIdSecretPoliciesPostResponse parses an HTTP response from a CreateSecretPolicyV1OrgsOrgIdSecretPoliciesPostWithResponse call
+func ParseCreateSecretPolicyV1OrgsOrgIdSecretPoliciesPostResponse(rsp *http.Response) (*CreateSecretPolicyV1OrgsOrgIdSecretPoliciesPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateSecretPolicyV1OrgsOrgIdSecretPoliciesPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest SecretPolicyResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdDeleteResponse parses an HTTP response from a DeleteSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdDeleteWithResponse call
+func ParseDeleteSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdDeleteResponse(rsp *http.Response) (*DeleteSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdDeleteResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdDeleteResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdGetResponse parses an HTTP response from a GetSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdGetWithResponse call
+func ParseGetSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdGetResponse(rsp *http.Response) (*GetSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SecretPolicyResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatchResponse parses an HTTP response from a UpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatchWithResponse call
+func ParseUpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatchResponse(rsp *http.Response) (*UpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatchResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatchResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SecretPolicyResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksGetResponse parses an HTTP response from a GetSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksGetWithResponse call
+func ParseGetSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksGetResponse(rsp *http.Response) (*GetSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SecretPolicyBotLinksResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutResponse parses an HTTP response from a PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutWithResponse call
+func ParsePutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutResponse(rsp *http.Response) (*PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SecretPolicyBotLinksResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
