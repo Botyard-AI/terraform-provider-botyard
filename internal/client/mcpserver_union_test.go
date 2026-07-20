@@ -56,7 +56,7 @@ func TestDecodeMcpServerDetail(t *testing.T) {
 }
 
 func TestCreateMcpServerTyped_ContainerImage(t *testing.T) {
-	var gotBody map[string]any
+	var gotBody map[string]json.RawMessage
 	var gotPath, gotAuth string
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		gotPath = r.URL.Path
@@ -95,8 +95,8 @@ func TestCreateMcpServerTyped_ContainerImage(t *testing.T) {
 	if gotAuth != "Bearer k" {
 		t.Errorf("auth = %q", gotAuth)
 	}
-	if gotBody["runtime_kind"] != "container_image" || gotBody["image"] != "ghcr.io/x:1" {
-		t.Errorf("request body = %+v", gotBody)
+	if string(gotBody["runtime_kind"]) != `"container_image"` || string(gotBody["image"]) != `"ghcr.io/x:1"` {
+		t.Errorf("request body = %s / %s", gotBody["runtime_kind"], gotBody["image"])
 	}
 	if detail == nil || detail.Container == nil || detail.Container.McpServerId != "m-1" {
 		t.Errorf("detail = %+v", detail)
