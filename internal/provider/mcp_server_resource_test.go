@@ -13,6 +13,29 @@ import (
 )
 
 func strp(s string) *string { return &s }
+func phm(s string) *client.McpPodHostMode {
+	m := client.McpPodHostMode(s)
+	return &m
+}
+
+// decodeObj unmarshals a JSON object into a raw-message map for key/value assertions.
+func decodeObj(t *testing.T, body []byte) map[string]json.RawMessage {
+	t.Helper()
+	var m map[string]json.RawMessage
+	if err := json.Unmarshal(body, &m); err != nil {
+		t.Fatalf("decode: %v", err)
+	}
+	return m
+}
+
+func jsonStr(t *testing.T, raw json.RawMessage) string {
+	t.Helper()
+	var s string
+	if err := json.Unmarshal(raw, &s); err != nil {
+		t.Fatalf("json string: %v", err)
+	}
+	return s
+}
 
 // containerModel / managedModel build minimal valid resource models.
 func containerModel() McpServerResourceModel {
@@ -102,18 +125,15 @@ func TestBuildCreateJSON_ContainerImage(t *testing.T) {
 	if diags.HasError() {
 		t.Fatalf("diags: %v", diags)
 	}
-	var m map[string]any
-	if err := json.Unmarshal(body, &m); err != nil {
-		t.Fatal(err)
+	m := decodeObj(t, body)
+	if jsonStr(t, m["runtime_kind"]) != "container_image" || jsonStr(t, m["image"]) != "ghcr.io/x:1" {
+		t.Errorf("runtime_kind/image = %s/%s", m["runtime_kind"], m["image"])
 	}
-	if m["runtime_kind"] != "container_image" || m["image"] != "ghcr.io/x:1" {
-		t.Errorf("body = %v", m)
+	if string(m["port"]) != "8080" {
+		t.Errorf("port = %s", m["port"])
 	}
-	if m["port"].(float64) != 8080 {
-		t.Errorf("port = %v", m["port"])
-	}
-	if m["pod_host_mode"] != "pod_localhost" {
-		t.Errorf("pod_host_mode = %v", m["pod_host_mode"])
+	if jsonStr(t, m["pod_host_mode"]) != "pod_localhost" {
+		t.Errorf("pod_host_mode = %s", m["pod_host_mode"])
 	}
 	if _, ok := m["endpoint_url"]; ok {
 		t.Error("container create must not carry endpoint_url")
@@ -125,12 +145,9 @@ func TestBuildCreateJSON_ManagedRemote(t *testing.T) {
 	if diags.HasError() {
 		t.Fatalf("diags: %v", diags)
 	}
-	var m map[string]any
-	if err := json.Unmarshal(body, &m); err != nil {
-		t.Fatal(err)
-	}
-	if m["runtime_kind"] != "managed_remote" || m["endpoint_url"] != "https://example.com/mcp" {
-		t.Errorf("body = %v", m)
+	m := decodeObj(t, body)
+	if jsonStr(t, m["runtime_kind"]) != "managed_remote" || jsonStr(t, m["endpoint_url"]) != "https://example.com/mcp" {
+		t.Errorf("runtime_kind/endpoint = %s/%s", m["runtime_kind"], m["endpoint_url"])
 	}
 	for _, k := range []string{"image", "port", "pod_host_mode"} {
 		if _, ok := m[k]; ok {
@@ -145,12 +162,11 @@ func TestBuildUpdateJSON_SparsePerKind(t *testing.T) {
 	if diags.HasError() {
 		t.Fatalf("diags: %v", diags)
 	}
-	var cm map[string]any
-	_ = json.Unmarshal(body, &cm)
+	cm := decodeObj(t, body)
 	if _, ok := cm["endpoint_url"]; ok {
 		t.Error("container update must omit endpoint_url")
 	}
-	if cm["image"] != "ghcr.io/x:1" || cm["pod_host_mode"] != "pod_localhost" {
+	if jsonStr(t, cm["image"]) != "ghcr.io/x:1" || jsonStr(t, cm["pod_host_mode"]) != "pod_localhost" {
 		t.Errorf("container update body = %v", cm)
 	}
 
@@ -159,14 +175,13 @@ func TestBuildUpdateJSON_SparsePerKind(t *testing.T) {
 	if diags.HasError() {
 		t.Fatalf("diags: %v", diags)
 	}
-	var mm map[string]any
-	_ = json.Unmarshal(body, &mm)
+	mm := decodeObj(t, body)
 	for _, k := range []string{"image", "port", "command", "args", "env_plaintext", "env_secret_refs", "secret_file_mounts", "pod_host_mode"} {
 		if _, ok := mm[k]; ok {
 			t.Errorf("managed update must omit %q", k)
 		}
 	}
-	if mm["endpoint_url"] != "https://example.com/mcp" {
+	if jsonStr(t, mm["endpoint_url"]) != "https://example.com/mcp" {
 		t.Errorf("managed update body = %v", mm)
 	}
 }
@@ -186,6 +201,7 @@ func TestMapDetail_ContainerImage(t *testing.T) {
 			Port:             8080,
 			Command:          &[]string{"run"},
 			EnvSecretRefs:    &map[string]string{"TOKEN": "vault.token"},
+			PodHostMode:      phm("pod_localhost"),
 			ToolCount:        3,
 			ConfigGeneration: 2,
 			DesiredState:     client.McpServerDesiredStateRunning,
@@ -194,8 +210,7 @@ func TestMapDetail_ContainerImage(t *testing.T) {
 			UpdatedAt:        ts,
 		},
 	}
-	// pod_host_mode is preserved from the incoming model (write-only field).
-	m := McpServerResourceModel{PodHostMode: types.StringValue("pod_localhost")}
+	var m McpServerResourceModel
 	var diags diag.Diagnostics
 	mapDetail(context.Background(), d, &m, &diags)
 	if diags.HasError() {
@@ -205,7 +220,7 @@ func TestMapDetail_ContainerImage(t *testing.T) {
 		t.Errorf("id/image/port = %q/%q/%d", m.ID.ValueString(), m.Image.ValueString(), m.Port.ValueInt64())
 	}
 	if m.PodHostMode.ValueString() != "pod_localhost" {
-		t.Error("pod_host_mode should be preserved (not overwritten) on container read")
+		t.Error("pod_host_mode should be mapped from the detail response on container read")
 	}
 	if !m.EndpointURL.IsNull() {
 		t.Error("endpoint_url should be null for container_image")

@@ -157,9 +157,9 @@ func (r *McpServerResource) Schema(_ context.Context, _ resource.SchemaRequest, 
 			},
 			"pod_host_mode": schema.StringAttribute{
 				Optional: true,
+				Computed: true,
 				MarkdownDescription: "HTTP `Host` strategy for the in-cluster pod: `natural` (default) or `pod_localhost` " +
-					"(container_image only). Write-only: the API does not return it, so it is preserved from configuration " +
-					"and not refreshed on read.",
+					"(container_image only).",
 			},
 			"endpoint_url": schema.StringAttribute{
 				Optional:            true,
@@ -294,8 +294,6 @@ func (r *McpServerResource) Read(ctx context.Context, req resource.ReadRequest, 
 			fmt.Sprintf("Read returned HTTP %d: %s", status, describeAPIError(raw)))
 		return
 	}
-	// pod_host_mode is write-only (absent from the detail response); mapDetail
-	// preserves the prior state value.
 	mapDetail(ctx, detail, &state, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
@@ -405,25 +403,25 @@ func buildCreateJSON(ctx context.Context, plan McpServerResourceModel) ([]byte, 
 // dynamic body limited to the active kind.
 func buildUpdateJSON(ctx context.Context, plan McpServerResourceModel, kind string) ([]byte, diag.Diagnostics) {
 	var diags diag.Diagnostics
-	body := map[string]any{
-		"name":                    plan.Name.ValueString(),
-		"slug":                    strOrNil(plan.Slug),
-		"description":             strOrNil(plan.Description),
-		"request_timeout_seconds": int64OrNil(plan.RequestTimeoutSeconds),
+	body := map[string]json.RawMessage{
+		"name":                    rawString(plan.Name),
+		"slug":                    rawString(plan.Slug),
+		"description":             rawString(plan.Description),
+		"request_timeout_seconds": rawInt64(plan.RequestTimeoutSeconds),
 	}
 	switch kind {
 	case client.McpRuntimeManagedRemote:
-		body["endpoint_url"] = plan.EndpointURL.ValueString()
+		body["endpoint_url"] = rawString(plan.EndpointURL)
 	default: // container_image
-		body["image"] = plan.Image.ValueString()
-		body["port"] = plan.Port.ValueInt64()
-		body["command"] = listOrNil(ctx, plan.Command, &diags)
-		body["args"] = listOrNil(ctx, plan.Args, &diags)
-		body["env_plaintext"] = mapOrNil(ctx, plan.EnvPlaintext, &diags)
-		body["env_secret_refs"] = mapOrNil(ctx, plan.EnvSecretRefs, &diags)
-		body["secret_file_mounts"] = mapOrNil(ctx, plan.SecretFileMounts, &diags)
+		body["image"] = rawString(plan.Image)
+		body["port"] = rawInt64(plan.Port)
+		body["command"] = rawStrList(ctx, plan.Command, &diags)
+		body["args"] = rawStrList(ctx, plan.Args, &diags)
+		body["env_plaintext"] = rawStrMap(ctx, plan.EnvPlaintext, &diags)
+		body["env_secret_refs"] = rawStrMap(ctx, plan.EnvSecretRefs, &diags)
+		body["secret_file_mounts"] = rawStrMap(ctx, plan.SecretFileMounts, &diags)
 		if !plan.PodHostMode.IsNull() {
-			body["pod_host_mode"] = plan.PodHostMode.ValueString()
+			body["pod_host_mode"] = rawString(plan.PodHostMode)
 		}
 	}
 	out, err := json.Marshal(body)
@@ -433,8 +431,7 @@ func buildUpdateJSON(ctx context.Context, plan McpServerResourceModel, kind stri
 	return out, diags
 }
 
-// mapDetail writes an API detail into the resource model. pod_host_mode is not
-// set (it is absent from the response and preserved from config/state).
+// mapDetail writes an API detail into the resource model.
 func mapDetail(ctx context.Context, d *client.McpServerDetail, m *McpServerResourceModel, diags *diag.Diagnostics) {
 	if d.Container != nil {
 		c := d.Container
@@ -453,6 +450,7 @@ func mapDetail(ctx context.Context, d *client.McpServerDetail, m *McpServerResou
 		m.EnvPlaintext = strMapToMap(ctx, c.EnvPlaintext, diags)
 		m.EnvSecretRefs = strMapToMap(ctx, c.EnvSecretRefs, diags)
 		m.SecretFileMounts = strMapToMap(ctx, c.SecretFileMounts, diags)
+		m.PodHostMode = podHostModeToStr(c.PodHostMode)
 		m.EndpointURL = types.StringNull()
 		m.DesiredState = types.StringValue(string(c.DesiredState))
 		m.ObservedState = types.StringValue(string(c.ObservedState))
@@ -577,35 +575,61 @@ func strMapToMap(ctx context.Context, p *map[string]string, diags *diag.Diagnost
 	return v
 }
 
-// strOrNil / int64OrNil / listOrNil / mapOrNil return the value for a set
-// attribute or nil (JSON null) for an unset one, for building the sparse PATCH
-// body. `any` here is intrinsic to constructing dynamic JSON.
-func strOrNil(s types.String) any {
+func podHostModeToStr(p *client.McpPodHostMode) types.String {
+	if p == nil {
+		return types.StringNull()
+	}
+	return types.StringValue(string(*p))
+}
+
+// rawString / rawInt64 / rawStrList / rawStrMap pre-marshal a typed attribute
+// into a json.RawMessage (JSON `null` when unset) for building the sparse PATCH
+// body as a map[string]json.RawMessage — sparse dynamic JSON without `any` and
+// without hand-typed API structs.
+func rawString(s types.String) json.RawMessage {
 	if s.IsNull() || s.IsUnknown() {
-		return nil
+		return json.RawMessage("null")
 	}
-	return s.ValueString()
+	b, err := json.Marshal(s.ValueString())
+	if err != nil {
+		return json.RawMessage("null")
+	}
+	return b
 }
 
-func int64OrNil(v types.Int64) any {
+func rawInt64(v types.Int64) json.RawMessage {
 	if v.IsNull() || v.IsUnknown() {
-		return nil
+		return json.RawMessage("null")
 	}
-	return v.ValueInt64()
+	b, err := json.Marshal(v.ValueInt64())
+	if err != nil {
+		return json.RawMessage("null")
+	}
+	return b
 }
 
-func listOrNil(ctx context.Context, l types.List, diags *diag.Diagnostics) any {
+func rawStrList(ctx context.Context, l types.List, diags *diag.Diagnostics) json.RawMessage {
 	p := listToStrSlicePtr(ctx, l, diags)
 	if p == nil {
-		return nil
+		return json.RawMessage("null")
 	}
-	return *p
+	b, err := json.Marshal(*p)
+	if err != nil {
+		diags.AddError("Error encoding list", err.Error())
+		return json.RawMessage("null")
+	}
+	return b
 }
 
-func mapOrNil(ctx context.Context, m types.Map, diags *diag.Diagnostics) any {
+func rawStrMap(ctx context.Context, m types.Map, diags *diag.Diagnostics) json.RawMessage {
 	p := mapToStrMapPtr(ctx, m, diags)
 	if p == nil {
-		return nil
+		return json.RawMessage("null")
 	}
-	return *p
+	b, err := json.Marshal(*p)
+	if err != nil {
+		diags.AddError("Error encoding map", err.Error())
+		return json.RawMessage("null")
+	}
+	return b
 }
