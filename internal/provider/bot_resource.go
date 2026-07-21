@@ -1,0 +1,343 @@
+package provider
+
+import (
+	"bytes"
+	"context"
+	"encoding/json"
+	"fmt"
+	"time"
+
+	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework/path"
+	"github.com/hashicorp/terraform-plugin-framework/resource"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+
+	"github.com/Botyard-AI/terraform-provider-botyard/internal/client"
+)
+
+var (
+	_ resource.Resource                = (*BotResource)(nil)
+	_ resource.ResourceWithConfigure   = (*BotResource)(nil)
+	_ resource.ResourceWithImportState = (*BotResource)(nil)
+)
+
+// BotResource manages a Botyard bot's desired-state record.
+//
+// Phase A covers the bot's lifecycle and core identity: create (POST /bots),
+// read, metadata update (description/avatar_url via PATCH), delete, and import.
+// The bot's OpenClaw config (via PATCH /config) and its skill/tool/credential
+// assignments are managed by later phases / dedicated resources, not here.
+type BotResource struct {
+	data *providerData
+}
+
+// BotResourceModel maps the botyard_bot resource schema.
+//
+// Deliberately omitted per the epic-59 decision (task #825): `tier` (deprecated
+// platform-wide) and `cluster_id` (internal provisioner placement). Also omitted
+// from Phase A: the nested `config`, plus files/skills/tools/resources/access —
+// those belong to later phases.
+type BotResourceModel struct {
+	// Writable identity.
+	Name        types.String `tfsdk:"name"`
+	Description types.String `tfsdk:"description"`
+	AvatarURL   types.String `tfsdk:"avatar_url"`
+
+	// Server-owned identity (computed).
+	ID        types.String `tfsdk:"id"`
+	Slug      types.String `tfsdk:"slug"`
+	OrgID     types.String `tfsdk:"org_id"`
+	Namespace types.String `tfsdk:"namespace"`
+
+	// Runtime placement (computed — not settable via create or the metadata
+	// PATCH). `runtime_privilege_mode` is mutable via a dedicated PATCH but is
+	// surfaced read-only in Phase A; making it writable is a planned follow-up.
+	RuntimeClass         types.String `tfsdk:"runtime_class"`
+	StorageClass         types.String `tfsdk:"storage_class"`
+	RuntimePrivilegeMode types.String `tfsdk:"runtime_privilege_mode"`
+	DurableRootOwnsHome  types.Bool   `tfsdk:"durable_root_owns_home"`
+
+	// Control-plane telemetry (computed).
+	Access           types.String `tfsdk:"access"`
+	DesiredState     types.String `tfsdk:"desired_state"`
+	HealthStatus     types.String `tfsdk:"health_status"`
+	OnboardingState  types.String `tfsdk:"onboarding_state"`
+	ConfigGeneration types.Int64  `tfsdk:"config_generation"`
+	CreatedAt        types.String `tfsdk:"created_at"`
+	UpdatedAt        types.String `tfsdk:"updated_at"`
+}
+
+// NewBotResource is the resource factory registered with the provider.
+func NewBotResource() resource.Resource {
+	return &BotResource{}
+}
+
+// Metadata sets the resource type name.
+func (r *BotResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_bot"
+}
+
+// Schema defines the botyard_bot resource schema.
+func (r *BotResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+	// stableComputedString marks an immutable, server-owned string that never
+	// changes after create — UseStateForUnknown keeps no-op plans clean.
+	stableComputedString := func(desc string) schema.StringAttribute {
+		return schema.StringAttribute{
+			Computed:            true,
+			MarkdownDescription: desc,
+			PlanModifiers:       []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
+		}
+	}
+	// liveComputedString marks a server-owned string that can change over the
+	// bot's life (telemetry) — it must refresh on every read, so no
+	// UseStateForUnknown.
+	liveComputedString := func(desc string) schema.StringAttribute {
+		return schema.StringAttribute{Computed: true, MarkdownDescription: desc}
+	}
+
+	resp.Schema = schema.Schema{
+		MarkdownDescription: "Manages a Botyard bot's desired-state record within the configured organization. " +
+			"Creating the resource persists the bot and triggers provisioner reconciliation best-effort. " +
+			"Phase A manages the bot's core identity (name, description, avatar) and exposes its runtime " +
+			"placement and control-plane state as read-only attributes; the bot's OpenClaw config and its " +
+			"skill/tool/credential assignments are managed separately.",
+		Attributes: map[string]schema.Attribute{
+			"name": schema.StringAttribute{
+				Required: true,
+				MarkdownDescription: "Bot display name (1–255 chars). Immutable — changing it forces replacement, " +
+					"as the API derives the bot's slug from the name at creation and does not support renaming.",
+				PlanModifiers: []planmodifier.String{stringplanmodifier.RequiresReplace()},
+			},
+			"description": schema.StringAttribute{
+				Optional: true,
+				MarkdownDescription: "Short human-facing description / role for the bot (max 500 chars). Display " +
+					"metadata only — not injected into the bot's system prompt. Omit to leave unset.",
+			},
+			"avatar_url": schema.StringAttribute{
+				Optional: true,
+				Computed: true,
+				MarkdownDescription: "Avatar image URL (a DiceBear data URI or a custom URL). When omitted, the " +
+					"platform assigns a generated default, which is reflected here.",
+				PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
+			},
+
+			"id":        stableComputedString("Unique bot identifier (UUID)."),
+			"slug":      stableComputedString("URL-friendly bot identifier, derived from the name at creation. Used as the import ID."),
+			"org_id":    stableComputedString("Organization ID that owns the bot."),
+			"namespace": stableComputedString("Kubernetes namespace for the bot runtime."),
+
+			"runtime_class":          stableComputedString("Container runtime class for the bot pod (e.g. `kata_qemu`, `runc`, or a cluster default). Set by the platform; not user-configurable."),
+			"storage_class":          stableComputedString("Storage class for the bot's workspace PVC. Set by the platform; not user-configurable."),
+			"runtime_privilege_mode": stableComputedString("Privilege level of the bot runtime pod. Read-only in this provider version."),
+			"durable_root_owns_home": schema.BoolAttribute{
+				Computed:            true,
+				MarkdownDescription: "Operator rollout flag for the single-block durable root layout. When true, `/home/openclaw` lives inside the durable root overlay.",
+				PlanModifiers:       []planmodifier.Bool{boolplanmodifier.UseStateForUnknown()},
+			},
+
+			"access":            liveComputedString("Bot visibility within its organization (`open` or `restricted`)."),
+			"desired_state":     liveComputedString("Control-plane desired lifecycle state."),
+			"health_status":     liveComputedString("Bot health monitoring status."),
+			"onboarding_state":  liveComputedString("Guided-setup lifecycle state of the bot."),
+			"config_generation": schema.Int64Attribute{Computed: true, MarkdownDescription: "Monotonic config generation counter."},
+			"created_at":        stableComputedString("Creation timestamp (RFC 3339)."),
+			"updated_at":        liveComputedString("Last-update timestamp (RFC 3339)."),
+		},
+	}
+}
+
+// Configure receives the shared provider data.
+func (r *BotResource) Configure(_ context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+	if req.ProviderData == nil {
+		return
+	}
+	data, ok := req.ProviderData.(*providerData)
+	if !ok {
+		resp.Diagnostics.AddError("Unexpected Resource Configure Type",
+			fmt.Sprintf("Expected *providerData, got: %T. This is a bug in the provider.", req.ProviderData))
+		return
+	}
+	r.data = data
+}
+
+func (r *BotResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	var plan BotResourceModel
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	body, diags := buildBotCreateBody(plan)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	apiResp, err := r.data.client.CreateBotV1OrgsOrgIdBotsPostWithBodyWithResponse(
+		ctx, r.data.orgID, "application/json", bytes.NewReader(body))
+	if err != nil {
+		resp.Diagnostics.AddError("Error creating bot", err.Error())
+		return
+	}
+	if apiResp.JSON201 == nil {
+		resp.Diagnostics.AddError("Unexpected response creating bot",
+			fmt.Sprintf("Create returned HTTP %d: %s", apiResp.StatusCode(), describeAPIError(apiResp.Body)))
+		return
+	}
+	mapBotResource(apiResp.JSON201, &plan)
+	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
+}
+
+func (r *BotResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+	var state BotResourceModel
+	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	apiResp, err := r.data.client.GetBotV1OrgsOrgIdBotsBotSlugGetWithResponse(ctx, r.data.orgID, state.Slug.ValueString())
+	if err != nil {
+		resp.Diagnostics.AddError("Error reading bot", err.Error())
+		return
+	}
+	// A bot deletion is a soft-delete (desired_state=deleted) that the
+	// reconciler later purges — treat both "gone" (404) and "tombstoned"
+	// (still readable but desired_state=deleted) as removed from state.
+	if apiResp.StatusCode() == 404 {
+		resp.State.RemoveResource(ctx)
+		return
+	}
+	if apiResp.JSON200 == nil {
+		resp.Diagnostics.AddError("Unexpected response reading bot",
+			fmt.Sprintf("Read returned HTTP %d: %s", apiResp.StatusCode(), describeAPIError(apiResp.Body)))
+		return
+	}
+	if apiResp.JSON200.DesiredState == client.DesiredStateDeleted {
+		resp.State.RemoveResource(ctx)
+		return
+	}
+	mapBotResource(apiResp.JSON200, &state)
+	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
+}
+
+func (r *BotResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+	var plan, state BotResourceModel
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	body, err := buildBotUpdateBody(plan)
+	if err != nil {
+		resp.Diagnostics.AddError("Error encoding bot update", err.Error())
+		return
+	}
+
+	apiResp, err := r.data.client.UpdateBotV1OrgsOrgIdBotsBotSlugPatchWithBodyWithResponse(
+		ctx, r.data.orgID, state.Slug.ValueString(), "application/json", bytes.NewReader(body))
+	if err != nil {
+		resp.Diagnostics.AddError("Error updating bot", err.Error())
+		return
+	}
+	if apiResp.JSON200 == nil {
+		resp.Diagnostics.AddError("Unexpected response updating bot",
+			fmt.Sprintf("Update returned HTTP %d: %s", apiResp.StatusCode(), describeAPIError(apiResp.Body)))
+		return
+	}
+	mapBotResource(apiResp.JSON200, &plan)
+	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
+}
+
+func (r *BotResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var state BotResourceModel
+	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	apiResp, err := r.data.client.DeleteBotV1OrgsOrgIdBotsBotSlugDeleteWithResponse(ctx, r.data.orgID, state.Slug.ValueString())
+	if err != nil {
+		resp.Diagnostics.AddError("Error deleting bot", err.Error())
+		return
+	}
+	switch apiResp.StatusCode() {
+	case 200, 202, 204, 404:
+		// soft-deleted, accepted, or already gone
+	default:
+		resp.Diagnostics.AddError("Unexpected response deleting bot",
+			fmt.Sprintf("Delete returned HTTP %d: %s", apiResp.StatusCode(), describeAPIError(apiResp.Body)))
+	}
+}
+
+// ImportState imports an existing bot by its slug (the API's URL identifier).
+func (r *BotResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	resource.ImportStatePassthroughID(ctx, path.Root("slug"), req, resp)
+}
+
+// buildBotCreateBody builds the POST /bots body as a sparse
+// map[string]json.RawMessage. `config` is required by the API but its fields are
+// all optional, so Phase A sends an empty object (`{}`) — the API merges it over
+// OpenClaw defaults. Building the body by hand (rather than via the generated
+// BotCreate struct) sends `config` as literal `{}`: a zero-value
+// OpenClawConfigPatch marshals its fields as explicit nulls, which would risk
+// nulling defaults. This also keeps the wire body to exactly the Phase A fields
+// (BotCreate is a strict model that rejects unknown keys).
+func buildBotCreateBody(plan BotResourceModel) ([]byte, diag.Diagnostics) {
+	var diags diag.Diagnostics
+	body := map[string]json.RawMessage{
+		"name":        rawString(plan.Name),
+		"description": rawString(plan.Description),
+		"avatar_url":  rawString(plan.AvatarURL),
+		"config":      json.RawMessage("{}"),
+	}
+	out, err := json.Marshal(body)
+	if err != nil {
+		diags.AddError("Error encoding bot", err.Error())
+	}
+	return out, diags
+}
+
+// buildBotUpdateBody builds the PATCH /bots/{slug} body as a sparse
+// map[string]json.RawMessage limited to the Phase A metadata fields the API
+// accepts on update. The bot's config is updated via a separate endpoint, and
+// tier/resources/runtime_privilege_mode are out of Phase A scope. Terraform
+// config is the source of truth, so each managed field is sent every update
+// (a value sets it; JSON null clears it).
+func buildBotUpdateBody(plan BotResourceModel) ([]byte, error) {
+	body := map[string]json.RawMessage{
+		"description": rawString(plan.Description),
+		"avatar_url":  rawString(plan.AvatarURL),
+	}
+	return json.Marshal(body)
+}
+
+// mapBotResource writes an API BotResponse into the resource model. It never
+// touches `tier` or `cluster_id` (deliberately not modeled) and reads back
+// `description`/`avatar_url` so server-applied defaults land in state.
+func mapBotResource(b *client.BotResponse, m *BotResourceModel) {
+	m.Name = types.StringValue(b.Name)
+	m.Description = strPtrToStr(b.Description)
+	m.AvatarURL = strPtrToStr(b.AvatarUrl)
+
+	m.ID = types.StringValue(b.Id)
+	m.Slug = types.StringValue(b.Slug)
+	m.OrgID = types.StringValue(b.OrgId)
+	m.Namespace = types.StringValue(b.Namespace)
+
+	m.RuntimeClass = types.StringValue(string(b.RuntimeClass))
+	m.StorageClass = types.StringValue(string(b.StorageClass))
+	m.RuntimePrivilegeMode = types.StringValue(string(b.RuntimePrivilegeMode))
+	m.DurableRootOwnsHome = types.BoolValue(b.DurableRootOwnsHome)
+
+	m.Access = types.StringValue(string(b.Access))
+	m.DesiredState = types.StringValue(string(b.DesiredState))
+	m.HealthStatus = types.StringValue(string(b.HealthStatus))
+	m.OnboardingState = types.StringValue(string(b.OnboardingState))
+	m.ConfigGeneration = types.Int64Value(int64(b.ConfigGeneration))
+	m.CreatedAt = types.StringValue(b.CreatedAt.Format(time.RFC3339))
+	m.UpdatedAt = types.StringValue(b.UpdatedAt.Format(time.RFC3339))
+}
