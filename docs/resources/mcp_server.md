@@ -61,7 +61,7 @@ resource "botyard_mcp_server" "vendor" {
 - `port` (Number) Container port for the streamable-http transport. Required when `runtime_kind = container_image`.
 - `request_timeout_seconds` (Number) Per-server gateway request-timeout override (seconds). Null inherits the gateway default.
 - `secret_file_mounts` (Map of String) Absolute container path → secret_key_path mounts, read-only (container_image only).
-- `slug` (String) URL-safe identifier. Derived from the name when omitted.
+- `slug` (String) URL-safe identifier. Derived from the name on create when omitted, then preserved across updates unless explicitly set.
 - `transport` (String) Wire transport. Defaults to `streamable_http`. Immutable — changing it forces replacement.
 
 ### Read-Only

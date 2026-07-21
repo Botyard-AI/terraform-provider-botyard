@@ -10,6 +10,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/mapplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -97,9 +99,14 @@ func (r *McpServerResource) Schema(_ context.Context, _ resource.SchemaRequest, 
 				MarkdownDescription: "Human-readable label, unique within the organization.",
 			},
 			"slug": schema.StringAttribute{
-				Optional:            true,
-				Computed:            true,
-				MarkdownDescription: "URL-safe identifier. Derived from the name when omitted.",
+				Optional: true,
+				Computed: true,
+				MarkdownDescription: "URL-safe identifier. Derived from the name on create when omitted, then " +
+					"preserved across updates unless explicitly set.",
+				// Without UseStateForUnknown an unconfigured slug plans as unknown on
+				// every update; the Update body would then send `slug: null`, which the
+				// API rejects. Pinning the prior state value keeps updates valid.
+				PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
 			},
 			"description": schema.StringAttribute{
 				Optional:            true,
@@ -110,7 +117,16 @@ func (r *McpServerResource) Schema(_ context.Context, _ resource.SchemaRequest, 
 				Computed: true,
 				MarkdownDescription: "Wire transport. Defaults to `streamable_http`. Immutable — changing it forces " +
 					"replacement.",
-				PlanModifiers: []planmodifier.String{stringplanmodifier.RequiresReplace()},
+				// UseStateForUnknown must run before RequiresReplace: transport is
+				// Optional+Computed, so when it is left unconfigured the plan value is
+				// unknown. Without UseStateForUnknown that unknown makes RequiresReplace
+				// fire on *every* update (any other field change), needlessly destroying
+				// and recreating the server. Pinning the prior state value first means a
+				// replacement is only triggered when the user actually changes transport.
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.RequiresReplace(),
+				},
 			},
 			"request_timeout_seconds": schema.Int64Attribute{
 				Optional:            true,
@@ -129,18 +145,21 @@ func (r *McpServerResource) Schema(_ context.Context, _ resource.SchemaRequest, 
 				Computed:            true,
 				ElementType:         types.StringType,
 				MarkdownDescription: "Argv-style entrypoint override (container_image only).",
+				PlanModifiers:       []planmodifier.List{listplanmodifier.UseStateForUnknown()},
 			},
 			"args": schema.ListAttribute{
 				Optional:            true,
 				Computed:            true,
 				ElementType:         types.StringType,
 				MarkdownDescription: "Argv-style arguments (container_image only).",
+				PlanModifiers:       []planmodifier.List{listplanmodifier.UseStateForUnknown()},
 			},
 			"env_plaintext": schema.MapAttribute{
 				Optional:            true,
 				Computed:            true,
 				ElementType:         types.StringType,
 				MarkdownDescription: "Non-sensitive environment variables (container_image only).",
+				PlanModifiers:       []planmodifier.Map{mapplanmodifier.UseStateForUnknown()},
 			},
 			"env_secret_refs": schema.MapAttribute{
 				Optional:    true,
@@ -148,18 +167,21 @@ func (r *McpServerResource) Schema(_ context.Context, _ resource.SchemaRequest, 
 				ElementType: types.StringType,
 				MarkdownDescription: "Env-var name → secret_key_path references (container_image only). These are vault key-path " +
 					"pointers, not secret values.",
+				PlanModifiers: []planmodifier.Map{mapplanmodifier.UseStateForUnknown()},
 			},
 			"secret_file_mounts": schema.MapAttribute{
 				Optional:            true,
 				Computed:            true,
 				ElementType:         types.StringType,
 				MarkdownDescription: "Absolute container path → secret_key_path mounts, read-only (container_image only).",
+				PlanModifiers:       []planmodifier.Map{mapplanmodifier.UseStateForUnknown()},
 			},
 			"pod_host_mode": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
 				MarkdownDescription: "HTTP `Host` strategy for the in-cluster pod: `natural` (default) or `pod_localhost` " +
 					"(container_image only).",
+				PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
 			},
 			"endpoint_url": schema.StringAttribute{
 				Optional:            true,
@@ -332,18 +354,17 @@ func (r *McpServerResource) Delete(ctx context.Context, req resource.DeleteReque
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	apiResp, err := r.data.client.DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteWithResponse(
-		ctx, r.data.orgID, state.ID.ValueString())
+	status, body, err := r.data.client.DeleteMcpServer(ctx, r.data.orgID, state.ID.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError("Error deleting MCP server", err.Error())
 		return
 	}
-	switch apiResp.StatusCode() {
+	switch status {
 	case 200, 202, 204, 404:
 		// deleted or already gone
 	default:
 		resp.Diagnostics.AddError("Unexpected response deleting MCP server",
-			fmt.Sprintf("Delete returned HTTP %d: %s", apiResp.StatusCode(), describeAPIError(apiResp.Body)))
+			fmt.Sprintf("Delete returned HTTP %d: %s", status, describeAPIError(body)))
 	}
 }
 
