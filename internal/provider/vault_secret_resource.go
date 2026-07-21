@@ -401,18 +401,17 @@ func (r *VaultSecretResource) Delete(ctx context.Context, req resource.DeleteReq
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	apiResp, err := r.data.client.DeleteSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdDeleteWithResponse(
-		ctx, r.data.orgID, state.ID.ValueString())
+	status, body, err := r.data.client.DeleteSecretPolicy(ctx, r.data.orgID, state.ID.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError("Error deleting vault secret", err.Error())
 		return
 	}
-	switch apiResp.StatusCode() {
+	switch status {
 	case 200, 202, 204, 404:
 		// deleted or already gone (links cascade-delete with the policy)
 	default:
 		resp.Diagnostics.AddError("Unexpected response deleting vault secret",
-			fmt.Sprintf("Delete returned HTTP %d: %s", apiResp.StatusCode(), describeAPIError(apiResp.Body)))
+			fmt.Sprintf("Delete returned HTTP %d: %s", status, describeAPIError(body)))
 	}
 }
 
