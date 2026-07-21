@@ -171,6 +171,7 @@ func resolveProviderConfig(cfg BotyardProviderModel, getenv func(string) string)
 func (p *BotyardProvider) Resources(_ context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		NewBotResource,
+		NewBotSkillAssignmentResource,
 		NewMcpServerResource,
 		NewVaultSecretResource,
 	}

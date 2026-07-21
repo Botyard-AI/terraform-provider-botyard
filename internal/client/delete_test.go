@@ -79,6 +79,24 @@ func TestDeleteWrappers_DoNotParseBody(t *testing.T) {
 			if want := "/v1/orgs/org-1/secret-policies/pol-1"; gotPath != want {
 				t.Errorf("path = %q, want %q", gotPath, want)
 			}
+
+			// bot skill batch unassign (DELETE with a BotSkillIds body)
+			status, body, err = c.UnassignBotSkills(context.Background(), "org-1", "bot-1", []string{"s-1", "s-2"})
+			if err != nil {
+				t.Fatalf("UnassignBotSkills returned err: %v", err)
+			}
+			if status != tc.status {
+				t.Errorf("UnassignBotSkills status = %d, want %d", status, tc.status)
+			}
+			if string(body) != tc.body {
+				t.Errorf("UnassignBotSkills body = %q, want %q", string(body), tc.body)
+			}
+			if gotMethod != http.MethodDelete {
+				t.Errorf("method = %q, want DELETE", gotMethod)
+			}
+			if want := "/v1/orgs/org-1/bots/bot-1/skills"; gotPath != want {
+				t.Errorf("path = %q, want %q", gotPath, want)
+			}
 		})
 	}
 }
