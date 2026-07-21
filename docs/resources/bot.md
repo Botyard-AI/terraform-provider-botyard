@@ -3,12 +3,12 @@
 page_title: "botyard_bot Resource - Botyard"
 subcategory: ""
 description: |-
-  Manages a Botyard bot's desired-state record within the configured organization. Creating the resource persists the bot and triggers provisioner reconciliation best-effort. Phase A manages the bot's core identity (name, description, avatar) and exposes its runtime placement and control-plane state as read-only attributes; the bot's OpenClaw config and its skill/tool/credential assignments are managed separately.
+  Manages a Botyard bot's desired-state record within the configured organization. Creating the resource persists the bot and triggers provisioner reconciliation best-effort. It manages the bot's core identity (name, description, avatar) and its OpenClaw config overrides, and exposes runtime placement and control-plane state as read-only attributes; the bot's skill/tool/credential assignments are managed separately.
 ---
 
 # botyard_bot (Resource)
 
-Manages a Botyard bot's desired-state record within the configured organization. Creating the resource persists the bot and triggers provisioner reconciliation best-effort. Phase A manages the bot's core identity (name, description, avatar) and exposes its runtime placement and control-plane state as read-only attributes; the bot's OpenClaw config and its skill/tool/credential assignments are managed separately.
+Manages a Botyard bot's desired-state record within the configured organization. Creating the resource persists the bot and triggers provisioner reconciliation best-effort. It manages the bot's core identity (name, description, avatar) and its OpenClaw `config` overrides, and exposes runtime placement and control-plane state as read-only attributes; the bot's skill/tool/credential assignments are managed separately.
 
 ## Example Usage
 
@@ -19,6 +19,53 @@ Manages a Botyard bot's desired-state record within the configured organization.
 resource "botyard_bot" "support" {
   name        = "Support Assistant"
   description = "Answers customer questions in the help center."
+}
+
+# A bot with OpenClaw config overrides. `config` is a nested attribute, so it
+# uses object syntax (`config = { ... }`). Only the fields you set are applied
+# over OpenClaw's defaults; omitted fields keep their server default.
+resource "botyard_bot" "researcher" {
+  name        = "Research Assistant"
+  description = "Runs deep research tasks."
+
+  config = {
+    system_prompt_mode = "botyard"
+    thinking_default   = "high"
+    reasoning_default  = "stream"
+
+    model = {
+      primary = {
+        provider = "botyard"
+        model    = "gpt-5.4"
+      }
+    }
+
+    identity = {
+      emoji = "🔬"
+      theme = "dark"
+    }
+
+    heartbeat = {
+      every            = "30m"
+      light_context    = true
+      isolated_session = true
+
+      active_hours = {
+        from_time = "09:00"
+        to_time   = "17:00"
+        timezone  = "America/New_York"
+      }
+    }
+
+    compaction = {
+      reserve_tokens            = 24000
+      truncate_after_compaction = true
+    }
+
+    session = {
+      write_lock_max_hold_ms = 300000
+    }
+  }
 }
 
 # Runtime placement (runtime_class, storage_class, runtime_privilege_mode),
@@ -38,6 +85,7 @@ output "support_bot_slug" {
 ### Optional
 
 - `avatar_url` (String) Avatar image URL (a DiceBear data URI or a custom URL). Optional — the API stores no avatar when omitted. Removing it from the config clears the stored value (sends JSON null).
+- `config` (Attributes) OpenClaw configuration overrides for the bot, applied via the config endpoint (embedded in the create request and sent to `PATCH /config` on update). Only the fields you set are applied over OpenClaw's defaults; omitted fields keep their server default. This block models the patchable config surface incrementally — `addons` and `bot_type` are not yet modeled. (see [below for nested schema](#nestedatt--config))
 - `description` (String) Short human-facing description / role for the bot (max 500 chars). Display metadata only — not injected into the bot's system prompt. Omit to leave unset.
 
 ### Read-Only
@@ -57,6 +105,94 @@ output "support_bot_slug" {
 - `slug` (String) URL-friendly bot identifier, derived from the name at creation. Used as the import ID.
 - `storage_class` (String) Storage class for the bot's workspace PVC. Set by the platform; not user-configurable.
 - `updated_at` (String) Last-update timestamp (RFC 3339).
+
+<a id="nestedatt--config"></a>
+### Nested Schema for `config`
+
+Optional:
+
+- `compaction` (Attributes) Context-compaction safeguards. (see [below for nested schema](#nestedatt--config--compaction))
+- `heartbeat` (Attributes) Heartbeat scheduling and behavior. (see [below for nested schema](#nestedatt--config--heartbeat))
+- `identity` (Attributes) Bot identity overrides. (see [below for nested schema](#nestedatt--config--identity))
+- `model` (Attributes) LLM model configuration. (see [below for nested schema](#nestedatt--config--model))
+- `reasoning_default` (String) Default reasoning mode: `off`, `on`, or `stream`.
+- `session` (Attributes) Session-reliability settings. (see [below for nested schema](#nestedatt--config--session))
+- `system_prompt_mode` (String) System prompt source: `botyard` (lean, default) or `openclaw`.
+- `thinking_default` (String) Default thinking budget: one of `off`, `minimal`, `low`, `medium`, `high`, `xhigh`, `adaptive`.
+
+<a id="nestedatt--config--compaction"></a>
+### Nested Schema for `config.compaction`
+
+Optional:
+
+- `max_active_transcript_bytes` (Number) Byte size that triggers proactive local compaction.
+- `mid_turn_precheck` (Boolean) Run a tool-loop context precheck before the next model call.
+- `reserve_tokens` (Number) Reply/tool headroom tokens reserved after compaction.
+- `reserve_tokens_floor` (Number) Floor enforced for `reserve_tokens` (0 disables).
+- `timeout_seconds` (Number) Maximum seconds allowed for one compaction operation.
+- `truncate_after_compaction` (Boolean) Rotate the active transcript to a compacted successor.
+
+
+<a id="nestedatt--config--heartbeat"></a>
+### Nested Schema for `config.heartbeat`
+
+Optional:
+
+- `ack_max_chars` (Number) Max characters after `HEARTBEAT_OK` before delivery.
+- `active_hours` (Attributes) Time window when heartbeats are active. (see [below for nested schema](#nestedatt--config--heartbeat--active_hours))
+- `every` (String) Heartbeat interval: one of `0m` (disabled), `5m`, `15m`, `30m`, `1h`, `2h`, `6h`, `12h`, `24h`, `168h`.
+- `include_reasoning` (Boolean) Include reasoning traces in heartbeat responses.
+- `isolated_session` (Boolean) Run each heartbeat in a fresh session with no history.
+- `light_context` (Boolean) Use minimal context (only HEARTBEAT.md) to reduce token cost.
+- `model` (String) LLM model override for heartbeat runs.
+- `prompt` (String) Custom prompt replacing the default HEARTBEAT.md reader.
+
+<a id="nestedatt--config--heartbeat--active_hours"></a>
+### Nested Schema for `config.heartbeat.active_hours`
+
+Required:
+
+- `from_time` (String) Start time in `HH:MM` format (e.g. `09:00`).
+- `timezone` (String) IANA timezone (e.g. `America/New_York`).
+- `to_time` (String) End time in `HH:MM` format (e.g. `17:00`).
+
+
+
+<a id="nestedatt--config--identity"></a>
+### Nested Schema for `config.identity`
+
+Optional:
+
+- `emoji` (String) Bot identity emoji.
+- `theme` (String) Bot identity theme.
+
+
+<a id="nestedatt--config--model"></a>
+### Nested Schema for `config.model`
+
+Optional:
+
+- `primary` (Attributes) Primary model reference. (see [below for nested schema](#nestedatt--config--model--primary))
+
+<a id="nestedatt--config--model--primary"></a>
+### Nested Schema for `config.model.primary`
+
+Required:
+
+- `model` (String) Model ID within the provider (e.g. `gpt-5.4`).
+
+Optional:
+
+- `provider` (String) Provider key within `models.providers` (e.g. `botyard`). Defaults to `botyard` when omitted.
+
+
+
+<a id="nestedatt--config--session"></a>
+### Nested Schema for `config.session`
+
+Optional:
+
+- `write_lock_max_hold_ms` (Number) Watchdog force-release threshold for the session write-lock (ms).
 
 ## Import
 

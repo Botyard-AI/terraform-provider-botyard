@@ -29,8 +29,10 @@ var (
 //
 // Phase A covers the bot's lifecycle and core identity: create (POST /bots),
 // read, metadata update (description/avatar_url via PATCH), delete, and import.
-// The bot's OpenClaw config (via PATCH /config) and its skill/tool/credential
-// assignments are managed by later phases / dedicated resources, not here.
+// Phase B adds the bot's OpenClaw config as an optional nested `config` block,
+// applied via the create POST and PATCH /config (see bot_config.go). The bot's
+// skill/tool/credential assignments remain managed by later phases / dedicated
+// resources, not here.
 type BotResource struct {
 	data *providerData
 }
@@ -39,13 +41,17 @@ type BotResource struct {
 //
 // Deliberately omitted per the epic-59 decision (task #825): `tier` (deprecated
 // platform-wide) and `cluster_id` (internal provisioner placement). Also omitted
-// from Phase A: the nested `config`, plus files/skills/tools/resources/access —
-// those belong to later phases.
+// from this resource: files/skills/tools/resources/access — those belong to
+// later phases. The nested `config` block is added in Phase B (see botConfigModel).
 type BotResourceModel struct {
 	// Writable identity.
 	Name        types.String `tfsdk:"name"`
 	Description types.String `tfsdk:"description"`
 	AvatarURL   types.String `tfsdk:"avatar_url"`
+
+	// OpenClaw config overrides (Phase B). Nil when the practitioner does not
+	// declare a `config` block; managed via the create POST and PATCH /config.
+	Config *botConfigModel `tfsdk:"config"`
 
 	// Server-owned identity (computed).
 	ID        types.String `tfsdk:"id"`
@@ -102,9 +108,9 @@ func (r *BotResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "Manages a Botyard bot's desired-state record within the configured organization. " +
 			"Creating the resource persists the bot and triggers provisioner reconciliation best-effort. " +
-			"Phase A manages the bot's core identity (name, description, avatar) and exposes its runtime " +
-			"placement and control-plane state as read-only attributes; the bot's OpenClaw config and its " +
-			"skill/tool/credential assignments are managed separately.",
+			"It manages the bot's core identity (name, description, avatar) and its OpenClaw `config` " +
+			"overrides, and exposes runtime placement and control-plane state as read-only attributes; " +
+			"the bot's skill/tool/credential assignments are managed separately.",
 		Attributes: map[string]schema.Attribute{
 			"name": schema.StringAttribute{
 				Required: true,
@@ -122,6 +128,8 @@ func (r *BotResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *
 				MarkdownDescription: "Avatar image URL (a DiceBear data URI or a custom URL). Optional — the API " +
 					"stores no avatar when omitted. Removing it from the config clears the stored value (sends JSON null).",
 			},
+
+			"config": botConfigSchemaAttribute(),
 
 			"id":        stableComputedString("Unique bot identifier (UUID)."),
 			"slug":      stableComputedString("URL-friendly bot identifier, derived from the name at creation. Used as the import ID."),
@@ -187,6 +195,9 @@ func (r *BotResource) Create(ctx context.Context, req resource.CreateRequest, re
 		return
 	}
 	mapBotResource(apiResp.JSON201, &plan)
+	// The create POST embeds the config, so the 201 already reflects the merged
+	// desired_config — refresh the declared config leaves from it.
+	mapBotConfig(&apiResp.JSON201.DesiredConfig, plan.Config)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
@@ -213,6 +224,7 @@ func (r *BotResource) Read(ctx context.Context, req resource.ReadRequest, resp *
 			fmt.Sprintf("Read returned HTTP %d: %s", apiResp.StatusCode(), describeAPIError(apiResp.Body)))
 	case botReadOK:
 		mapBotResource(apiResp.JSON200, &state)
+		mapBotConfig(&apiResp.JSON200.DesiredConfig, state.Config)
 		resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 	}
 }
@@ -242,8 +254,46 @@ func (r *BotResource) Update(ctx context.Context, req resource.UpdateRequest, re
 			fmt.Sprintf("Update returned HTTP %d: %s", apiResp.StatusCode(), describeAPIError(apiResp.Body)))
 		return
 	}
-	mapBotResource(apiResp.JSON200, &plan)
+	// The bot's config lives behind a dedicated PATCH /config endpoint (BotUpdate
+	// carries no config), so apply it separately when a config block is declared.
+	// The config PATCH returns the full, freshly-merged bot, so prefer its
+	// response for the final state mapping.
+	final := apiResp.JSON200
+	if plan.Config != nil {
+		cfgResp, ok := r.updateBotConfig(ctx, state.Slug.ValueString(), plan.Config, &resp.Diagnostics)
+		if !ok {
+			return
+		}
+		final = cfgResp
+	}
+
+	mapBotResource(final, &plan)
+	mapBotConfig(&final.DesiredConfig, plan.Config)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
+}
+
+// updateBotConfig applies the declared config via PATCH /config. The body wraps
+// the sparse OpenClawConfigPatch object in a BotConfigUpdate ({"config": {...}}).
+// Returns the merged bot on success; on failure it records a diagnostic and
+// returns ok=false so the caller aborts without setting state.
+func (r *BotResource) updateBotConfig(ctx context.Context, slug string, cfg *botConfigModel, diags *diag.Diagnostics) (*client.BotResponse, bool) {
+	body, err := json.Marshal(map[string]json.RawMessage{"config": buildBotConfigPatch(cfg)})
+	if err != nil {
+		diags.AddError("Error encoding bot config", err.Error())
+		return nil, false
+	}
+	cfgResp, err := r.data.client.UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchWithBodyWithResponse(
+		ctx, r.data.orgID, slug, "application/json", bytes.NewReader(body))
+	if err != nil {
+		diags.AddError("Error updating bot config", err.Error())
+		return nil, false
+	}
+	if cfgResp.JSON200 == nil {
+		diags.AddError("Unexpected response updating bot config",
+			fmt.Sprintf("Config update returned HTTP %d: %s", cfgResp.StatusCode(), describeAPIError(cfgResp.Body)))
+		return nil, false
+	}
+	return cfgResp.JSON200, true
 }
 
 func (r *BotResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
@@ -270,19 +320,20 @@ func (r *BotResource) ImportState(ctx context.Context, req resource.ImportStateR
 
 // buildBotCreateBody builds the POST /bots body as a sparse
 // map[string]json.RawMessage. `config` is required by the API but its fields are
-// all optional, so Phase A sends an empty object (`{}`) — the API merges it over
-// OpenClaw defaults. Building the body by hand (rather than via the generated
-// BotCreate struct) sends `config` as literal `{}`: a zero-value
-// OpenClawConfigPatch marshals its fields as explicit nulls, which would risk
-// nulling defaults. This also keeps the wire body to exactly the Phase A fields
-// (BotCreate is a strict model that rejects unknown keys).
+// all optional; buildBotConfigPatch renders the declared config block as a
+// sparse OpenClawConfigPatch object, or `{}` when no config block is declared —
+// the API merges it over OpenClaw defaults, so an empty object nulls nothing.
+// Building the body by hand (rather than via the generated BotCreate struct)
+// avoids a zero-value OpenClawConfigPatch marshaling its fields as explicit
+// nulls, and keeps the wire body to exactly the fields the strict BotCreate
+// model accepts (it rejects unknown keys).
 func buildBotCreateBody(plan BotResourceModel) ([]byte, diag.Diagnostics) {
 	var diags diag.Diagnostics
 	body := map[string]json.RawMessage{
 		"name":        rawString(plan.Name),
 		"description": rawString(plan.Description),
 		"avatar_url":  rawString(plan.AvatarURL),
-		"config":      json.RawMessage("{}"),
+		"config":      buildBotConfigPatch(plan.Config),
 	}
 	out, err := json.Marshal(body)
 	if err != nil {
