@@ -119,7 +119,14 @@ resources are added.
 Acceptance tests (`TF_ACC=1`) run real `terraform apply/plan/destroy` against a
 Botyard API. The recommended setup is a hermetic local API + Postgres stack (no
 Kubernetes required — bot records are created without a live provisioner). The
-full harness and release pipeline land in a follow-up task.
+full harness lands in a follow-up task.
+
+## Releasing
+
+The provider is published to the Terraform Registry as `Botyard-AI/botyard`
+(`v0.1.0` is live). Releases are cut manually. See [`RELEASING.md`](./RELEASING.md)
+for how to cut the next (bump-based) release, plus the one-time Registry
+onboarding — already complete — retained for verification and recovery.
 
 ## License
 
