@@ -4,9 +4,12 @@ Manage [Botyard](https://botyard.io) platform resources — bots, skills,
 workforces, credentials, and MCP servers — as code.
 
 > **Status: early, in active development.** Ships the provider configuration, a
-> generated API client, authentication, the `botyard_mcp_server` **resource**,
-> and a `botyard_bot` data source. More managed resources are added
-> incrementally (secret policies, bots, …).
+> generated API client, authentication, the `botyard_mcp_server` and
+> `botyard_vault_secret` **resources**, and a `botyard_bot` data source. More
+> managed resources are added incrementally (bots, …).
+
+Full reference documentation is generated for the Terraform Registry and lives
+in [`docs/`](./docs); runnable examples are in [`examples/`](./examples).
 
 ## Usage
 
@@ -76,8 +79,24 @@ make build      # compile
 make test       # unit tests (hermetic)
 make fmtcheck   # gofmt check
 make vet        # go vet
+make docs       # regenerate docs/ from schema + examples (tfplugindocs)
 make testacc    # acceptance tests (needs a reachable API; see below)
 ```
+
+### Documentation
+
+Registry documentation in `docs/` is generated from the provider schema and the
+`examples/` directory with
+[`tfplugindocs`](https://github.com/hashicorp/terraform-plugin-docs). After
+changing a schema `MarkdownDescription` or an example, regenerate and commit:
+
+```sh
+make docs       # regenerate docs/
+make docs-check # regenerate and fail if docs/ drifted (mirrors CI)
+```
+
+CI runs the same drift check, so stale docs fail the build. Requires a
+`terraform` binary on `PATH` (or `tfplugindocs` will download one).
 
 ### Generated API client
 

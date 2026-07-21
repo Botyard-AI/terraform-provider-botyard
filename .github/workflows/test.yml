@@ -49,3 +49,32 @@ jobs:
           version: v2.12.2
       - name: govulncheck
         run: go run golang.org/x/vuln/cmd/govulncheck@v1.6.0 ./...
+
+  docs:
+    name: docs drift check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+          cache: true
+      # Regenerate docs/ from the provider schema + examples and fail if the
+      # committed docs are stale. Keep the tfplugindocs version in sync with the
+      # GNUmakefile (TFPLUGINDOCS_VERSION). --tf-version pins the terraform
+      # binary tfplugindocs downloads so example formatting is deterministic.
+      - name: regenerate docs
+        run: |
+          go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs@v0.25.0 \
+            generate --provider-name botyard --rendered-provider-name Botyard --tf-version 1.9.8
+      # Use `git status --porcelain` (not `git diff --exit-code`) so newly
+      # generated but untracked pages — e.g. docs for a resource added without a
+      # regenerated page — also count as drift; `git diff` ignores untracked files.
+      - name: check docs drift
+        run: |
+          drift="$(git status --porcelain -- docs/)"
+          if [ -n "$drift" ]; then
+            echo "::error::docs/ is out of date. Run 'make docs' and commit the result." >&2
+            echo "$drift" >&2
+            exit 1
+          fi
