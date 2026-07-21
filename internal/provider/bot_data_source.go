@@ -31,10 +31,8 @@ type BotDataSourceModel struct {
 	Slug                 types.String `tfsdk:"slug"`
 	ID                   types.String `tfsdk:"id"`
 	OrgID                types.String `tfsdk:"org_id"`
-	ClusterID            types.String `tfsdk:"cluster_id"`
 	Name                 types.String `tfsdk:"name"`
 	Namespace            types.String `tfsdk:"namespace"`
-	Tier                 types.String `tfsdk:"tier"`
 	RuntimeClass         types.String `tfsdk:"runtime_class"`
 	StorageClass         types.String `tfsdk:"storage_class"`
 	RuntimePrivilegeMode types.String `tfsdk:"runtime_privilege_mode"`
@@ -65,10 +63,8 @@ func (d *BotDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, re
 			},
 			"id":                     schema.StringAttribute{Computed: true, MarkdownDescription: "Unique bot identifier (UUID)."},
 			"org_id":                 schema.StringAttribute{Computed: true, MarkdownDescription: "Organization ID that owns the bot."},
-			"cluster_id":             schema.StringAttribute{Computed: true, MarkdownDescription: "Provisioner cluster the bot runs on."},
 			"name":                   schema.StringAttribute{Computed: true, MarkdownDescription: "Human-readable bot name."},
 			"namespace":              schema.StringAttribute{Computed: true, MarkdownDescription: "Kubernetes namespace for the bot runtime."},
-			"tier":                   schema.StringAttribute{Computed: true, MarkdownDescription: "Bot tier."},
 			"runtime_class":          schema.StringAttribute{Computed: true, MarkdownDescription: "Runtime class."},
 			"storage_class":          schema.StringAttribute{Computed: true, MarkdownDescription: "Storage class."},
 			"runtime_privilege_mode": schema.StringAttribute{Computed: true, MarkdownDescription: "Runtime privilege mode."},
@@ -128,10 +124,8 @@ func botToModel(b *client.BotResponse) BotDataSourceModel {
 		Slug:                 types.StringValue(b.Slug),
 		ID:                   types.StringValue(b.Id),
 		OrgID:                types.StringValue(b.OrgId),
-		ClusterID:            types.StringValue(b.ClusterId),
 		Name:                 types.StringValue(b.Name),
 		Namespace:            types.StringValue(b.Namespace),
-		Tier:                 types.StringValue(string(b.Tier)),
 		RuntimeClass:         types.StringValue(string(b.RuntimeClass)),
 		StorageClass:         types.StringValue(string(b.StorageClass)),
 		RuntimePrivilegeMode: types.StringValue(string(b.RuntimePrivilegeMode)),
