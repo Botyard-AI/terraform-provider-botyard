@@ -123,10 +123,10 @@ full harness lands in a follow-up task.
 
 ## Releasing
 
-Releases are cut manually and published to the Terraform Registry as
-`Botyard-AI/botyard`. See [`RELEASING.md`](./RELEASING.md) for the one-time
-Registry onboarding (namespace, GPG signing key, connecting the provider) and the
-per-release workflow (cutting `v0.1.0` and beyond).
+The provider is published to the Terraform Registry as `Botyard-AI/botyard`
+(`v0.1.0` is live). Releases are cut manually. See [`RELEASING.md`](./RELEASING.md)
+for how to cut the next (bump-based) release, plus the one-time Registry
+onboarding — already complete — retained for verification and recovery.
 
 ## License
 
