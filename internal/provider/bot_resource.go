@@ -119,10 +119,8 @@ func (r *BotResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *
 			},
 			"avatar_url": schema.StringAttribute{
 				Optional: true,
-				Computed: true,
-				MarkdownDescription: "Avatar image URL (a DiceBear data URI or a custom URL). When omitted, the " +
-					"platform assigns a generated default, which is reflected here.",
-				PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
+				MarkdownDescription: "Avatar image URL (a DiceBear data URI or a custom URL). Optional — the API " +
+					"stores no avatar when omitted. Removing it from the config clears the stored value (sends JSON null).",
 			},
 
 			"id":        stableComputedString("Unique bot identifier (UUID)."),
@@ -204,24 +202,19 @@ func (r *BotResource) Read(ctx context.Context, req resource.ReadRequest, resp *
 		resp.Diagnostics.AddError("Error reading bot", err.Error())
 		return
 	}
-	// A bot deletion is a soft-delete (desired_state=deleted) that the
-	// reconciler later purges — treat both "gone" (404) and "tombstoned"
-	// (still readable but desired_state=deleted) as removed from state.
-	if apiResp.StatusCode() == 404 {
+	switch botReadDisposition(apiResp.StatusCode(), apiResp.JSON200) {
+	case botReadGone:
+		// A bot deletion is a soft-delete (desired_state=deleted) that the
+		// reconciler later purges — treat both "gone" (404) and "tombstoned"
+		// (still readable but desired_state=deleted) as removed from state.
 		resp.State.RemoveResource(ctx)
-		return
-	}
-	if apiResp.JSON200 == nil {
+	case botReadUnexpected:
 		resp.Diagnostics.AddError("Unexpected response reading bot",
 			fmt.Sprintf("Read returned HTTP %d: %s", apiResp.StatusCode(), describeAPIError(apiResp.Body)))
-		return
+	case botReadOK:
+		mapBotResource(apiResp.JSON200, &state)
+		resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 	}
-	if apiResp.JSON200.DesiredState == client.DesiredStateDeleted {
-		resp.State.RemoveResource(ctx)
-		return
-	}
-	mapBotResource(apiResp.JSON200, &state)
-	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
 func (r *BotResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
@@ -264,10 +257,7 @@ func (r *BotResource) Delete(ctx context.Context, req resource.DeleteRequest, re
 		resp.Diagnostics.AddError("Error deleting bot", err.Error())
 		return
 	}
-	switch apiResp.StatusCode() {
-	case 200, 202, 204, 404:
-		// soft-deleted, accepted, or already gone
-	default:
+	if !botDeleteStatusAccepted(apiResp.StatusCode()) {
 		resp.Diagnostics.AddError("Unexpected response deleting bot",
 			fmt.Sprintf("Delete returned HTTP %d: %s", apiResp.StatusCode(), describeAPIError(apiResp.Body)))
 	}
@@ -313,6 +303,48 @@ func buildBotUpdateBody(plan BotResourceModel) ([]byte, error) {
 		"avatar_url":  rawString(plan.AvatarURL),
 	}
 	return json.Marshal(body)
+}
+
+// botReadResult classifies how Read should react to a GET /bots/{slug} response.
+type botReadResult int
+
+const (
+	// botReadOK — the bot exists and is live; map it into state.
+	botReadOK botReadResult = iota
+	// botReadGone — the bot is absent (404) or soft-deleted
+	// (desired_state=deleted); remove it from state.
+	botReadGone
+	// botReadUnexpected — a non-404 response with no parseable body; surface an
+	// error.
+	botReadUnexpected
+)
+
+// botReadDisposition is the pure, unit-testable Read decision. Delete is a
+// soft-delete that leaves a readable tombstone until the reconciler purges the
+// row, so a 200 with desired_state=deleted is treated the same as a 404.
+func botReadDisposition(status int, b *client.BotResponse) botReadResult {
+	if status == 404 {
+		return botReadGone
+	}
+	if b == nil {
+		return botReadUnexpected
+	}
+	if b.DesiredState == client.DesiredStateDeleted {
+		return botReadGone
+	}
+	return botReadOK
+}
+
+// botDeleteStatusAccepted reports whether a DELETE /bots/{slug} status means the
+// bot is gone or on its way out (soft-deleted, accepted, no-content, or already
+// absent). Any other status is an error.
+func botDeleteStatusAccepted(code int) bool {
+	switch code {
+	case 200, 202, 204, 404:
+		return true
+	default:
+		return false
+	}
 }
 
 // mapBotResource writes an API BotResponse into the resource model. It never

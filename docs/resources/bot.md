@@ -37,7 +37,7 @@ output "support_bot_slug" {
 
 ### Optional
 
-- `avatar_url` (String) Avatar image URL (a DiceBear data URI or a custom URL). When omitted, the platform assigns a generated default, which is reflected here.
+- `avatar_url` (String) Avatar image URL (a DiceBear data URI or a custom URL). Optional — the API stores no avatar when omitted. Removing it from the config clears the stored value (sends JSON null).
 - `description` (String) Short human-facing description / role for the bot (max 500 chars). Display metadata only — not injected into the bot's system prompt. Omit to leave unset.
 
 ### Read-Only
