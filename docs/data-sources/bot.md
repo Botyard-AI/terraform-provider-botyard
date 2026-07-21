@@ -32,7 +32,6 @@ output "bot_id" {
 
 ### Read-Only
 
-- `cluster_id` (String) Provisioner cluster the bot runs on.
 - `config_generation` (Number) Monotonic config generation counter.
 - `created_at` (String) Creation timestamp (RFC 3339).
 - `desired_state` (String) Control-plane desired lifecycle state.
@@ -45,5 +44,4 @@ output "bot_id" {
 - `runtime_class` (String) Runtime class.
 - `runtime_privilege_mode` (String) Runtime privilege mode.
 - `storage_class` (String) Storage class.
-- `tier` (String) Bot tier.
 - `updated_at` (String) Last-update timestamp (RFC 3339).

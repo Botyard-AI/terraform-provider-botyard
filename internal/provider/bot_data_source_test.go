@@ -9,6 +9,9 @@ import (
 	"github.com/Botyard-AI/terraform-provider-botyard/internal/client"
 )
 
+// cannedBotJSON intentionally includes the API's "cluster_id" and "tier"
+// fields even though the data source no longer maps them, proving botToModel
+// tolerates (and ignores) response fields that are deliberately not exposed.
 const cannedBotJSON = `{
   "id": "b-123",
   "slug": "my-bot",
@@ -73,9 +76,7 @@ func TestBotDataSource_ClientRoundTripWithAuth(t *testing.T) {
 		"slug":             {model.Slug.ValueString(), "my-bot"},
 		"id":               {model.ID.ValueString(), "b-123"},
 		"org_id":           {model.OrgID.ValueString(), "org-1"},
-		"cluster_id":       {model.ClusterID.ValueString(), "hel1-0"},
 		"name":             {model.Name.ValueString(), "My Bot"},
-		"tier":             {model.Tier.ValueString(), "starter"},
 		"health_status":    {model.HealthStatus.ValueString(), "healthy"},
 		"desired_state":    {model.DesiredState.ValueString(), "running"},
 		"created_at":       {model.CreatedAt.ValueString(), "2026-07-20T10:00:00Z"},
