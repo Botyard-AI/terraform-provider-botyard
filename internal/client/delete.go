@@ -41,3 +41,15 @@ func (c *ClientWithResponses) DeleteMcpServer(ctx context.Context, orgID, mcpSer
 func (c *ClientWithResponses) DeleteSecretPolicy(ctx context.Context, orgID, policyID string) (int, []byte, error) {
 	return deleteStatus(c.DeleteSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdDelete(ctx, orgID, policyID))
 }
+
+// UnassignBotSkills removes the given skill assignments from a bot in one batch
+// request, returning the HTTP status and raw body without body parsing (see the
+// package note above). This DELETE takes a BotSkillIds body and returns 204 No
+// Content on success — served with a JSON content-type, so the generated
+// ...DeleteWithResponse parser would choke on the empty body. Unknown IDs are
+// ignored server-side; the endpoint returns 404 only when none of the given
+// skills were assigned, which a caller treats as already-gone.
+func (c *ClientWithResponses) UnassignBotSkills(ctx context.Context, orgID, botSlug string, skillIDs []string) (int, []byte, error) {
+	return deleteStatus(c.UnassignSkillsV1OrgsOrgIdBotsBotSlugSkillsDelete(
+		ctx, orgID, botSlug, BotSkillIds{SkillIds: skillIDs}))
+}

@@ -14,7 +14,7 @@ CLIENT_DIR="$ROOT/internal/client"
 SPEC="$CLIENT_DIR/openapi.json"
 
 # Tags the generated client covers. Widen as resources are added.
-KEEP_TAGS=(bots mcp-servers secret-policies)
+KEEP_TAGS=(bots mcp-servers secret-policies skills)
 
 # Paths dropped even though their tag is kept:
 #   - The MCP catalog endpoints pull in McpCatalogFormField schemas whose inline
@@ -23,12 +23,19 @@ KEEP_TAGS=(bots mcp-servers secret-policies)
 #   - The bot-scoped secret-policies endpoints model a bot reading its own
 #     variables (a different access pattern); the botyard_vault_secret resource
 #     only needs the org-scoped policy CRUD + bot-links endpoints.
+#   - The org-scoped /skills catalogue endpoints (authoring skills, not
+#     assigning them) are a different surface from bot_skill_assignment, which
+#     only touches the bot-scoped .../bots/{bot_slug}/skills assignment
+#     endpoints. Re-include when a skill-catalogue resource is built.
 # Re-include either when the corresponding surface is built.
 EXCLUDE_PATHS=(
   "/v1/orgs/{org_id}/mcp-servers/catalog"
   "/v1/orgs/{org_id}/mcp-servers/from-catalog"
   "/v1/orgs/{org_id}/bots/{bot_slug}/secret-policies"
   "/v1/orgs/{org_id}/bots/{bot_slug}/secret-policies/{policy_id}"
+  "/v1/orgs/{org_id}/skills"
+  "/v1/orgs/{org_id}/skills/search"
+  "/v1/orgs/{org_id}/skills/{skill_slug}"
 )
 
 OAPI_CODEGEN_VERSION="v2.4.1"
