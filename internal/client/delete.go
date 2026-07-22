@@ -63,3 +63,16 @@ func (c *ClientWithResponses) UnassignBotTools(ctx context.Context, orgID, botSl
 	return deleteStatus(c.UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDelete(
 		ctx, orgID, botSlug, BotToolIds{ToolIds: toolIDs}))
 }
+
+// UnassignBotCredential removes a single credential assignment from a bot,
+// returning the HTTP status and raw body without body parsing (see the package
+// note above). This DELETE takes the credential ID in the path and returns 204
+// No Content on success — served with a JSON content-type, which the generated
+// ...DeleteWithResponse parser would choke on. It removes every link for the
+// (bot, credential) pair (a credential is single-scope, so this clears it from
+// its scope). A 404 means the credential was not assigned, which a caller
+// treats as already-gone.
+func (c *ClientWithResponses) UnassignBotCredential(ctx context.Context, orgID, botSlug, credentialID string) (int, []byte, error) {
+	return deleteStatus(c.UnassignCredentialV1OrgsOrgIdBotsBotSlugCredentialsCredentialIdDelete(
+		ctx, orgID, botSlug, credentialID))
+}

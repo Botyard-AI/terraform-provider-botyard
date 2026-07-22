@@ -158,6 +158,14 @@ const (
 	CredentialProviderTavily         CredentialProvider = "tavily"
 )
 
+// Defines values for CredentialScope.
+const (
+	CredentialScopeImageGen    CredentialScope = "image_gen"
+	CredentialScopeIntegration CredentialScope = "integration"
+	CredentialScopeLlm         CredentialScope = "llm"
+	CredentialScopeWebSearch   CredentialScope = "web_search"
+)
+
 // Defines values for DeployStatus.
 const (
 	DeployStatusDeployed DeployStatus = "deployed"
@@ -658,6 +666,58 @@ type BotCreate struct {
 
 	// ToolIds Tools to assign at creation (the wizard's final selection).
 	ToolIds *[]string `json:"tool_ids,omitempty"`
+}
+
+// BotCredentialAssign Request to set the bot's credential assignments for one or more scopes.
+//
+// For each scope listed in “scopes“, the “credentials“ entries whose scope
+// matches are the complete desired state — existing rows for that scope are
+// removed and replaced. Scopes not in “scopes“ are untouched. If “scopes“
+// is omitted, the scopes are inferred from the “credentials“ entries — with
+// an empty “credentials“ that becomes a no-op, so set “scopes“ explicitly
+// to clear a scope.
+type BotCredentialAssign struct {
+	// Credentials Credentials to assign (possibly empty when clearing a scope)
+	Credentials []BotCredentialAssignEntry `json:"credentials"`
+
+	// Scopes Scopes the caller intends to replace. Each listed scope is wiped then repopulated from the matching entries in `credentials`. Omit to infer from `credentials`. Required to clear a scope — send an empty `credentials` with `scopes=[the_scope]`.
+	Scopes *[]CredentialScope `json:"scopes"`
+}
+
+// BotCredentialAssignEntry A single credential assignment within a batch request.
+type BotCredentialAssignEntry struct {
+	// CredentialId Credential to assign
+	CredentialId string `json:"credential_id"`
+
+	// DefaultModel Preferred model ID for this credential (optional, recommended for LLM scope)
+	DefaultModel *string `json:"default_model"`
+
+	// Ordinal Priority within scope (0 = tried first)
+	Ordinal int `json:"ordinal"`
+
+	// Scope What a credential is used for.
+	Scope CredentialScope `json:"scope"`
+}
+
+// BotCredentialAssignmentResponse A credential assigned to a bot.
+type BotCredentialAssignmentResponse struct {
+	ApiProtocol  *ApiProtocol `json:"api_protocol"`
+	CredentialId string       `json:"credential_id"`
+	DefaultModel *string      `json:"default_model"`
+	Enabled      bool         `json:"enabled"`
+	KeyPrefix    *string      `json:"key_prefix"`
+	Label        string       `json:"label"`
+
+	// Model Per-link model preference (only for api_protocol=claude_code_cli credentials). Accepted values are whatever the active Claude CLI backend supports — see ``CLAUDE_CODE_CLI_SUPPORTED_MODELS`` in ``botyard_core.openclaw.config``.
+	Model   *string `json:"model"`
+	Ordinal int     `json:"ordinal"`
+
+	// Provider Known provider vendors.
+	Provider CredentialProvider `json:"provider"`
+
+	// Scope What a credential is used for.
+	Scope CredentialScope `json:"scope"`
+	Slug  string          `json:"slug"`
 }
 
 // BotFilterField Fields filterable via the bot search endpoint.
@@ -1541,6 +1601,9 @@ type CredentialProviderConfig struct {
 	Provider CredentialProvider `json:"provider"`
 	Slug     string             `json:"slug"`
 }
+
+// CredentialScope What a credential is used for.
+type CredentialScope string
 
 // DeployStatus Deployment status for any deployable entity (skills, bot files, etc.).
 type DeployStatus string
@@ -2688,6 +2751,12 @@ type ListBotsV1OrgsOrgIdBotsGetParams struct {
 	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
 }
 
+// ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetParams defines parameters for ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGet.
+type ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetParams struct {
+	// Scope Filter by credential scope
+	Scope *CredentialScope `form:"scope,omitempty" json:"scope,omitempty"`
+}
+
 // ListMcpServersV1OrgsOrgIdMcpServersGetParams defines parameters for ListMcpServersV1OrgsOrgIdMcpServersGet.
 type ListMcpServersV1OrgsOrgIdMcpServersGetParams struct {
 	// State Filter by reconciler-observed lifecycle state
@@ -2710,6 +2779,9 @@ type UpdateBotV1OrgsOrgIdBotsBotSlugPatchJSONRequestBody = BotUpdate
 
 // UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchJSONRequestBody defines body for UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatch for application/json ContentType.
 type UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchJSONRequestBody = BotConfigUpdate
+
+// AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutJSONRequestBody defines body for AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPut for application/json ContentType.
+type AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutJSONRequestBody = BotCredentialAssign
 
 // UnassignSkillsV1OrgsOrgIdBotsBotSlugSkillsDeleteJSONRequestBody defines body for UnassignSkillsV1OrgsOrgIdBotsBotSlugSkillsDelete for application/json ContentType.
 type UnassignSkillsV1OrgsOrgIdBotsBotSlugSkillsDeleteJSONRequestBody = BotSkillIds
@@ -3339,6 +3411,17 @@ type ClientInterface interface {
 
 	UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatch(ctx context.Context, orgId string, botSlug string, body UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGet request
+	ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGet(ctx context.Context, orgId string, botSlug string, params *ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutWithBody request with any body
+	AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPut(ctx context.Context, orgId string, botSlug string, body AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UnassignCredentialV1OrgsOrgIdBotsBotSlugCredentialsCredentialIdDelete request
+	UnassignCredentialV1OrgsOrgIdBotsBotSlugCredentialsCredentialIdDelete(ctx context.Context, orgId string, botSlug string, credentialId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// FinishBotOnboardingRouteV1OrgsOrgIdBotsBotSlugFinishOnboardingPost request
 	FinishBotOnboardingRouteV1OrgsOrgIdBotsBotSlugFinishOnboardingPost(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -3579,6 +3662,54 @@ func (c *Client) UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchWithBody(ctx co
 
 func (c *Client) UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatch(ctx context.Context, orgId string, botSlug string, body UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchRequest(c.Server, orgId, botSlug, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGet(ctx context.Context, orgId string, botSlug string, params *ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetRequest(c.Server, orgId, botSlug, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutRequestWithBody(c.Server, orgId, botSlug, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPut(ctx context.Context, orgId string, botSlug string, body AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutRequest(c.Server, orgId, botSlug, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UnassignCredentialV1OrgsOrgIdBotsBotSlugCredentialsCredentialIdDelete(ctx context.Context, orgId string, botSlug string, credentialId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUnassignCredentialV1OrgsOrgIdBotsBotSlugCredentialsCredentialIdDeleteRequest(c.Server, orgId, botSlug, credentialId)
 	if err != nil {
 		return nil, err
 	}
@@ -4450,6 +4581,171 @@ func NewUpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchRequestWithBody(server s
 	}
 
 	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetRequest generates requests for ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGet
+func NewListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetRequest(server string, orgId string, botSlug string, params *ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "bot_slug", runtime.ParamLocationPath, botSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/bots/%s/credentials", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Scope != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "scope", runtime.ParamLocationQuery, *params.Scope); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewAssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutRequest calls the generic AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPut builder with application/json body
+func NewAssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutRequest(server string, orgId string, botSlug string, body AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewAssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutRequestWithBody(server, orgId, botSlug, "application/json", bodyReader)
+}
+
+// NewAssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutRequestWithBody generates requests for AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPut with any type of body
+func NewAssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutRequestWithBody(server string, orgId string, botSlug string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "bot_slug", runtime.ParamLocationPath, botSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/bots/%s/credentials", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewUnassignCredentialV1OrgsOrgIdBotsBotSlugCredentialsCredentialIdDeleteRequest generates requests for UnassignCredentialV1OrgsOrgIdBotsBotSlugCredentialsCredentialIdDelete
+func NewUnassignCredentialV1OrgsOrgIdBotsBotSlugCredentialsCredentialIdDeleteRequest(server string, orgId string, botSlug string, credentialId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "bot_slug", runtime.ParamLocationPath, botSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam2 string
+
+	pathParam2, err = runtime.StyleParamWithLocation("simple", false, "credential_id", runtime.ParamLocationPath, credentialId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/bots/%s/credentials/%s", pathParam0, pathParam1, pathParam2)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
 
 	return req, nil
 }
@@ -5793,6 +6089,17 @@ type ClientWithResponsesInterface interface {
 
 	UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchWithResponse(ctx context.Context, orgId string, botSlug string, body UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchResponse, error)
 
+	// ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetWithResponse request
+	ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetWithResponse(ctx context.Context, orgId string, botSlug string, params *ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetParams, reqEditors ...RequestEditorFn) (*ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetResponse, error)
+
+	// AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutWithBodyWithResponse request with any body
+	AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutResponse, error)
+
+	AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutWithResponse(ctx context.Context, orgId string, botSlug string, body AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutJSONRequestBody, reqEditors ...RequestEditorFn) (*AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutResponse, error)
+
+	// UnassignCredentialV1OrgsOrgIdBotsBotSlugCredentialsCredentialIdDeleteWithResponse request
+	UnassignCredentialV1OrgsOrgIdBotsBotSlugCredentialsCredentialIdDeleteWithResponse(ctx context.Context, orgId string, botSlug string, credentialId string, reqEditors ...RequestEditorFn) (*UnassignCredentialV1OrgsOrgIdBotsBotSlugCredentialsCredentialIdDeleteResponse, error)
+
 	// FinishBotOnboardingRouteV1OrgsOrgIdBotsBotSlugFinishOnboardingPostWithResponse request
 	FinishBotOnboardingRouteV1OrgsOrgIdBotsBotSlugFinishOnboardingPostWithResponse(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*FinishBotOnboardingRouteV1OrgsOrgIdBotsBotSlugFinishOnboardingPostResponse, error)
 
@@ -6077,6 +6384,74 @@ func (r UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchResponse) Status() strin
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *[]BotCredentialAssignmentResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON201                       *[]BotCredentialAssignmentResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UnassignCredentialV1OrgsOrgIdBotsBotSlugCredentialsCredentialIdDeleteResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r UnassignCredentialV1OrgsOrgIdBotsBotSlugCredentialsCredentialIdDeleteResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UnassignCredentialV1OrgsOrgIdBotsBotSlugCredentialsCredentialIdDeleteResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -6816,6 +7191,41 @@ func (c *ClientWithResponses) UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchWi
 	return ParseUpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchResponse(rsp)
 }
 
+// ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetWithResponse request returning *ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetResponse
+func (c *ClientWithResponses) ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetWithResponse(ctx context.Context, orgId string, botSlug string, params *ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetParams, reqEditors ...RequestEditorFn) (*ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetResponse, error) {
+	rsp, err := c.ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGet(ctx, orgId, botSlug, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetResponse(rsp)
+}
+
+// AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutWithBodyWithResponse request with arbitrary body returning *AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutResponse
+func (c *ClientWithResponses) AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutResponse, error) {
+	rsp, err := c.AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutWithBody(ctx, orgId, botSlug, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutResponse(rsp)
+}
+
+func (c *ClientWithResponses) AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutWithResponse(ctx context.Context, orgId string, botSlug string, body AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutJSONRequestBody, reqEditors ...RequestEditorFn) (*AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutResponse, error) {
+	rsp, err := c.AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPut(ctx, orgId, botSlug, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutResponse(rsp)
+}
+
+// UnassignCredentialV1OrgsOrgIdBotsBotSlugCredentialsCredentialIdDeleteWithResponse request returning *UnassignCredentialV1OrgsOrgIdBotsBotSlugCredentialsCredentialIdDeleteResponse
+func (c *ClientWithResponses) UnassignCredentialV1OrgsOrgIdBotsBotSlugCredentialsCredentialIdDeleteWithResponse(ctx context.Context, orgId string, botSlug string, credentialId string, reqEditors ...RequestEditorFn) (*UnassignCredentialV1OrgsOrgIdBotsBotSlugCredentialsCredentialIdDeleteResponse, error) {
+	rsp, err := c.UnassignCredentialV1OrgsOrgIdBotsBotSlugCredentialsCredentialIdDelete(ctx, orgId, botSlug, credentialId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUnassignCredentialV1OrgsOrgIdBotsBotSlugCredentialsCredentialIdDeleteResponse(rsp)
+}
+
 // FinishBotOnboardingRouteV1OrgsOrgIdBotsBotSlugFinishOnboardingPostWithResponse request returning *FinishBotOnboardingRouteV1OrgsOrgIdBotsBotSlugFinishOnboardingPostResponse
 func (c *ClientWithResponses) FinishBotOnboardingRouteV1OrgsOrgIdBotsBotSlugFinishOnboardingPostWithResponse(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*FinishBotOnboardingRouteV1OrgsOrgIdBotsBotSlugFinishOnboardingPostResponse, error) {
 	rsp, err := c.FinishBotOnboardingRouteV1OrgsOrgIdBotsBotSlugFinishOnboardingPost(ctx, orgId, botSlug, reqEditors...)
@@ -7407,6 +7817,98 @@ func ParseUpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchResponse(rsp *http.Res
 		}
 		response.JSON200 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetResponse parses an HTTP response from a ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetWithResponse call
+func ParseListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetResponse(rsp *http.Response) (*ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []BotCredentialAssignmentResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseAssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutResponse parses an HTTP response from a AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutWithResponse call
+func ParseAssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutResponse(rsp *http.Response) (*AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest []BotCredentialAssignmentResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUnassignCredentialV1OrgsOrgIdBotsBotSlugCredentialsCredentialIdDeleteResponse parses an HTTP response from a UnassignCredentialV1OrgsOrgIdBotsBotSlugCredentialsCredentialIdDeleteWithResponse call
+func ParseUnassignCredentialV1OrgsOrgIdBotsBotSlugCredentialsCredentialIdDeleteResponse(rsp *http.Response) (*UnassignCredentialV1OrgsOrgIdBotsBotSlugCredentialsCredentialIdDeleteResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UnassignCredentialV1OrgsOrgIdBotsBotSlugCredentialsCredentialIdDeleteResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest ProblemDetails
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {

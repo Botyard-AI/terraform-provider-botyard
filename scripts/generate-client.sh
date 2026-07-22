@@ -14,7 +14,7 @@ CLIENT_DIR="$ROOT/internal/client"
 SPEC="$CLIENT_DIR/openapi.json"
 
 # Tags the generated client covers. Widen as resources are added.
-KEEP_TAGS=(bots mcp-servers secret-policies skills bot-tools)
+KEEP_TAGS=(bots mcp-servers secret-policies skills bot-tools credentials)
 
 # Paths dropped even though their tag is kept:
 #   - The MCP catalog endpoints pull in McpCatalogFormField schemas whose inline
@@ -27,6 +27,18 @@ KEEP_TAGS=(bots mcp-servers secret-policies skills bot-tools)
 #     assigning them) are a different surface from bot_skill_assignment, which
 #     only touches the bot-scoped .../bots/{bot_slug}/skills assignment
 #     endpoints. Re-include when a skill-catalogue resource is built.
+#   - The `credentials` tag is broad: it covers the org-scoped credential CRUD
+#     (create/list/get/update/delete/presets/oauth/test) AND the secret-bearing
+#     bot-private credential paths AND the reorder / per-link-model bot paths.
+#     The botyard_bot_credential_assignment resource only assigns EXISTING org
+#     credentials to a bot, so it keeps just the bot-scoped assignment surface:
+#     GET+PUT .../bots/{bot_slug}/credentials and DELETE
+#     .../bots/{bot_slug}/credentials/{credential_id}. Everything else under the
+#     tag is excluded — the org CRUD + presets/oauth/test are out of scope; the
+#     bot-private create/delete carry raw api_key/oauth_token (secrets, deferred
+#     to a future write-only/ephemeral resource); reorder is redundant (assign
+#     sets ordinals directly); and the per-link model PATCH is deferred. Re-add
+#     when a credential-management (secret-bearing) resource is built.
 # Re-include either when the corresponding surface is built.
 EXCLUDE_PATHS=(
   "/v1/orgs/{org_id}/mcp-servers/catalog"
@@ -36,6 +48,16 @@ EXCLUDE_PATHS=(
   "/v1/orgs/{org_id}/skills"
   "/v1/orgs/{org_id}/skills/search"
   "/v1/orgs/{org_id}/skills/{skill_slug}"
+  "/v1/orgs/{org_id}/credentials"
+  "/v1/orgs/{org_id}/credentials/presets"
+  "/v1/orgs/{org_id}/credentials/{credential_id}"
+  "/v1/orgs/{org_id}/credentials/{credential_id}/oauth/start"
+  "/v1/orgs/{org_id}/credentials/{credential_id}/oauth/tokens"
+  "/v1/orgs/{org_id}/credentials/{credential_id}/test"
+  "/v1/orgs/{org_id}/bots/{bot_slug}/credentials/private"
+  "/v1/orgs/{org_id}/bots/{bot_slug}/credentials/private/{credential_id}"
+  "/v1/orgs/{org_id}/bots/{bot_slug}/credentials/reorder"
+  "/v1/orgs/{org_id}/bots/{bot_slug}/credentials/{credential_id}/model"
 )
 
 OAPI_CODEGEN_VERSION="v2.4.1"
