@@ -6,18 +6,25 @@ import (
 	"encoding/json"
 	"fmt"
 	"sort"
+	"strings"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
-	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	"github.com/Botyard-AI/terraform-provider-botyard/internal/client"
 )
+
+// credentialScopeValues is the closed set of valid credential scopes, shared by
+// the schema's scope validator and the import-ID parser.
+var credentialScopeValues = []string{"llm", "web_search", "image_gen", "integration"}
 
 var (
 	_ resource.Resource                = (*BotCredentialAssignmentResource)(nil)
@@ -107,7 +114,10 @@ func (r *BotCredentialAssignmentResource) Schema(_ context.Context, _ resource.S
 			"secret-bearing bot-private credential endpoints are intentionally not modeled so raw API keys and " +
 			"OAuth tokens never enter Terraform state. The per-link Claude Code CLI `model` override is also " +
 			"not managed; re-applying this resource re-issues the per-scope assignment and resets any per-link " +
-			"model override set outside Terraform.",
+			"model override set outside Terraform.\n\n" +
+			"Because ownership is per-scope, import IDs carry the scopes to manage: `<bot_slug>` imports every " +
+			"scope the bot currently has assignments in, and `<bot_slug>:<scope>[,<scope>...]` imports only the " +
+			"listed scopes.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
@@ -135,11 +145,17 @@ func (r *BotCredentialAssignmentResource) Schema(_ context.Context, _ resource.S
 							Required: true,
 							MarkdownDescription: "What the credential is used for. One of `llm`, `web_search`, " +
 								"`image_gen`, `integration`. Must match the credential's own scope.",
+							Validators: []validator.String{
+								stringvalidator.OneOf(credentialScopeValues...),
+							},
 						},
 						"ordinal": schema.Int64Attribute{
 							Required: true,
 							MarkdownDescription: "Priority of this credential within its scope (0 = tried first). " +
 								"Each (scope, ordinal) pair must be unique.",
+							Validators: []validator.Int64{
+								int64validator.AtLeast(0),
+							},
 						},
 						"default_model": schema.StringAttribute{
 							Optional: true,
@@ -277,9 +293,88 @@ func (r *BotCredentialAssignmentResource) Delete(ctx context.Context, req resour
 	}
 }
 
-// ImportState imports the assignment by the bot slug it manages.
+// ImportState imports an assignment by an ID that carries which scopes the
+// resource should own — because ownership is per-scope, the bot slug alone is
+// ambiguous. The ID is either "<bot_slug>" (manage every scope the bot currently
+// has assignments in) or "<bot_slug>:<scope>[,<scope>...]" (manage only the
+// listed scopes). It reads the bot's live assignments, filters to the requested
+// scopes, and seeds full state so the first post-import Read is a no-op.
 func (r *BotCredentialAssignmentResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	resource.ImportStatePassthroughID(ctx, path.Root("bot_slug"), req, resp)
+	slug, scopes, err := parseCredentialImportID(req.ID)
+	if err != nil {
+		resp.Diagnostics.AddError("Invalid import ID", err.Error())
+		return
+	}
+	all, status, raw, lerr := listBotCredentials(ctx, r.data.client, r.data.orgID, slug)
+	if lerr != nil {
+		resp.Diagnostics.AddError("Error reading bot credential assignments", lerr.Error())
+		return
+	}
+	if status == 404 {
+		resp.Diagnostics.AddError("Bot not found",
+			fmt.Sprintf("No bot with slug %q exists in this organization.", slug))
+		return
+	}
+	if status != 200 {
+		resp.Diagnostics.AddError("Unexpected response reading bot credential assignments",
+			fmt.Sprintf("List returned HTTP %d: %s", status, describeAPIError(raw)))
+		return
+	}
+	// A bare slug imports every scope that currently has assignments; an explicit
+	// scope list imports only those (even if some are currently empty).
+	managed := all
+	if scopes != nil {
+		managed = filterByScopes(all, scopes)
+	}
+	model := BotCredentialAssignmentResourceModel{
+		ID:          types.StringValue(slug),
+		BotSlug:     types.StringValue(slug),
+		Credentials: entriesToSet(ctx, managed, &resp.Diagnostics),
+	}
+	resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
+}
+
+// parseCredentialImportID splits an import ID into a bot slug and, optionally,
+// the explicit scope list to manage. "<bot_slug>" yields (slug, nil, nil) —
+// manage all scopes; "<bot_slug>:llm,web_search" yields the slug plus the listed
+// scopes. Scopes are validated against the closed enum so a typo fails the
+// import instead of silently importing an empty set.
+func parseCredentialImportID(id string) (string, []string, error) {
+	format := "import ID must be \"<bot_slug>\" or \"<bot_slug>:<scope>[,<scope>...]\""
+	slugPart, scopePart, hasScopes := strings.Cut(id, ":")
+	slug := strings.TrimSpace(slugPart)
+	if slug == "" {
+		return "", nil, fmt.Errorf("%s", format)
+	}
+	if !hasScopes {
+		return slug, nil, nil
+	}
+	var scopes []string
+	for _, s := range strings.Split(scopePart, ",") {
+		s = strings.TrimSpace(s)
+		if s == "" {
+			continue
+		}
+		if !validCredentialScope(s) {
+			return "", nil, fmt.Errorf("unknown scope %q in import ID; valid scopes: %s",
+				s, strings.Join(credentialScopeValues, ", "))
+		}
+		scopes = append(scopes, s)
+	}
+	if len(scopes) == 0 {
+		return "", nil, fmt.Errorf("import ID lists no scopes after ':'; %s", format)
+	}
+	return slug, scopes, nil
+}
+
+// validCredentialScope reports whether s is a known credential scope.
+func validCredentialScope(s string) bool {
+	for _, v := range credentialScopeValues {
+		if s == v {
+			return true
+		}
+	}
+	return false
 }
 
 // applyCredentialAssignment performs the per-scope replace and reads back the

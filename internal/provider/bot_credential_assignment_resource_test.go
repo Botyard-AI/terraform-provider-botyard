@@ -11,6 +11,12 @@ import (
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework/path"
+	"github.com/hashicorp/terraform-plugin-framework/resource"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
+	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	"github.com/Botyard-AI/terraform-provider-botyard/internal/client"
 )
@@ -363,5 +369,197 @@ func TestCredentialScopeHelpers(t *testing.T) {
 	filtered := filterByScopes(entries, []string{"web_search"})
 	if len(filtered) != 1 || filtered[0].CredentialID != "c" {
 		t.Errorf("filterByScopes = %+v, want [c@web_search]", filtered)
+	}
+}
+
+func TestParseCredentialImportID(t *testing.T) {
+	tests := []struct {
+		id      string
+		slug    string
+		scopes  []string
+		wantErr bool
+	}{
+		{"my-bot", "my-bot", nil, false},
+		{"my-bot:llm", "my-bot", []string{"llm"}, false},
+		{"my-bot:llm,web_search", "my-bot", []string{"llm", "web_search"}, false},
+		{" my-bot : llm , integration ", "my-bot", []string{"llm", "integration"}, false},
+		{"my-bot:bogus", "", nil, true},
+		{"my-bot:llm,bogus", "", nil, true},
+		{"", "", nil, true},
+		{":llm", "", nil, true},
+		{"my-bot:", "", nil, true},
+		{"my-bot:,", "", nil, true},
+	}
+	for _, tc := range tests {
+		slug, scopes, err := parseCredentialImportID(tc.id)
+		if tc.wantErr {
+			if err == nil {
+				t.Errorf("parseCredentialImportID(%q) = (%q,%v,nil), want error", tc.id, slug, scopes)
+			}
+			continue
+		}
+		if err != nil {
+			t.Errorf("parseCredentialImportID(%q) error: %v", tc.id, err)
+			continue
+		}
+		if slug != tc.slug || !equalStrs(scopes, tc.scopes) {
+			t.Errorf("parseCredentialImportID(%q) = (%q,%v), want (%q,%v)", tc.id, slug, scopes, tc.slug, tc.scopes)
+		}
+	}
+}
+
+// importedCredentials imports with the given ID against s and returns the
+// managed credentials placed into state (or the import diagnostics).
+func importedCredentials(t *testing.T, s *credServer, id string) ([]credentialEntry, diag.Diagnostics) {
+	t.Helper()
+	ctx := context.Background()
+	r := credResource(t, s)
+	var sresp resource.SchemaResponse
+	r.Schema(ctx, resource.SchemaRequest{}, &sresp)
+	importResp := resource.ImportStateResponse{State: tfsdk.State{Schema: sresp.Schema}}
+	r.ImportState(ctx, resource.ImportStateRequest{ID: id}, &importResp)
+	if importResp.Diagnostics.HasError() {
+		return nil, importResp.Diagnostics
+	}
+	var got BotCredentialAssignmentResourceModel
+	importResp.Diagnostics.Append(importResp.State.Get(ctx, &got)...)
+	if importResp.Diagnostics.HasError() {
+		t.Fatalf("import state.Get: %v", importResp.Diagnostics)
+	}
+	if got.BotSlug.ValueString() != "bot-1" || got.ID.ValueString() != "bot-1" {
+		t.Errorf("import slug/id = %q/%q, want bot-1", got.BotSlug.ValueString(), got.ID.ValueString())
+	}
+	var d diag.Diagnostics
+	return entriesFromSet(ctx, got.Credentials, &d), d
+}
+
+func TestImportStateScopeAware(t *testing.T) {
+	// Bot has assignments across three scopes.
+	seed := func() *credServer {
+		return newCredServer(
+			ent("a", "llm", 0, "claude-opus-4-8"), ent("b", "llm", 1),
+			ent("c", "web_search", 0), ent("z", "integration", 0),
+		)
+	}
+
+	t.Run("bare slug imports all scopes", func(t *testing.T) {
+		got, d := importedCredentials(t, seed(), "bot-1")
+		if d.HasError() {
+			t.Fatalf("import diags: %v", d)
+		}
+		want := []credentialEntry{
+			ent("a", "llm", 0, "claude-opus-4-8"), ent("b", "llm", 1),
+			ent("c", "web_search", 0), ent("z", "integration", 0),
+		}
+		if !equalEntries(got, want) {
+			t.Errorf("import(all) = %+v, want %+v", got, want)
+		}
+	})
+
+	t.Run("explicit scopes import only those (fixes the drift-away bug)", func(t *testing.T) {
+		got, d := importedCredentials(t, seed(), "bot-1:llm")
+		if d.HasError() {
+			t.Fatalf("import diags: %v", d)
+		}
+		want := []credentialEntry{ent("a", "llm", 0, "claude-opus-4-8"), ent("b", "llm", 1)}
+		if !equalEntries(got, want) {
+			t.Errorf("import(llm) = %+v, want %+v (only llm, not filtered away)", got, want)
+		}
+		// Post-import Read must be a no-op: Read derives managed scopes from the
+		// imported state, so it reconstructs exactly the same set.
+		all, status, _, err := listBotCredentials(context.Background(), credResource(t, seed()).data.client, "org-1", "bot-1")
+		if err != nil || status != 200 {
+			t.Fatalf("readback list: status=%d err=%v", status, err)
+		}
+		if reread := filterByScopes(all, distinctScopes(got)); !equalEntries(reread, want) {
+			t.Errorf("post-import Read = %+v, want %+v (no drift)", reread, want)
+		}
+	})
+
+	t.Run("multiple explicit scopes", func(t *testing.T) {
+		got, d := importedCredentials(t, seed(), "bot-1:llm,web_search")
+		if d.HasError() {
+			t.Fatalf("import diags: %v", d)
+		}
+		want := []credentialEntry{ent("a", "llm", 0, "claude-opus-4-8"), ent("b", "llm", 1), ent("c", "web_search", 0)}
+		if !equalEntries(got, want) {
+			t.Errorf("import(llm,web_search) = %+v, want %+v", got, want)
+		}
+	})
+
+	t.Run("invalid import ID errors", func(t *testing.T) {
+		if _, d := importedCredentials(t, seed(), "bot-1:bogus"); !d.HasError() {
+			t.Error("import with bogus scope should error")
+		}
+	})
+}
+
+// credentialSchemaNestedAttrs pulls the scope and ordinal attributes out of the
+// resource schema so their configured validators can be exercised directly.
+func credentialSchemaNestedAttrs(t *testing.T) (schema.StringAttribute, schema.Int64Attribute) {
+	t.Helper()
+	var sresp resource.SchemaResponse
+	(&BotCredentialAssignmentResource{}).Schema(context.Background(), resource.SchemaRequest{}, &sresp)
+	creds, ok := sresp.Schema.Attributes["credentials"].(schema.SetNestedAttribute)
+	if !ok {
+		t.Fatalf("credentials attribute is not a SetNestedAttribute")
+	}
+	scopeAttr, ok := creds.NestedObject.Attributes["scope"].(schema.StringAttribute)
+	if !ok {
+		t.Fatalf("scope attribute is not a StringAttribute")
+	}
+	ordAttr, ok := creds.NestedObject.Attributes["ordinal"].(schema.Int64Attribute)
+	if !ok {
+		t.Fatalf("ordinal attribute is not an Int64Attribute")
+	}
+	return scopeAttr, ordAttr
+}
+
+func scopeHasError(t *testing.T, scopeAttr schema.StringAttribute, value string) bool {
+	t.Helper()
+	resp := &validator.StringResponse{}
+	req := validator.StringRequest{Path: path.Root("scope"), ConfigValue: types.StringValue(value)}
+	for _, v := range scopeAttr.Validators {
+		v.ValidateString(context.Background(), req, resp)
+	}
+	return resp.Diagnostics.HasError()
+}
+
+func ordinalHasError(t *testing.T, ordAttr schema.Int64Attribute, value int64) bool {
+	t.Helper()
+	resp := &validator.Int64Response{}
+	req := validator.Int64Request{Path: path.Root("ordinal"), ConfigValue: types.Int64Value(value)}
+	for _, v := range ordAttr.Validators {
+		v.ValidateInt64(context.Background(), req, resp)
+	}
+	return resp.Diagnostics.HasError()
+}
+
+// TestCredentialSchemaValidators proves invalid scope/ordinal input is rejected
+// at the schema-validation phase — which the framework runs before Create — so
+// an invalid config never reaches the client and issues no API request.
+func TestCredentialSchemaValidators(t *testing.T) {
+	scopeAttr, ordAttr := credentialSchemaNestedAttrs(t)
+
+	for _, good := range credentialScopeValues {
+		if scopeHasError(t, scopeAttr, good) {
+			t.Errorf("valid scope %q was rejected", good)
+		}
+	}
+	for _, bad := range []string{"bogus", "LLM", "", "web-search"} {
+		if !scopeHasError(t, scopeAttr, bad) {
+			t.Errorf("invalid scope %q was accepted", bad)
+		}
+	}
+
+	for _, good := range []int64{0, 1, 5, 100} {
+		if ordinalHasError(t, ordAttr, good) {
+			t.Errorf("valid ordinal %d was rejected", good)
+		}
+	}
+	for _, bad := range []int64{-1, -10} {
+		if !ordinalHasError(t, ordAttr, bad) {
+			t.Errorf("invalid ordinal %d was accepted", bad)
+		}
 	}
 }

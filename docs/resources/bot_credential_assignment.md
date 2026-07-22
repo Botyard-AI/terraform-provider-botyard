@@ -6,6 +6,7 @@ description: |-
   Assigns existing organization credentials to a Botyard bot. Assignments are scoped (llm, web_search, image_gen, integration) and ordered within a scope by an explicit ordinal (0 = highest priority, tried first).
   This resource takes exclusive ownership of the scopes it declares: for every scope present in credentials, any credential assigned to that scope outside Terraform is removed on apply so the scope converges on the declared entries. Scopes not present in credentials are left untouched. Use at most one botyard_bot_credential_assignment per bot.
   It manages assignment of existing credentials only. It does not create credentials — the secret-bearing bot-private credential endpoints are intentionally not modeled so raw API keys and OAuth tokens never enter Terraform state. The per-link Claude Code CLI model override is also not managed; re-applying this resource re-issues the per-scope assignment and resets any per-link model override set outside Terraform.
+  Because ownership is per-scope, import IDs carry the scopes to manage: <bot_slug> imports every scope the bot currently has assignments in, and <bot_slug>:<scope>[,<scope>...] imports only the listed scopes.
 ---
 
 # botyard_bot_credential_assignment (Resource)
@@ -15,6 +16,8 @@ Assigns existing organization credentials to a Botyard bot. Assignments are scop
 This resource takes **exclusive ownership of the scopes it declares**: for every scope present in `credentials`, any credential assigned to that scope outside Terraform is removed on apply so the scope converges on the declared entries. Scopes not present in `credentials` are left untouched. Use at most one `botyard_bot_credential_assignment` per bot.
 
 It manages assignment of **existing** credentials only. It does **not** create credentials — the secret-bearing bot-private credential endpoints are intentionally not modeled so raw API keys and OAuth tokens never enter Terraform state. The per-link Claude Code CLI `model` override is also not managed; re-applying this resource re-issues the per-scope assignment and resets any per-link model override set outside Terraform.
+
+Because ownership is per-scope, import IDs carry the scopes to manage: `<bot_slug>` imports every scope the bot currently has assignments in, and `<bot_slug>:<scope>[,<scope>...]` imports only the listed scopes.
 
 ## Example Usage
 
@@ -77,3 +80,18 @@ Required:
 Optional:
 
 - `default_model` (String) Preferred model ID for this credential (optional; recommended for the `llm` scope).
+
+## Import
+
+Import is supported using the following syntax:
+
+The [`terraform import` command](https://developer.hashicorp.com/terraform/cli/commands/import) can be used, for example:
+
+```shell
+# Import ownership of every scope the bot currently has credential assignments in:
+terraform import botyard_bot_credential_assignment.example my-bot-slug
+
+# Or import ownership of only specific scopes (recommended when Terraform should
+# manage a subset of the bot's credential scopes):
+terraform import botyard_bot_credential_assignment.example 'my-bot-slug:llm,web_search'
+```
