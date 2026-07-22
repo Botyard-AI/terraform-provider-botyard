@@ -117,7 +117,8 @@ func (r *BotCredentialAssignmentResource) Schema(_ context.Context, _ resource.S
 			"model override set outside Terraform.\n\n" +
 			"Because ownership is per-scope, import IDs carry the scopes to manage: `<bot_slug>` imports every " +
 			"scope the bot currently has assignments in, and `<bot_slug>:<scope>[,<scope>...]` imports only the " +
-			"listed scopes.",
+			"listed scopes (each listed scope must currently have at least one assignment — an empty scope " +
+			"cannot be owned).",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
@@ -299,6 +300,12 @@ func (r *BotCredentialAssignmentResource) Delete(ctx context.Context, req resour
 // has assignments in) or "<bot_slug>:<scope>[,<scope>...]" (manage only the
 // listed scopes). It reads the bot's live assignments, filters to the requested
 // scopes, and seeds full state so the first post-import Read is a no-op.
+//
+// Ownership is represented solely by the `credentials` entries, so a scope with
+// zero assignments cannot be held in state — Read would derive no ownership for
+// it. An explicit scope that is currently empty is therefore rejected rather
+// than silently dropped, keeping import consistent with what configuration can
+// express (you own a scope by declaring its credentials).
 func (r *BotCredentialAssignmentResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	slug, scopes, err := parseCredentialImportID(req.ID)
 	if err != nil {
@@ -320,10 +327,20 @@ func (r *BotCredentialAssignmentResource) ImportState(ctx context.Context, req r
 			fmt.Sprintf("List returned HTTP %d: %s", status, describeAPIError(raw)))
 		return
 	}
-	// A bare slug imports every scope that currently has assignments; an explicit
-	// scope list imports only those (even if some are currently empty).
+	// A bare slug imports every scope that currently has assignments. An explicit
+	// scope list imports only those — but every listed scope must currently have
+	// at least one assignment, because an empty scope cannot be represented in
+	// state (ownership is carried by the credential entries).
 	managed := all
 	if scopes != nil {
+		if empty := emptyRequestedScopes(all, scopes); len(empty) > 0 {
+			resp.Diagnostics.AddError("Cannot import empty credential scope(s)",
+				fmt.Sprintf("Scope(s) %s have no assignments on bot %q, so they cannot be represented in "+
+					"Terraform state — an empty scope is not owned by this resource. Import only scopes that "+
+					"currently have assignments, then manage a scope by declaring its credentials in configuration.",
+					strings.Join(empty, ", "), slug))
+			return
+		}
 		managed = filterByScopes(all, scopes)
 	}
 	model := BotCredentialAssignmentResourceModel{
@@ -559,6 +576,23 @@ func filterByScopes(entries []credentialEntry, scopes []string) []credentialEntr
 		return out[i].CredentialID < out[j].CredentialID
 	})
 	return out
+}
+
+// emptyRequestedScopes returns the requested scopes (sorted) that have no
+// assignment in entries — i.e. scopes that cannot be represented in state.
+func emptyRequestedScopes(entries []credentialEntry, scopes []string) []string {
+	present := make(map[string]struct{}, len(entries))
+	for _, e := range entries {
+		present[e.Scope] = struct{}{}
+	}
+	var empty []string
+	for _, s := range scopes {
+		if _, ok := present[s]; !ok {
+			empty = append(empty, s)
+		}
+	}
+	sort.Strings(empty)
+	return empty
 }
 
 // distinctCredentialIDs returns the sorted unique credential IDs in entries.

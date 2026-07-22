@@ -492,6 +492,37 @@ func TestImportStateScopeAware(t *testing.T) {
 			t.Error("import with bogus scope should error")
 		}
 	})
+
+	t.Run("explicit empty scope is rejected, then out-of-band assignment stays unowned", func(t *testing.T) {
+		// Bot has llm assignments but web_search is currently empty.
+		s := newCredServer(ent("a", "llm", 0), ent("b", "llm", 1))
+		// Importing the empty web_search scope is rejected: an empty scope cannot
+		// be represented in state, so we refuse rather than silently drop it.
+		if _, d := importedCredentials(t, s, "bot-1:llm,web_search"); !d.HasError() {
+			t.Fatal("importing an empty explicit scope should error (unrepresentable)")
+		}
+		// The user imports only the populated scope instead.
+		got, d := importedCredentials(t, s, "bot-1:llm")
+		if d.HasError() {
+			t.Fatalf("import of populated scope errored: %v", d)
+		}
+		want := []credentialEntry{ent("a", "llm", 0), ent("b", "llm", 1)}
+		if !equalEntries(got, want) {
+			t.Errorf("import(llm) = %+v, want %+v", got, want)
+		}
+		// An out-of-band web_search assignment now appears. Because web_search was
+		// never (and could not be) imported, a Read over the managed scopes must
+		// ignore it — no phantom ownership. This is the exact edge the R2 review
+		// flagged, now consistent with the per-scope model.
+		s.links = append(s.links, ent("c", "web_search", 0))
+		all, status, _, err := listBotCredentials(context.Background(), credResource(t, s).data.client, "org-1", "bot-1")
+		if err != nil || status != 200 {
+			t.Fatalf("readback: status=%d err=%v", status, err)
+		}
+		if reread := filterByScopes(all, distinctScopes(got)); !equalEntries(reread, want) {
+			t.Errorf("Read over managed scopes leaked out-of-band web_search: %+v", reread)
+		}
+	})
 }
 
 // credentialSchemaNestedAttrs pulls the scope and ordinal attributes out of the
