@@ -501,6 +501,19 @@ const (
 	SkillProviderVercel      SkillProvider = "vercel"
 )
 
+// Defines values for SyncStatus.
+const (
+	SyncStatusFailed  SyncStatus = "failed"
+	SyncStatusPending SyncStatus = "pending"
+	SyncStatusSynced  SyncStatus = "synced"
+)
+
+// Defines values for ToolRuntime.
+const (
+	ToolRuntimeMcp      ToolRuntime = "mcp"
+	ToolRuntimeOpenclaw ToolRuntime = "openclaw"
+)
+
 // Defines values for ToolsConfigExecAsk.
 const (
 	ToolsConfigExecAskAlways ToolsConfigExecAsk = "always"
@@ -905,6 +918,80 @@ type BotStorageClass string
 
 // BotTier Bot subscription tier.
 type BotTier string
+
+// BotToolAssignRequest Request body for tool assignment.
+//
+// Per-tool-domain settings (e.g. sessions visibility) are configured via
+// “PATCH /bots/{slug}/config“ on “tools.domain_settings“ — they are
+// not part of the assignment payload, since they apply to a domain rather
+// than to an individual tool row.
+type BotToolAssignRequest struct {
+	// ToolIds Tool catalog IDs to assign
+	ToolIds []string `json:"tool_ids"`
+}
+
+// BotToolAssignmentResponse Tool assigned to a bot.
+type BotToolAssignmentResponse struct {
+	// AssignedAt When tool was assigned
+	AssignedAt time.Time `json:"assigned_at"`
+
+	// AssignedBy User who assigned this tool
+	AssignedBy *string `json:"assigned_by"`
+
+	// Description Tool description
+	Description *string `json:"description"`
+
+	// Domain Tool domain
+	Domain string `json:"domain"`
+
+	// McpServer MCP server name
+	McpServer *string `json:"mcp_server"`
+
+	// Name Tool display name
+	Name string `json:"name"`
+
+	// Runtime Where a tool executes — determines enforcement mechanism.
+	Runtime ToolRuntime `json:"runtime"`
+
+	// RuntimeToolName Internal runtime tool name
+	RuntimeToolName string `json:"runtime_tool_name"`
+
+	// Slug Globally unique composite identifier
+	Slug string `json:"slug"`
+
+	// SyncError Error message from the last failed config push
+	SyncError *string `json:"sync_error"`
+
+	// SyncStatus Async config-apply status for a bot tool assignment.
+	//
+	// Mirrors :class:`DeployStatus`, but tracks the reconciler-owned bridge
+	// *config* push (``tools.allow`` + the re-baked ``systemPromptOverride``)
+	// rather than a workspace-file deploy. A tool mutation on a running bot
+	// bumps ``config_generation`` and marks the affected rows ``pending``; the
+	// provisioner's config reconciler flips them to ``synced`` once the push
+	// lands, or the failure recorder marks them ``failed`` (retryable).
+	SyncStatus SyncStatus `json:"sync_status"`
+
+	// SyncedAt When this assignment was last confirmed applied to the running bot
+	SyncedAt *time.Time `json:"synced_at"`
+
+	// ToolId Tool catalog ID
+	ToolId string `json:"tool_id"`
+}
+
+// BotToolIds Request body for tool removal operations.
+type BotToolIds struct {
+	// ToolIds Tool catalog IDs
+	ToolIds []string `json:"tool_ids"`
+}
+
+// BotToolRetrySyncRequest Request body for retrying failed tool-assignment config pushes.
+//
+// An empty/omitted “tool_ids“ retries every failed assignment on the bot.
+type BotToolRetrySyncRequest struct {
+	// ToolIds Tool catalog IDs to retry (null/empty = all failed assignments)
+	ToolIds *[]string `json:"tool_ids"`
+}
 
 // BotUpdate Request to update bot metadata (avatar, tier).
 //
@@ -2527,6 +2614,19 @@ type Storage struct {
 	Workspace WorkspaceStorageMetrics `json:"workspace"`
 }
 
+// SyncStatus Async config-apply status for a bot tool assignment.
+//
+// Mirrors :class:`DeployStatus`, but tracks the reconciler-owned bridge
+// *config* push (“tools.allow“ + the re-baked “systemPromptOverride“)
+// rather than a workspace-file deploy. A tool mutation on a running bot
+// bumps “config_generation“ and marks the affected rows “pending“; the
+// provisioner's config reconciler flips them to “synced“ once the push
+// lands, or the failure recorder marks them “failed“ (retryable).
+type SyncStatus string
+
+// ToolRuntime Where a tool executes — determines enforcement mechanism.
+type ToolRuntime string
+
 // ToolsConfig Tools and execution security policy.
 //
 // Per-tool-domain settings (e.g. sessions visibility) used to live here
@@ -2619,6 +2719,18 @@ type AssignSkillsV1OrgsOrgIdBotsBotSlugSkillsPutJSONRequestBody = BotSkillAssign
 
 // DeployBotSkillsV1OrgsOrgIdBotsBotSlugSkillsDeployPostJSONRequestBody defines body for DeployBotSkillsV1OrgsOrgIdBotsBotSlugSkillsDeployPost for application/json ContentType.
 type DeployBotSkillsV1OrgsOrgIdBotsBotSlugSkillsDeployPostJSONRequestBody = BotSkillDeploy
+
+// UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteJSONRequestBody defines body for UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDelete for application/json ContentType.
+type UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteJSONRequestBody = BotToolIds
+
+// AssignToolsV1OrgsOrgIdBotsBotSlugToolsPostJSONRequestBody defines body for AssignToolsV1OrgsOrgIdBotsBotSlugToolsPost for application/json ContentType.
+type AssignToolsV1OrgsOrgIdBotsBotSlugToolsPostJSONRequestBody = BotToolAssignRequest
+
+// ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutJSONRequestBody defines body for ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPut for application/json ContentType.
+type ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutJSONRequestBody = BotToolAssignRequest
+
+// RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostJSONRequestBody defines body for RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPost for application/json ContentType.
+type RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostJSONRequestBody = BotToolRetrySyncRequest
 
 // CreateMcpServerV1OrgsOrgIdMcpServersPostJSONRequestBody defines body for CreateMcpServerV1OrgsOrgIdMcpServersPost for application/json ContentType.
 type CreateMcpServerV1OrgsOrgIdMcpServersPostJSONRequestBody CreateMcpServerV1OrgsOrgIdMcpServersPostJSONBody
@@ -3257,6 +3369,29 @@ type ClientInterface interface {
 	// UnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDelete request
 	UnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDelete(ctx context.Context, orgId string, botSlug string, skillSlug string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteWithBody request with any body
+	UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDelete(ctx context.Context, orgId string, botSlug string, body UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListBotToolsV1OrgsOrgIdBotsBotSlugToolsGet request
+	ListBotToolsV1OrgsOrgIdBotsBotSlugToolsGet(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// AssignToolsV1OrgsOrgIdBotsBotSlugToolsPostWithBody request with any body
+	AssignToolsV1OrgsOrgIdBotsBotSlugToolsPostWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	AssignToolsV1OrgsOrgIdBotsBotSlugToolsPost(ctx context.Context, orgId string, botSlug string, body AssignToolsV1OrgsOrgIdBotsBotSlugToolsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutWithBody request with any body
+	ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPut(ctx context.Context, orgId string, botSlug string, body ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostWithBody request with any body
+	RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPost(ctx context.Context, orgId string, botSlug string, body RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// ListMcpServersV1OrgsOrgIdMcpServersGet request
 	ListMcpServersV1OrgsOrgIdMcpServersGet(ctx context.Context, orgId string, params *ListMcpServersV1OrgsOrgIdMcpServersGetParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -3576,6 +3711,114 @@ func (c *Client) DeployBotSkillsV1OrgsOrgIdBotsBotSlugSkillsDeployPost(ctx conte
 
 func (c *Client) UnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDelete(ctx context.Context, orgId string, botSlug string, skillSlug string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDeleteRequest(c.Server, orgId, botSlug, skillSlug)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteRequestWithBody(c.Server, orgId, botSlug, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDelete(ctx context.Context, orgId string, botSlug string, body UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteRequest(c.Server, orgId, botSlug, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListBotToolsV1OrgsOrgIdBotsBotSlugToolsGet(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListBotToolsV1OrgsOrgIdBotsBotSlugToolsGetRequest(c.Server, orgId, botSlug)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) AssignToolsV1OrgsOrgIdBotsBotSlugToolsPostWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAssignToolsV1OrgsOrgIdBotsBotSlugToolsPostRequestWithBody(c.Server, orgId, botSlug, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) AssignToolsV1OrgsOrgIdBotsBotSlugToolsPost(ctx context.Context, orgId string, botSlug string, body AssignToolsV1OrgsOrgIdBotsBotSlugToolsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAssignToolsV1OrgsOrgIdBotsBotSlugToolsPostRequest(c.Server, orgId, botSlug, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutRequestWithBody(c.Server, orgId, botSlug, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPut(ctx context.Context, orgId string, botSlug string, body ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutRequest(c.Server, orgId, botSlug, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostRequestWithBody(c.Server, orgId, botSlug, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPost(ctx context.Context, orgId string, botSlug string, body RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostRequest(c.Server, orgId, botSlug, body)
 	if err != nil {
 		return nil, err
 	}
@@ -4585,6 +4828,263 @@ func NewUnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDeleteRequest(server s
 	return req, nil
 }
 
+// NewUnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteRequest calls the generic UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDelete builder with application/json body
+func NewUnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteRequest(server string, orgId string, botSlug string, body UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteRequestWithBody(server, orgId, botSlug, "application/json", bodyReader)
+}
+
+// NewUnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteRequestWithBody generates requests for UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDelete with any type of body
+func NewUnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteRequestWithBody(server string, orgId string, botSlug string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "bot_slug", runtime.ParamLocationPath, botSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/bots/%s/tools", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewListBotToolsV1OrgsOrgIdBotsBotSlugToolsGetRequest generates requests for ListBotToolsV1OrgsOrgIdBotsBotSlugToolsGet
+func NewListBotToolsV1OrgsOrgIdBotsBotSlugToolsGetRequest(server string, orgId string, botSlug string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "bot_slug", runtime.ParamLocationPath, botSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/bots/%s/tools", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewAssignToolsV1OrgsOrgIdBotsBotSlugToolsPostRequest calls the generic AssignToolsV1OrgsOrgIdBotsBotSlugToolsPost builder with application/json body
+func NewAssignToolsV1OrgsOrgIdBotsBotSlugToolsPostRequest(server string, orgId string, botSlug string, body AssignToolsV1OrgsOrgIdBotsBotSlugToolsPostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewAssignToolsV1OrgsOrgIdBotsBotSlugToolsPostRequestWithBody(server, orgId, botSlug, "application/json", bodyReader)
+}
+
+// NewAssignToolsV1OrgsOrgIdBotsBotSlugToolsPostRequestWithBody generates requests for AssignToolsV1OrgsOrgIdBotsBotSlugToolsPost with any type of body
+func NewAssignToolsV1OrgsOrgIdBotsBotSlugToolsPostRequestWithBody(server string, orgId string, botSlug string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "bot_slug", runtime.ParamLocationPath, botSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/bots/%s/tools", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutRequest calls the generic ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPut builder with application/json body
+func NewReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutRequest(server string, orgId string, botSlug string, body ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutRequestWithBody(server, orgId, botSlug, "application/json", bodyReader)
+}
+
+// NewReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutRequestWithBody generates requests for ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPut with any type of body
+func NewReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutRequestWithBody(server string, orgId string, botSlug string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "bot_slug", runtime.ParamLocationPath, botSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/bots/%s/tools", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewRetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostRequest calls the generic RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPost builder with application/json body
+func NewRetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostRequest(server string, orgId string, botSlug string, body RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewRetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostRequestWithBody(server, orgId, botSlug, "application/json", bodyReader)
+}
+
+// NewRetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostRequestWithBody generates requests for RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPost with any type of body
+func NewRetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostRequestWithBody(server string, orgId string, botSlug string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "bot_slug", runtime.ParamLocationPath, botSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/bots/%s/tools/retry-sync", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewListMcpServersV1OrgsOrgIdMcpServersGetRequest generates requests for ListMcpServersV1OrgsOrgIdMcpServersGet
 func NewListMcpServersV1OrgsOrgIdMcpServersGetRequest(server string, orgId string, params *ListMcpServersV1OrgsOrgIdMcpServersGetParams) (*http.Request, error) {
 	var err error
@@ -5323,6 +5823,29 @@ type ClientWithResponsesInterface interface {
 	// UnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDeleteWithResponse request
 	UnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDeleteWithResponse(ctx context.Context, orgId string, botSlug string, skillSlug string, reqEditors ...RequestEditorFn) (*UnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDeleteResponse, error)
 
+	// UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteWithBodyWithResponse request with any body
+	UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteResponse, error)
+
+	UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteWithResponse(ctx context.Context, orgId string, botSlug string, body UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteJSONRequestBody, reqEditors ...RequestEditorFn) (*UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteResponse, error)
+
+	// ListBotToolsV1OrgsOrgIdBotsBotSlugToolsGetWithResponse request
+	ListBotToolsV1OrgsOrgIdBotsBotSlugToolsGetWithResponse(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*ListBotToolsV1OrgsOrgIdBotsBotSlugToolsGetResponse, error)
+
+	// AssignToolsV1OrgsOrgIdBotsBotSlugToolsPostWithBodyWithResponse request with any body
+	AssignToolsV1OrgsOrgIdBotsBotSlugToolsPostWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AssignToolsV1OrgsOrgIdBotsBotSlugToolsPostResponse, error)
+
+	AssignToolsV1OrgsOrgIdBotsBotSlugToolsPostWithResponse(ctx context.Context, orgId string, botSlug string, body AssignToolsV1OrgsOrgIdBotsBotSlugToolsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*AssignToolsV1OrgsOrgIdBotsBotSlugToolsPostResponse, error)
+
+	// ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutWithBodyWithResponse request with any body
+	ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutResponse, error)
+
+	ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutWithResponse(ctx context.Context, orgId string, botSlug string, body ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutJSONRequestBody, reqEditors ...RequestEditorFn) (*ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutResponse, error)
+
+	// RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostWithBodyWithResponse request with any body
+	RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostResponse, error)
+
+	RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostWithResponse(ctx context.Context, orgId string, botSlug string, body RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostJSONRequestBody, reqEditors ...RequestEditorFn) (*RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostResponse, error)
+
 	// ListMcpServersV1OrgsOrgIdMcpServersGetWithResponse request
 	ListMcpServersV1OrgsOrgIdMcpServersGetWithResponse(ctx context.Context, orgId string, params *ListMcpServersV1OrgsOrgIdMcpServersGetParams, reqEditors ...RequestEditorFn) (*ListMcpServersV1OrgsOrgIdMcpServersGetResponse, error)
 
@@ -5736,6 +6259,120 @@ func (r UnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDeleteResponse) Status
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r UnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDeleteResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListBotToolsV1OrgsOrgIdBotsBotSlugToolsGetResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *[]BotToolAssignmentResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r ListBotToolsV1OrgsOrgIdBotsBotSlugToolsGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListBotToolsV1OrgsOrgIdBotsBotSlugToolsGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type AssignToolsV1OrgsOrgIdBotsBotSlugToolsPostResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON201                       *[]BotToolAssignmentResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r AssignToolsV1OrgsOrgIdBotsBotSlugToolsPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r AssignToolsV1OrgsOrgIdBotsBotSlugToolsPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *[]BotToolAssignmentResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *[]BotToolAssignmentResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -6273,6 +6910,83 @@ func (c *ClientWithResponses) UnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlug
 		return nil, err
 	}
 	return ParseUnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDeleteResponse(rsp)
+}
+
+// UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteWithBodyWithResponse request with arbitrary body returning *UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteResponse
+func (c *ClientWithResponses) UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteResponse, error) {
+	rsp, err := c.UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteWithBody(ctx, orgId, botSlug, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteResponse(rsp)
+}
+
+func (c *ClientWithResponses) UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteWithResponse(ctx context.Context, orgId string, botSlug string, body UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteJSONRequestBody, reqEditors ...RequestEditorFn) (*UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteResponse, error) {
+	rsp, err := c.UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDelete(ctx, orgId, botSlug, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteResponse(rsp)
+}
+
+// ListBotToolsV1OrgsOrgIdBotsBotSlugToolsGetWithResponse request returning *ListBotToolsV1OrgsOrgIdBotsBotSlugToolsGetResponse
+func (c *ClientWithResponses) ListBotToolsV1OrgsOrgIdBotsBotSlugToolsGetWithResponse(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*ListBotToolsV1OrgsOrgIdBotsBotSlugToolsGetResponse, error) {
+	rsp, err := c.ListBotToolsV1OrgsOrgIdBotsBotSlugToolsGet(ctx, orgId, botSlug, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListBotToolsV1OrgsOrgIdBotsBotSlugToolsGetResponse(rsp)
+}
+
+// AssignToolsV1OrgsOrgIdBotsBotSlugToolsPostWithBodyWithResponse request with arbitrary body returning *AssignToolsV1OrgsOrgIdBotsBotSlugToolsPostResponse
+func (c *ClientWithResponses) AssignToolsV1OrgsOrgIdBotsBotSlugToolsPostWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AssignToolsV1OrgsOrgIdBotsBotSlugToolsPostResponse, error) {
+	rsp, err := c.AssignToolsV1OrgsOrgIdBotsBotSlugToolsPostWithBody(ctx, orgId, botSlug, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAssignToolsV1OrgsOrgIdBotsBotSlugToolsPostResponse(rsp)
+}
+
+func (c *ClientWithResponses) AssignToolsV1OrgsOrgIdBotsBotSlugToolsPostWithResponse(ctx context.Context, orgId string, botSlug string, body AssignToolsV1OrgsOrgIdBotsBotSlugToolsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*AssignToolsV1OrgsOrgIdBotsBotSlugToolsPostResponse, error) {
+	rsp, err := c.AssignToolsV1OrgsOrgIdBotsBotSlugToolsPost(ctx, orgId, botSlug, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAssignToolsV1OrgsOrgIdBotsBotSlugToolsPostResponse(rsp)
+}
+
+// ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutWithBodyWithResponse request with arbitrary body returning *ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutResponse
+func (c *ClientWithResponses) ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutResponse, error) {
+	rsp, err := c.ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutWithBody(ctx, orgId, botSlug, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutResponse(rsp)
+}
+
+func (c *ClientWithResponses) ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutWithResponse(ctx context.Context, orgId string, botSlug string, body ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutJSONRequestBody, reqEditors ...RequestEditorFn) (*ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutResponse, error) {
+	rsp, err := c.ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPut(ctx, orgId, botSlug, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutResponse(rsp)
+}
+
+// RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostWithBodyWithResponse request with arbitrary body returning *RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostResponse
+func (c *ClientWithResponses) RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostResponse, error) {
+	rsp, err := c.RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostWithBody(ctx, orgId, botSlug, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostResponse(rsp)
+}
+
+func (c *ClientWithResponses) RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostWithResponse(ctx context.Context, orgId string, botSlug string, body RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostJSONRequestBody, reqEditors ...RequestEditorFn) (*RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostResponse, error) {
+	rsp, err := c.RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPost(ctx, orgId, botSlug, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostResponse(rsp)
 }
 
 // ListMcpServersV1OrgsOrgIdMcpServersGetWithResponse request returning *ListMcpServersV1OrgsOrgIdMcpServersGetResponse
@@ -6943,6 +7657,164 @@ func ParseUnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDeleteResponse(rsp *
 	}
 
 	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteResponse parses an HTTP response from a UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteWithResponse call
+func ParseUnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteResponse(rsp *http.Response) (*UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListBotToolsV1OrgsOrgIdBotsBotSlugToolsGetResponse parses an HTTP response from a ListBotToolsV1OrgsOrgIdBotsBotSlugToolsGetWithResponse call
+func ParseListBotToolsV1OrgsOrgIdBotsBotSlugToolsGetResponse(rsp *http.Response) (*ListBotToolsV1OrgsOrgIdBotsBotSlugToolsGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListBotToolsV1OrgsOrgIdBotsBotSlugToolsGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []BotToolAssignmentResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseAssignToolsV1OrgsOrgIdBotsBotSlugToolsPostResponse parses an HTTP response from a AssignToolsV1OrgsOrgIdBotsBotSlugToolsPostWithResponse call
+func ParseAssignToolsV1OrgsOrgIdBotsBotSlugToolsPostResponse(rsp *http.Response) (*AssignToolsV1OrgsOrgIdBotsBotSlugToolsPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &AssignToolsV1OrgsOrgIdBotsBotSlugToolsPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest []BotToolAssignmentResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutResponse parses an HTTP response from a ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutWithResponse call
+func ParseReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutResponse(rsp *http.Response) (*ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []BotToolAssignmentResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseRetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostResponse parses an HTTP response from a RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostWithResponse call
+func ParseRetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostResponse(rsp *http.Response) (*RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []BotToolAssignmentResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest ProblemDetails
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {

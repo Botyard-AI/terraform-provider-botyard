@@ -53,3 +53,13 @@ func (c *ClientWithResponses) UnassignBotSkills(ctx context.Context, orgID, botS
 	return deleteStatus(c.UnassignSkillsV1OrgsOrgIdBotsBotSlugSkillsDelete(
 		ctx, orgID, botSlug, BotSkillIds{SkillIds: skillIDs}))
 }
+
+// UnassignBotTools removes the given tool assignments from a bot in one batch
+// request, returning the HTTP status and raw body without body parsing (see the
+// package note above). Like the skills DELETE, this takes a BotToolIds body and
+// returns 204 No Content with a JSON content-type, which the generated
+// ...DeleteWithResponse parser would choke on.
+func (c *ClientWithResponses) UnassignBotTools(ctx context.Context, orgID, botSlug string, toolIDs []string) (int, []byte, error) {
+	return deleteStatus(c.UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDelete(
+		ctx, orgID, botSlug, BotToolIds{ToolIds: toolIDs}))
+}
