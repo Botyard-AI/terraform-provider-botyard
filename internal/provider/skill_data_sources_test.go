@@ -64,6 +64,26 @@ func TestListSkills_Pagination(t *testing.T) {
 	}
 }
 
+func TestFindSkillBySlug(t *testing.T) {
+	skills := []client.SkillSummaryResponse{
+		{Id: "sk-a", Slug: "alpha"},
+		{Id: "sk-b", Slug: "beta"},
+	}
+	got, found := findSkillBySlug(skills, "beta")
+	if !found {
+		t.Fatal("findSkillBySlug did not find an existing slug")
+	}
+	if got.Id != "sk-b" {
+		t.Errorf("findSkillBySlug id = %q, want sk-b", got.Id)
+	}
+	if _, found := findSkillBySlug(skills, "missing"); found {
+		t.Error("findSkillBySlug found a non-existent slug")
+	}
+	if _, found := findSkillBySlug(nil, "alpha"); found {
+		t.Error("findSkillBySlug found a slug in an empty catalogue")
+	}
+}
+
 // TestListSkills_EmptyFirstPageStops guards the defensive break: has_more=true
 // but an empty items page must not loop forever.
 func TestListSkills_EmptyFirstPageStops(t *testing.T) {

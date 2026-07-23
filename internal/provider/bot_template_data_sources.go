@@ -125,6 +125,17 @@ func listBotTemplates(ctx context.Context, data *providerData, diags *diag.Diagn
 	return *apiResp.JSON200, true
 }
 
+// findBotTemplateBySlug returns the template whose slug matches, or ok=false when
+// none match.
+func findBotTemplateBySlug(templates []client.BotTemplateResponse, slug string) (client.BotTemplateResponse, bool) {
+	for _, t := range templates {
+		if t.Slug == slug {
+			return t, true
+		}
+	}
+	return client.BotTemplateResponse{}, false
+}
+
 // --- Singular: botyard_bot_template -----------------------------------------
 
 // BotTemplateDataSource resolves a single bot template by slug. Its main use is
@@ -178,21 +189,20 @@ func (d *BotTemplateDataSource) Read(ctx context.Context, req datasource.ReadReq
 	if !ok {
 		return
 	}
-	for _, t := range templates {
-		if t.Slug == slug {
-			state, err := botTemplateToModel(t)
-			if err != nil {
-				resp.Diagnostics.AddError("Error decoding bot template", err.Error())
-				return
-			}
-			resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
-			return
-		}
+	t, found := findBotTemplateBySlug(templates, slug)
+	if !found {
+		resp.Diagnostics.AddError(
+			"Bot template not found",
+			fmt.Sprintf("No bot template with slug %q was found in the organization.", slug),
+		)
+		return
 	}
-	resp.Diagnostics.AddError(
-		"Bot template not found",
-		fmt.Sprintf("No bot template with slug %q was found in the organization.", slug),
-	)
+	state, err := botTemplateToModel(t)
+	if err != nil {
+		resp.Diagnostics.AddError("Error decoding bot template", err.Error())
+		return
+	}
+	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
 // --- Plural: botyard_bot_templates ------------------------------------------

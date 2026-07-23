@@ -99,6 +99,17 @@ func listTools(ctx context.Context, data *providerData, diags *diag.Diagnostics)
 	return *apiResp.JSON200, true
 }
 
+// findToolBySlug returns the tool whose composite slug matches, or ok=false when
+// none match.
+func findToolBySlug(tools []client.ToolResponse, slug string) (client.ToolResponse, bool) {
+	for _, t := range tools {
+		if t.Slug == slug {
+			return t, true
+		}
+	}
+	return client.ToolResponse{}, false
+}
+
 // --- Singular: botyard_tool -------------------------------------------------
 
 // ToolDataSource resolves a single org tool by its composite slug — the common
@@ -145,17 +156,16 @@ func (d *ToolDataSource) Read(ctx context.Context, req datasource.ReadRequest, r
 	if !ok {
 		return
 	}
-	for _, t := range tools {
-		if t.Slug == slug {
-			state := toolToModel(t)
-			resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
-			return
-		}
+	t, found := findToolBySlug(tools, slug)
+	if !found {
+		resp.Diagnostics.AddError(
+			"Tool not found",
+			fmt.Sprintf("No tool with slug %q was found in the organization's tool catalog.", slug),
+		)
+		return
 	}
-	resp.Diagnostics.AddError(
-		"Tool not found",
-		fmt.Sprintf("No tool with slug %q was found in the organization's tool catalog.", slug),
-	)
+	state := toolToModel(t)
+	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
 // --- Plural: botyard_tools --------------------------------------------------

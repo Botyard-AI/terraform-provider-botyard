@@ -41,6 +41,29 @@ const cannedBotTemplatesJSON = `[
   }
 ]`
 
+// TestFindBotTemplateBySlug covers the singular botyard_bot_template lookup: a
+// slug hit returns the matching template, and a miss (including an empty list)
+// returns ok=false so Read emits a "not found" diagnostic.
+func TestFindBotTemplateBySlug(t *testing.T) {
+	templates := []client.BotTemplateResponse{
+		{Id: "tpl-1", Slug: "guided-setup"},
+		{Id: "tpl-2", Slug: "blank"},
+	}
+	got, found := findBotTemplateBySlug(templates, "guided-setup")
+	if !found {
+		t.Fatal("findBotTemplateBySlug did not find an existing slug")
+	}
+	if got.Id != "tpl-1" {
+		t.Errorf("findBotTemplateBySlug id = %q, want tpl-1", got.Id)
+	}
+	if _, found := findBotTemplateBySlug(templates, "nope"); found {
+		t.Error("findBotTemplateBySlug found a non-existent slug")
+	}
+	if _, found := findBotTemplateBySlug(nil, "guided-setup"); found {
+		t.Error("findBotTemplateBySlug found a slug in an empty list")
+	}
+}
+
 func TestListBotTemplates_RoundTripAndMapping(t *testing.T) {
 	const (
 		apiKey = "byk_test_secret"
@@ -97,12 +120,14 @@ func TestListBotTemplates_RoundTripAndMapping(t *testing.T) {
 	if m0.ConfigJSON.IsNull() {
 		t.Fatal("m0 config_json is null, want a JSON object")
 	}
-	var cfg map[string]any
+	var cfg struct {
+		ReasoningDefault string `json:"reasoning_default"`
+	}
 	if err := json.Unmarshal([]byte(m0.ConfigJSON.ValueString()), &cfg); err != nil {
 		t.Fatalf("config_json not valid JSON: %v", err)
 	}
-	if cfg["reasoning_default"] != "off" {
-		t.Errorf("config_json reasoning_default = %v, want off", cfg["reasoning_default"])
+	if cfg.ReasoningDefault != "off" {
+		t.Errorf("config_json reasoning_default = %q, want off", cfg.ReasoningDefault)
 	}
 
 	// Blank template: null config -> null config_json; empty bundles.

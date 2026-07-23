@@ -118,6 +118,17 @@ func listSkills(ctx context.Context, data *providerData, diags *diag.Diagnostics
 	return all, true
 }
 
+// findSkillBySlug returns the skill whose slug matches, or ok=false when none
+// match.
+func findSkillBySlug(skills []client.SkillSummaryResponse, slug string) (client.SkillSummaryResponse, bool) {
+	for _, s := range skills {
+		if s.Slug == slug {
+			return s, true
+		}
+	}
+	return client.SkillSummaryResponse{}, false
+}
+
 // --- Singular: botyard_skill ------------------------------------------------
 
 // SkillDataSource resolves a single skill by slug — the "give me the id for this
@@ -170,26 +181,25 @@ func (d *SkillDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 	if !ok {
 		return
 	}
-	for _, s := range skills {
-		if s.Slug == slug {
-			state := SkillDataSourceModel{
-				Slug:      types.StringValue(s.Slug),
-				ID:        types.StringValue(s.Id),
-				Name:      types.StringValue(s.Name),
-				Summary:   types.StringValue(s.Summary),
-				Scope:     types.StringValue(string(s.Scope)),
-				FileCount: types.Int64Value(int64(s.FileCount)),
-				CreatedAt: types.StringValue(s.CreatedAt.Format(time.RFC3339)),
-				UpdatedAt: types.StringValue(s.UpdatedAt.Format(time.RFC3339)),
-			}
-			resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
-			return
-		}
+	s, found := findSkillBySlug(skills, slug)
+	if !found {
+		resp.Diagnostics.AddError(
+			"Skill not found",
+			fmt.Sprintf("No skill with slug %q was found in the organization's skill catalogue.", slug),
+		)
+		return
 	}
-	resp.Diagnostics.AddError(
-		"Skill not found",
-		fmt.Sprintf("No skill with slug %q was found in the organization's skill catalogue.", slug),
-	)
+	state := SkillDataSourceModel{
+		Slug:      types.StringValue(s.Slug),
+		ID:        types.StringValue(s.Id),
+		Name:      types.StringValue(s.Name),
+		Summary:   types.StringValue(s.Summary),
+		Scope:     types.StringValue(string(s.Scope)),
+		FileCount: types.Int64Value(int64(s.FileCount)),
+		CreatedAt: types.StringValue(s.CreatedAt.Format(time.RFC3339)),
+		UpdatedAt: types.StringValue(s.UpdatedAt.Format(time.RFC3339)),
+	}
+	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
 // --- Plural: botyard_skills -------------------------------------------------

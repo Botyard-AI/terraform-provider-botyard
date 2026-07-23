@@ -117,6 +117,29 @@ func TestListTools_RoundTripAndMapping(t *testing.T) {
 	}
 }
 
+func TestFindToolBySlug(t *testing.T) {
+	tools := []client.ToolResponse{
+		{Id: "tool-1", Slug: "mcp:botyard:a"},
+		{Id: "tool-2", Slug: "openclaw::b"},
+	}
+	// Hit: returns the matching entry.
+	got, found := findToolBySlug(tools, "openclaw::b")
+	if !found {
+		t.Fatal("findToolBySlug did not find an existing slug")
+	}
+	if got.Id != "tool-2" {
+		t.Errorf("findToolBySlug id = %q, want tool-2", got.Id)
+	}
+	// Miss: returns ok=false.
+	if _, found := findToolBySlug(tools, "does-not-exist"); found {
+		t.Error("findToolBySlug found a non-existent slug")
+	}
+	// Empty catalog is a miss, not a panic.
+	if _, found := findToolBySlug(nil, "mcp:botyard:a"); found {
+		t.Error("findToolBySlug found a slug in an empty catalog")
+	}
+}
+
 func TestListTools_ErrorStatus(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/problem+json")
