@@ -14,7 +14,7 @@ CLIENT_DIR="$ROOT/internal/client"
 SPEC="$CLIENT_DIR/openapi.json"
 
 # Tags the generated client covers. Widen as resources are added.
-KEEP_TAGS=(bots mcp-servers secret-policies skills bot-tools credentials)
+KEEP_TAGS=(bots mcp-servers secret-policies skills bot-tools credentials tools bot-templates)
 
 # Paths dropped even though their tag is kept:
 #   - The MCP catalog endpoints pull in McpCatalogFormField schemas whose inline
@@ -23,32 +23,28 @@ KEEP_TAGS=(bots mcp-servers secret-policies skills bot-tools credentials)
 #   - The bot-scoped secret-policies endpoints model a bot reading its own
 #     variables (a different access pattern); the botyard_vault_secret resource
 #     only needs the org-scoped policy CRUD + bot-links endpoints.
-#   - The org-scoped /skills catalogue endpoints (authoring skills, not
-#     assigning them) are a different surface from bot_skill_assignment, which
-#     only touches the bot-scoped .../bots/{bot_slug}/skills assignment
-#     endpoints. Re-include when a skill-catalogue resource is built.
-#   - The `credentials` tag is broad: it covers the org-scoped credential CRUD
-#     (create/list/get/update/delete/presets/oauth/test) AND the secret-bearing
-#     bot-private credential paths AND the reorder / per-link-model bot paths.
-#     The botyard_bot_credential_assignment resource only assigns EXISTING org
-#     credentials to a bot, so it keeps just the bot-scoped assignment surface:
-#     GET+PUT .../bots/{bot_slug}/credentials and DELETE
-#     .../bots/{bot_slug}/credentials/{credential_id}. Everything else under the
-#     tag is excluded — the org CRUD + presets/oauth/test are out of scope; the
-#     bot-private create/delete carry raw api_key/oauth_token (secrets, deferred
-#     to a future write-only/ephemeral resource); reorder is redundant (assign
-#     sets ordinals directly); and the per-link model PATCH is deferred. Re-add
-#     when a credential-management (secret-bearing) resource is built.
-# Re-include either when the corresponding surface is built.
+#   - The org-scoped /skills and /credentials LIST endpoints (GET) back the
+#     read-only botyard_skills / botyard_skill / botyard_credentials discovery
+#     data sources, so the exact list paths are KEPT. Their sibling POST create
+#     operations on the SAME path are dropped via EXCLUDE_OPERATIONS below (the
+#     data sources only read; create_credentials in particular carries raw
+#     api_key/oauth_token in CredentialCreate — keeping the generated client
+#     read-only avoids pulling that secret-bearing schema in). The remaining
+#     skills/credentials sub-paths stay excluded:
+#       * /skills/search + /skills/{skill_slug} — authoring/single-skill CRUD;
+#         the singular botyard_skill data source filters the list by slug.
+#       * org credential CRUD-by-id + presets/oauth/test; the secret-bearing
+#         bot-private create/delete; reorder; the per-link model PATCH — all out
+#         of scope for read-only discovery (see the credential_assignment notes).
+# Re-include either when the corresponding (authoring/secret-bearing) surface is
+# built.
 EXCLUDE_PATHS=(
   "/v1/orgs/{org_id}/mcp-servers/catalog"
   "/v1/orgs/{org_id}/mcp-servers/from-catalog"
   "/v1/orgs/{org_id}/bots/{bot_slug}/secret-policies"
   "/v1/orgs/{org_id}/bots/{bot_slug}/secret-policies/{policy_id}"
-  "/v1/orgs/{org_id}/skills"
   "/v1/orgs/{org_id}/skills/search"
   "/v1/orgs/{org_id}/skills/{skill_slug}"
-  "/v1/orgs/{org_id}/credentials"
   "/v1/orgs/{org_id}/credentials/presets"
   "/v1/orgs/{org_id}/credentials/{credential_id}"
   "/v1/orgs/{org_id}/credentials/{credential_id}/oauth/start"
@@ -60,6 +56,16 @@ EXCLUDE_PATHS=(
   "/v1/orgs/{org_id}/bots/{bot_slug}/credentials/{credential_id}/model"
 )
 
+# Write operations dropped from an otherwise-kept path: the discovery data
+# sources read the /skills and /credentials list endpoints (GET) but never
+# create, so their POST create operations are excluded to keep the generated
+# client read-only for these catalogs (and to avoid pulling the secret-bearing
+# CredentialCreate schema).
+EXCLUDE_OPERATIONS=(
+  "create_skill_v1_orgs__org_id__skills_post"
+  "create_credentials_v1_orgs__org_id__credentials_post"
+)
+
 OAPI_CODEGEN_VERSION="v2.4.1"
 DOWN_CONVERT_VERSION="0.14.1"
 
@@ -67,9 +73,11 @@ tmp_norm="$(mktemp --suffix=.json)"
 tmp_30="$(mktemp --suffix=.json)"
 trap 'rm -f "$tmp_norm" "$tmp_30"' EXIT
 
-echo ">> normalize + prune (tags: ${KEEP_TAGS[*]}; exclude: ${EXCLUDE_PATHS[*]})"
+echo ">> normalize + prune (tags: ${KEEP_TAGS[*]}; exclude paths: ${EXCLUDE_PATHS[*]}; exclude ops: ${EXCLUDE_OPERATIONS[*]})"
 python3 "$ROOT/scripts/openapi-normalize.py" "$SPEC" "$tmp_norm" \
-  --keep-tags "${KEEP_TAGS[@]}" --exclude-paths "${EXCLUDE_PATHS[@]}"
+  --keep-tags "${KEEP_TAGS[@]}" \
+  --exclude-paths "${EXCLUDE_PATHS[@]}" \
+  --exclude-operations "${EXCLUDE_OPERATIONS[@]}"
 
 echo ">> down-convert 3.1 -> 3.0"
 npx --yes "@apiture/openapi-down-convert@${DOWN_CONVERT_VERSION}" --input "$tmp_norm" --output "$tmp_30"

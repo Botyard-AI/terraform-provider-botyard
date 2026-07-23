@@ -153,6 +153,21 @@ class TestNormalizeSpec(unittest.TestCase):
         assert "/v1/orgs/{org_id}/bots/{slug}/catalog" not in out["paths"]
         assert "/v1/orgs/{org_id}/bots/{slug}" in out["paths"]  # exact match: sibling kept
 
+    def test_exclude_operations(self):
+        spec = self._spec()
+        # Add a sibling write operation on the kept path that we want to drop
+        # while keeping the path's read operation.
+        spec["paths"]["/v1/orgs/{org_id}/bots/{slug}"]["post"] = {
+            "tags": ["bots"],
+            "operationId": "create_bot",
+            "responses": {"200": {"description": "ok"}},
+        }
+        spec["paths"]["/v1/orgs/{org_id}/bots/{slug}"]["get"]["operationId"] = "get_bot"
+        out = norm.normalize_spec(spec, {"bots"}, (), ("create_bot",))
+        path = out["paths"]["/v1/orgs/{org_id}/bots/{slug}"]
+        assert "get" in path  # read operation kept
+        assert "post" not in path  # excluded write operation dropped
+
     def test_full_normalization(self):
         spec = norm.normalize_spec(self._spec(), {"bots"})
         # No residual null branches anywhere.

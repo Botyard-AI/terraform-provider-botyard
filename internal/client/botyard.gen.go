@@ -35,6 +35,13 @@ const (
 	ApiProtocolOpenaiCompatible   ApiProtocol = "openai_compatible"
 )
 
+// Defines values for AuthMethod.
+const (
+	AuthMethodApiKey AuthMethod = "api_key"
+	AuthMethodNone   AuthMethod = "none"
+	AuthMethodOauth  AuthMethod = "oauth"
+)
+
 // Defines values for BotAccess.
 const (
 	BotAccessOpen       BotAccess = "open"
@@ -509,11 +516,27 @@ const (
 	SkillProviderVercel      SkillProvider = "vercel"
 )
 
+// Defines values for SkillScope.
+const (
+	SkillScopeBot    SkillScope = "bot"
+	SkillScopeMember SkillScope = "member"
+	SkillScopeOrg    SkillScope = "org"
+)
+
 // Defines values for SyncStatus.
 const (
 	SyncStatusFailed  SyncStatus = "failed"
 	SyncStatusPending SyncStatus = "pending"
 	SyncStatusSynced  SyncStatus = "synced"
+)
+
+// Defines values for TemplateIcon.
+const (
+	TemplateIconCode      TemplateIcon = "code"
+	TemplateIconHeadset   TemplateIcon = "headset"
+	TemplateIconNewspaper TemplateIcon = "newspaper"
+	TemplateIconSettings  TemplateIcon = "settings"
+	TemplateIconUser      TemplateIcon = "user"
 )
 
 // Defines values for ToolRuntime.
@@ -602,6 +625,9 @@ type AndBotFilterFieldKind string
 
 // ApiProtocol Wire protocol for communicating with a provider.
 type ApiProtocol string
+
+// AuthMethod Authentication method for provider credentials.
+type AuthMethod string
 
 // BotAccess Bot visibility within its organization.
 type BotAccess string
@@ -975,6 +1001,39 @@ type BotSkillIds struct {
 // CLUSTER_DEFAULT defers to the adapter-level configured default. Only the
 // classes currently in active use are enumerated — extend as needed.
 type BotStorageClass string
+
+// BotTemplateResponse A bot template with files, default skill IDs, and optional config.
+type BotTemplateResponse struct {
+	// Config Default bot config patch (heartbeat, model, etc.) applied at deploy time
+	Config *OpenClawConfigPatch `json:"config"`
+
+	// Description Short description for the template card
+	Description string `json:"description"`
+
+	// Files Default bot files keyed by file type (soul, heartbeat, agents, user, tools)
+	Files map[string]string `json:"files"`
+
+	// Icon Lucide icon name for bot templates.
+	Icon TemplateIcon `json:"icon"`
+
+	// Id Unique template identifier
+	Id string `json:"id"`
+
+	// Name Display name shown in the wizard
+	Name string `json:"name"`
+
+	// SkillIds IDs of skills to auto-assign when using this template
+	SkillIds []string `json:"skill_ids"`
+
+	// Slug URL-safe identifier (e.g. personal-assistant)
+	Slug string `json:"slug"`
+
+	// SupportsGuidedSetup Whether this template offers the in-chat guided setup option
+	SupportsGuidedSetup *bool `json:"supports_guided_setup,omitempty"`
+
+	// ToolIds IDs of tools to auto-assign when using this template
+	ToolIds []string `json:"tool_ids"`
+}
 
 // BotTier Bot subscription tier.
 type BotTier string
@@ -1600,6 +1659,45 @@ type CredentialProviderConfig struct {
 	// Provider Known provider vendors.
 	Provider CredentialProvider `json:"provider"`
 	Slug     string             `json:"slug"`
+}
+
+// CredentialResponse Provider credential response. Sensitive values are always masked.
+type CredentialResponse struct {
+	ApiProtocol *ApiProtocol `json:"api_protocol"`
+
+	// AuthMethod Authentication method for provider credentials.
+	AuthMethod         AuthMethod `json:"auth_method"`
+	AvailableToAllBots bool       `json:"available_to_all_bots"`
+	BaseUrl            *string    `json:"base_url"`
+
+	// BotId Bot this credential is private to (null = org-level)
+	BotId        *string   `json:"bot_id"`
+	CreatedAt    time.Time `json:"created_at"`
+	CredentialId string    `json:"credential_id"`
+	Enabled      bool      `json:"enabled"`
+	IsDefault    bool      `json:"is_default"`
+
+	// KeyPrefix First 8 chars of API key + '...' for identification
+	KeyPrefix      *string    `json:"key_prefix"`
+	Label          string     `json:"label"`
+	LastTestError  *string    `json:"last_test_error"`
+	LastTestStatus *string    `json:"last_test_status"`
+	LastTestedAt   *time.Time `json:"last_tested_at"`
+
+	// Managed True when Botyard provisions and funds this credential (managed credits) rather than BYOK
+	Managed *bool `json:"managed,omitempty"`
+
+	// OauthConfig OAuth metadata (no secrets)
+	OauthConfig *map[string]interface{} `json:"oauth_config"`
+	OrgId       string                  `json:"org_id"`
+
+	// Provider Known provider vendors.
+	Provider CredentialProvider `json:"provider"`
+
+	// Scope What a credential is used for.
+	Scope     CredentialScope `json:"scope"`
+	Slug      string          `json:"slug"`
+	UpdatedAt time.Time       `json:"updated_at"`
 }
 
 // CredentialScope What a credential is used for.
@@ -2422,6 +2520,18 @@ type PaginatedResponseBotListItem struct {
 	Total int `json:"total"`
 }
 
+// PaginatedResponseSkillSummaryResponse defines model for PaginatedResponse_SkillSummaryResponse_.
+type PaginatedResponseSkillSummaryResponse struct {
+	// HasMore Whether more items exist beyond this page
+	HasMore bool                   `json:"has_more"`
+	Items   []SkillSummaryResponse `json:"items"`
+	Limit   int                    `json:"limit"`
+	Offset  int                    `json:"offset"`
+
+	// Total Total number of items matching the query
+	Total int `json:"total"`
+}
+
 // PaginationParams Query parameters for offset-based paginated endpoints.
 type PaginationParams struct {
 	// Limit Items per page
@@ -2665,6 +2775,36 @@ type SessionConfigPatch struct {
 // SkillProvider Who provided/authored the skill.
 type SkillProvider string
 
+// SkillScope Visibility scope for a skill in the catalogue.
+type SkillScope string
+
+// SkillSummaryResponse Lightweight skill response for list endpoints (no file content).
+type SkillSummaryResponse struct {
+	CreatedAt time.Time `json:"created_at"`
+
+	// FileCount Number of files in this skill
+	FileCount int `json:"file_count"`
+
+	// Id Unique skill identifier
+	Id string `json:"id"`
+
+	// Name Human-readable display name
+	Name string `json:"name"`
+
+	// Provider Who provided/authored the skill.
+	Provider SkillProvider `json:"provider"`
+
+	// Scope Visibility scope for a skill in the catalogue.
+	Scope SkillScope `json:"scope"`
+
+	// Slug URL-safe identifier
+	Slug string `json:"slug"`
+
+	// Summary Brief description
+	Summary   string    `json:"summary"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
 // SkillsConfig Skills loading configuration.
 type SkillsConfig struct {
 	AllowBundled *[]string `json:"allow_bundled,omitempty"`
@@ -2686,6 +2826,48 @@ type Storage struct {
 // provisioner's config reconciler flips them to “synced“ once the push
 // lands, or the failure recorder marks them “failed“ (retryable).
 type SyncStatus string
+
+// TemplateIcon Lucide icon name for bot templates.
+type TemplateIcon string
+
+// ToolResponse Tool catalog entry.
+type ToolResponse struct {
+	// CreatedAt When tool was created
+	CreatedAt time.Time `json:"created_at"`
+
+	// Description What the tool does
+	Description *string `json:"description"`
+
+	// Domain Tool grouping (e.g. 'github', 'conversations')
+	Domain string `json:"domain"`
+
+	// Enabled Whether the tool is globally enabled
+	Enabled bool `json:"enabled"`
+
+	// Id Unique tool identifier
+	Id string `json:"id"`
+
+	// McpServer MCP server name (e.g. 'botyard')
+	McpServer *string `json:"mcp_server"`
+
+	// Name Human-readable display name
+	Name string `json:"name"`
+
+	// OrgId Owning org (null = platform tool)
+	OrgId *string `json:"org_id"`
+
+	// Runtime Where a tool executes — determines enforcement mechanism.
+	Runtime ToolRuntime `json:"runtime"`
+
+	// RuntimeToolName Internal name used by the runtime — MCP function name or OpenClaw tool ID
+	RuntimeToolName string `json:"runtime_tool_name"`
+
+	// Slug Globally unique composite identifier (runtime:mcp_server:runtime_tool_name)
+	Slug string `json:"slug"`
+
+	// UpdatedAt Last update timestamp
+	UpdatedAt time.Time `json:"updated_at"`
+}
 
 // ToolRuntime Where a tool executes — determines enforcement mechanism.
 type ToolRuntime string
@@ -2757,6 +2939,15 @@ type ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetParams struct {
 	Scope *CredentialScope `form:"scope,omitempty" json:"scope,omitempty"`
 }
 
+// ListCredentialsV1OrgsOrgIdCredentialsGetParams defines parameters for ListCredentialsV1OrgsOrgIdCredentialsGet.
+type ListCredentialsV1OrgsOrgIdCredentialsGetParams struct {
+	// Scope Filter by credential scope
+	Scope *CredentialScope `form:"scope,omitempty" json:"scope,omitempty"`
+
+	// Provider Filter by provider vendor
+	Provider *CredentialProvider `form:"provider,omitempty" json:"provider,omitempty"`
+}
+
 // ListMcpServersV1OrgsOrgIdMcpServersGetParams defines parameters for ListMcpServersV1OrgsOrgIdMcpServersGet.
 type ListMcpServersV1OrgsOrgIdMcpServersGetParams struct {
 	// State Filter by reconciler-observed lifecycle state
@@ -2766,6 +2957,24 @@ type ListMcpServersV1OrgsOrgIdMcpServersGetParams struct {
 // CreateMcpServerV1OrgsOrgIdMcpServersPostJSONBody defines parameters for CreateMcpServerV1OrgsOrgIdMcpServersPost.
 type CreateMcpServerV1OrgsOrgIdMcpServersPostJSONBody struct {
 	union json.RawMessage
+}
+
+// ListSkillsV1OrgsOrgIdSkillsGetParams defines parameters for ListSkillsV1OrgsOrgIdSkillsGet.
+type ListSkillsV1OrgsOrgIdSkillsGetParams struct {
+	Limit  *int `form:"limit,omitempty" json:"limit,omitempty"`
+	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+}
+
+// ListToolsV1OrgsOrgIdToolsGetParams defines parameters for ListToolsV1OrgsOrgIdToolsGet.
+type ListToolsV1OrgsOrgIdToolsGetParams struct {
+	// Runtime Filter by runtime
+	Runtime *ToolRuntime `form:"runtime,omitempty" json:"runtime,omitempty"`
+
+	// Domain Filter by domain
+	Domain *string `form:"domain,omitempty" json:"domain,omitempty"`
+
+	// McpServer Filter by MCP server name
+	McpServer *string `form:"mcp_server,omitempty" json:"mcp_server,omitempty"`
 }
 
 // CreateBotV1OrgsOrgIdBotsPostJSONRequestBody defines body for CreateBotV1OrgsOrgIdBotsPost for application/json ContentType.
@@ -3379,6 +3588,9 @@ func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
 
 // The interface specification for the client above.
 type ClientInterface interface {
+	// ListBotTemplatesV1OrgsOrgIdBotTemplatesGet request
+	ListBotTemplatesV1OrgsOrgIdBotTemplatesGet(ctx context.Context, orgId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// ListBotsV1OrgsOrgIdBotsGet request
 	ListBotsV1OrgsOrgIdBotsGet(ctx context.Context, orgId string, params *ListBotsV1OrgsOrgIdBotsGetParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -3475,6 +3687,9 @@ type ClientInterface interface {
 
 	RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPost(ctx context.Context, orgId string, botSlug string, body RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// ListCredentialsV1OrgsOrgIdCredentialsGet request
+	ListCredentialsV1OrgsOrgIdCredentialsGet(ctx context.Context, orgId string, params *ListCredentialsV1OrgsOrgIdCredentialsGetParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// ListMcpServersV1OrgsOrgIdMcpServersGet request
 	ListMcpServersV1OrgsOrgIdMcpServersGet(ctx context.Context, orgId string, params *ListMcpServersV1OrgsOrgIdMcpServersGetParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -3526,6 +3741,27 @@ type ClientInterface interface {
 	PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutWithBody(ctx context.Context, orgId string, policyId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPut(ctx context.Context, orgId string, policyId string, body PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListSkillsV1OrgsOrgIdSkillsGet request
+	ListSkillsV1OrgsOrgIdSkillsGet(ctx context.Context, orgId string, params *ListSkillsV1OrgsOrgIdSkillsGetParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListToolsV1OrgsOrgIdToolsGet request
+	ListToolsV1OrgsOrgIdToolsGet(ctx context.Context, orgId string, params *ListToolsV1OrgsOrgIdToolsGetParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetToolV1OrgsOrgIdToolsToolIdGet request
+	GetToolV1OrgsOrgIdToolsToolIdGet(ctx context.Context, orgId string, toolId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+}
+
+func (c *Client) ListBotTemplatesV1OrgsOrgIdBotTemplatesGet(ctx context.Context, orgId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListBotTemplatesV1OrgsOrgIdBotTemplatesGetRequest(c.Server, orgId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
 }
 
 func (c *Client) ListBotsV1OrgsOrgIdBotsGet(ctx context.Context, orgId string, params *ListBotsV1OrgsOrgIdBotsGetParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -3960,6 +4196,18 @@ func (c *Client) RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPost(ctx conte
 	return c.Client.Do(req)
 }
 
+func (c *Client) ListCredentialsV1OrgsOrgIdCredentialsGet(ctx context.Context, orgId string, params *ListCredentialsV1OrgsOrgIdCredentialsGetParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListCredentialsV1OrgsOrgIdCredentialsGetRequest(c.Server, orgId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) ListMcpServersV1OrgsOrgIdMcpServersGet(ctx context.Context, orgId string, params *ListMcpServersV1OrgsOrgIdMcpServersGetParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewListMcpServersV1OrgsOrgIdMcpServersGetRequest(c.Server, orgId, params)
 	if err != nil {
@@ -4186,6 +4434,76 @@ func (c *Client) PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLink
 		return nil, err
 	}
 	return c.Client.Do(req)
+}
+
+func (c *Client) ListSkillsV1OrgsOrgIdSkillsGet(ctx context.Context, orgId string, params *ListSkillsV1OrgsOrgIdSkillsGetParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListSkillsV1OrgsOrgIdSkillsGetRequest(c.Server, orgId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListToolsV1OrgsOrgIdToolsGet(ctx context.Context, orgId string, params *ListToolsV1OrgsOrgIdToolsGetParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListToolsV1OrgsOrgIdToolsGetRequest(c.Server, orgId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetToolV1OrgsOrgIdToolsToolIdGet(ctx context.Context, orgId string, toolId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetToolV1OrgsOrgIdToolsToolIdGetRequest(c.Server, orgId, toolId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// NewListBotTemplatesV1OrgsOrgIdBotTemplatesGetRequest generates requests for ListBotTemplatesV1OrgsOrgIdBotTemplatesGet
+func NewListBotTemplatesV1OrgsOrgIdBotTemplatesGetRequest(server string, orgId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/bot-templates", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
 }
 
 // NewListBotsV1OrgsOrgIdBotsGetRequest generates requests for ListBotsV1OrgsOrgIdBotsGet
@@ -5381,6 +5699,78 @@ func NewRetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostRequestWithBody(ser
 	return req, nil
 }
 
+// NewListCredentialsV1OrgsOrgIdCredentialsGetRequest generates requests for ListCredentialsV1OrgsOrgIdCredentialsGet
+func NewListCredentialsV1OrgsOrgIdCredentialsGetRequest(server string, orgId string, params *ListCredentialsV1OrgsOrgIdCredentialsGetParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/credentials", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Scope != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "scope", runtime.ParamLocationQuery, *params.Scope); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Provider != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "provider", runtime.ParamLocationQuery, *params.Provider); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewListMcpServersV1OrgsOrgIdMcpServersGetRequest generates requests for ListMcpServersV1OrgsOrgIdMcpServersGet
 func NewListMcpServersV1OrgsOrgIdMcpServersGetRequest(server string, orgId string, params *ListMcpServersV1OrgsOrgIdMcpServersGetParams) (*http.Request, error) {
 	var err error
@@ -6014,6 +6404,207 @@ func NewPutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutReque
 	return req, nil
 }
 
+// NewListSkillsV1OrgsOrgIdSkillsGetRequest generates requests for ListSkillsV1OrgsOrgIdSkillsGet
+func NewListSkillsV1OrgsOrgIdSkillsGetRequest(server string, orgId string, params *ListSkillsV1OrgsOrgIdSkillsGetParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/skills", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "limit", runtime.ParamLocationQuery, *params.Limit); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Offset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "offset", runtime.ParamLocationQuery, *params.Offset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewListToolsV1OrgsOrgIdToolsGetRequest generates requests for ListToolsV1OrgsOrgIdToolsGet
+func NewListToolsV1OrgsOrgIdToolsGetRequest(server string, orgId string, params *ListToolsV1OrgsOrgIdToolsGetParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/tools", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Runtime != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "runtime", runtime.ParamLocationQuery, *params.Runtime); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Domain != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "domain", runtime.ParamLocationQuery, *params.Domain); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.McpServer != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "mcp_server", runtime.ParamLocationQuery, *params.McpServer); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetToolV1OrgsOrgIdToolsToolIdGetRequest generates requests for GetToolV1OrgsOrgIdToolsToolIdGet
+func NewGetToolV1OrgsOrgIdToolsToolIdGetRequest(server string, orgId string, toolId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "tool_id", runtime.ParamLocationPath, toolId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/tools/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 func (c *Client) applyEditors(ctx context.Context, req *http.Request, additionalEditors []RequestEditorFn) error {
 	for _, r := range c.RequestEditors {
 		if err := r(ctx, req); err != nil {
@@ -6057,6 +6648,9 @@ func WithBaseURL(baseURL string) ClientOption {
 
 // ClientWithResponsesInterface is the interface specification for the client with responses above.
 type ClientWithResponsesInterface interface {
+	// ListBotTemplatesV1OrgsOrgIdBotTemplatesGetWithResponse request
+	ListBotTemplatesV1OrgsOrgIdBotTemplatesGetWithResponse(ctx context.Context, orgId string, reqEditors ...RequestEditorFn) (*ListBotTemplatesV1OrgsOrgIdBotTemplatesGetResponse, error)
+
 	// ListBotsV1OrgsOrgIdBotsGetWithResponse request
 	ListBotsV1OrgsOrgIdBotsGetWithResponse(ctx context.Context, orgId string, params *ListBotsV1OrgsOrgIdBotsGetParams, reqEditors ...RequestEditorFn) (*ListBotsV1OrgsOrgIdBotsGetResponse, error)
 
@@ -6153,6 +6747,9 @@ type ClientWithResponsesInterface interface {
 
 	RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostWithResponse(ctx context.Context, orgId string, botSlug string, body RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostJSONRequestBody, reqEditors ...RequestEditorFn) (*RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostResponse, error)
 
+	// ListCredentialsV1OrgsOrgIdCredentialsGetWithResponse request
+	ListCredentialsV1OrgsOrgIdCredentialsGetWithResponse(ctx context.Context, orgId string, params *ListCredentialsV1OrgsOrgIdCredentialsGetParams, reqEditors ...RequestEditorFn) (*ListCredentialsV1OrgsOrgIdCredentialsGetResponse, error)
+
 	// ListMcpServersV1OrgsOrgIdMcpServersGetWithResponse request
 	ListMcpServersV1OrgsOrgIdMcpServersGetWithResponse(ctx context.Context, orgId string, params *ListMcpServersV1OrgsOrgIdMcpServersGetParams, reqEditors ...RequestEditorFn) (*ListMcpServersV1OrgsOrgIdMcpServersGetResponse, error)
 
@@ -6204,6 +6801,38 @@ type ClientWithResponsesInterface interface {
 	PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutWithBodyWithResponse(ctx context.Context, orgId string, policyId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutResponse, error)
 
 	PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutWithResponse(ctx context.Context, orgId string, policyId string, body PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutJSONRequestBody, reqEditors ...RequestEditorFn) (*PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutResponse, error)
+
+	// ListSkillsV1OrgsOrgIdSkillsGetWithResponse request
+	ListSkillsV1OrgsOrgIdSkillsGetWithResponse(ctx context.Context, orgId string, params *ListSkillsV1OrgsOrgIdSkillsGetParams, reqEditors ...RequestEditorFn) (*ListSkillsV1OrgsOrgIdSkillsGetResponse, error)
+
+	// ListToolsV1OrgsOrgIdToolsGetWithResponse request
+	ListToolsV1OrgsOrgIdToolsGetWithResponse(ctx context.Context, orgId string, params *ListToolsV1OrgsOrgIdToolsGetParams, reqEditors ...RequestEditorFn) (*ListToolsV1OrgsOrgIdToolsGetResponse, error)
+
+	// GetToolV1OrgsOrgIdToolsToolIdGetWithResponse request
+	GetToolV1OrgsOrgIdToolsToolIdGetWithResponse(ctx context.Context, orgId string, toolId string, reqEditors ...RequestEditorFn) (*GetToolV1OrgsOrgIdToolsToolIdGetResponse, error)
+}
+
+type ListBotTemplatesV1OrgsOrgIdBotTemplatesGetResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *[]BotTemplateResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r ListBotTemplatesV1OrgsOrgIdBotTemplatesGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListBotTemplatesV1OrgsOrgIdBotTemplatesGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
 }
 
 type ListBotsV1OrgsOrgIdBotsGetResponse struct {
@@ -6754,6 +7383,29 @@ func (r RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostResponse) StatusCod
 	return 0
 }
 
+type ListCredentialsV1OrgsOrgIdCredentialsGetResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *[]CredentialResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r ListCredentialsV1OrgsOrgIdCredentialsGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListCredentialsV1OrgsOrgIdCredentialsGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type ListMcpServersV1OrgsOrgIdMcpServersGetResponse struct {
 	Body                          []byte
 	HTTPResponse                  *http.Response
@@ -7087,6 +7739,84 @@ func (r PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutRespo
 	return 0
 }
 
+type ListSkillsV1OrgsOrgIdSkillsGetResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *PaginatedResponseSkillSummaryResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r ListSkillsV1OrgsOrgIdSkillsGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListSkillsV1OrgsOrgIdSkillsGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListToolsV1OrgsOrgIdToolsGetResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *[]ToolResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r ListToolsV1OrgsOrgIdToolsGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListToolsV1OrgsOrgIdToolsGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetToolV1OrgsOrgIdToolsToolIdGetResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *ToolResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r GetToolV1OrgsOrgIdToolsToolIdGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetToolV1OrgsOrgIdToolsToolIdGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ListBotTemplatesV1OrgsOrgIdBotTemplatesGetWithResponse request returning *ListBotTemplatesV1OrgsOrgIdBotTemplatesGetResponse
+func (c *ClientWithResponses) ListBotTemplatesV1OrgsOrgIdBotTemplatesGetWithResponse(ctx context.Context, orgId string, reqEditors ...RequestEditorFn) (*ListBotTemplatesV1OrgsOrgIdBotTemplatesGetResponse, error) {
+	rsp, err := c.ListBotTemplatesV1OrgsOrgIdBotTemplatesGet(ctx, orgId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListBotTemplatesV1OrgsOrgIdBotTemplatesGetResponse(rsp)
+}
+
 // ListBotsV1OrgsOrgIdBotsGetWithResponse request returning *ListBotsV1OrgsOrgIdBotsGetResponse
 func (c *ClientWithResponses) ListBotsV1OrgsOrgIdBotsGetWithResponse(ctx context.Context, orgId string, params *ListBotsV1OrgsOrgIdBotsGetParams, reqEditors ...RequestEditorFn) (*ListBotsV1OrgsOrgIdBotsGetResponse, error) {
 	rsp, err := c.ListBotsV1OrgsOrgIdBotsGet(ctx, orgId, params, reqEditors...)
@@ -7399,6 +8129,15 @@ func (c *ClientWithResponses) RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncP
 	return ParseRetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostResponse(rsp)
 }
 
+// ListCredentialsV1OrgsOrgIdCredentialsGetWithResponse request returning *ListCredentialsV1OrgsOrgIdCredentialsGetResponse
+func (c *ClientWithResponses) ListCredentialsV1OrgsOrgIdCredentialsGetWithResponse(ctx context.Context, orgId string, params *ListCredentialsV1OrgsOrgIdCredentialsGetParams, reqEditors ...RequestEditorFn) (*ListCredentialsV1OrgsOrgIdCredentialsGetResponse, error) {
+	rsp, err := c.ListCredentialsV1OrgsOrgIdCredentialsGet(ctx, orgId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListCredentialsV1OrgsOrgIdCredentialsGetResponse(rsp)
+}
+
 // ListMcpServersV1OrgsOrgIdMcpServersGetWithResponse request returning *ListMcpServersV1OrgsOrgIdMcpServersGetResponse
 func (c *ClientWithResponses) ListMcpServersV1OrgsOrgIdMcpServersGetWithResponse(ctx context.Context, orgId string, params *ListMcpServersV1OrgsOrgIdMcpServersGetParams, reqEditors ...RequestEditorFn) (*ListMcpServersV1OrgsOrgIdMcpServersGetResponse, error) {
 	rsp, err := c.ListMcpServersV1OrgsOrgIdMcpServersGet(ctx, orgId, params, reqEditors...)
@@ -7563,6 +8302,66 @@ func (c *ClientWithResponses) PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPo
 		return nil, err
 	}
 	return ParsePutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutResponse(rsp)
+}
+
+// ListSkillsV1OrgsOrgIdSkillsGetWithResponse request returning *ListSkillsV1OrgsOrgIdSkillsGetResponse
+func (c *ClientWithResponses) ListSkillsV1OrgsOrgIdSkillsGetWithResponse(ctx context.Context, orgId string, params *ListSkillsV1OrgsOrgIdSkillsGetParams, reqEditors ...RequestEditorFn) (*ListSkillsV1OrgsOrgIdSkillsGetResponse, error) {
+	rsp, err := c.ListSkillsV1OrgsOrgIdSkillsGet(ctx, orgId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListSkillsV1OrgsOrgIdSkillsGetResponse(rsp)
+}
+
+// ListToolsV1OrgsOrgIdToolsGetWithResponse request returning *ListToolsV1OrgsOrgIdToolsGetResponse
+func (c *ClientWithResponses) ListToolsV1OrgsOrgIdToolsGetWithResponse(ctx context.Context, orgId string, params *ListToolsV1OrgsOrgIdToolsGetParams, reqEditors ...RequestEditorFn) (*ListToolsV1OrgsOrgIdToolsGetResponse, error) {
+	rsp, err := c.ListToolsV1OrgsOrgIdToolsGet(ctx, orgId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListToolsV1OrgsOrgIdToolsGetResponse(rsp)
+}
+
+// GetToolV1OrgsOrgIdToolsToolIdGetWithResponse request returning *GetToolV1OrgsOrgIdToolsToolIdGetResponse
+func (c *ClientWithResponses) GetToolV1OrgsOrgIdToolsToolIdGetWithResponse(ctx context.Context, orgId string, toolId string, reqEditors ...RequestEditorFn) (*GetToolV1OrgsOrgIdToolsToolIdGetResponse, error) {
+	rsp, err := c.GetToolV1OrgsOrgIdToolsToolIdGet(ctx, orgId, toolId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetToolV1OrgsOrgIdToolsToolIdGetResponse(rsp)
+}
+
+// ParseListBotTemplatesV1OrgsOrgIdBotTemplatesGetResponse parses an HTTP response from a ListBotTemplatesV1OrgsOrgIdBotTemplatesGetWithResponse call
+func ParseListBotTemplatesV1OrgsOrgIdBotTemplatesGetResponse(rsp *http.Response) (*ListBotTemplatesV1OrgsOrgIdBotTemplatesGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListBotTemplatesV1OrgsOrgIdBotTemplatesGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []BotTemplateResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
 }
 
 // ParseListBotsV1OrgsOrgIdBotsGetResponse parses an HTTP response from a ListBotsV1OrgsOrgIdBotsGetWithResponse call
@@ -8329,6 +9128,39 @@ func ParseRetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostResponse(rsp *htt
 	return response, nil
 }
 
+// ParseListCredentialsV1OrgsOrgIdCredentialsGetResponse parses an HTTP response from a ListCredentialsV1OrgsOrgIdCredentialsGetWithResponse call
+func ParseListCredentialsV1OrgsOrgIdCredentialsGetResponse(rsp *http.Response) (*ListCredentialsV1OrgsOrgIdCredentialsGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListCredentialsV1OrgsOrgIdCredentialsGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []CredentialResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseListMcpServersV1OrgsOrgIdMcpServersGetResponse parses an HTTP response from a ListMcpServersV1OrgsOrgIdMcpServersGetWithResponse call
 func ParseListMcpServersV1OrgsOrgIdMcpServersGetResponse(rsp *http.Response) (*ListMcpServersV1OrgsOrgIdMcpServersGetResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -8770,6 +9602,105 @@ func ParsePutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutRes
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest SecretPolicyBotLinksResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListSkillsV1OrgsOrgIdSkillsGetResponse parses an HTTP response from a ListSkillsV1OrgsOrgIdSkillsGetWithResponse call
+func ParseListSkillsV1OrgsOrgIdSkillsGetResponse(rsp *http.Response) (*ListSkillsV1OrgsOrgIdSkillsGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListSkillsV1OrgsOrgIdSkillsGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PaginatedResponseSkillSummaryResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListToolsV1OrgsOrgIdToolsGetResponse parses an HTTP response from a ListToolsV1OrgsOrgIdToolsGetWithResponse call
+func ParseListToolsV1OrgsOrgIdToolsGetResponse(rsp *http.Response) (*ListToolsV1OrgsOrgIdToolsGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListToolsV1OrgsOrgIdToolsGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []ToolResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetToolV1OrgsOrgIdToolsToolIdGetResponse parses an HTTP response from a GetToolV1OrgsOrgIdToolsToolIdGetWithResponse call
+func ParseGetToolV1OrgsOrgIdToolsToolIdGetResponse(rsp *http.Response) (*GetToolV1OrgsOrgIdToolsToolIdGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetToolV1OrgsOrgIdToolsToolIdGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ToolResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
