@@ -149,13 +149,25 @@ def _strip_default_json(op: dict[str, Any]) -> None:
             responses.pop("default", None)
 
 
-def prune(spec: dict[str, Any], keep_tags: set[str], exclude_paths: tuple[str, ...] = ()) -> None:
+def prune(
+    spec: dict[str, Any],
+    keep_tags: set[str],
+    exclude_paths: tuple[str, ...] = (),
+    exclude_operations: tuple[str, ...] = (),
+) -> None:
     excluded = set(exclude_paths)
+    excluded_ops = set(exclude_operations)
     new_paths: dict[str, Any] = {}
     for path, item in spec.get("paths", {}).items():
         if path in excluded:
             continue  # explicitly excluded (e.g. endpoints whose schemas trip codegen)
-        kept = {m: op for m, op in item.items() if m in HTTP_METHODS and keep_tags & set(op.get("tags", []))}
+        kept = {
+            m: op
+            for m, op in item.items()
+            if m in HTTP_METHODS
+            and keep_tags & set(op.get("tags", []))
+            and op.get("operationId") not in excluded_ops
+        }
         if not kept:
             continue
         for op in kept.values():
@@ -198,12 +210,15 @@ def prune(spec: dict[str, Any], keep_tags: set[str], exclude_paths: tuple[str, .
 
 
 def normalize_spec(
-    spec: dict[str, Any], keep_tags: set[str], exclude_paths: tuple[str, ...] = ()
+    spec: dict[str, Any],
+    keep_tags: set[str],
+    exclude_paths: tuple[str, ...] = (),
+    exclude_operations: tuple[str, ...] = (),
 ) -> dict[str, Any]:
     """Full in-place normalization; returns the same spec for convenience."""
     collapse_nullable(spec)
     fix_scalars(spec)
-    prune(spec, keep_tags, exclude_paths)
+    prune(spec, keep_tags, exclude_paths, exclude_operations)
     return spec
 
 
@@ -219,10 +234,19 @@ def main() -> None:
         help="Exact OpenAPI path templates to drop even when tag-matched "
         "(e.g. schemas that trip codegen).",
     )
+    ap.add_argument(
+        "--exclude-operations",
+        nargs="*",
+        default=[],
+        help="operationIds to drop even when their path is kept and tag-matched "
+        "(e.g. a write operation on a path whose read operation the client needs).",
+    )
     args = ap.parse_args()
 
     spec = json.load(open(args.src))
-    normalize_spec(spec, set(args.keep_tags), tuple(args.exclude_paths))
+    normalize_spec(
+        spec, set(args.keep_tags), tuple(args.exclude_paths), tuple(args.exclude_operations)
+    )
     json.dump(spec, open(args.dst, "w"))
     n_schemas = len(spec.get("components", {}).get("schemas", {}))
     print(f"normalized+pruned -> {args.dst} ({len(spec['paths'])} paths, {n_schemas} schemas)")

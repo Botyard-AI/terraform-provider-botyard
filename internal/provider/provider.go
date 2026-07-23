@@ -182,6 +182,14 @@ func (p *BotyardProvider) Resources(_ context.Context) []func() resource.Resourc
 func (p *BotyardProvider) DataSources(_ context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
 		NewBotDataSource,
+		NewBotTemplateDataSource,
+		NewBotTemplatesDataSource,
+		NewCredentialsDataSource,
+		NewMcpServersDataSource,
+		NewSkillDataSource,
+		NewSkillsDataSource,
+		NewToolDataSource,
+		NewToolsDataSource,
 	}
 }
 
