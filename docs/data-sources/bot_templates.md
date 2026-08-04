@@ -43,6 +43,6 @@ Read-Only:
 - `id` (String) Unique template identifier (UUID).
 - `name` (String) Display name shown in the wizard.
 - `skill_ids` (List of String) IDs of skills this template auto-assigns. Wire into `botyard_bot_skill_assignment.skill_ids`.
-- `slug` (String) URL-safe template identifier (e.g. `guided-setup`, `personal-assistant`).
+- `slug` (String) URL-safe visible template identifier (e.g. `coding-agent`, `personal-assistant`). Hidden/internal templates are not exposed by the catalog.
 - `supports_guided_setup` (Boolean) Whether this template offers the in-chat guided setup option.
 - `tool_ids` (List of String) IDs of tools this template auto-assigns. Wire into `botyard_bot_tool_assignment.tool_ids`.
