@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-framework/diag"
@@ -12,20 +13,22 @@ import (
 	"github.com/Botyard-AI/terraform-provider-botyard/internal/client"
 )
 
-// cannedBotTemplatesJSON has a guided-setup template with a config patch and a
-// second template with null config, exercising both config_json branches.
+// cannedBotTemplatesJSON has a visible template whose config patch contains
+// both an explicit null and an unmodeled future key, plus a second template
+// with null config. This exercises lossless config_json preservation and both
+// null/non-null branches.
 const cannedBotTemplatesJSON = `[
   {
     "id": "tpl-1",
-    "slug": "guided-setup",
-    "name": "Guided Setup",
-    "description": "The default onboarding bundle",
-    "icon": "settings",
+    "slug": "coding-agent",
+    "name": "Coding Agent",
+    "description": "A visible coding bundle",
+    "icon": "code",
     "files": {"soul": "You are helpful.", "heartbeat": "tick"},
     "skill_ids": ["sk-a", "sk-b"],
     "tool_ids": ["tool-1", "tool-2", "tool-3"],
     "supports_guided_setup": true,
-    "config": {"reasoning_default": "off"}
+    "config": {"reasoning_default": "off", "tool_search": null, "future_unmodeled": {"enabled": true}}
   },
   {
     "id": "tpl-2",
@@ -45,21 +48,21 @@ const cannedBotTemplatesJSON = `[
 // slug hit returns the matching template, and a miss (including an empty list)
 // returns ok=false so Read emits a "not found" diagnostic.
 func TestFindBotTemplateBySlug(t *testing.T) {
-	templates := []client.BotTemplateResponse{
-		{Id: "tpl-1", Slug: "guided-setup"},
-		{Id: "tpl-2", Slug: "blank"},
+	templates := []client.BotTemplateWithRawConfig{
+		{Template: client.BotTemplateResponse{Id: "tpl-1", Slug: "coding-agent"}},
+		{Template: client.BotTemplateResponse{Id: "tpl-2", Slug: "blank"}},
 	}
-	got, found := findBotTemplateBySlug(templates, "guided-setup")
+	got, found := findBotTemplateBySlug(templates, "coding-agent")
 	if !found {
 		t.Fatal("findBotTemplateBySlug did not find an existing slug")
 	}
-	if got.Id != "tpl-1" {
-		t.Errorf("findBotTemplateBySlug id = %q, want tpl-1", got.Id)
+	if got.Template.Id != "tpl-1" {
+		t.Errorf("findBotTemplateBySlug id = %q, want tpl-1", got.Template.Id)
 	}
 	if _, found := findBotTemplateBySlug(templates, "nope"); found {
 		t.Error("findBotTemplateBySlug found a non-existent slug")
 	}
-	if _, found := findBotTemplateBySlug(nil, "guided-setup"); found {
+	if _, found := findBotTemplateBySlug(nil, "coding-agent"); found {
 		t.Error("findBotTemplateBySlug found a slug in an empty list")
 	}
 }
@@ -100,12 +103,9 @@ func TestListBotTemplates_RoundTripAndMapping(t *testing.T) {
 		t.Fatalf("got %d templates, want 2", len(templates))
 	}
 
-	// Guided-setup template: bundle + files + config_json present.
-	m0, err := botTemplateToModel(templates[0])
-	if err != nil {
-		t.Fatalf("botTemplateToModel(tpl-1): %v", err)
-	}
-	if m0.Slug.ValueString() != "guided-setup" || !m0.SupportsGuidedSetup.ValueBool() {
+	// Visible template: bundle + files + lossless config_json present.
+	m0 := botTemplateToModel(templates[0])
+	if m0.Slug.ValueString() != "coding-agent" || !m0.SupportsGuidedSetup.ValueBool() {
 		t.Errorf("m0 slug/guided = %q/%v", m0.Slug.ValueString(), m0.SupportsGuidedSetup.ValueBool())
 	}
 	if len(m0.ToolIDs) != 3 || m0.ToolIDs[0] != "tool-1" {
@@ -120,21 +120,21 @@ func TestListBotTemplates_RoundTripAndMapping(t *testing.T) {
 	if m0.ConfigJSON.IsNull() {
 		t.Fatal("m0 config_json is null, want a JSON object")
 	}
-	var cfg struct {
-		ReasoningDefault string `json:"reasoning_default"`
-	}
-	if err := json.Unmarshal([]byte(m0.ConfigJSON.ValueString()), &cfg); err != nil {
+	var gotConfig map[string]any
+	if err := json.Unmarshal([]byte(m0.ConfigJSON.ValueString()), &gotConfig); err != nil {
 		t.Fatalf("config_json not valid JSON: %v", err)
 	}
-	if cfg.ReasoningDefault != "off" {
-		t.Errorf("config_json reasoning_default = %q, want off", cfg.ReasoningDefault)
+	wantConfig := map[string]any{
+		"reasoning_default": "off",
+		"tool_search":       nil,
+		"future_unmodeled":  map[string]any{"enabled": true},
+	}
+	if !reflect.DeepEqual(gotConfig, wantConfig) {
+		t.Errorf("config_json = %#v, want semantic equality with %#v", gotConfig, wantConfig)
 	}
 
 	// Blank template: null config -> null config_json; empty bundles.
-	m1, err := botTemplateToModel(templates[1])
-	if err != nil {
-		t.Fatalf("botTemplateToModel(tpl-2): %v", err)
-	}
+	m1 := botTemplateToModel(templates[1])
 	if !m1.ConfigJSON.IsNull() {
 		t.Errorf("m1 config_json = %q, want null", m1.ConfigJSON.ValueString())
 	}

@@ -3,22 +3,23 @@
 page_title: "botyard_bot_template Data Source - Botyard"
 subcategory: ""
 description: |-
-  Looks up a single bot template by slug. Use it to source onboarding defaults — most notably the guided-setup template's default tool_ids and skill_ids — and wire them explicitly into the assignment resources (botyard_bot_tool_assignment, botyard_bot_skill_assignment). This keeps the defaults explicit and composable; the assignment resources remain the single, exclusive owner of a bot's tools/skills.
+  Looks up a single visible bot template by slug. Use it to source a template's default tool_ids and skill_ids and wire them explicitly into the assignment resources (botyard_bot_tool_assignment, botyard_bot_skill_assignment). This keeps the defaults explicit and composable; the assignment resources remain the single, exclusive owner of a bot's tools/skills. Hidden/internal templates, including the guided-setup wizard bundle, are intentionally absent from the catalog.
 ---
 
 # botyard_bot_template (Data Source)
 
-Looks up a single bot template by slug. Use it to source onboarding defaults — most notably the guided-setup template's default `tool_ids` and `skill_ids` — and wire them explicitly into the assignment resources (`botyard_bot_tool_assignment`, `botyard_bot_skill_assignment`). This keeps the defaults explicit and composable; the assignment resources remain the single, exclusive owner of a bot's tools/skills.
+Looks up a single visible bot template by slug. Use it to source a template's default `tool_ids` and `skill_ids` and wire them explicitly into the assignment resources (`botyard_bot_tool_assignment`, `botyard_bot_skill_assignment`). This keeps the defaults explicit and composable; the assignment resources remain the single, exclusive owner of a bot's tools/skills. Hidden/internal templates, including the guided-setup wizard bundle, are intentionally absent from the catalog.
 
 ## Example Usage
 
 ```terraform
-# Source the guided-setup onboarding defaults and wire them explicitly into the
-# (exclusive) assignment resources. This keeps the defaults visible in config
-# rather than applied server-side, so the assignment resources remain the single
-# owner of the bot's tools and skills.
+# Source a visible catalog template's defaults and wire them explicitly into the
+# (exclusive) assignment resources. Hidden/internal templates, including the
+# guided-setup wizard bundle, are intentionally not exposed by this data source.
+# Keeping visible defaults in configuration leaves the assignment resources as
+# the single owner of the bot's tools and skills.
 data "botyard_bot_template" "defaults" {
-  slug = "guided-setup"
+  slug = "coding-agent"
 }
 
 resource "botyard_bot_tool_assignment" "example" {
@@ -37,7 +38,7 @@ resource "botyard_bot_skill_assignment" "example" {
 
 ### Required
 
-- `slug` (String) Slug of the bot template to look up (e.g. `guided-setup`).
+- `slug` (String) Slug of the visible bot template to look up (e.g. `coding-agent`). Hidden/internal templates, including the guided-setup wizard bundle, are not exposed by the catalog.
 
 ### Read-Only
 
