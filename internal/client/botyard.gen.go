@@ -21,6 +21,13 @@ const (
 	BearerAuthScopes = "BearerAuth.Scopes"
 )
 
+// Defines values for ActorType.
+const (
+	ActorTypeApiKey ActorType = "api_key"
+	ActorTypeBot    ActorType = "bot"
+	ActorTypeUser   ActorType = "user"
+)
+
 // Defines values for AndBotFilterFieldKind.
 const (
 	AndBotFilterFieldKindAnd AndBotFilterFieldKind = "and"
@@ -596,6 +603,9 @@ type ActiveHoursConfigPatch struct {
 	// ToTime End time in HH:MM format
 	ToTime *string `json:"to_time"`
 }
+
+// ActorType Type of authenticated actor.
+type ActorType string
 
 // AddonInput Shape of an addon instance as it appears in desired_config JSON.
 type AddonInput struct {
@@ -2772,8 +2782,94 @@ type SessionConfigPatch struct {
 	WriteLockMaxHoldMs *int `json:"write_lock_max_hold_ms"`
 }
 
+// SkillCreate Request to create a skill.
+type SkillCreate struct {
+	// Files One or more files comprising the skill. SKILL.md should contain instructions only; name and summary are structured metadata fields, not YAML frontmatter.
+	Files []SkillFileInput `json:"files"`
+
+	// Name Human-readable display name
+	Name string `json:"name"`
+
+	// Scope Visibility scope for a skill in the catalogue.
+	Scope SkillScope `json:"scope"`
+
+	// Summary Brief description for system prompt index
+	Summary string `json:"summary"`
+}
+
+// SkillFileInput A single file in a skill create/update request.
+type SkillFileInput struct {
+	// Content File content (markdown, text)
+	Content string `json:"content"`
+
+	// Filename Filename within the skill, e.g. SKILL.md
+	Filename string `json:"filename"`
+}
+
+// SkillFileResponse A single file in a skill response.
+type SkillFileResponse struct {
+	// Content File content
+	Content string `json:"content"`
+
+	// ContentHash SHA-256 hash for diff detection
+	ContentHash string    `json:"content_hash"`
+	CreatedAt   time.Time `json:"created_at"`
+
+	// Filename Filename within the skill
+	Filename string `json:"filename"`
+
+	// Id Unique file identifier
+	Id string `json:"id"`
+
+	// SortOrder Ordering for listing/concatenation
+	SortOrder int       `json:"sort_order"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
 // SkillProvider Who provided/authored the skill.
 type SkillProvider string
+
+// SkillResponse Skill response with files.
+type SkillResponse struct {
+	CreatedAt time.Time `json:"created_at"`
+
+	// CreatedByActorType Type of actor that created this skill (user or bot)
+	CreatedByActorType *ActorType `json:"created_by_actor_type"`
+
+	// CreatedByAvatarUrl Avatar URL of the creator
+	CreatedByAvatarUrl *string `json:"created_by_avatar_url"`
+
+	// CreatedByBotId Bot that created this skill
+	CreatedByBotId *string `json:"created_by_bot_id"`
+
+	// CreatedByName Display name of the creator
+	CreatedByName *string `json:"created_by_name"`
+
+	// CreatedByUserId User who created this skill
+	CreatedByUserId *string `json:"created_by_user_id"`
+
+	// Files Files comprising the skill
+	Files []SkillFileResponse `json:"files"`
+
+	// Id Unique skill identifier
+	Id string `json:"id"`
+
+	// Name Human-readable display name
+	Name string `json:"name"`
+
+	// Provider Who provided/authored the skill.
+	Provider SkillProvider `json:"provider"`
+
+	// Scope Visibility scope for a skill in the catalogue.
+	Scope SkillScope `json:"scope"`
+
+	// Slug URL-safe identifier
+	Slug string `json:"slug"`
+
+	// Summary Brief description
+	Summary   string    `json:"summary"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
 
 // SkillScope Visibility scope for a skill in the catalogue.
 type SkillScope string
@@ -2803,6 +2899,17 @@ type SkillSummaryResponse struct {
 	// Summary Brief description
 	Summary   string    `json:"summary"`
 	UpdatedAt time.Time `json:"updated_at"`
+}
+
+// SkillUpdate Request to update a skill.
+type SkillUpdate struct {
+	// Files Replacement files. SKILL.md should contain instructions only; name and summary are structured metadata fields, not YAML frontmatter.
+	Files *[]SkillFileInput `json:"files"`
+	Name  *string           `json:"name"`
+
+	// Scope Visibility scope (org or member)
+	Scope   *SkillScope `json:"scope"`
+	Summary *string     `json:"summary"`
 }
 
 // SkillsConfig Skills loading configuration.
@@ -3027,6 +3134,12 @@ type UpdateSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdPatchJSONRequestBody = S
 
 // PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutJSONRequestBody defines body for PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPut for application/json ContentType.
 type PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutJSONRequestBody = SecretPolicyBotLinksRequest
+
+// CreateSkillV1OrgsOrgIdSkillsPostJSONRequestBody defines body for CreateSkillV1OrgsOrgIdSkillsPost for application/json ContentType.
+type CreateSkillV1OrgsOrgIdSkillsPostJSONRequestBody = SkillCreate
+
+// UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchJSONRequestBody defines body for UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatch for application/json ContentType.
+type UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchJSONRequestBody = SkillUpdate
 
 // Getter for additional properties for ProblemDetails. Returns the specified
 // element and whether it was found
@@ -3745,6 +3858,22 @@ type ClientInterface interface {
 	// ListSkillsV1OrgsOrgIdSkillsGet request
 	ListSkillsV1OrgsOrgIdSkillsGet(ctx context.Context, orgId string, params *ListSkillsV1OrgsOrgIdSkillsGetParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// CreateSkillV1OrgsOrgIdSkillsPostWithBody request with any body
+	CreateSkillV1OrgsOrgIdSkillsPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateSkillV1OrgsOrgIdSkillsPost(ctx context.Context, orgId string, body CreateSkillV1OrgsOrgIdSkillsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteSkillV1OrgsOrgIdSkillsSkillSlugDelete request
+	DeleteSkillV1OrgsOrgIdSkillsSkillSlugDelete(ctx context.Context, orgId string, skillSlug string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetSkillV1OrgsOrgIdSkillsSkillSlugGet request
+	GetSkillV1OrgsOrgIdSkillsSkillSlugGet(ctx context.Context, orgId string, skillSlug string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchWithBody request with any body
+	UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchWithBody(ctx context.Context, orgId string, skillSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatch(ctx context.Context, orgId string, skillSlug string, body UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// ListToolsV1OrgsOrgIdToolsGet request
 	ListToolsV1OrgsOrgIdToolsGet(ctx context.Context, orgId string, params *ListToolsV1OrgsOrgIdToolsGetParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -4438,6 +4567,78 @@ func (c *Client) PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLink
 
 func (c *Client) ListSkillsV1OrgsOrgIdSkillsGet(ctx context.Context, orgId string, params *ListSkillsV1OrgsOrgIdSkillsGetParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewListSkillsV1OrgsOrgIdSkillsGetRequest(c.Server, orgId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateSkillV1OrgsOrgIdSkillsPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateSkillV1OrgsOrgIdSkillsPostRequestWithBody(c.Server, orgId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateSkillV1OrgsOrgIdSkillsPost(ctx context.Context, orgId string, body CreateSkillV1OrgsOrgIdSkillsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateSkillV1OrgsOrgIdSkillsPostRequest(c.Server, orgId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteSkillV1OrgsOrgIdSkillsSkillSlugDelete(ctx context.Context, orgId string, skillSlug string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteRequest(c.Server, orgId, skillSlug)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetSkillV1OrgsOrgIdSkillsSkillSlugGet(ctx context.Context, orgId string, skillSlug string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetSkillV1OrgsOrgIdSkillsSkillSlugGetRequest(c.Server, orgId, skillSlug)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchWithBody(ctx context.Context, orgId string, skillSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchRequestWithBody(c.Server, orgId, skillSlug, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatch(ctx context.Context, orgId string, skillSlug string, body UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchRequest(c.Server, orgId, skillSlug, body)
 	if err != nil {
 		return nil, err
 	}
@@ -6476,6 +6677,189 @@ func NewListSkillsV1OrgsOrgIdSkillsGetRequest(server string, orgId string, param
 	return req, nil
 }
 
+// NewCreateSkillV1OrgsOrgIdSkillsPostRequest calls the generic CreateSkillV1OrgsOrgIdSkillsPost builder with application/json body
+func NewCreateSkillV1OrgsOrgIdSkillsPostRequest(server string, orgId string, body CreateSkillV1OrgsOrgIdSkillsPostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateSkillV1OrgsOrgIdSkillsPostRequestWithBody(server, orgId, "application/json", bodyReader)
+}
+
+// NewCreateSkillV1OrgsOrgIdSkillsPostRequestWithBody generates requests for CreateSkillV1OrgsOrgIdSkillsPost with any type of body
+func NewCreateSkillV1OrgsOrgIdSkillsPostRequestWithBody(server string, orgId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/skills", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteRequest generates requests for DeleteSkillV1OrgsOrgIdSkillsSkillSlugDelete
+func NewDeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteRequest(server string, orgId string, skillSlug string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "skill_slug", runtime.ParamLocationPath, skillSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/skills/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetSkillV1OrgsOrgIdSkillsSkillSlugGetRequest generates requests for GetSkillV1OrgsOrgIdSkillsSkillSlugGet
+func NewGetSkillV1OrgsOrgIdSkillsSkillSlugGetRequest(server string, orgId string, skillSlug string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "skill_slug", runtime.ParamLocationPath, skillSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/skills/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchRequest calls the generic UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatch builder with application/json body
+func NewUpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchRequest(server string, orgId string, skillSlug string, body UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchRequestWithBody(server, orgId, skillSlug, "application/json", bodyReader)
+}
+
+// NewUpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchRequestWithBody generates requests for UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatch with any type of body
+func NewUpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchRequestWithBody(server string, orgId string, skillSlug string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "skill_slug", runtime.ParamLocationPath, skillSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/skills/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PATCH", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewListToolsV1OrgsOrgIdToolsGetRequest generates requests for ListToolsV1OrgsOrgIdToolsGet
 func NewListToolsV1OrgsOrgIdToolsGetRequest(server string, orgId string, params *ListToolsV1OrgsOrgIdToolsGetParams) (*http.Request, error) {
 	var err error
@@ -6804,6 +7188,22 @@ type ClientWithResponsesInterface interface {
 
 	// ListSkillsV1OrgsOrgIdSkillsGetWithResponse request
 	ListSkillsV1OrgsOrgIdSkillsGetWithResponse(ctx context.Context, orgId string, params *ListSkillsV1OrgsOrgIdSkillsGetParams, reqEditors ...RequestEditorFn) (*ListSkillsV1OrgsOrgIdSkillsGetResponse, error)
+
+	// CreateSkillV1OrgsOrgIdSkillsPostWithBodyWithResponse request with any body
+	CreateSkillV1OrgsOrgIdSkillsPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateSkillV1OrgsOrgIdSkillsPostResponse, error)
+
+	CreateSkillV1OrgsOrgIdSkillsPostWithResponse(ctx context.Context, orgId string, body CreateSkillV1OrgsOrgIdSkillsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateSkillV1OrgsOrgIdSkillsPostResponse, error)
+
+	// DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteWithResponse request
+	DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteWithResponse(ctx context.Context, orgId string, skillSlug string, reqEditors ...RequestEditorFn) (*DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteResponse, error)
+
+	// GetSkillV1OrgsOrgIdSkillsSkillSlugGetWithResponse request
+	GetSkillV1OrgsOrgIdSkillsSkillSlugGetWithResponse(ctx context.Context, orgId string, skillSlug string, reqEditors ...RequestEditorFn) (*GetSkillV1OrgsOrgIdSkillsSkillSlugGetResponse, error)
+
+	// UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchWithBodyWithResponse request with any body
+	UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchWithBodyWithResponse(ctx context.Context, orgId string, skillSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchResponse, error)
+
+	UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchWithResponse(ctx context.Context, orgId string, skillSlug string, body UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchResponse, error)
 
 	// ListToolsV1OrgsOrgIdToolsGetWithResponse request
 	ListToolsV1OrgsOrgIdToolsGetWithResponse(ctx context.Context, orgId string, params *ListToolsV1OrgsOrgIdToolsGetParams, reqEditors ...RequestEditorFn) (*ListToolsV1OrgsOrgIdToolsGetResponse, error)
@@ -7762,6 +8162,97 @@ func (r ListSkillsV1OrgsOrgIdSkillsGetResponse) StatusCode() int {
 	return 0
 }
 
+type CreateSkillV1OrgsOrgIdSkillsPostResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON201                       *SkillResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateSkillV1OrgsOrgIdSkillsPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateSkillV1OrgsOrgIdSkillsPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetSkillV1OrgsOrgIdSkillsSkillSlugGetResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *SkillResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r GetSkillV1OrgsOrgIdSkillsSkillSlugGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetSkillV1OrgsOrgIdSkillsSkillSlugGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *SkillResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type ListToolsV1OrgsOrgIdToolsGetResponse struct {
 	Body                          []byte
 	HTTPResponse                  *http.Response
@@ -8311,6 +8802,58 @@ func (c *ClientWithResponses) ListSkillsV1OrgsOrgIdSkillsGetWithResponse(ctx con
 		return nil, err
 	}
 	return ParseListSkillsV1OrgsOrgIdSkillsGetResponse(rsp)
+}
+
+// CreateSkillV1OrgsOrgIdSkillsPostWithBodyWithResponse request with arbitrary body returning *CreateSkillV1OrgsOrgIdSkillsPostResponse
+func (c *ClientWithResponses) CreateSkillV1OrgsOrgIdSkillsPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateSkillV1OrgsOrgIdSkillsPostResponse, error) {
+	rsp, err := c.CreateSkillV1OrgsOrgIdSkillsPostWithBody(ctx, orgId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateSkillV1OrgsOrgIdSkillsPostResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateSkillV1OrgsOrgIdSkillsPostWithResponse(ctx context.Context, orgId string, body CreateSkillV1OrgsOrgIdSkillsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateSkillV1OrgsOrgIdSkillsPostResponse, error) {
+	rsp, err := c.CreateSkillV1OrgsOrgIdSkillsPost(ctx, orgId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateSkillV1OrgsOrgIdSkillsPostResponse(rsp)
+}
+
+// DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteWithResponse request returning *DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteResponse
+func (c *ClientWithResponses) DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteWithResponse(ctx context.Context, orgId string, skillSlug string, reqEditors ...RequestEditorFn) (*DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteResponse, error) {
+	rsp, err := c.DeleteSkillV1OrgsOrgIdSkillsSkillSlugDelete(ctx, orgId, skillSlug, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteResponse(rsp)
+}
+
+// GetSkillV1OrgsOrgIdSkillsSkillSlugGetWithResponse request returning *GetSkillV1OrgsOrgIdSkillsSkillSlugGetResponse
+func (c *ClientWithResponses) GetSkillV1OrgsOrgIdSkillsSkillSlugGetWithResponse(ctx context.Context, orgId string, skillSlug string, reqEditors ...RequestEditorFn) (*GetSkillV1OrgsOrgIdSkillsSkillSlugGetResponse, error) {
+	rsp, err := c.GetSkillV1OrgsOrgIdSkillsSkillSlugGet(ctx, orgId, skillSlug, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetSkillV1OrgsOrgIdSkillsSkillSlugGetResponse(rsp)
+}
+
+// UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchWithBodyWithResponse request with arbitrary body returning *UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchResponse
+func (c *ClientWithResponses) UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchWithBodyWithResponse(ctx context.Context, orgId string, skillSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchResponse, error) {
+	rsp, err := c.UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchWithBody(ctx, orgId, skillSlug, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchWithResponse(ctx context.Context, orgId string, skillSlug string, body UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchResponse, error) {
+	rsp, err := c.UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatch(ctx, orgId, skillSlug, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchResponse(rsp)
 }
 
 // ListToolsV1OrgsOrgIdToolsGetWithResponse request returning *ListToolsV1OrgsOrgIdToolsGetResponse
@@ -9635,6 +10178,131 @@ func ParseListSkillsV1OrgsOrgIdSkillsGetResponse(rsp *http.Response) (*ListSkill
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest PaginatedResponseSkillSummaryResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateSkillV1OrgsOrgIdSkillsPostResponse parses an HTTP response from a CreateSkillV1OrgsOrgIdSkillsPostWithResponse call
+func ParseCreateSkillV1OrgsOrgIdSkillsPostResponse(rsp *http.Response) (*CreateSkillV1OrgsOrgIdSkillsPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateSkillV1OrgsOrgIdSkillsPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest SkillResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteResponse parses an HTTP response from a DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteWithResponse call
+func ParseDeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteResponse(rsp *http.Response) (*DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetSkillV1OrgsOrgIdSkillsSkillSlugGetResponse parses an HTTP response from a GetSkillV1OrgsOrgIdSkillsSkillSlugGetWithResponse call
+func ParseGetSkillV1OrgsOrgIdSkillsSkillSlugGetResponse(rsp *http.Response) (*GetSkillV1OrgsOrgIdSkillsSkillSlugGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetSkillV1OrgsOrgIdSkillsSkillSlugGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SkillResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchResponse parses an HTTP response from a UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchWithResponse call
+func ParseUpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchResponse(rsp *http.Response) (*UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SkillResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
