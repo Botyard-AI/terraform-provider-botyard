@@ -25,14 +25,15 @@ KEEP_TAGS=(bots mcp-servers secret-policies skills bot-tools credentials tools b
 #     only needs the org-scoped policy CRUD + bot-links endpoints.
 #   - The org-scoped /skills and /credentials LIST endpoints (GET) back the
 #     read-only botyard_skills / botyard_skill / botyard_credentials discovery
-#     data sources, so the exact list paths are KEPT. Their sibling POST create
-#     operations on the SAME path are dropped via EXCLUDE_OPERATIONS below (the
-#     data sources only read; create_credentials in particular carries raw
-#     api_key/oauth_token in CredentialCreate — keeping the generated client
-#     read-only avoids pulling that secret-bearing schema in). The remaining
-#     skills/credentials sub-paths stay excluded:
-#       * /skills/search + /skills/{skill_slug} — authoring/single-skill CRUD;
-#         the singular botyard_skill data source filters the list by slug.
+#     data sources, so the exact list paths are KEPT. The /credentials sibling
+#     POST create is dropped via EXCLUDE_OPERATIONS below: the credential data
+#     sources only read, and create_credentials carries raw api_key/oauth_token
+#     in CredentialCreate — keeping the generated client read-only avoids
+#     pulling that secret-bearing schema in. The skills authoring surface
+#     (POST /skills + /skills/{skill_slug} GET/PATCH/DELETE) IS kept: it backs
+#     the botyard_skill managed resource. Still excluded:
+#       * /skills/search — the filter-DSL search endpoint; the singular
+#         botyard_skill data source filters the plain list by slug instead.
 #       * org credential CRUD-by-id + presets/oauth/test; the secret-bearing
 #         bot-private create/delete; reorder; the per-link model PATCH — all out
 #         of scope for read-only discovery (see the credential_assignment notes).
@@ -44,7 +45,6 @@ EXCLUDE_PATHS=(
   "/v1/orgs/{org_id}/bots/{bot_slug}/secret-policies"
   "/v1/orgs/{org_id}/bots/{bot_slug}/secret-policies/{policy_id}"
   "/v1/orgs/{org_id}/skills/search"
-  "/v1/orgs/{org_id}/skills/{skill_slug}"
   "/v1/orgs/{org_id}/credentials/presets"
   "/v1/orgs/{org_id}/credentials/{credential_id}"
   "/v1/orgs/{org_id}/credentials/{credential_id}/oauth/start"
@@ -56,13 +56,12 @@ EXCLUDE_PATHS=(
   "/v1/orgs/{org_id}/bots/{bot_slug}/credentials/{credential_id}/model"
 )
 
-# Write operations dropped from an otherwise-kept path: the discovery data
-# sources read the /skills and /credentials list endpoints (GET) but never
-# create, so their POST create operations are excluded to keep the generated
-# client read-only for these catalogs (and to avoid pulling the secret-bearing
+# Write operations dropped from an otherwise-kept path: the credential
+# discovery data sources read the /credentials list endpoint (GET) but never
+# create, so its POST create operation is excluded to keep the generated client
+# read-only for that catalog (and to avoid pulling the secret-bearing
 # CredentialCreate schema).
 EXCLUDE_OPERATIONS=(
-  "create_skill_v1_orgs__org_id__skills_post"
   "create_credentials_v1_orgs__org_id__credentials_post"
 )
 

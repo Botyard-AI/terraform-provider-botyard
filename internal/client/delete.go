@@ -42,6 +42,14 @@ func (c *ClientWithResponses) DeleteSecretPolicy(ctx context.Context, orgID, pol
 	return deleteStatus(c.DeleteSecretPolicyV1OrgsOrgIdSecretPoliciesPolicyIdDelete(ctx, orgID, policyID))
 }
 
+// DeleteSkill deletes a catalogue skill by slug, returning the HTTP status and
+// raw body without body parsing (see the package note above on the empty-204
+// bug). The API refuses to delete non-custom skills, so a 400 here means the
+// skill is platform-provided rather than Terraform-managed.
+func (c *ClientWithResponses) DeleteSkill(ctx context.Context, orgID, skillSlug string) (int, []byte, error) {
+	return deleteStatus(c.DeleteSkillV1OrgsOrgIdSkillsSkillSlugDelete(ctx, orgID, skillSlug))
+}
+
 // UnassignBotSkills removes the given skill assignments from a bot in one batch
 // request, returning the HTTP status and raw body without body parsing (see the
 // package note above). This DELETE takes a BotSkillIds body and returns 204 No
