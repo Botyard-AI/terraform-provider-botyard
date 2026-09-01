@@ -4,9 +4,10 @@ Manage [Botyard](https://botyard.io) platform resources — bots, skills,
 workforces, credentials, and MCP servers — as code.
 
 > **Status: early, in active development.** Ships the provider configuration, a
-> generated API client, authentication, the `botyard_mcp_server` and
-> `botyard_vault_secret` **resources**, and a `botyard_bot` data source. More
-> managed resources are added incrementally (bots, …).
+> generated API client, authentication, the `botyard_bot`, `botyard_skill`,
+> `botyard_mcp_server` and `botyard_vault_secret` **resources**, the bot
+> skill/tool/credential assignment resources, and discovery data sources. More
+> managed resources are added incrementally (workforces, …).
 
 Full reference documentation is generated for the Terraform Registry and lives
 in [`docs/`](./docs); runnable examples are in [`examples/`](./examples).
