@@ -2,7 +2,7 @@ module github.com/Botyard-AI/terraform-provider-botyard
 
 go 1.25.0
 
-toolchain go1.25.12
+toolchain go1.25.13
 
 require (
 	github.com/hashicorp/terraform-plugin-framework v1.19.0
