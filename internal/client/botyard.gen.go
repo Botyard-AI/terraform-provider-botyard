@@ -23,9 +23,12 @@ const (
 
 // Defines values for ActorType.
 const (
-	ActorTypeApiKey ActorType = "api_key"
-	ActorTypeBot    ActorType = "bot"
-	ActorTypeUser   ActorType = "user"
+	ActorTypeApiKey      ActorType = "api_key"
+	ActorTypeBot         ActorType = "bot"
+	ActorTypeMcpWorkload ActorType = "mcp_workload"
+	ActorTypeSlackUser   ActorType = "slack_user"
+	ActorTypeTeamsUser   ActorType = "teams_user"
+	ActorTypeUser        ActorType = "user"
 )
 
 // Defines values for AndBotFilterFieldKind.
@@ -67,6 +70,13 @@ const (
 	BotFilterFieldTier          BotFilterField = "tier"
 )
 
+// Defines values for BotHarness.
+const (
+	BotHarnessBotyardNative BotHarness = "botyard_native"
+	BotHarnessClaudeCode    BotHarness = "claude_code"
+	BotHarnessOpenclaw      BotHarness = "openclaw"
+)
+
 // Defines values for BotHealthStatus.
 const (
 	BotHealthStatusDegraded         BotHealthStatus = "degraded"
@@ -74,6 +84,12 @@ const (
 	BotHealthStatusRescueFailed     BotHealthStatus = "rescue_failed"
 	BotHealthStatusRescueInProgress BotHealthStatus = "rescue_in_progress"
 	BotHealthStatusRescued          BotHealthStatus = "rescued"
+)
+
+// Defines values for BotHostingType.
+const (
+	BotHostingTypeHosted     BotHostingType = "hosted"
+	BotHostingTypeSelfHosted BotHostingType = "self_hosted"
 )
 
 // Defines values for BotMemberRole.
@@ -91,9 +107,10 @@ const (
 
 // Defines values for BotRuntimeClass.
 const (
-	BotRuntimeClassClusterDefault BotRuntimeClass = "cluster_default"
-	BotRuntimeClassKataQemu       BotRuntimeClass = "kata_qemu"
-	BotRuntimeClassRunc           BotRuntimeClass = "runc"
+	BotRuntimeClassClusterDefault  BotRuntimeClass = "cluster_default"
+	BotRuntimeClassKata4Dragonball BotRuntimeClass = "kata4_dragonball"
+	BotRuntimeClassKataQemu        BotRuntimeClass = "kata_qemu"
+	BotRuntimeClassRunc            BotRuntimeClass = "runc"
 )
 
 // Defines values for BotRuntimePrivilegeMode.
@@ -127,6 +144,12 @@ const (
 	ConditionBotFilterFieldKindCondition ConditionBotFilterFieldKind = "condition"
 )
 
+// Defines values for ConfigFieldDiffKind.
+const (
+	ConfigFieldDiffKindComplex ConfigFieldDiffKind = "complex"
+	ConfigFieldDiffKindScalar  ConfigFieldDiffKind = "scalar"
+)
+
 // Defines values for ContainerImageMcpServerCreateRuntimeKind.
 const (
 	ContainerImageMcpServerCreateRuntimeKindContainerImage ContainerImageMcpServerCreateRuntimeKind = "container_image"
@@ -140,6 +163,12 @@ const (
 // Defines values for ContainerImageMcpServerSummaryRuntimeKind.
 const (
 	ContainerImageMcpServerSummaryRuntimeKindContainerImage ContainerImageMcpServerSummaryRuntimeKind = "container_image"
+)
+
+// Defines values for ContextPruningConfigMode.
+const (
+	ContextPruningConfigModeCacheTtl ContextPruningConfigMode = "cache-ttl"
+	ContextPruningConfigModeOff      ContextPruningConfigMode = "off"
 )
 
 // Defines values for CredentialBackedModelConfigInput.
@@ -157,19 +186,23 @@ const (
 
 // Defines values for CredentialProvider.
 const (
-	CredentialProviderAnthropic      CredentialProvider = "anthropic"
-	CredentialProviderAzureOpenai    CredentialProvider = "azure_openai"
-	CredentialProviderBrave          CredentialProvider = "brave"
-	CredentialProviderChatgptCodex   CredentialProvider = "chatgpt_codex"
-	CredentialProviderClaudeMax      CredentialProvider = "claude_max"
-	CredentialProviderCustom         CredentialProvider = "custom"
-	CredentialProviderGithub         CredentialProvider = "github"
-	CredentialProviderGithubApp      CredentialProvider = "github_app"
-	CredentialProviderGoogleAiStudio CredentialProvider = "google_ai_studio"
-	CredentialProviderOpenai         CredentialProvider = "openai"
-	CredentialProviderOpenrouter     CredentialProvider = "openrouter"
-	CredentialProviderSnowflake      CredentialProvider = "snowflake"
-	CredentialProviderTavily         CredentialProvider = "tavily"
+	CredentialProviderAnthropic       CredentialProvider = "anthropic"
+	CredentialProviderAzureOpenai     CredentialProvider = "azure_openai"
+	CredentialProviderBrave           CredentialProvider = "brave"
+	CredentialProviderChatgptCodex    CredentialProvider = "chatgpt_codex"
+	CredentialProviderClaudeMax       CredentialProvider = "claude_max"
+	CredentialProviderCustom          CredentialProvider = "custom"
+	CredentialProviderDinero          CredentialProvider = "dinero"
+	CredentialProviderEconomic        CredentialProvider = "economic"
+	CredentialProviderGithub          CredentialProvider = "github"
+	CredentialProviderGithubApp       CredentialProvider = "github_app"
+	CredentialProviderGoogleAiStudio  CredentialProvider = "google_ai_studio"
+	CredentialProviderOpenai          CredentialProvider = "openai"
+	CredentialProviderOpenrouter      CredentialProvider = "openrouter"
+	CredentialProviderShopify         CredentialProvider = "shopify"
+	CredentialProviderSnowflake       CredentialProvider = "snowflake"
+	CredentialProviderTavily          CredentialProvider = "tavily"
+	CredentialProviderVercelAiGateway CredentialProvider = "vercel_ai_gateway"
 )
 
 // Defines values for CredentialScope.
@@ -192,6 +225,29 @@ const (
 	DesiredStateDeleted   DesiredState = "deleted"
 	DesiredStateRunning   DesiredState = "running"
 	DesiredStateSuspended DesiredState = "suspended"
+)
+
+// Defines values for Domain.
+const (
+	DomainAudit          Domain = "audit"
+	DomainAuthz          Domain = "authz"
+	DomainBilling        Domain = "billing"
+	DomainBot            Domain = "bot"
+	DomainConversation   Domain = "conversation"
+	DomainCredential     Domain = "credential"
+	DomainGithub         Domain = "github"
+	DomainGithubWorkflow Domain = "github_workflow"
+	DomainInbox          Domain = "inbox"
+	DomainIntegration    Domain = "integration"
+	DomainMcpServer      Domain = "mcp_server"
+	DomainMember         Domain = "member"
+	DomainOrg            Domain = "org"
+	DomainPlatform       Domain = "platform"
+	DomainSchedule       Domain = "schedule"
+	DomainSecret         Domain = "secret"
+	DomainSkill          Domain = "skill"
+	DomainTool           Domain = "tool"
+	DomainWorkforce      Domain = "workforce"
 )
 
 // Defines values for FilterOp.
@@ -299,6 +355,7 @@ const (
 // Defines values for McpCatalogFormFieldKind.
 const (
 	McpCatalogFormFieldKindBoolean         McpCatalogFormFieldKind = "boolean"
+	McpCatalogFormFieldKindIntegration     McpCatalogFormFieldKind = "integration"
 	McpCatalogFormFieldKindNumber          McpCatalogFormFieldKind = "number"
 	McpCatalogFormFieldKindPassword        McpCatalogFormFieldKind = "password"
 	McpCatalogFormFieldKindSecretRef       McpCatalogFormFieldKind = "secret_ref"
@@ -326,8 +383,9 @@ const (
 
 // Defines values for McpCatalogFormFieldValueMode.
 const (
-	McpCatalogFormFieldValueModePlaintext McpCatalogFormFieldValueMode = "plaintext"
-	McpCatalogFormFieldValueModeSecretRef McpCatalogFormFieldValueMode = "secret_ref"
+	McpCatalogFormFieldValueModeIntegration McpCatalogFormFieldValueMode = "integration"
+	McpCatalogFormFieldValueModePlaintext   McpCatalogFormFieldValueMode = "plaintext"
+	McpCatalogFormFieldValueModeSecretRef   McpCatalogFormFieldValueMode = "secret_ref"
 )
 
 // Defines values for McpCatalogFormSpecLockedConfig.
@@ -398,6 +456,7 @@ const (
 // Defines values for ObservedState.
 const (
 	ObservedStateDeleted                   ObservedState = "deleted"
+	ObservedStateExternal                  ObservedState = "external"
 	ObservedStateFailed                    ObservedState = "failed"
 	ObservedStatePending                   ObservedState = "pending"
 	ObservedStateProvisioning              ObservedState = "provisioning"
@@ -408,6 +467,7 @@ const (
 	ObservedStateProvisioningInfra         ObservedState = "provisioning:infra"
 	ObservedStateProvisioningSetup         ObservedState = "provisioning:setup"
 	ObservedStateRunning                   ObservedState = "running"
+	ObservedStateSuspended                 ObservedState = "suspended"
 	ObservedStateUnknown                   ObservedState = "unknown"
 	ObservedStateUpdating                  ObservedState = "updating"
 	ObservedStateUpdatingAwaitingReady     ObservedState = "updating:awaiting_ready"
@@ -493,12 +553,125 @@ const (
 	OrBotFilterFieldKindOr OrBotFilterFieldKind = "or"
 )
 
+// Defines values for PermissionAction.
+const (
+	PermissionActionCreate PermissionAction = "create"
+	PermissionActionDelete PermissionAction = "delete"
+	PermissionActionManage PermissionAction = "manage"
+	PermissionActionMerge  PermissionAction = "merge"
+	PermissionActionRead   PermissionAction = "read"
+	PermissionActionUpdate PermissionAction = "update"
+)
+
+// Defines values for PermissionScopeShape.
+const (
+	PermissionScopeShapeAnchored  PermissionScopeShape = "anchored"
+	PermissionScopeShapeInstance  PermissionScopeShape = "instance"
+	PermissionScopeShapeKindLevel PermissionScopeShape = "kind_level"
+)
+
+// Defines values for PermissionSource.
+const (
+	PermissionSourceActorGrant PermissionSource = "actor_grant"
+	PermissionSourceRoleBundle PermissionSource = "role_bundle"
+	PermissionSourceRoleDelta  PermissionSource = "role_delta"
+	PermissionSourceSelfGrant  PermissionSource = "self_grant"
+)
+
+// Defines values for RequirementStatus.
+const (
+	RequirementStatusCatalogUnmapped RequirementStatus = "catalog_unmapped"
+	RequirementStatusMissing         RequirementStatus = "missing"
+	RequirementStatusNotRequired     RequirementStatus = "not_required"
+	RequirementStatusSatisfied       RequirementStatus = "satisfied"
+	RequirementStatusSelfScoped      RequirementStatus = "self_scoped"
+)
+
 // Defines values for RescueStage.
 const (
 	RescueStageComponent RescueStage = "component"
 	RescueStageConfig    RescueStage = "config"
 	RescueStageHard      RescueStage = "hard"
 	RescueStageSoft      RescueStage = "soft"
+)
+
+// Defines values for Resource.
+const (
+	ResourceActivity             Resource = "activity"
+	ResourceApiKey               Resource = "api_key"
+	ResourceApp                  Resource = "app"
+	ResourceAuditEvent           Resource = "audit_event"
+	ResourceBilling              Resource = "billing"
+	ResourceBoard                Resource = "board"
+	ResourceBoardMembership      Resource = "board_membership"
+	ResourceBot                  Resource = "bot"
+	ResourceBotpage              Resource = "botpage"
+	ResourceCatalogEntry         Resource = "catalog_entry"
+	ResourceComponent            Resource = "component"
+	ResourceConfig               Resource = "config"
+	ResourceContentBlock         Resource = "content_block"
+	ResourceConversation         Resource = "conversation"
+	ResourceCredential           Resource = "credential"
+	ResourceCredentialPreset     Resource = "credential_preset"
+	ResourceCredit               Resource = "credit"
+	ResourceCronJob              Resource = "cron_job"
+	ResourceEmail                Resource = "email"
+	ResourceExternalChat         Resource = "external_chat"
+	ResourceFile                 Resource = "file"
+	ResourceFleet                Resource = "fleet"
+	ResourceImage                Resource = "image"
+	ResourceInboxMessage         Resource = "inbox_message"
+	ResourceInstallation         Resource = "installation"
+	ResourceIntegration          Resource = "integration"
+	ResourceIntegrationToken     Resource = "integration_token"
+	ResourceInvitation           Resource = "invitation"
+	ResourceIssue                Resource = "issue"
+	ResourceMaintenancePolicy    Resource = "maintenance_policy"
+	ResourceMcpServer            Resource = "mcp_server"
+	ResourceMember               Resource = "member"
+	ResourceMemory               Resource = "memory"
+	ResourceMessage              Resource = "message"
+	ResourceMetering             Resource = "metering"
+	ResourceMigration            Resource = "migration"
+	ResourceNotification         Resource = "notification"
+	ResourceObservability        Resource = "observability"
+	ResourceOrg                  Resource = "org"
+	ResourcePermission           Resource = "permission"
+	ResourcePlan                 Resource = "plan"
+	ResourcePrivateSource        Resource = "private_source"
+	ResourceProcessWatch         Resource = "process_watch"
+	ResourceProfile              Resource = "profile"
+	ResourcePullRequest          Resource = "pull_request"
+	ResourcePullRequestReview    Resource = "pull_request_review"
+	ResourceQuestion             Resource = "question"
+	ResourceRepository           Resource = "repository"
+	ResourceRepositoryCredential Resource = "repository_credential"
+	ResourceRequest              Resource = "request"
+	ResourceRollout              Resource = "rollout"
+	ResourceRootCommand          Resource = "root_command"
+	ResourceRuntime              Resource = "runtime"
+	ResourceSchedule             Resource = "schedule"
+	ResourceSecret               Resource = "secret"
+	ResourceSecretLease          Resource = "secret_lease"
+	ResourceSecretPolicy         Resource = "secret_policy"
+	ResourceService              Resource = "service"
+	ResourceSettings             Resource = "settings"
+	ResourceSkill                Resource = "skill"
+	ResourceSubscription         Resource = "subscription"
+	ResourceTask                 Resource = "task"
+	ResourceTaskFile             Resource = "task_file"
+	ResourceTeam                 Resource = "team"
+	ResourceTemplate             Resource = "template"
+	ResourceTool                 Resource = "tool"
+	ResourceToolDomainSettings   Resource = "tool_domain_settings"
+	ResourceUsage                Resource = "usage"
+	ResourceUser                 Resource = "user"
+	ResourceUserActivity         Resource = "user_activity"
+	ResourceVaultInputRequest    Resource = "vault_input_request"
+	ResourceWallet               Resource = "wallet"
+	ResourceWeb                  Resource = "web"
+	ResourceWorkflowCredential   Resource = "workflow_credential"
+	ResourceWorkflowRun          Resource = "workflow_run"
 )
 
 // Defines values for RuntimeVaultSensitivity.
@@ -530,6 +703,11 @@ const (
 	SkillScopeOrg    SkillScope = "org"
 )
 
+// Defines values for SkillSourceKind.
+const (
+	SkillSourceKindGithub SkillSourceKind = "github"
+)
+
 // Defines values for SyncStatus.
 const (
 	SyncStatusFailed  SyncStatus = "failed"
@@ -546,10 +724,30 @@ const (
 	TemplateIconUser      TemplateIcon = "user"
 )
 
+// Defines values for ToolResourceKind.
+const (
+	ToolResourceKindNone    ToolResourceKind = "none"
+	ToolResourceKindSelfBot ToolResourceKind = "self_bot"
+)
+
 // Defines values for ToolRuntime.
 const (
 	ToolRuntimeMcp      ToolRuntime = "mcp"
 	ToolRuntimeOpenclaw ToolRuntime = "openclaw"
+)
+
+// Defines values for ToolSearchConfigMode.
+const (
+	ToolSearchConfigModeAlways ToolSearchConfigMode = "always"
+	ToolSearchConfigModeAuto   ToolSearchConfigMode = "auto"
+	ToolSearchConfigModeOff    ToolSearchConfigMode = "off"
+)
+
+// Defines values for ToolSearchConfigPatchMode.
+const (
+	ToolSearchConfigPatchModeAlways ToolSearchConfigPatchMode = "always"
+	ToolSearchConfigPatchModeAuto   ToolSearchConfigPatchMode = "auto"
+	ToolSearchConfigPatchModeOff    ToolSearchConfigPatchMode = "off"
 )
 
 // Defines values for ToolsConfigExecAsk.
@@ -571,6 +769,15 @@ const (
 	ToolsConfigExecSecurityAllowlist ToolsConfigExecSecurity = "allowlist"
 	ToolsConfigExecSecurityDeny      ToolsConfigExecSecurity = "deny"
 	ToolsConfigExecSecurityFull      ToolsConfigExecSecurity = "full"
+)
+
+// Defines values for UsageError.
+const (
+	UsageErrorMalformed     UsageError = "malformed"
+	UsageErrorRateLimited   UsageError = "rate_limited"
+	UsageErrorScopeMissing  UsageError = "scope_missing"
+	UsageErrorTokenExpired  UsageError = "token_expired"
+	UsageErrorUpstreamError UsageError = "upstream_error"
 )
 
 // ActiveHoursConfig Active hours window for heartbeat scheduling.
@@ -604,7 +811,17 @@ type ActiveHoursConfigPatch struct {
 	ToTime *string `json:"to_time"`
 }
 
-// ActorType Type of authenticated actor.
+// ActorType Type of an authenticated principal or a message author.
+//
+// “USER“/“API_KEY“/“BOT“/“MCP_WORKLOAD“ are authenticatable
+// *principals* — they can carry a credential, populate “AuthContext“, and be
+// the subject of an authz decision. “TEAMS_USER“ is a message-author-only
+// label for an external
+// Microsoft Teams sender: it is written to
+// “conversation_messages.sender_actor_type“ so an inbound Teams turn is
+// attributed honestly, but it is NEVER an authenticated principal. The
+// principal path (“AuthContext“, JWT claims, the “authz“ engine) rejects
+// it via :data:`PRINCIPAL_ACTOR_TYPES` / :func:`assert_principal_actor_type`.
 type ActorType string
 
 // AddonInput Shape of an addon instance as it appears in desired_config JSON.
@@ -666,9 +883,41 @@ type BotConfigUpdate struct {
 	Config OpenClawConfigPatch `json:"config"`
 }
 
+// BotCopyRequest Request to copy an existing bot's definition into a new bot.
+//
+// A copy duplicates what the source bot *is* — its config, managed workspace
+// files, skills, tools, tool domain settings, and credential assignments —
+// and never what it has *lived*: memory, conversations, disk, schedules,
+// devices, health, its email address, or its access list. The caller of the
+// copy becomes the new bot's sole owner.
+type BotCopyRequest struct {
+	// AvatarUrl Avatar image URL — an image data URI (DiceBear SVG, or an uploaded WebP/PNG/JPEG) or an https:// URL. Max 16384 characters. Omit to inherit the source's avatar; send null for none.
+	AvatarUrl *string `json:"avatar_url"`
+
+	// CopySecretPolicies Copy the source's Runtime Vault policy assignments, so the copy can read the same secrets. On by default because a copy that cannot reach its secrets is not a working copy; set false to start the new bot with no vault access. Only a bot owner can call this endpoint, and an owner can assign these policies directly, so this propagates no authority the caller lacks.
+	CopySecretPolicies *bool `json:"copy_secret_policies,omitempty"`
+
+	// Description Short human-facing description / role for the bot (e.g. 'Platform developer'). Display metadata only — not injected into the bot's system prompt. Omit to inherit the source's description; send null to start with none.
+	Description *string `json:"description"`
+
+	// Name Name for the copy. Omit to let the server pick the first free "<source name> (copy)" variant; supplying a name that is already taken in this org is a 409.
+	Name *string `json:"name"`
+}
+
+// BotCopyResponse The created copy, plus what could not come with it.
+//
+// Defined after :class:`BotResponse` because it embeds it.
+type BotCopyResponse struct {
+	// Bot Bot desired/observed state response.
+	Bot BotResponse `json:"bot"`
+
+	// SkippedPrivateCredentialCount Number of bot-private credentials on the source that were not copied. Private credentials are secret material owned by the source bot, so the copy starts without them and must be given its own before it can use those providers.
+	SkippedPrivateCredentialCount *int `json:"skipped_private_credential_count,omitempty"`
+}
+
 // BotCreate Request to create a bot from guided form fields.
 type BotCreate struct {
-	// AvatarUrl Avatar image URL (DiceBear data URI or custom)
+	// AvatarUrl Avatar image URL — an image data URI (DiceBear SVG, or an uploaded WebP/PNG/JPEG) or an https:// URL. Max 16384 characters.
 	AvatarUrl *string `json:"avatar_url"`
 
 	// Config Patchable fields for OpenClaw bot configs.
@@ -687,6 +936,32 @@ type BotCreate struct {
 
 	// GuidedSetup When true, the bot starts in guided-setup mode: it introduces its capabilities and configures itself by chatting with the user. The guided-setup template bundle is unioned with skill_ids/tool_ids.
 	GuidedSetup *bool `json:"guided_setup,omitempty"`
+
+	// Harness Which agent software the bot runs.
+	//
+	// Deliberately named *harness*, not *runtime*: ``runtime`` already carries
+	// five unrelated meanings in this codebase (``Bot.runtime_class``, the bot
+	// runtime image, ``ComponentName.RUNTIME``, Runtime Vault, and the
+	// ``bot_runtime`` audit domain), and *harness* is the vocabulary the native
+	// runtime design already uses.
+	//
+	// Distinct from :class:`BotType`, which discriminates the *shape of the
+	// stored config blob* rather than naming the agent software. See
+	// ``Bot.harness`` for the full note.
+	//
+	// Immutable once set — see ``Bot.harness``.
+	Harness *BotHarness `json:"harness,omitempty"`
+
+	// HostingType Who runs the bot's runtime.
+	//
+	// Classical SaaS framing, with one caveat recorded so it does not drift:
+	// "self-hosted" classically means the customer runs the *whole product*;
+	// here they run only the **runtime**, while the control plane stays
+	// Botyard's. The term is correct at the *bot* level ("this bot is hosted by
+	// you") and must never be read as "self-hosted Botyard".
+	//
+	// Immutable once set — see ``Bot.hosting_type``.
+	HostingType *BotHostingType `json:"hosting_type,omitempty"`
 
 	// Name Bot display name
 	Name string `json:"name"`
@@ -759,8 +1034,46 @@ type BotCredentialAssignmentResponse struct {
 // BotFilterField Fields filterable via the bot search endpoint.
 type BotFilterField string
 
+// BotHarness Which agent software the bot runs.
+//
+// Deliberately named *harness*, not *runtime*: “runtime“ already carries
+// five unrelated meanings in this codebase (“Bot.runtime_class“, the bot
+// runtime image, “ComponentName.RUNTIME“, Runtime Vault, and the
+// “bot_runtime“ audit domain), and *harness* is the vocabulary the native
+// runtime design already uses.
+//
+// Distinct from :class:`BotType`, which discriminates the *shape of the
+// stored config blob* rather than naming the agent software. See
+// “Bot.harness“ for the full note.
+//
+// Immutable once set — see “Bot.harness“.
+type BotHarness string
+
 // BotHealthStatus Bot health monitoring status.
 type BotHealthStatus string
+
+// BotHostingOptions The “(hosting_type, harness)“ combinations a bot may be created with.
+//
+// Exposed so the "Add bot" UI derives its options from the same allowlist the
+// API enforces against, instead of hardcoding the table a third time.
+type BotHostingOptions struct {
+	// Default One permitted ``(hosting_type, harness)`` combination.
+	Default HostingPair `json:"default"`
+
+	// Pairs Every permitted combination, in a stable order. A combination absent from this list is rejected by bot creation.
+	Pairs []HostingPair `json:"pairs"`
+}
+
+// BotHostingType Who runs the bot's runtime.
+//
+// Classical SaaS framing, with one caveat recorded so it does not drift:
+// "self-hosted" classically means the customer runs the *whole product*;
+// here they run only the **runtime**, while the control plane stays
+// Botyard's. The term is correct at the *bot* level ("this bot is hosted by
+// you") and must never be read as "self-hosted Botyard".
+//
+// Immutable once set — see “Bot.hosting_type“.
+type BotHostingType string
 
 // BotListItem Bot list item response.
 type BotListItem struct {
@@ -770,6 +1083,12 @@ type BotListItem struct {
 
 	// CanUse Whether the calling actor can chat with this bot
 	CanUse *bool `json:"can_use,omitempty"`
+
+	// CreatedByActorType Type of actor that created the bot (user or api_key)
+	CreatedByActorType *ActorType `json:"created_by_actor_type"`
+
+	// CreatedByName Display name of the user or API key that created the bot
+	CreatedByName *string `json:"created_by_name"`
 
 	// Description Short human-facing description / role for the bot (e.g. 'Platform developer'). Display metadata only — not injected into the bot's system prompt.
 	Description *string `json:"description"`
@@ -782,12 +1101,26 @@ type BotListItem struct {
 	// HealthStatus Bot health monitoring status.
 	HealthStatus BotHealthStatus `json:"health_status"`
 
+	// HostingType Who runs the bot's runtime.
+	//
+	// Classical SaaS framing, with one caveat recorded so it does not drift:
+	// "self-hosted" classically means the customer runs the *whole product*;
+	// here they run only the **runtime**, while the control plane stays
+	// Botyard's. The term is correct at the *bot* level ("this bot is hosted by
+	// you") and must never be read as "self-hosted Botyard".
+	//
+	// Immutable once set — see ``Bot.hosting_type``.
+	HostingType BotHostingType `json:"hosting_type"`
+
 	// Id Unique bot identifier (UUID)
 	Id string `json:"id"`
 
 	// MaintenanceRestartPending True when a workload-aware maintenance restart is announced / in-flight for this bot (``bots.maintenance_restart`` is set). A pod-recreating update is queued but gated behind the maintenance engine (deferred to a window or waiting for the bot to go idle), so the bot keeps its old pod and stays running even though ``observed_state`` reads ``updating:infra``. UIs surface this as 'Running · update pending' rather than 'Provisioning'.
-	MaintenanceRestartPending *bool  `json:"maintenance_restart_pending,omitempty"`
-	Name                      string `json:"name"`
+	MaintenanceRestartPending *bool `json:"maintenance_restart_pending,omitempty"`
+
+	// MemberRole The calling user's role on this bot (null when not a member)
+	MemberRole *BotMemberRole `json:"member_role"`
+	Name       string         `json:"name"`
 
 	// ObservedState Operator's view of where a bot is in the reconciler phase pipeline.
 	//
@@ -828,8 +1161,14 @@ type BotOnboardingState string
 // BotResponse Bot desired/observed state response.
 type BotResponse struct {
 	// Access Bot visibility within its organization.
-	Access    BotAccess `json:"access"`
-	AvatarUrl *string   `json:"avatar_url"`
+	Access BotAccess `json:"access"`
+
+	// AutoRetryPending True when the bot is FAILED but the reconciler still has a retry scheduled for it (`retry_after` is in the future). Setup is not over: UIs should keep showing progress rather than a terminal 'setup failed' screen, which is what made a first-run bot look broken during a transient config-push error it recovered from a minute later. Goes false once the scheduled retry window has passed without the bot leaving FAILED.
+	AutoRetryPending *bool   `json:"auto_retry_pending,omitempty"`
+	AvatarUrl        *string `json:"avatar_url"`
+
+	// CanManage Whether the calling actor may manage owner-gated bot settings. Advisory for UI affordances; mutation endpoints remain authoritative.
+	CanManage *bool `json:"can_manage,omitempty"`
 
 	// CanUse Whether the calling actor can chat with this bot
 	CanUse           *bool     `json:"can_use,omitempty"`
@@ -860,8 +1199,34 @@ type BotResponse struct {
 	// DurableRootOwnsHome Operator rollout flag for the single-block durable root layout. When true, /home/openclaw lives inside the durable root overlay.
 	DurableRootOwnsHome bool `json:"durable_root_owns_home"`
 
+	// Harness Which agent software the bot runs.
+	//
+	// Deliberately named *harness*, not *runtime*: ``runtime`` already carries
+	// five unrelated meanings in this codebase (``Bot.runtime_class``, the bot
+	// runtime image, ``ComponentName.RUNTIME``, Runtime Vault, and the
+	// ``bot_runtime`` audit domain), and *harness* is the vocabulary the native
+	// runtime design already uses.
+	//
+	// Distinct from :class:`BotType`, which discriminates the *shape of the
+	// stored config blob* rather than naming the agent software. See
+	// ``Bot.harness`` for the full note.
+	//
+	// Immutable once set — see ``Bot.harness``.
+	Harness BotHarness `json:"harness"`
+
 	// HealthStatus Bot health monitoring status.
 	HealthStatus BotHealthStatus `json:"health_status"`
+
+	// HostingType Who runs the bot's runtime.
+	//
+	// Classical SaaS framing, with one caveat recorded so it does not drift:
+	// "self-hosted" classically means the customer runs the *whole product*;
+	// here they run only the **runtime**, while the control plane stays
+	// Botyard's. The term is correct at the *bot* level ("this bot is hosted by
+	// you") and must never be read as "self-hosted Botyard".
+	//
+	// Immutable once set — see ``Bot.hosting_type``.
+	HostingType BotHostingType `json:"hosting_type"`
 
 	// Id Unique bot identifier (UUID)
 	Id string `json:"id"`
@@ -869,6 +1234,12 @@ type BotResponse struct {
 	// LastHealthCheckAt Timestamp of the last health check
 	LastHealthCheckAt *time.Time `json:"last_health_check_at"`
 	LastReconciledAt  *time.Time `json:"last_reconciled_at"`
+
+	// LlmChain The bot's provider chain as it will be, and as it currently is.
+	//
+	// Two states of the same list, which is what lets the LLM card show BEFORE and
+	// AFTER while a config is applying instead of a list of derived consequences.
+	LlmChain *LlmChainState `json:"llm_chain,omitempty"`
 
 	// MaintenanceRestartPending True when a workload-aware maintenance restart is announced / in-flight for this bot (``bots.maintenance_restart`` is set). A pod-recreating update is queued but gated behind the maintenance engine (deferred to a window or waiting for the bot to go idle), so the bot keeps its old pod and stays running even though ``observed_state`` reads ``updating:infra``. UIs surface this as 'Running · update pending' rather than 'Provisioning'.
 	MaintenanceRestartPending *bool `json:"maintenance_restart_pending,omitempty"`
@@ -893,9 +1264,12 @@ type BotResponse struct {
 	// ``pending`` bots receive an onboarding directive in their system prompt
 	// until they call the ``finish_onboarding`` tool, which flips them to
 	// ``complete``. ``none`` means the bot was created without guided setup.
-	OnboardingState      BotOnboardingState `json:"onboarding_state"`
-	OrgId                string             `json:"org_id"`
-	OwnerId              *string            `json:"owner_id"`
+	OnboardingState BotOnboardingState `json:"onboarding_state"`
+	OrgId           string             `json:"org_id"`
+	OwnerId         *string            `json:"owner_id"`
+
+	// PendingConfigChanges Fields that differ between `desired_config` and the bot's last reconciled config (empty once reconciled_generation catches up to config_generation, or before the bot's first-ever reconcile, when there is nothing to diff against yet). Each entry's `path` is rooted at a top-level BotConfig field the bot detail page can edit (thinking_default, reasoning_default, system_prompt_mode, tool_search, heartbeat, skills, tools, model) — use the first path segment to route an entry to its owning card.
+	PendingConfigChanges *[]ConfigFieldDiff `json:"pending_config_changes,omitempty"`
 	ReconcileError       *string            `json:"reconcile_error"`
 	ReconciledGeneration int                `json:"reconciled_generation"`
 
@@ -948,6 +1322,9 @@ type BotRuntimePrivilegeMode string
 
 // BotSearchRequest Request body for POST /v1/orgs/{org_id}/bots/search.
 type BotSearchRequest struct {
+	// IncludePendingDeletion Include bots whose infrastructure teardown is still pending.
+	IncludePendingDeletion *bool `json:"include_pending_deletion,omitempty"`
+
 	// Pagination Query parameters for offset-based paginated endpoints.
 	Pagination *PaginationParams         `json:"pagination,omitempty"`
 	Where      *FilterNodeBotFilterField `json:"where"`
@@ -1128,7 +1505,7 @@ type BotToolRetrySyncRequest struct {
 //
 // For config changes, use PATCH /{bot_slug}/config instead.
 type BotUpdate struct {
-	// AvatarUrl Avatar image URL (DiceBear data URI or custom). Send null to clear; omit to leave unchanged.
+	// AvatarUrl Avatar image URL — an image data URI (DiceBear SVG, or an uploaded WebP/PNG/JPEG) or an https:// URL. Max 16384 characters. Send null to clear; omit to leave unchanged.
 	AvatarUrl *string `json:"avatar_url"`
 
 	// Description Short human-facing description / role for the bot (e.g. 'Platform developer'). Display metadata only — not injected into the bot's system prompt. Send null to clear; omit to leave unchanged.
@@ -1294,26 +1671,33 @@ type CommandsConfigOwnerDisplay string
 // Defaults harden bots against the overflow -> failed-compaction ->
 // stuck-session-write-lock trap (upstream openclaw #699 / #70334). Only
 // serializers whose schema exposes these keys emit them (v2026.6.1+);
-// older versions ignore the fields. Designed to become per-bot
-// configurable from the dashboard.
+// older versions ignore the fields.
+//
+// The token-budget knobs are “| None“ so the builder can OMIT them for a bot
+// whose primary model is routed through a backend that owns native compaction
+// (claude-cli, Codex harness), where they are inert. The concrete field
+// defaults reproduce the historical 200k-window derivation, so a config built
+// without the credential-driven resolution still emits sane safeguards.
+// “timeout_seconds“ stays a non-optional global (a compaction-operation
+// wall-clock cap, not a per-model attribute) and is always emitted.
 type CompactionConfig struct {
-	// MaxActiveTranscriptBytes Trigger proactive local compaction when the active transcript reaches this byte size, independent of (unreliable) token estimates. Default is ~200k tokens at the ~40 bytes/token observed for tool-heavy bots; tune per workload.
-	MaxActiveTranscriptBytes *int `json:"max_active_transcript_bytes,omitempty"`
+	// MaxActiveTranscriptBytes Trigger proactive local compaction when the active transcript reaches this byte size, independent of (unreliable) token estimates. Derived per-model as ``context_window * 40`` (~40 bytes/token for tool-heavy bots). None omits the key.
+	MaxActiveTranscriptBytes *int `json:"max_active_transcript_bytes"`
 
-	// MidTurnPrecheck Run a context-pressure precheck after each tool result so a single large result triggers compaction mid-turn instead of overflowing the next model call. OpenClaw's built-in is off.
-	MidTurnPrecheck *bool `json:"mid_turn_precheck,omitempty"`
+	// MidTurnPrecheck Run a context-pressure precheck after each tool result so a single large result triggers compaction mid-turn instead of overflowing the next model call. OpenClaw's built-in is off. None omits the key.
+	MidTurnPrecheck *bool `json:"mid_turn_precheck"`
 
-	// ReserveTokens Token headroom reserved for reply generation and tool output after compaction. OpenClaw's built-in is 16384; a higher reserve suits tool-heavy bots and leaves room for the compaction run itself to fit under the model context window.
-	ReserveTokens *int `json:"reserve_tokens,omitempty"`
+	// ReserveTokens Token headroom reserved for reply generation and tool output after compaction. Derived per-model from the context window (``max(round(cw * 0.16), 16000)``); None omits the key so OpenClaw uses its built-in (16384). Omitted for native-compaction backends.
+	ReserveTokens *int `json:"reserve_tokens"`
 
-	// ReserveTokensFloor Minimum floor enforced for reserve_tokens in compaction paths (0 disables the floor guard).
-	ReserveTokensFloor *int `json:"reserve_tokens_floor,omitempty"`
+	// ReserveTokensFloor Minimum floor enforced for reserve_tokens in compaction paths (0 disables the floor guard). None omits the key.
+	ReserveTokensFloor *int `json:"reserve_tokens_floor"`
 
-	// TimeoutSeconds Maximum wall-clock seconds allowed for one local compaction operation. Botyard defaults to 10 minutes because large history summaries can legitimately exceed OpenClaw's shorter runtime default.
+	// TimeoutSeconds Maximum wall-clock seconds allowed for one local compaction operation. Botyard defaults to 10 minutes because large history summaries can legitimately exceed OpenClaw's shorter runtime default. Global (not per-model); always emitted.
 	TimeoutSeconds *int `json:"timeout_seconds,omitempty"`
 
-	// TruncateAfterCompaction Rotate the active session transcript to a compacted successor after compaction so future turns load only the summary plus tail, bounding growth. OpenClaw's built-in is off.
-	TruncateAfterCompaction *bool `json:"truncate_after_compaction,omitempty"`
+	// TruncateAfterCompaction Rotate the active session transcript to a compacted successor after compaction so future turns load only the summary plus tail, bounding growth. OpenClaw's built-in is off. None omits the key.
+	TruncateAfterCompaction *bool `json:"truncate_after_compaction"`
 }
 
 // CompactionConfigPatch Patchable compaction fields (all optional; only provided fields apply).
@@ -1351,6 +1735,58 @@ type ConditionBotFilterField struct {
 // ConditionBotFilterFieldKind defines model for ConditionBotFilterField.Kind.
 type ConditionBotFilterFieldKind string
 
+// ConfigFieldDiff One differing field between “desired_config“ and “reconciled_config_json“.
+//
+// “path“ is a dotted path rooted at a :data:`DIFFABLE_FIELDS` entry, e.g.
+// “"heartbeat.every"“ or “"tools.allow"“. The first path segment
+// (“path.split(".")[0]“) is always one of :data:`DIFFABLE_FIELDS`, which
+// the frontend uses to route a diff entry to its owning card.
+type ConfigFieldDiff struct {
+	Kind     ConfigFieldDiffKind       `json:"kind"`
+	NewCount *int                      `json:"new_count"`
+	NewValue *ConfigFieldDiff_NewValue `json:"new_value"`
+	OldCount *int                      `json:"old_count"`
+	OldValue *ConfigFieldDiff_OldValue `json:"old_value"`
+	Path     string                    `json:"path"`
+}
+
+// ConfigFieldDiffKind defines model for ConfigFieldDiff.Kind.
+type ConfigFieldDiffKind string
+
+// ConfigFieldDiffNewValue0 defines model for .
+type ConfigFieldDiffNewValue0 = string
+
+// ConfigFieldDiffNewValue1 defines model for .
+type ConfigFieldDiffNewValue1 = int
+
+// ConfigFieldDiffNewValue2 defines model for .
+type ConfigFieldDiffNewValue2 = float32
+
+// ConfigFieldDiffNewValue3 defines model for .
+type ConfigFieldDiffNewValue3 = bool
+
+// ConfigFieldDiff_NewValue defines model for ConfigFieldDiff.NewValue.
+type ConfigFieldDiff_NewValue struct {
+	union json.RawMessage
+}
+
+// ConfigFieldDiffOldValue0 defines model for .
+type ConfigFieldDiffOldValue0 = string
+
+// ConfigFieldDiffOldValue1 defines model for .
+type ConfigFieldDiffOldValue1 = int
+
+// ConfigFieldDiffOldValue2 defines model for .
+type ConfigFieldDiffOldValue2 = float32
+
+// ConfigFieldDiffOldValue3 defines model for .
+type ConfigFieldDiffOldValue3 = bool
+
+// ConfigFieldDiff_OldValue defines model for ConfigFieldDiff.OldValue.
+type ConfigFieldDiff_OldValue struct {
+	union json.RawMessage
+}
+
 // ContainerImageMcpServerCreate Register a new MCP server that Botyard will run as a K8s pod.
 type ContainerImageMcpServerCreate struct {
 	// Args Argv-style arguments appended to command/entrypoint
@@ -1358,6 +1794,9 @@ type ContainerImageMcpServerCreate struct {
 
 	// Command Argv-style entrypoint override (null = use image default)
 	Command *[]string `json:"command"`
+
+	// CredentialSidecarImage Per-server credential sidecar image override. Omit/null to inherit the provisioner's configured default.
+	CredentialSidecarImage *string `json:"credential_sidecar_image"`
 
 	// Description Optional free-form description shown alongside the server in the UI
 	Description *string `json:"description"`
@@ -1370,6 +1809,9 @@ type ContainerImageMcpServerCreate struct {
 
 	// Image Container image reference (e.g. ``ghcr.io/foo/mcp:1.0``)
 	Image string `json:"image"`
+
+	// IntegrationCredentialIds Integration connections this server is linked to. Unlike every other field here this does not become container configuration: the pod is authorized to fetch short-lived access tokens for these connections and is injected with nothing. The list is the desired state — an update that omits an id unlinks it.
+	IntegrationCredentialIds *[]string `json:"integration_credential_ids,omitempty"`
 
 	// McpCatalogEntryId Catalog entry used to prefill this create payload, if any
 	McpCatalogEntryId *string `json:"mcp_catalog_entry_id"`
@@ -1433,6 +1875,9 @@ type ContainerImageMcpServerDetail struct {
 	// CreatedAt When the server was registered
 	CreatedAt time.Time `json:"created_at"`
 
+	// CredentialSidecarImage Per-server credential sidecar image override; null inherits the provisioner default
+	CredentialSidecarImage *string `json:"credential_sidecar_image"`
+
 	// Description Optional free-form description
 	Description *string `json:"description"`
 
@@ -1447,6 +1892,9 @@ type ContainerImageMcpServerDetail struct {
 
 	// Image Container image reference
 	Image string `json:"image"`
+
+	// IntegrationCredentialIds Integration connections this hosted server may vend tokens for. These are authorization links, not container configuration.
+	IntegrationCredentialIds *[]string `json:"integration_credential_ids,omitempty"`
 
 	// LastError Last reconciler error message, if any
 	LastError *string `json:"last_error"`
@@ -1508,6 +1956,9 @@ type ContainerImageMcpServerDetail struct {
 	// SetupCatalogName Human-readable catalog/template name this server was created from
 	SetupCatalogName *string `json:"setup_catalog_name"`
 
+	// SetupCatalogSlug Canonical catalog slug this server was created from, if any
+	SetupCatalogSlug *string `json:"setup_catalog_slug"`
+
 	// SetupFormSpec Dynamic setup form spec snapshotted when the server was created
 	SetupFormSpec *McpCatalogFormSpec `json:"setup_form_spec"`
 
@@ -1549,6 +2000,9 @@ type ContainerImageMcpServerDetailRuntimeKind string
 type ContainerImageMcpServerSummary struct {
 	// CreatedAt When the server was registered
 	CreatedAt time.Time `json:"created_at"`
+
+	// CredentialSidecarImage Per-server credential sidecar image override; null inherits the provisioner default
+	CredentialSidecarImage *string `json:"credential_sidecar_image"`
 
 	// Description Optional free-form description
 	Description *string `json:"description"`
@@ -1593,6 +2047,9 @@ type ContainerImageMcpServerSummary struct {
 	// SetupCatalogName Human-readable catalog/template name this server was created from
 	SetupCatalogName *string `json:"setup_catalog_name"`
 
+	// SetupCatalogSlug Canonical catalog slug this server was created from, if any
+	SetupCatalogSlug *string `json:"setup_catalog_slug"`
+
 	// SetupLogoUrl Logo URL inherited from the setup catalog source, if any
 	SetupLogoUrl *string `json:"setup_logo_url"`
 
@@ -1614,6 +2071,106 @@ type ContainerImageMcpServerSummary struct {
 
 // ContainerImageMcpServerSummaryRuntimeKind Runtime kind tag — always “container_image“ for this variant
 type ContainerImageMcpServerSummaryRuntimeKind string
+
+// ContextLimitsConfig Per-agent context budget ceilings serialized into the openclaw config.
+//
+// The load-bearing knob is :attr:`tool_result_max_chars`. OpenClaw caps a
+// single *live* tool result at “min(floor(contextWindow * 0.3) * 4, cap)“
+// chars (“resolveLiveToolResultMaxChars“ /
+// “calculateMaxToolResultCharsWithCap“), where “cap“ is this config value
+// when set and otherwise an auto cap derived from the model's context window:
+// 16k chars under 100k tokens, 32k at >=100k, **64k at >=200k**. Every Botyard
+// bot on a modern model therefore lands in the 64k bucket, so a single tool
+// result may legally consume ~16k tokens of context.
+//
+// That auto cap is the mechanism behind the chronic context overflows: measured
+// botyard-mcp responses on a real bot (13-minute window, ~600 KB total) were
+// “search_conversation_history“ 76 KB, “memory_search“ 36 KB, “get_task“
+// 31 KB, “github_list_prs“ 31 KB, “search_tasks“ 29 KB, “list_my_tasks“
+// 22 KB — i.e. all but one pass the 64k cap untouched, and a handful of them
+// fill the window. Sessions were observed overflowing at ~258k compaction
+// tokens with only 47-72 messages.
+//
+// Unlike :class:`ContextPruningConfig` this does not depend on prompt-cache
+// eligibility — “resolveAgentContextLimits“ takes no provider or auth input,
+// and the persistence write path is ungated (it even falls back to 16000
+// rather than "unbounded" when the context window is unknown). So on the
+// **embedded (pi) runner** it applies to every bot whatever model backs it.
+//
+// Two scope limits worth knowing before relying on it:
+//
+//   - On **claude-cli** bots it does not bound the CLI's context at all. Claude
+//     Code's tool results never reach OpenClaw's persistence write path; the cap
+//     only feeds “shouldPreemptivelyCompactBeforePrompt“'s size estimate.
+//   - The mid-turn guard consumer reads it via “midTurnPrecheckOptions“, so
+//     that particular path is live only because Botyard sets
+//     “compaction.mid_turn_precheck=True“. The write-time cap itself is
+//     unconditional.
+type ContextLimitsConfig struct {
+	// MemoryGetDefaultLines Default ``memory_get`` line window when a request omits ``lines``. None omits the key so OpenClaw uses its built-in default.
+	MemoryGetDefaultLines *int `json:"memory_get_default_lines"`
+
+	// MemoryGetMaxChars Ceiling for a single ``memory_get`` excerpt, in chars. None omits the key so OpenClaw uses its built-in default.
+	MemoryGetMaxChars *int `json:"memory_get_max_chars"`
+
+	// PostCompactionMaxChars Max chars retained from AGENTS.md during post-compaction context refresh injection. None omits the key so OpenClaw uses its built-in default.
+	PostCompactionMaxChars *int `json:"post_compaction_max_chars"`
+
+	// ToolResultMaxChars Ceiling for a single live tool result before truncation, in chars. Botyard pins OpenClaw's small-context default (16000, ~4k tokens) for every model instead of letting the >=200k-token auto cap (64000) apply, which is what lets a single 30-76 KB MCP response occupy the window. The value can only lower the effective cap — OpenClaw takes ``min(floor(contextWindow * 0.3) * 4, cap)`` — and truncation is explicit (a truncation notice is appended, minimum 2000 chars kept). None omits the key so OpenClaw uses its auto cap.
+	ToolResultMaxChars *int `json:"tool_result_max_chars"`
+}
+
+// ContextPruningConfig Cache-TTL pruning of *old tool results* out of the in-memory context.
+//
+// Complements compaction rather than duplicating it. Compaction summarises
+// *conversation* messages and explicitly refuses to run when there are none
+// ("[compaction] skipping — no real conversation messages"), which is why a
+// second overflow inside one turn is unrecoverable: after the first compaction
+// rotates the transcript, the window refills with tool output that compaction
+// will not touch. Pruning is the only mechanism that reclaims that space —
+// it soft-trims oversized old tool results (head+tail with a “...“ marker)
+// and hard-clears the rest to a placeholder, in memory only; the on-disk
+// transcript is never rewritten.
+//
+// **Known limitation — this does not reach every bot.** OpenClaw registers the
+// pruning extension only in the embedded (“pi“) agent runner, and only when
+// “isCacheTtlEligibleProvider“ holds: provider “anthropic“ /
+// “anthropic-vertex“, an Anthropic model on Bedrock, “modelApi ==
+// anthropic-messages“, or Gemini 2.5/3 on “google-generative-ai“. A bot
+// whose primary is an OpenAI-family model routed through the Botyard proxy is
+// *not* eligible and gets nothing from this block — for those bots
+// :class:`ContextLimitsConfig` is the whole fix. Emitting it anyway is
+// deliberate: it is inert where ineligible, and where eligible it turns
+// pruning on for providers nothing auto-configures (Gemini).
+//
+// **“ttl“ is deliberately not set here.** It is a prompt-cache *coherence*
+// knob, not a responsiveness one: pruning rewrites the prompt prefix, so the
+// TTL exists to hold pruning back until the provider's prompt cache has
+// lapsed anyway, at which point the re-cache is free. OpenClaw's Anthropic
+// auto-config is a matched set — “ttl: 1h“ alongside a 1h heartbeat that
+// deliberately keeps an extended cache warm — and overriding the TTL alone
+// would prune into that warm cache and bust it, precisely when it is most
+// expensive (pruning only engages once the context is >=30% full). Since this
+// block is inert on the OpenAI-family bots that were actually overflowing,
+// any TTL we pinned would apply *only* to bots that were not failing. Leave it
+// to OpenClaw unless there is a measured cache-cost/context-pressure tradeoff
+// to act on.
+type ContextPruningConfig struct {
+	// KeepLastAssistants Number of trailing assistant turns kept unpruned. None omits the key so OpenClaw uses its built-in (3).
+	KeepLastAssistants *int `json:"keep_last_assistants"`
+
+	// MinPrunableToolChars Minimum total chars across prunable tool results before the hard-clear pass runs (soft-trim is not gated by it). The gate is summed over **post-soft-trim** sizes, so a result saturated at ``tool_result_max_chars`` has already been cut to ~3.1k chars (``softTrim`` head 1500 + tail 1500 + notice) by the time it counts: OpenClaw's built-in 50000 needs ~16 such results, and this 32000 needs ~10. A modest loosening, not the two-result trigger it looks like — the knob that actually decides how hard pruning bites is ``softTrim.maxChars``, which Botyard does not currently override. None omits the key.
+	MinPrunableToolChars *int `json:"min_prunable_tool_chars"`
+
+	// Mode ``cache-ttl`` prunes old tool results once the prompt cache TTL has elapsed; ``off`` disables pruning. None omits the key, which lets OpenClaw's Anthropic auto-default (``cache-ttl`` + 1h TTL) apply.
+	Mode *ContextPruningConfigMode `json:"mode"`
+
+	// Ttl How long after the last prompt-cache touch before pruning may run. Defaults to None (key omitted) so OpenClaw's own value applies — its built-in is 5m and ``applyAnthropicConfigDefaults`` installs 1h for Anthropic auth, paired with a 1h heartbeat that keeps an extended cache warm. Lowering it prunes into a still-warm cache and busts it; see the class docstring before overriding.
+	Ttl *string `json:"ttl"`
+}
+
+// ContextPruningConfigMode “cache-ttl“ prunes old tool results once the prompt cache TTL has elapsed; “off“ disables pruning. None omits the key, which lets OpenClaw's Anthropic auto-default (“cache-ttl“ + 1h TTL) apply.
+type ContextPruningConfigMode string
 
 // CpuMetrics defines model for CpuMetrics.
 type CpuMetrics struct {
@@ -1640,12 +2197,17 @@ type CredentialBackedModelConfig struct {
 	Headers                   *map[string]string                        `json:"headers,omitempty"`
 	Id                        string                                    `json:"id"`
 	Input                     *[]CredentialBackedModelConfigInput       `json:"input,omitempty"`
+	MaxActiveTranscriptBytes  *int                                      `json:"max_active_transcript_bytes"`
 	MaxTokens                 *int                                      `json:"max_tokens,omitempty"`
+	MidTurnPrecheck           *bool                                     `json:"mid_turn_precheck"`
 	Reasoning                 *bool                                     `json:"reasoning,omitempty"`
+	ReserveTokens             *int                                      `json:"reserve_tokens"`
+	ReserveTokensFloor        *int                                      `json:"reserve_tokens_floor"`
 	ResponsesCompactThreshold *int                                      `json:"responses_compact_threshold"`
 	ResponsesServerCompaction *bool                                     `json:"responses_server_compaction"`
 	SupportsStore             *bool                                     `json:"supports_store"`
 	TextVerbosity             *CredentialBackedModelConfigTextVerbosity `json:"text_verbosity"`
+	TruncateAfterCompaction   *bool                                     `json:"truncate_after_compaction"`
 }
 
 // CredentialBackedModelConfigInput defines model for CredentialBackedModelConfig.Input.
@@ -1654,22 +2216,20 @@ type CredentialBackedModelConfigInput string
 // CredentialBackedModelConfigTextVerbosity defines model for CredentialBackedModelConfig.TextVerbosity.
 type CredentialBackedModelConfigTextVerbosity string
 
+// CredentialBotLinksRequest Request to replace a credential's explicit bot assignments.
+type CredentialBotLinksRequest struct {
+	// BotIds Full replacement set of bot IDs assigned to this credential
+	BotIds []string `json:"bot_ids"`
+}
+
+// CredentialBotLinksResponse Current explicit bot assignments for a credential.
+type CredentialBotLinksResponse struct {
+	// BotIds Bot IDs explicitly assigned to this credential
+	BotIds []string `json:"bot_ids"`
+}
+
 // CredentialProvider Known provider vendors.
 type CredentialProvider string
-
-// CredentialProviderConfig OpenClaw provider entry generated from a Botyard credential.
-type CredentialProviderConfig struct {
-	Api *OpenClawModelApi `json:"api"`
-
-	// ApiProtocol Wire protocol for communicating with a provider.
-	ApiProtocol ApiProtocol                   `json:"api_protocol"`
-	Headers     *map[string]string            `json:"headers,omitempty"`
-	Models      []CredentialBackedModelConfig `json:"models"`
-
-	// Provider Known provider vendors.
-	Provider CredentialProvider `json:"provider"`
-	Slug     string             `json:"slug"`
-}
 
 // CredentialResponse Provider credential response. Sensitive values are always masked.
 type CredentialResponse struct {
@@ -1685,7 +2245,10 @@ type CredentialResponse struct {
 	CreatedAt    time.Time `json:"created_at"`
 	CredentialId string    `json:"credential_id"`
 	Enabled      bool      `json:"enabled"`
-	IsDefault    bool      `json:"is_default"`
+
+	// ExternalAccountId Stable non-secret upstream account key for an integration OAuth connection (disambiguates multiple connections of the same provider); null for other credentials
+	ExternalAccountId *string `json:"external_account_id"`
+	IsDefault         bool    `json:"is_default"`
 
 	// KeyPrefix First 8 chars of API key + '...' for identification
 	KeyPrefix      *string    `json:"key_prefix"`
@@ -1713,6 +2276,25 @@ type CredentialResponse struct {
 // CredentialScope What a credential is used for.
 type CredentialScope string
 
+// CredentialUsageResponse Subscription usage limits for a personal-subscription LLM credential.
+//
+// Limits belong to the underlying subscription account and are shared across
+// every bot using this credential. “windows“ is empty when “error“ is set.
+type CredentialUsageResponse struct {
+	// Error Typed reason the windows are unavailable (token_expired, scope_missing, rate_limited, upstream_error, malformed); null on success.
+	Error *UsageError `json:"error"`
+
+	// Plan Best-effort plan label (e.g. Codex plan + credit balance).
+	Plan *string `json:"plan"`
+
+	// Provider Known provider vendors.
+	Provider CredentialProvider `json:"provider"`
+
+	// RetryAt When the provider's rate limit is expected to lift, taken from its Retry-After header or a default backoff. Set only for rate_limited.
+	RetryAt *time.Time            `json:"retry_at"`
+	Windows []UsageWindowResponse `json:"windows"`
+}
+
 // DeployStatus Deployment status for any deployable entity (skills, bot files, etc.).
 type DeployStatus string
 
@@ -1720,6 +2302,83 @@ type DeployStatus string
 //
 // Set by the API; the reconciler drives “observed_state“ toward this value.
 type DesiredState string
+
+// Domain Top-level product area a permission belongs to (a permission axis).
+type Domain string
+
+// EffectivePermissionResponse One permission an actor holds, with the authority that produced it.
+type EffectivePermissionResponse struct {
+	CreatedAt          *time.Time `json:"created_at"`
+	GrantedByActorId   *string    `json:"granted_by_actor_id"`
+	GrantedByActorType *ActorType `json:"granted_by_actor_type"`
+	Label              string     `json:"label"`
+
+	// Pattern A permission pattern on the wire. ``null`` on an axis means wildcard.
+	Pattern           PermissionPatternPayload `json:"pattern"`
+	Reason            *string                  `json:"reason"`
+	Revocable         bool                     `json:"revocable"`
+	RevocableByCaller bool                     `json:"revocable_by_caller"`
+	RoleKey           *string                  `json:"role_key"`
+	RowId             *string                  `json:"row_id"`
+	Scope             *ResourceScopePayload    `json:"scope"`
+
+	// ScopeShape *What* a held permission applies to — the shape of the authority.
+	//
+	// Three answers, because there are three genuinely different things an actor can
+	// hold and a boolean can express two. Reporting one as another is the failure
+	// this vocabulary exists to prevent: the question is asked during an incident,
+	// to decide whose access to cut off.
+	//
+	// ``KIND_LEVEL``
+	//     Every instance of the resource type. ``org:viewer`` reading any bot.
+	// ``INSTANCE``
+	//     **One record that already exists.** A bot's self grant over its own row.
+	// ``ANCHORED``
+	//     **Everything belonging to one named record** — an open-ended set that
+	//     grows on its own. "May post in the conversations of bot X" also covers a
+	//     conversation created tomorrow.
+	//
+	// ``INSTANCE`` and ``ANCHORED`` both name exactly one bot, so they read
+	// identically on screen while meaning different things. Rendering ``ANCHORED``
+	// as ``INSTANCE`` understates it — the dangerous direction, and the same
+	// understatement that made merging scoped holders with kind-level ones a
+	// wrong-but-authoritative answer to "who can reach admin?".
+	//
+	// **``ANCHORED`` is declared before anything emits it, deliberately.** Anchored
+	// scope arrives with Phase 2 (platform-development task 1607); declaring the
+	// value now means every consumer handles it from the day it first appears, and
+	// Phase 2 is then purely additive. Adding a third value to a two-valued field
+	// *after* a UI is built on it is a breaking change on a security surface.
+	ScopeShape PermissionScopeShape `json:"scope_shape"`
+
+	// Source Which authority put a permission on an actor.
+	//
+	// Four authorities, distinguished by **who can change them** — which is the
+	// only distinction a permissions view exists to make:
+	//
+	// ``ROLE_BUNDLE``
+	//     The code-defined floor in :data:`~botyard_core.authz.roles.ROLE_PERMISSIONS`.
+	//     Changed by shipping code, never by a grant. Not revocable through this
+	//     surface; the way to remove it is to change the actor's *role*.
+	// ``ROLE_DELTA``
+	//     A ``role_permissions`` row — an org's addition on top of the floor.
+	//     Revocable, but it affects **everyone holding the role**, not this actor.
+	// ``ACTOR_GRANT``
+	//     An ``actor_grants`` row for this actor specifically. The only source a
+	//     per-actor revoke acts on.
+	// ``SELF_GRANT``
+	//     The permanent, instance-scoped grant a bot holds over its own record.
+	//     Code-defined and never persisted, so there is no row to delete.
+	//
+	// ``ROLE_BUNDLE`` and ``SELF_GRANT`` are therefore **not revocable**, and a UI
+	// must render them as such rather than as a grant with a missing delete button
+	// — an action that reports success and changes nothing is worse than no action.
+	//
+	// The MCP audit path's flat ``grant_source`` label (``org_viewer``,
+	// ``bot_unrestricted``, ...) is derivable from ``(source, role_key)``, so the
+	// two surfaces stay reconcilable instead of forking into a third vocabulary.
+	Source PermissionSource `json:"source"`
+}
 
 // FilterNodeBotFilterField defines model for FilterNode_BotFilterField_.
 type FilterNodeBotFilterField struct {
@@ -1810,6 +2469,35 @@ type HeartbeatConfigPatch struct {
 // HeartbeatConfigPatchEvery How often the heartbeat fires. Send '0m' (or null) to disable heartbeats; omit the field to leave the current interval unchanged.
 type HeartbeatConfigPatchEvery string
 
+// HostingPair One permitted “(hosting_type, harness)“ combination.
+type HostingPair struct {
+	// Harness Which agent software the bot runs.
+	//
+	// Deliberately named *harness*, not *runtime*: ``runtime`` already carries
+	// five unrelated meanings in this codebase (``Bot.runtime_class``, the bot
+	// runtime image, ``ComponentName.RUNTIME``, Runtime Vault, and the
+	// ``bot_runtime`` audit domain), and *harness* is the vocabulary the native
+	// runtime design already uses.
+	//
+	// Distinct from :class:`BotType`, which discriminates the *shape of the
+	// stored config blob* rather than naming the agent software. See
+	// ``Bot.harness`` for the full note.
+	//
+	// Immutable once set — see ``Bot.harness``.
+	Harness BotHarness `json:"harness"`
+
+	// HostingType Who runs the bot's runtime.
+	//
+	// Classical SaaS framing, with one caveat recorded so it does not drift:
+	// "self-hosted" classically means the customer runs the *whole product*;
+	// here they run only the **runtime**, while the control plane stays
+	// Botyard's. The term is correct at the *bot* level ("this bot is hosted by
+	// you") and must never be read as "self-hosted Botyard".
+	//
+	// Immutable once set — see ``Bot.hosting_type``.
+	HostingType BotHostingType `json:"hosting_type"`
+}
+
 // IdentityConfig Bot agent identity (mutable — patch_model uses setattr).
 type IdentityConfig struct {
 	Avatar *string `json:"avatar"`
@@ -1827,8 +2515,105 @@ type IdentityConfigPatch struct {
 	Theme *string `json:"theme"`
 }
 
+// LlmChainEntry One credential link, in the bot's routing order — stored losslessly.
+//
+// This is the **authoritative** record of a bot's LLM routing.
+// “primary“/“fallbacks“/“allowed_models“/“providers“ are derived from
+// it by :func:`derive_routing`; none of them is stored.
+//
+// Why it has to live here rather than in “bot_credential_links“: that table
+// is keyed “(bot_id, scope, ordinal)“ and apply is a destructive
+// scope-replace, so ordinal — the very thing a reorder changes — is rewritten
+// and a removed entry's row simply vanishes. There is no stable per-entry
+// identity to hang a “current_*“ column on, which is why credentials alone
+// can never answer "what was the chain before this change?". Storing the
+// chain in the config puts it on the same desired/reconciled footing as every
+// other stateful thing on the bot.
+//
+// Why it can't be recovered from the derived fields either: an HTTP link
+// projects to “ModelRef(provider="botyard", model=<id>)“, which carries no
+// credential identity, and :func:`derive_routing` collapses CLI entries that
+// share a ref, so the derived ref count is not the chain length. The
+// projection is lossy in that direction — which is exactly why the chain
+// itself must not be. One entry per eligible credential link, always; the
+// collapse happens at projection time and never in storage.
+//
+// “routed_model“ is None for CLI-backed links — they are delivered through
+// “agents.defaults.cliBackends“, not “models.providers“. Carrying the
+// resolved model here (rather than re-reading the credential preset) is what
+// keeps derivation a **pure, synchronous** function: the serializer has no
+// database session, so anything the wire format needs must already be in the
+// config.
+type LlmChainEntry struct {
+	// Alias OpenClaw ``/model`` slash-command alias, already deduped against earlier entries at build time so the resolved alias is unambiguous.
+	Alias *string `json:"alias"`
+
+	// ApiProtocol Wire protocol for communicating with a provider.
+	ApiProtocol  ApiProtocol `json:"api_protocol"`
+	CredentialId string      `json:"credential_id"`
+
+	// Label Human-readable credential label, shown in the bot UI
+	Label string `json:"label"`
+
+	// ModelId The model the user picked for this credential. For CLI links this is the short form (``opus-4-7``); the ``claude-`` prefix belongs to the OpenClaw ref and is added by :meth:`to_ref`.
+	ModelId string `json:"model_id"`
+	Ordinal int    `json:"ordinal"`
+
+	// Provider Known provider vendors.
+	Provider CredentialProvider `json:"provider"`
+
+	// ProviderApi The credential preset's ``openclaw_api``, which is the provider-level API and can differ from the routed model's own (a Snowflake credential speaks openai-compatible while serving anthropic-messages models). Stored because the serializer cannot re-read the preset.
+	ProviderApi *OpenClawModelApi            `json:"provider_api"`
+	RoutedModel *CredentialBackedModelConfig `json:"routed_model"`
+
+	// Slug Credential slug — provider entry key and proxy routing header
+	Slug string `json:"slug"`
+}
+
+// LlmChainEntryResponse One credential in the bot's provider chain, as the UI renders it.
+//
+// Deliberately slimmer than the stored “LlmChainEntry“: the resolved routed
+// model it carries is serializer input — context windows, token budgets,
+// compaction knobs — and nothing in the UI reads it. Projecting instead of
+// echoing the stored entry keeps a bot detail response from growing by a
+// kilobyte per linked credential.
+type LlmChainEntryResponse struct {
+	// ApiProtocol How the credential is reached, e.g. claude_code_cli
+	ApiProtocol string `json:"api_protocol"`
+
+	// CredentialId The credential backing this position in the chain
+	CredentialId string `json:"credential_id"`
+
+	// Label Human-readable credential label
+	Label string `json:"label"`
+
+	// ModelId The model this credential routes to
+	ModelId string `json:"model_id"`
+
+	// Ordinal Position in the chain — 0 is primary, the rest fall back
+	Ordinal int `json:"ordinal"`
+
+	// Provider Credential provider, e.g. anthropic / openai
+	Provider string `json:"provider"`
+}
+
+// LlmChainState The bot's provider chain as it will be, and as it currently is.
+//
+// Two states of the same list, which is what lets the LLM card show BEFORE and
+// AFTER while a config is applying instead of a list of derived consequences.
+type LlmChainState struct {
+	// Desired The chain the bot will run once the current config is applied
+	Desired *[]LlmChainEntryResponse `json:"desired,omitempty"`
+
+	// Reconciled The chain the bot is running right now, or null when no chain has been recorded yet — a bot that has never reconciled has nothing to compare against, and the card must say so rather than implying the chain was empty. An empty list means the bot really has no LLM credential.
+	Reconciled *[]LlmChainEntryResponse `json:"reconciled"`
+}
+
 // ManagedRemoteMcpServerCreate Register a new MCP server that Botyard proxies to a vendor-hosted URL.
 type ManagedRemoteMcpServerCreate struct {
+	// AcknowledgedCredentialHost Destination host the caller accepts will receive this server's Runtime Vault secrets. Required when ``secret_headers`` are set and the endpoint is not the catalog template's own; must equal the host of ``endpoint_url``. Naming the host rather than sending a bare flag is deliberate: it proves the caller knew *where* the secret was going, and a host changed after the confirmation was shown no longer matches. Recorded to the audit trail.
+	AcknowledgedCredentialHost *string `json:"acknowledged_credential_host"`
+
 	// Description Optional free-form description shown alongside the server in the UI
 	Description *string `json:"description"`
 
@@ -1847,8 +2632,14 @@ type ManagedRemoteMcpServerCreate struct {
 	// RuntimeKind Runtime kind tag — always ``managed_remote`` for this variant
 	RuntimeKind ManagedRemoteMcpServerCreateRuntimeKind `json:"runtime_kind"`
 
+	// SecretHeaders Header name to Runtime Vault key path resolved just in time
+	SecretHeaders *map[string]string `json:"secret_headers,omitempty"`
+
 	// Slug URL-safe identifier — server-generated from ``name`` when omitted. Must match ``^[a-z0-9][a-z0-9-]{0,63}$`` if provided.
 	Slug *string `json:"slug"`
+
+	// StaticHeaders Non-sensitive outbound headers added to every remote request
+	StaticHeaders *map[string]string `json:"static_headers,omitempty"`
 
 	// Transport Wire transport a deployed MCP server exposes to the gateway.
 	Transport *McpServerTransport `json:"transport,omitempty"`
@@ -1905,8 +2696,14 @@ type ManagedRemoteMcpServerDetail struct {
 	// RuntimeKind Runtime kind tag — always ``managed_remote`` for this variant
 	RuntimeKind ManagedRemoteMcpServerDetailRuntimeKind `json:"runtime_kind"`
 
+	// SecretHeaders Header name to Runtime Vault key path; secret values are never returned
+	SecretHeaders *map[string]string `json:"secret_headers,omitempty"`
+
 	// SetupCatalogName Human-readable catalog/template name this server was created from
 	SetupCatalogName *string `json:"setup_catalog_name"`
+
+	// SetupCatalogSlug Canonical catalog slug this server was created from, if any
+	SetupCatalogSlug *string `json:"setup_catalog_slug"`
 
 	// SetupFormSpec Dynamic setup form spec snapshotted when the server was created
 	SetupFormSpec *McpCatalogFormSpec `json:"setup_form_spec"`
@@ -1925,6 +2722,9 @@ type ManagedRemoteMcpServerDetail struct {
 
 	// Slug URL-safe unique-per-org identifier
 	Slug string `json:"slug"`
+
+	// StaticHeaders Non-sensitive outbound headers added to every remote request
+	StaticHeaders *map[string]string `json:"static_headers,omitempty"`
 
 	// ToolCount Number of tools in the last successful tools/list snapshot (0 if uncached)
 	ToolCount int `json:"tool_count"`
@@ -1990,6 +2790,9 @@ type ManagedRemoteMcpServerSummary struct {
 	// SetupCatalogName Human-readable catalog/template name this server was created from
 	SetupCatalogName *string `json:"setup_catalog_name"`
 
+	// SetupCatalogSlug Canonical catalog slug this server was created from, if any
+	SetupCatalogSlug *string `json:"setup_catalog_slug"`
+
 	// SetupLogoUrl Logo URL inherited from the setup catalog source, if any
 	SetupLogoUrl *string `json:"setup_logo_url"`
 
@@ -2016,6 +2819,9 @@ type ManagedRemoteMcpServerSummaryRuntimeKind string
 type McpCatalogFormField struct {
 	// AllowedModes Allowed input modes for text_or_secret_ref fields
 	AllowedModes *[]McpCatalogFormFieldAllowedModes `json:"allowed_modes"`
+
+	// CredentialProvider Provider whose connected credentials this field offers. Required for integration fields, rejected on every other kind.
+	CredentialProvider *CredentialProvider `json:"credential_provider"`
 
 	// DefaultMode Initial input mode for text_or_secret_ref fields
 	DefaultMode *McpCatalogFormFieldDefaultMode `json:"default_mode"`
@@ -2050,8 +2856,8 @@ type McpCatalogFormField struct {
 	// SuggestedSecretPath Suggested dotted secret key path for secret-ref-capable fields
 	SuggestedSecretPath *string `json:"suggested_secret_path"`
 
-	// Target Where a dynamic catalog form field compiles in ``McpServerCreate``.
-	Target McpCatalogFormFieldTarget `json:"target"`
+	// Target Where this field compiles. Required for every kind except integration, which links a connection to this server rather than compiling into configuration, and therefore has no target.
+	Target *McpCatalogFormFieldTarget `json:"target"`
 }
 
 // McpCatalogFormFieldAllowedModes defines model for McpCatalogFormField.AllowedModes.
@@ -2092,14 +2898,14 @@ type McpCatalogFormFieldTargetType string
 
 // McpCatalogFormFieldValue Current value for one dynamic MCP catalog form field.
 type McpCatalogFormFieldValue struct {
-	// Mode How this value should be interpreted for secret-capable fields
+	// Mode How this value should be interpreted. plaintext and secret_ref are the two input modes of a text_or_secret_ref field. integration is not an input mode at all — it marks the value of an integration field, which is the id of the connection this server is linked to. Nothing is injected into the pod for it.
 	Mode *McpCatalogFormFieldValueMode `json:"mode,omitempty"`
 
-	// Value Plaintext value or secret reference path for the field
+	// Value Plaintext value or secret reference path for the field; the linked connection's credential id for integration fields
 	Value *string `json:"value,omitempty"`
 }
 
-// McpCatalogFormFieldValueMode How this value should be interpreted for secret-capable fields
+// McpCatalogFormFieldValueMode How this value should be interpreted. plaintext and secret_ref are the two input modes of a text_or_secret_ref field. integration is not an input mode at all — it marks the value of an integration field, which is the id of the connection this server is linked to. Nothing is injected into the pod for it.
 type McpCatalogFormFieldValueMode string
 
 // McpCatalogFormSpec Botyard-owned dynamic form spec for curated MCP catalog entries.
@@ -2168,11 +2974,17 @@ type McpServerTransport string
 // either requires delete-and-recreate so the reconciler doesn't need to
 // re-plan pod primitives mid-flight.
 type McpServerUpdate struct {
+	// AcknowledgedCredentialHost Destination host the caller accepts will receive this server's Runtime Vault secrets. Required when re-pointing ``endpoint_url`` at a different host on a managed-remote row that has ``secret_headers``; must equal the host of the new ``endpoint_url``. Changing only the path on the same host needs nothing — the secret already goes there. Naming the host rather than sending a bare flag is deliberate: it proves the caller knew *where* the secret was going, and a host changed after the confirmation was shown no longer matches. Recorded to the audit trail.
+	AcknowledgedCredentialHost *string `json:"acknowledged_credential_host"`
+
 	// Args Argv-style arguments appended to command. Container-image rows only.
 	Args *[]string `json:"args"`
 
 	// Command Argv-style entrypoint override. Container-image rows only.
 	Command *[]string `json:"command"`
+
+	// CredentialSidecarImage Per-server credential sidecar image override. Send null to inherit the provisioner default. Container-image rows only.
+	CredentialSidecarImage *string `json:"credential_sidecar_image"`
 
 	// Description Free-form description
 	Description *string `json:"description"`
@@ -2188,6 +3000,9 @@ type McpServerUpdate struct {
 
 	// Image Container image reference. Container-image rows only.
 	Image *string `json:"image"`
+
+	// IntegrationCredentialIds Integration connections this server is linked to (full replacement). Sending a list that omits a currently-linked connection unlinks it. Container-image rows only.
+	IntegrationCredentialIds *[]string `json:"integration_credential_ids"`
 
 	// Name Human-readable label (unique per org)
 	Name *string `json:"name"`
@@ -2221,8 +3036,14 @@ type McpServerUpdate struct {
 	// SecretFileMounts Absolute container file path → secret_key_path mounted as read-only files (full replacement). Container-image rows only.
 	SecretFileMounts *map[string]string `json:"secret_file_mounts"`
 
+	// SecretHeaders Header name to Runtime Vault key path (full replacement; send {} to clear). Managed-remote rows only.
+	SecretHeaders *map[string]string `json:"secret_headers,omitempty"`
+
 	// Slug URL-safe identifier (unique per org among non-deleted servers)
 	Slug *string `json:"slug"`
+
+	// StaticHeaders Non-sensitive outbound headers (full replacement; send {} to clear). Managed-remote rows only.
+	StaticHeaders *map[string]string `json:"static_headers,omitempty"`
 }
 
 // McpToolSummary A single tool advertised by an MCP server's “tools/list“ handshake.
@@ -2283,44 +3104,56 @@ type MemoryMetrics struct {
 // extending this enum + a one-time migration — never by widening the table.
 type MeteredResource string
 
+// MissingPermissionResponse A permission to prompt for, and the tools that need it.
+//
+// Grouped on “(permission, resource_kind)“. Self-scoped requirements never
+// reach this list — they are excluded before grouping, because the self grant
+// is permanent and asking a user to grant it would be asking for something
+// already true and impossible to revoke.
+type MissingPermissionResponse struct {
+	GrantableByCaller bool   `json:"grantable_by_caller"`
+	Label             string `json:"label"`
+
+	// Permission A permission pattern on the wire. ``null`` on an axis means wildcard.
+	Permission PermissionPatternPayload `json:"permission"`
+
+	// ResourceKind Which resource a tool's permission check targets.
+	//
+	// ``SELF_BOT`` is the shape roughly half the tool surface needs: the tool acts
+	// on the calling bot's own record (its config, files, memory, services,
+	// schedules...). Resolving it to a concrete resource reference is what makes
+	// the self grant instance-scoped, so a tool that resolves the *wrong* bot id is
+	// denied.
+	//
+	// Part of the shared vocabulary rather than the MCP service because the
+	// distinction is load-bearing on the *product* side too: the self grant is
+	// permanent and not user-managed, so a ``SELF_BOT`` tool can never be the
+	// subject of a permission prompt or a revoke cascade. A surface that cannot see
+	// this axis cannot implement that exemption.
+	ResourceKind ToolResourceKind `json:"resource_kind"`
+	ToolIds      []string         `json:"tool_ids"`
+}
+
 // ModelConfig LLM model configuration (mutable — patch_model uses setattr).
+//
+// “chain“ is authoritative. “primary“, “fallbacks“, “allowed_models“
+// and “providers“ are **not stored** — read them through
+// :func:`derive_routing`, or via the convenience properties below.
 type ModelConfig struct {
-	AllowedModels *map[string]AllowedAgentModelConfig `json:"allowed_models,omitempty"`
+	Chain *[]LlmChainEntry `json:"chain,omitempty"`
+
+	// CliAllowlist Every model the single registered claude-cli backend accepts, from the credential preset. Stored input rather than derived output: it is a catalogue snapshot of the backend, not a projection of the chain, and without it OpenClaw's ``/model`` command rejects any CLI ref the bot is not currently routed to.
+	CliAllowlist  *map[string]AllowedAgentModelConfig `json:"cli_allowlist,omitempty"`
 	ContextWindow *int                                `json:"context_window,omitempty"`
-	Fallbacks     *[]ModelRef                         `json:"fallbacks,omitempty"`
 	Input         *[]ModelConfigInput                 `json:"input,omitempty"`
 	MaxTokens     *int                                `json:"max_tokens,omitempty"`
-
-	// Primary A reference to a model within an OpenClaw provider.
-	//
-	// Mirrors OpenClaw's ``ModelRef`` type (``{ provider, model }``).
-	// The provider field is the key in ``models.providers`` (e.g. ``"botyard"``),
-	// and model is the model ID within that provider (e.g. ``"gpt-5.4"``).
-	Primary      *ModelRef                   `json:"primary,omitempty"`
-	ProviderName *string                     `json:"provider_name,omitempty"`
-	Providers    *[]CredentialProviderConfig `json:"providers,omitempty"`
-	ProxyBaseUrl *string                     `json:"proxy_base_url,omitempty"`
-	Reasoning    *bool                       `json:"reasoning,omitempty"`
+	ProviderName  *string                             `json:"provider_name,omitempty"`
+	ProxyBaseUrl  *string                             `json:"proxy_base_url,omitempty"`
+	Reasoning     *bool                               `json:"reasoning,omitempty"`
 }
 
 // ModelConfigInput defines model for ModelConfig.Input.
 type ModelConfigInput string
-
-// ModelConfigPatch Patchable fields for model configuration.
-type ModelConfigPatch struct {
-	// Primary Primary model
-	Primary *ModelRef `json:"primary"`
-}
-
-// ModelRef A reference to a model within an OpenClaw provider.
-//
-// Mirrors OpenClaw's “ModelRef“ type (“{ provider, model }“).
-// The provider field is the key in “models.providers“ (e.g. “"botyard"“),
-// and model is the model ID within that provider (e.g. “"gpt-5.4"“).
-type ModelRef struct {
-	Model    string  `json:"model"`
-	Provider *string `json:"provider,omitempty"`
-}
 
 // ObservedState Operator's view of where a bot is in the reconciler phase pipeline.
 //
@@ -2394,9 +3227,89 @@ type OpenClawBotConfig struct {
 	// Defaults harden bots against the overflow -> failed-compaction ->
 	// stuck-session-write-lock trap (upstream openclaw #699 / #70334). Only
 	// serializers whose schema exposes these keys emit them (v2026.6.1+);
-	// older versions ignore the fields. Designed to become per-bot
-	// configurable from the dashboard.
+	// older versions ignore the fields.
+	//
+	// The token-budget knobs are ``| None`` so the builder can OMIT them for a bot
+	// whose primary model is routed through a backend that owns native compaction
+	// (claude-cli, Codex harness), where they are inert. The concrete field
+	// defaults reproduce the historical 200k-window derivation, so a config built
+	// without the credential-driven resolution still emits sane safeguards.
+	// ``timeout_seconds`` stays a non-optional global (a compaction-operation
+	// wall-clock cap, not a per-model attribute) and is always emitted.
 	Compaction *CompactionConfig `json:"compaction,omitempty"`
+
+	// ContextLimits Per-agent context budget ceilings serialized into the openclaw config.
+	//
+	// The load-bearing knob is :attr:`tool_result_max_chars`. OpenClaw caps a
+	// single *live* tool result at ``min(floor(contextWindow * 0.3) * 4, cap)``
+	// chars (``resolveLiveToolResultMaxChars`` /
+	// ``calculateMaxToolResultCharsWithCap``), where ``cap`` is this config value
+	// when set and otherwise an auto cap derived from the model's context window:
+	// 16k chars under 100k tokens, 32k at >=100k, **64k at >=200k**. Every Botyard
+	// bot on a modern model therefore lands in the 64k bucket, so a single tool
+	// result may legally consume ~16k tokens of context.
+	//
+	// That auto cap is the mechanism behind the chronic context overflows: measured
+	// botyard-mcp responses on a real bot (13-minute window, ~600 KB total) were
+	// ``search_conversation_history`` 76 KB, ``memory_search`` 36 KB, ``get_task``
+	// 31 KB, ``github_list_prs`` 31 KB, ``search_tasks`` 29 KB, ``list_my_tasks``
+	// 22 KB — i.e. all but one pass the 64k cap untouched, and a handful of them
+	// fill the window. Sessions were observed overflowing at ~258k compaction
+	// tokens with only 47-72 messages.
+	//
+	// Unlike :class:`ContextPruningConfig` this does not depend on prompt-cache
+	// eligibility — ``resolveAgentContextLimits`` takes no provider or auth input,
+	// and the persistence write path is ungated (it even falls back to 16000
+	// rather than "unbounded" when the context window is unknown). So on the
+	// **embedded (pi) runner** it applies to every bot whatever model backs it.
+	//
+	// Two scope limits worth knowing before relying on it:
+	//
+	// * On **claude-cli** bots it does not bound the CLI's context at all. Claude
+	//   Code's tool results never reach OpenClaw's persistence write path; the cap
+	//   only feeds ``shouldPreemptivelyCompactBeforePrompt``'s size estimate.
+	// * The mid-turn guard consumer reads it via ``midTurnPrecheckOptions``, so
+	//   that particular path is live only because Botyard sets
+	//   ``compaction.mid_turn_precheck=True``. The write-time cap itself is
+	//   unconditional.
+	ContextLimits *ContextLimitsConfig `json:"context_limits,omitempty"`
+
+	// ContextPruning Cache-TTL pruning of *old tool results* out of the in-memory context.
+	//
+	// Complements compaction rather than duplicating it. Compaction summarises
+	// *conversation* messages and explicitly refuses to run when there are none
+	// ("[compaction] skipping — no real conversation messages"), which is why a
+	// second overflow inside one turn is unrecoverable: after the first compaction
+	// rotates the transcript, the window refills with tool output that compaction
+	// will not touch. Pruning is the only mechanism that reclaims that space —
+	// it soft-trims oversized old tool results (head+tail with a ``...`` marker)
+	// and hard-clears the rest to a placeholder, in memory only; the on-disk
+	// transcript is never rewritten.
+	//
+	// **Known limitation — this does not reach every bot.** OpenClaw registers the
+	// pruning extension only in the embedded (``pi``) agent runner, and only when
+	// ``isCacheTtlEligibleProvider`` holds: provider ``anthropic`` /
+	// ``anthropic-vertex``, an Anthropic model on Bedrock, ``modelApi ==
+	// anthropic-messages``, or Gemini 2.5/3 on ``google-generative-ai``. A bot
+	// whose primary is an OpenAI-family model routed through the Botyard proxy is
+	// *not* eligible and gets nothing from this block — for those bots
+	// :class:`ContextLimitsConfig` is the whole fix. Emitting it anyway is
+	// deliberate: it is inert where ineligible, and where eligible it turns
+	// pruning on for providers nothing auto-configures (Gemini).
+	//
+	// **``ttl`` is deliberately not set here.** It is a prompt-cache *coherence*
+	// knob, not a responsiveness one: pruning rewrites the prompt prefix, so the
+	// TTL exists to hold pruning back until the provider's prompt cache has
+	// lapsed anyway, at which point the re-cache is free. OpenClaw's Anthropic
+	// auto-config is a matched set — ``ttl: 1h`` alongside a 1h heartbeat that
+	// deliberately keeps an extended cache warm — and overriding the TTL alone
+	// would prune into that warm cache and bust it, precisely when it is most
+	// expensive (pruning only engages once the context is >=30% full). Since this
+	// block is inert on the OpenAI-family bots that were actually overflowing,
+	// any TTL we pinned would apply *only* to bots that were not failing. Leave it
+	// to OpenClaw unless there is a measured cache-cost/context-pressure tradeoff
+	// to act on.
+	ContextPruning *ContextPruningConfig `json:"context_pruning,omitempty"`
 
 	// Gateway Gateway configuration.
 	Gateway      *GatewayConfig   `json:"gateway,omitempty"`
@@ -2407,6 +3320,10 @@ type OpenClawBotConfig struct {
 	Identity IdentityConfig `json:"identity"`
 
 	// Model LLM model configuration (mutable — patch_model uses setattr).
+	//
+	// ``chain`` is authoritative. ``primary``, ``fallbacks``, ``allowed_models``
+	// and ``providers`` are **not stored** — read them through
+	// :func:`derive_routing`, or via the convenience properties below.
 	Model            *ModelConfig                       `json:"model,omitempty"`
 	ReasoningDefault *OpenClawBotConfigReasoningDefault `json:"reasoning_default,omitempty"`
 	Secrets          *OpenClawSecretsConfig             `json:"secrets"`
@@ -2421,6 +3338,56 @@ type OpenClawBotConfig struct {
 	// SystemPromptMode System prompt source: botyard (lean, default) or openclaw
 	SystemPromptMode *OpenClawBotConfigSystemPromptMode `json:"system_prompt_mode,omitempty"`
 	ThinkingDefault  *OpenClawBotConfigThinkingDefault  `json:"thinking_default,omitempty"`
+
+	// ToolSearch Tool Search: defer tool schemas out of the prompt behind a search surface.
+	//
+	// One runtime-agnostic setting for one user-facing concept. The *mechanism*
+	// differs per agent runtime, and the runtime is derived from the primary
+	// model ref's provider rather than chosen by the owner — so asking the owner
+	// to pick the right per-runtime switch would be asking about an
+	// implementation detail they cannot see. Config generation does the mapping:
+	//
+	// ==================  ===================================================
+	// runtime             mechanism
+	// ==================  ===================================================
+	// ``claude-cli``      ``cliBackends.claude-cli.env.ENABLE_TOOL_SEARCH`` =
+	//                     ``"true"`` / ``"auto:N"`` / ``"false"``
+	// ``pi`` (embedded)   ``tools.toolSearch`` =
+	//                     ``{"enabled": true, "mode": "tools"}``, or absent
+	// ==================  ===================================================
+	//
+	// With it on, the runtime withholds tool *schemas* from the prompt and
+	// exposes a search surface instead; the model searches (or selects by exact
+	// name) and then calls the real tool. Measured against the real Botyard
+	// catalogue: 117,933 -> 43,863 input tokens (-62.8%) on ``claude-cli``, and
+	// 85,317 -> 15,719 (-82%) on the embedded loop.
+	//
+	// Runtime-specific caveats worth knowing before turning this on:
+	//
+	// * **claude-cli.** We set ``ENABLE_TOOL_SEARCH`` explicitly rather than
+	//   relying on Claude Code's default. The CLI's default mode is on, but it
+	//   *self-disables* whenever ``ANTHROPIC_BASE_URL`` is not a first-party
+	//   Anthropic host, logging "...is not a first-party Anthropic host. Set
+	//   ENABLE_TOOL_SEARCH=true (or auto / auto:N) if your proxy forwards
+	//   tool_reference blocks." Every Botyard bot points at the bridge's
+	//   loopback stream-proxy, so the feature is off fleet-wide unless we opt
+	//   in. Our proxy chain does forward the ``anthropic-beta`` header and
+	//   ``tool_reference`` blocks — verified end-to-end with a full
+	//   search-then-call round trip. Requires a model supporting
+	//   ``tool_reference`` (Sonnet 4+ / Opus 4+); haiku is on Claude Code's
+	//   unsupported list and silently keeps the full catalog, which is safe —
+	//   just not cheaper.
+	// * **pi (embedded).** OpenClaw's ``tools.toolSearch`` applies to embedded
+	//   runs only; a CLI backend never reaches that code path, since it hands
+	//   our ``mcp.servers`` verbatim to the CLI, which then talks to the Botyard
+	//   MCP server directly. We select ``mode: "tools"`` — the structured
+	//   search/describe/call surface — which is the mode that was measured.
+	//
+	// **Defaults to auto.** Claude Code defers only when the deferrable schemas
+	// exceed 10% of the context window. OpenClaw's embedded runtime has no
+	// threshold mechanism, so the runtime mapping treats ``auto`` as enabled.
+	// Owners can still select ``off`` explicitly from the bot detail page.
+	ToolSearch *ToolSearchConfig `json:"tool_search,omitempty"`
 
 	// Tools Tools and execution security policy.
 	//
@@ -2464,9 +3431,6 @@ type OpenClawConfigPatch struct {
 	// Identity Bot identity
 	Identity *IdentityConfigPatch `json:"identity"`
 
-	// Model Model configuration
-	Model *ModelConfigPatch `json:"model"`
-
 	// ReasoningDefault Default reasoning mode (off, on, or stream)
 	ReasoningDefault *OpenClawConfigPatchReasoningDefault `json:"reasoning_default"`
 
@@ -2478,6 +3442,9 @@ type OpenClawConfigPatch struct {
 
 	// ThinkingDefault Default thinking budget level for conversations
 	ThinkingDefault *OpenClawConfigPatchThinkingDefault `json:"thinking_default"`
+
+	// ToolSearch Tool Search — defers tool schemas behind a search surface instead of inlining every schema in the prompt. Runtime-agnostic: config generation maps it to Claude Code's ENABLE_TOOL_SEARCH on claude-cli bots and to OpenClaw's tools.toolSearch on embedded (pi) bots.
+	ToolSearch *ToolSearchConfigPatch `json:"tool_search"`
 }
 
 // OpenClawConfigPatchBotType defines model for OpenClawConfigPatch.BotType.
@@ -2551,6 +3518,104 @@ type PaginationParams struct {
 	Offset *int `json:"offset,omitempty"`
 }
 
+// PermissionAction The permission “action“ axis, as it appears on the wire.
+//
+// A deliberate mirror of :class:`botyard_core.authz.permissions.Action`, and
+// the *only* axis that is mirrored — “Domain“ and “Resource“ are exposed
+// directly. The reason is a name collision, not a design preference:
+// “botyard_core.models.bridge.generated“ already contributes a class named
+// “Action“ to the OpenAPI components, and two schemas with one name make
+// Pydantic disambiguate **both** by fully-qualified module path. That would
+// rename the *bridge's* long-standing “Action“ as collateral of an authz
+// change, and leave the generated TypeScript referring to
+// “botyard_core__authz__permissions__Action“ — a Python module path leaking
+// into the client API surface that every consumer of this endpoint would then
+// have to name.
+//
+// Mirroring one enum is the smaller cost, and “test_permission_action_matches_core“
+// makes the duplication safe: adding an action to the core vocabulary without
+// adding it here fails CI rather than silently producing an endpoint that
+// cannot express it.
+type PermissionAction string
+
+// PermissionPatternPayload A permission pattern on the wire. “null“ on an axis means wildcard.
+type PermissionPatternPayload struct {
+	Action *PermissionAction `json:"action"`
+
+	// Domain Top-level product area a permission belongs to (a permission axis).
+	Domain   Domain    `json:"domain"`
+	Resource *Resource `json:"resource"`
+}
+
+// PermissionScopeShape *What* a held permission applies to — the shape of the authority.
+//
+// Three answers, because there are three genuinely different things an actor can
+// hold and a boolean can express two. Reporting one as another is the failure
+// this vocabulary exists to prevent: the question is asked during an incident,
+// to decide whose access to cut off.
+//
+// “KIND_LEVEL“
+//
+//	Every instance of the resource type. ``org:viewer`` reading any bot.
+//
+// “INSTANCE“
+//
+//	**One record that already exists.** A bot's self grant over its own row.
+//
+// “ANCHORED“
+//
+//	**Everything belonging to one named record** — an open-ended set that
+//	grows on its own. "May post in the conversations of bot X" also covers a
+//	conversation created tomorrow.
+//
+// “INSTANCE“ and “ANCHORED“ both name exactly one bot, so they read
+// identically on screen while meaning different things. Rendering “ANCHORED“
+// as “INSTANCE“ understates it — the dangerous direction, and the same
+// understatement that made merging scoped holders with kind-level ones a
+// wrong-but-authoritative answer to "who can reach admin?".
+//
+// **“ANCHORED“ is declared before anything emits it, deliberately.** Anchored
+// scope arrives with Phase 2 (platform-development task 1607); declaring the
+// value now means every consumer handles it from the day it first appears, and
+// Phase 2 is then purely additive. Adding a third value to a two-valued field
+// *after* a UI is built on it is a breaking change on a security surface.
+type PermissionScopeShape string
+
+// PermissionSource Which authority put a permission on an actor.
+//
+// Four authorities, distinguished by **who can change them** — which is the
+// only distinction a permissions view exists to make:
+//
+// “ROLE_BUNDLE“
+//
+//	The code-defined floor in :data:`~botyard_core.authz.roles.ROLE_PERMISSIONS`.
+//	Changed by shipping code, never by a grant. Not revocable through this
+//	surface; the way to remove it is to change the actor's *role*.
+//
+// “ROLE_DELTA“
+//
+//	A ``role_permissions`` row — an org's addition on top of the floor.
+//	Revocable, but it affects **everyone holding the role**, not this actor.
+//
+// “ACTOR_GRANT“
+//
+//	An ``actor_grants`` row for this actor specifically. The only source a
+//	per-actor revoke acts on.
+//
+// “SELF_GRANT“
+//
+//	The permanent, instance-scoped grant a bot holds over its own record.
+//	Code-defined and never persisted, so there is no row to delete.
+//
+// “ROLE_BUNDLE“ and “SELF_GRANT“ are therefore **not revocable**, and a UI
+// must render them as such rather than as a grant with a missing delete button
+// — an action that reports success and changes nothing is worse than no action.
+//
+// The MCP audit path's flat “grant_source“ label (“org_viewer“,
+// “bot_unrestricted“, ...) is derivable from “(source, role_key)“, so the
+// two surfaces stay reconcilable instead of forking into a third vocabulary.
+type PermissionSource string
+
 // ProblemDetails RFC 9457 Problem Details response body.
 //
 // Every Botyard error response is a “ProblemDetails“ serialized as
@@ -2601,8 +3666,47 @@ type ProblemErrorItem struct {
 	Type string `json:"type"`
 }
 
+// RequirementStatus How one tool requirement stands against what an actor holds.
+//
+// Five values rather than the obvious three, because two of the cases that
+// *look* like "this tool needs nothing" are not that at all, and collapsing
+// either into :attr:`NOT_REQUIRED` produces a surface that is confidently wrong.
+//
+// “SELF_SCOPED“
+//
+//	The requirement targets the bot's own record and is satisfied by the
+//	permanent, code-defined self grant. It is **not promptable and not
+//	revocable** — there is no row behind it — so it must never reach a
+//	permission prompt or a revoke cascade. It is reported rather than
+//	silently dropped: a requirement that vanishes from the response is
+//	indistinguishable from one nobody declared, and this surface exists to
+//	make declarations legible.
+//
+// “CATALOG_UNMAPPED“
+//
+//	The tool declares nothing, but it is a platform botyard-MCP tool and all
+//	of those *are* annotated — so the catalog has not been seeded since the
+//	annotations landed. Platform tool seeding is manual, which makes this a
+//	real operational window rather than a theoretical one. Reported as a
+//	degraded state so the assign flow can refuse to reassure; if it were
+//	folded into ``NOT_REQUIRED`` an unseeded catalog would report the entire
+//	tool surface as unconstrained and the prompt would ask for nothing while
+//	looking perfectly healthy.
+type RequirementStatus string
+
 // RescueStage Rescue escalation stages.
 type RescueStage string
+
+// Resource The noun a permission acts on (a permission axis).
+//
+// **Partial and growing** — this seeds the resources implied by the current
+// vocabulary + the mapped “/v1/admin“ surface; Phase B (API) and Phase C
+// (MCP) add members as they annotate each route/tool. The same enum names both
+// the permission's capability noun and, for instance scoping, an addressable
+// object type (:class:`~botyard_core.authz.models.ResourceScope`); the two
+// coincide for most resources (“task“, “bot“) and differ only for
+// sub-resources (“bot:config“ targets a “bot“ object).
+type Resource string
 
 // ResourceMetricsResponse defines model for ResourceMetricsResponse.
 type ResourceMetricsResponse struct {
@@ -2643,6 +3747,27 @@ type ResourceQuantity struct {
 	// gpu are single-dimension (fully reserved). New line-items are added by
 	// extending this enum + a one-time migration — never by widening the table.
 	ResourceType MeteredResource `json:"resource_type"`
+}
+
+// ResourceScopePayload An instance scope. “resource_id=null“ = every instance of the type.
+//
+// **Do not classify authority by inspecting this.** “resource_id=null“ reads
+// like a narrowing but admits the whole type, so "a scope object is present"
+// and "the authority is narrow" are different questions. Read “scope_shape“,
+// which the server derives once from the engine's own rule.
+type ResourceScopePayload struct {
+	ResourceId *string `json:"resource_id"`
+
+	// ResourceType The noun a permission acts on (a permission axis).
+	//
+	// **Partial and growing** — this seeds the resources implied by the current
+	// vocabulary + the mapped ``/v1/admin`` surface; Phase B (API) and Phase C
+	// (MCP) add members as they annotate each route/tool. The same enum names both
+	// the permission's capability noun and, for instance scoping, an addressable
+	// object type (:class:`~botyard_core.authz.models.ResourceScope`); the two
+	// coincide for most resources (``task``, ``bot``) and differ only for
+	// sub-resources (``bot:config`` targets a ``bot`` object).
+	ResourceType Resource `json:"resource_type"`
 }
 
 // RuntimeVaultSensitivity Sensitivity classification for a Runtime Vault entry.
@@ -2693,6 +3818,9 @@ type SecretPolicyCreateRequest struct {
 	// MaxTtlSeconds Maximum TTL in seconds that the policy grants to leases (60-3600)
 	MaxTtlSeconds int `json:"max_ttl_seconds"`
 
+	// SecretTtlSeconds Whole-secret TTL: the secret auto-deletes this many seconds from creation. This is the secret's own lifetime, distinct from max_ttl_seconds (the per-lease cap). Omit for a secret that never expires.
+	SecretTtlSeconds *int `json:"secret_ttl_seconds"`
+
 	// Sensitivity Sensitivity classification for a Runtime Vault entry.
 	Sensitivity *RuntimeVaultSensitivity `json:"sensitivity,omitempty"`
 
@@ -2723,6 +3851,9 @@ type SecretPolicyResponse struct {
 	// DisplayName Human-readable name shown to bots and admins
 	DisplayName string `json:"display_name"`
 
+	// ExpiresAt When the whole secret auto-deletes (its whole-secret TTL); null means it never expires. Distinct from max_ttl_seconds, which caps individual lease lifetimes.
+	ExpiresAt *time.Time `json:"expires_at"`
+
 	// KeyPath Dot-delimited Runtime Vault key path
 	KeyPath string `json:"key_path"`
 
@@ -2747,6 +3878,9 @@ type SecretPolicyUpdateRequest struct {
 	// AllowAllBots Update whether all bots may access this secret (unchanged if omitted)
 	AllowAllBots *bool `json:"allow_all_bots"`
 
+	// ClearExpiry Remove the whole-secret TTL so the secret never expires. Mutually exclusive with secret_ttl_seconds.
+	ClearExpiry *bool `json:"clear_expiry,omitempty"`
+
 	// Description New description (unchanged if omitted)
 	Description *string `json:"description"`
 
@@ -2755,6 +3889,9 @@ type SecretPolicyUpdateRequest struct {
 
 	// MaxTtlSeconds New maximum TTL in seconds (60-3600, unchanged if omitted)
 	MaxTtlSeconds *int `json:"max_ttl_seconds"`
+
+	// SecretTtlSeconds Reset the whole-secret TTL: the secret auto-deletes this many seconds from now (unchanged if omitted). Distinct from max_ttl_seconds (the per-lease cap). Mutually exclusive with clear_expiry.
+	SecretTtlSeconds *int `json:"secret_ttl_seconds"`
 
 	// Sensitivity New sensitivity classification (unchanged if omitted)
 	Sensitivity *RuntimeVaultSensitivity `json:"sensitivity"`
@@ -2826,15 +3963,85 @@ type SkillFileResponse struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
+// SkillImportPreviewResponse What an import would install, resolved but not stored.
+type SkillImportPreviewResponse struct {
+	// CommitSha Commit the content would come from
+	CommitSha string `json:"commit_sha"`
+
+	// Filenames Files that would be installed
+	Filenames []string `json:"filenames"`
+
+	// Name Display name derived from the source
+	Name string `json:"name"`
+
+	// Path Directory holding SKILL.md within the repository; null means the root
+	Path *string `json:"path"`
+
+	// Ref Ref requested by the caller; null means the default branch
+	Ref *string `json:"ref"`
+
+	// Skipped Files present in the source that would not be installed, and why
+	Skipped []SkillImportSkippedFile `json:"skipped"`
+
+	// SourceUrl Canonical repository URL
+	SourceUrl string `json:"source_url"`
+
+	// Summary Summary derived from the source
+	Summary string `json:"summary"`
+
+	// TotalChars Total characters across all files
+	TotalChars int `json:"total_chars"`
+}
+
+// SkillImportRequest Request to import a skill from an external source reference.
+type SkillImportRequest struct {
+	// Name Override the name taken from the source. Use this to resolve a collision with a skill that already exists in the catalogue.
+	Name *string `json:"name"`
+
+	// Scope Visibility scope for a skill in the catalogue.
+	Scope *SkillScope `json:"scope,omitempty"`
+
+	// Source Where to fetch the skill from. Accepts a GitHub repository ('owner/repo'), a path within one ('owner/repo/path/to/skill'), a named skill in one ('owner/repo@skill-name'), a github.com URL, or a skills.sh URL. Pin a branch, tag, or commit by appending '#ref'.
+	Source string `json:"source"`
+}
+
+// SkillImportSkippedFile A file in the source that was not imported, and why.
+type SkillImportSkippedFile struct {
+	// Path Path within the source archive
+	Path string `json:"path"`
+
+	// Reason Why the file was not imported
+	Reason string `json:"reason"`
+}
+
 // SkillProvider Who provided/authored the skill.
 type SkillProvider string
+
+// SkillRefreshRequest Request to re-pull an imported skill from its source, in place.
+//
+// Every field is optional: an empty body means "re-resolve the recorded
+// source at the recorded ref", which is the reconcile-loop case and a no-op
+// whenever upstream has not moved.
+type SkillRefreshRequest struct {
+	// Force Overwrite the skill's current content and (re-)attach provenance. Required for a skill with no recorded source — one authored here, or one whose local edit detached it from upstream — because for those, refreshing means discarding what is stored now.
+	Force *bool `json:"force,omitempty"`
+
+	// Ref Re-resolve at this branch, tag, or commit instead of the recorded one. This is how a pinned version is bumped without replacing the skill — the skill keeps its id, so bot assignments survive.
+	Ref *string `json:"ref"`
+
+	// Source Attach the skill to this source instead of its recorded one, using the same reference grammar as import. Requires 'force', because it discards the recorded origin. Required when the skill has no recorded source at all.
+	Source *string `json:"source"`
+}
 
 // SkillResponse Skill response with files.
 type SkillResponse struct {
 	CreatedAt time.Time `json:"created_at"`
 
-	// CreatedByActorType Type of actor that created this skill (user or bot)
+	// CreatedByActorType Type of actor that created this skill (user, bot, or api_key)
 	CreatedByActorType *ActorType `json:"created_by_actor_type"`
+
+	// CreatedByApiKeyId API key that created this skill
+	CreatedByApiKeyId *string `json:"created_by_api_key_id"`
 
 	// CreatedByAvatarUrl Avatar URL of the creator
 	CreatedByAvatarUrl *string `json:"created_by_avatar_url"`
@@ -2866,6 +4073,9 @@ type SkillResponse struct {
 	// Slug URL-safe identifier
 	Slug string `json:"slug"`
 
+	// Source Where this skill was imported from; null for a skill authored in place. Read this to detect that upstream has moved, or to adopt an imported skill into infrastructure-as-code.
+	Source *SkillSourceResponse `json:"source"`
+
 	// Summary Brief description
 	Summary   string    `json:"summary"`
 	UpdatedAt time.Time `json:"updated_at"`
@@ -2873,6 +4083,49 @@ type SkillResponse struct {
 
 // SkillScope Visibility scope for a skill in the catalogue.
 type SkillScope string
+
+// SkillSourceKind Where an imported skill's content was fetched from.
+//
+// Distinct from :class:`SkillProvider`, which records *who authored* a skill.
+// This records *how we obtained it*, and is what a later refresh-from-source
+// dispatches on. A skills.sh reference resolves to “GITHUB“: skills.sh is a
+// directory over GitHub rather than a distinct fetch backend.
+type SkillSourceKind string
+
+// SkillSourceResponse Where an imported skill's content came from.
+//
+// Nested rather than flattened onto the skill because the underlying columns
+// are written all-or-nothing (“ck_skills_source_complete“): a nullable
+// object says "imported, or not" in one check, where seven sibling fields
+// would let a caller invent a half-imported state the database cannot hold.
+//
+// “source_content_hash“ is deliberately absent. It is the server's
+// local-edit/drift primitive; publishing it would make the hash algorithm a
+// compatibility surface for every client that learned to compare it.
+type SkillSourceResponse struct {
+	// CommitSha Commit the content actually came from — the reproducible pin
+	CommitSha string `json:"commit_sha"`
+
+	// ImportedAt When the skill was imported from this source
+	ImportedAt time.Time `json:"imported_at"`
+
+	// Kind Where an imported skill's content was fetched from.
+	//
+	// Distinct from :class:`SkillProvider`, which records *who authored* a skill.
+	// This records *how we obtained it*, and is what a later refresh-from-source
+	// dispatches on. A skills.sh reference resolves to ``GITHUB``: skills.sh is a
+	// directory over GitHub rather than a distinct fetch backend.
+	Kind SkillSourceKind `json:"kind"`
+
+	// Path Directory holding SKILL.md within the repository; null means the root
+	Path *string `json:"path"`
+
+	// Ref Ref the caller asked for; null means the repository's default branch
+	Ref *string `json:"ref"`
+
+	// Url Canonical repository URL, e.g. https://github.com/owner/repo
+	Url string `json:"url"`
+}
 
 // SkillSummaryResponse Lightweight skill response for list endpoints (no file content).
 type SkillSummaryResponse struct {
@@ -2895,6 +4148,9 @@ type SkillSummaryResponse struct {
 
 	// Slug URL-safe identifier
 	Slug string `json:"slug"`
+
+	// SourceKind Backend this skill was imported from; null for a skill authored in place. Only the kind is carried here so a list can distinguish imported skills without a per-row fetch; get the full provenance from the skill endpoint.
+	SourceKind *SkillSourceKind `json:"source_kind"`
 
 	// Summary Brief description
 	Summary   string    `json:"summary"`
@@ -2936,6 +4192,73 @@ type SyncStatus string
 
 // TemplateIcon Lucide icon name for bot templates.
 type TemplateIcon string
+
+// ToolPermissionCheckRequest The tool set to resolve. **One call for N tools, never N calls.**
+//
+// N separate resolutions could interleave with a concurrent grant and return a
+// combination of answers that no single moment ever produced, which a user
+// would then act on as if it were a snapshot.
+type ToolPermissionCheckRequest struct {
+	ToolIds []string `json:"tool_ids"`
+}
+
+// ToolPermissionCheckResponse What a bot holds and lacks across a whole tool set.
+type ToolPermissionCheckResponse struct {
+	CatalogUnmappedToolIds []string                    `json:"catalog_unmapped_tool_ids"`
+	MissingPermissions     []MissingPermissionResponse `json:"missing_permissions"`
+	Requirements           []ToolRequirementResponse   `json:"requirements"`
+}
+
+// ToolRequirementResponse One *(tool, requirement)* pair and how it stands for this bot.
+type ToolRequirementResponse struct {
+	Label        *string                      `json:"label"`
+	Name         string                       `json:"name"`
+	Permission   *PermissionPatternPayload    `json:"permission"`
+	ResourceKind *ToolResourceKind            `json:"resource_kind"`
+	SatisfiedBy  *EffectivePermissionResponse `json:"satisfied_by"`
+	Slug         string                       `json:"slug"`
+
+	// Status How one tool requirement stands against what an actor holds.
+	//
+	// Five values rather than the obvious three, because two of the cases that
+	// *look* like "this tool needs nothing" are not that at all, and collapsing
+	// either into :attr:`NOT_REQUIRED` produces a surface that is confidently wrong.
+	//
+	// ``SELF_SCOPED``
+	//     The requirement targets the bot's own record and is satisfied by the
+	//     permanent, code-defined self grant. It is **not promptable and not
+	//     revocable** — there is no row behind it — so it must never reach a
+	//     permission prompt or a revoke cascade. It is reported rather than
+	//     silently dropped: a requirement that vanishes from the response is
+	//     indistinguishable from one nobody declared, and this surface exists to
+	//     make declarations legible.
+	// ``CATALOG_UNMAPPED``
+	//     The tool declares nothing, but it is a platform botyard-MCP tool and all
+	//     of those *are* annotated — so the catalog has not been seeded since the
+	//     annotations landed. Platform tool seeding is manual, which makes this a
+	//     real operational window rather than a theoretical one. Reported as a
+	//     degraded state so the assign flow can refuse to reassure; if it were
+	//     folded into ``NOT_REQUIRED`` an unseeded catalog would report the entire
+	//     tool surface as unconstrained and the prompt would ask for nothing while
+	//     looking perfectly healthy.
+	Status RequirementStatus `json:"status"`
+	ToolId string            `json:"tool_id"`
+}
+
+// ToolResourceKind Which resource a tool's permission check targets.
+//
+// “SELF_BOT“ is the shape roughly half the tool surface needs: the tool acts
+// on the calling bot's own record (its config, files, memory, services,
+// schedules...). Resolving it to a concrete resource reference is what makes
+// the self grant instance-scoped, so a tool that resolves the *wrong* bot id is
+// denied.
+//
+// Part of the shared vocabulary rather than the MCP service because the
+// distinction is load-bearing on the *product* side too: the self grant is
+// permanent and not user-managed, so a “SELF_BOT“ tool can never be the
+// subject of a permission prompt or a revoke cascade. A surface that cannot see
+// this axis cannot implement that exemption.
+type ToolResourceKind string
 
 // ToolResponse Tool catalog entry.
 type ToolResponse struct {
@@ -2979,6 +4302,87 @@ type ToolResponse struct {
 // ToolRuntime Where a tool executes — determines enforcement mechanism.
 type ToolRuntime string
 
+// ToolSearchConfig Tool Search: defer tool schemas out of the prompt behind a search surface.
+//
+// One runtime-agnostic setting for one user-facing concept. The *mechanism*
+// differs per agent runtime, and the runtime is derived from the primary
+// model ref's provider rather than chosen by the owner — so asking the owner
+// to pick the right per-runtime switch would be asking about an
+// implementation detail they cannot see. Config generation does the mapping:
+//
+// ==================  ===================================================
+// runtime             mechanism
+// ==================  ===================================================
+// “claude-cli“      “cliBackends.claude-cli.env.ENABLE_TOOL_SEARCH“ =
+//
+//	``"true"`` / ``"auto:N"`` / ``"false"``
+//
+// “pi“ (embedded)   “tools.toolSearch“ =
+//
+//	``{"enabled": true, "mode": "tools"}``, or absent
+//
+// ==================  ===================================================
+//
+// With it on, the runtime withholds tool *schemas* from the prompt and
+// exposes a search surface instead; the model searches (or selects by exact
+// name) and then calls the real tool. Measured against the real Botyard
+// catalogue: 117,933 -> 43,863 input tokens (-62.8%) on “claude-cli“, and
+// 85,317 -> 15,719 (-82%) on the embedded loop.
+//
+// Runtime-specific caveats worth knowing before turning this on:
+//
+//   - **claude-cli.** We set “ENABLE_TOOL_SEARCH“ explicitly rather than
+//     relying on Claude Code's default. The CLI's default mode is on, but it
+//     *self-disables* whenever “ANTHROPIC_BASE_URL“ is not a first-party
+//     Anthropic host, logging "...is not a first-party Anthropic host. Set
+//     ENABLE_TOOL_SEARCH=true (or auto / auto:N) if your proxy forwards
+//     tool_reference blocks." Every Botyard bot points at the bridge's
+//     loopback stream-proxy, so the feature is off fleet-wide unless we opt
+//     in. Our proxy chain does forward the “anthropic-beta“ header and
+//     “tool_reference“ blocks — verified end-to-end with a full
+//     search-then-call round trip. Requires a model supporting
+//     “tool_reference“ (Sonnet 4+ / Opus 4+); haiku is on Claude Code's
+//     unsupported list and silently keeps the full catalog, which is safe —
+//     just not cheaper.
+//   - **pi (embedded).** OpenClaw's “tools.toolSearch“ applies to embedded
+//     runs only; a CLI backend never reaches that code path, since it hands
+//     our “mcp.servers“ verbatim to the CLI, which then talks to the Botyard
+//     MCP server directly. We select “mode: "tools"“ — the structured
+//     search/describe/call surface — which is the mode that was measured.
+//
+// **Defaults to auto.** Claude Code defers only when the deferrable schemas
+// exceed 10% of the context window. OpenClaw's embedded runtime has no
+// threshold mechanism, so the runtime mapping treats “auto“ as enabled.
+// Owners can still select “off“ explicitly from the bot detail page.
+type ToolSearchConfig struct {
+	// AutoThresholdPercent Percentage of the context window the deferrable tool schemas must exceed before ``auto`` mode defers them. Matches Claude Code's own default. Read only when ``mode`` is ``auto`` on the claude-cli runtime — OpenClaw's embedded Tool Search exposes no equivalent knob. Kept non-nullable so switching modes back and forth through a config patch never leaves an unrepresentable state.
+	AutoThresholdPercent *int `json:"auto_threshold_percent,omitempty"`
+
+	// Mode ``always`` defers tool schemas on every turn; ``auto`` defers only above ``auto_threshold_percent``; ``off`` never defers. On the claude-cli runtime these are Claude Code's ``tst`` / ``tst-auto`` / ``standard``, emitted explicitly in all three cases because leaving the env var unset lets the CLI's non-first-party base-URL gate decide for us. OpenClaw's embedded Tool Search has no threshold mechanism, so ``auto`` behaves like ``always`` there.
+	Mode *ToolSearchConfigMode `json:"mode,omitempty"`
+}
+
+// ToolSearchConfigMode “always“ defers tool schemas on every turn; “auto“ defers only above “auto_threshold_percent“; “off“ never defers. On the claude-cli runtime these are Claude Code's “tst“ / “tst-auto“ / “standard“, emitted explicitly in all three cases because leaving the env var unset lets the CLI's non-first-party base-URL gate decide for us. OpenClaw's embedded Tool Search has no threshold mechanism, so “auto“ behaves like “always“ there.
+type ToolSearchConfigMode string
+
+// ToolSearchConfigPatch Patchable Tool Search fields.
+//
+// Both fields are non-nullable on the target config, so “None“ here means
+// "no change" with no ambiguity — and because “mode“ alone decides the
+// behaviour, every state is reachable from every other state with a single
+// patch. Setting “mode“ back to “always“ or “off“ does not require
+// clearing the threshold first.
+type ToolSearchConfigPatch struct {
+	// AutoThresholdPercent Percentage of the context window the tool schemas must exceed before ``auto`` mode defers them. Ignored unless mode is auto, and read only on the claude-cli runtime — OpenClaw's embedded Tool Search has no threshold knob, so auto behaves like always there.
+	AutoThresholdPercent *int `json:"auto_threshold_percent"`
+
+	// Mode always (defer every turn) | auto (defer above the threshold) | off (never defer). Applies whatever mechanism the bot's runtime uses — Claude Code's ENABLE_TOOL_SEARCH on claude-cli bots, OpenClaw's tools.toolSearch on embedded (pi) bots.
+	Mode *ToolSearchConfigPatchMode `json:"mode"`
+}
+
+// ToolSearchConfigPatchMode always (defer every turn) | auto (defer above the threshold) | off (never defer). Applies whatever mechanism the bot's runtime uses — Claude Code's ENABLE_TOOL_SEARCH on claude-cli bots, OpenClaw's tools.toolSearch on embedded (pi) bots.
+type ToolSearchConfigPatchMode string
+
 // ToolsConfig Tools and execution security policy.
 //
 // Per-tool-domain settings (e.g. sessions visibility) used to live here
@@ -3016,6 +4420,24 @@ type ToolsConfigExecHost string
 // ToolsConfigExecSecurity defines model for ToolsConfig.ExecSecurity.
 type ToolsConfigExecSecurity string
 
+// UsageError Machine-readable reason a usage snapshot carries no windows.
+//
+// Distinguishes recoverable, user-actionable states (re-link vs. wait vs.
+// transient) so the FE can render the right hint instead of a bare failure.
+type UsageError string
+
+// UsageWindowResponse One subscription consumption window (e.g. the 5h or weekly bucket).
+type UsageWindowResponse struct {
+	// Label Window label, e.g. "5h", "Week", "Opus".
+	Label string `json:"label"`
+
+	// ResetAt When this window resets; null when the upstream omits it.
+	ResetAt *time.Time `json:"reset_at"`
+
+	// UsedPercent Percent of the window consumed (0-100).
+	UsedPercent float32 `json:"used_percent"`
+}
+
 // WorkspaceStorageMetrics defines model for WorkspaceStorageMetrics.
 type WorkspaceStorageMetrics struct {
 	// AvailableBytes Bytes available to an unprivileged process, or null when unavailable
@@ -3038,6 +4460,9 @@ type WorkspaceStorageMetrics struct {
 type ListBotsV1OrgsOrgIdBotsGetParams struct {
 	Limit  *int `form:"limit,omitempty" json:"limit,omitempty"`
 	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// IncludePendingDeletion Include bots whose infrastructure teardown is still pending.
+	IncludePendingDeletion *bool `form:"include_pending_deletion,omitempty" json:"include_pending_deletion,omitempty"`
 }
 
 // ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetParams defines parameters for ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGet.
@@ -3096,6 +4521,9 @@ type UpdateBotV1OrgsOrgIdBotsBotSlugPatchJSONRequestBody = BotUpdate
 // UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchJSONRequestBody defines body for UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatch for application/json ContentType.
 type UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchJSONRequestBody = BotConfigUpdate
 
+// CopyBotV1OrgsOrgIdBotsBotSlugCopyPostJSONRequestBody defines body for CopyBotV1OrgsOrgIdBotsBotSlugCopyPost for application/json ContentType.
+type CopyBotV1OrgsOrgIdBotsBotSlugCopyPostJSONRequestBody = BotCopyRequest
+
 // AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutJSONRequestBody defines body for AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPut for application/json ContentType.
 type AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutJSONRequestBody = BotCredentialAssign
 
@@ -3117,8 +4545,14 @@ type AssignToolsV1OrgsOrgIdBotsBotSlugToolsPostJSONRequestBody = BotToolAssignRe
 // ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutJSONRequestBody defines body for ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPut for application/json ContentType.
 type ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutJSONRequestBody = BotToolAssignRequest
 
+// CheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPostJSONRequestBody defines body for CheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPost for application/json ContentType.
+type CheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPostJSONRequestBody = ToolPermissionCheckRequest
+
 // RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostJSONRequestBody defines body for RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPost for application/json ContentType.
 type RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostJSONRequestBody = BotToolRetrySyncRequest
+
+// PutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPutJSONRequestBody defines body for PutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPut for application/json ContentType.
+type PutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPutJSONRequestBody = CredentialBotLinksRequest
 
 // CreateMcpServerV1OrgsOrgIdMcpServersPostJSONRequestBody defines body for CreateMcpServerV1OrgsOrgIdMcpServersPost for application/json ContentType.
 type CreateMcpServerV1OrgsOrgIdMcpServersPostJSONRequestBody CreateMcpServerV1OrgsOrgIdMcpServersPostJSONBody
@@ -3138,8 +4572,17 @@ type PutSecretPolicyBotLinksV1OrgsOrgIdSecretPoliciesPolicyIdBotLinksPutJSONRequ
 // CreateSkillV1OrgsOrgIdSkillsPostJSONRequestBody defines body for CreateSkillV1OrgsOrgIdSkillsPost for application/json ContentType.
 type CreateSkillV1OrgsOrgIdSkillsPostJSONRequestBody = SkillCreate
 
+// ImportSkillV1OrgsOrgIdSkillsImportPostJSONRequestBody defines body for ImportSkillV1OrgsOrgIdSkillsImportPost for application/json ContentType.
+type ImportSkillV1OrgsOrgIdSkillsImportPostJSONRequestBody = SkillImportRequest
+
+// PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostJSONRequestBody defines body for PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPost for application/json ContentType.
+type PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostJSONRequestBody = SkillImportRequest
+
 // UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchJSONRequestBody defines body for UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatch for application/json ContentType.
 type UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchJSONRequestBody = SkillUpdate
+
+// RefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPostJSONRequestBody defines body for RefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPost for application/json ContentType.
+type RefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPostJSONRequestBody = SkillRefreshRequest
 
 // Getter for additional properties for ProblemDetails. Returns the specified
 // element and whether it was found
@@ -3386,6 +4829,234 @@ func (t AndBotFilterField_Filters_Item) MarshalJSON() ([]byte, error) {
 }
 
 func (t *AndBotFilterField_Filters_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsConfigFieldDiffNewValue0 returns the union data inside the ConfigFieldDiff_NewValue as a ConfigFieldDiffNewValue0
+func (t ConfigFieldDiff_NewValue) AsConfigFieldDiffNewValue0() (ConfigFieldDiffNewValue0, error) {
+	var body ConfigFieldDiffNewValue0
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromConfigFieldDiffNewValue0 overwrites any union data inside the ConfigFieldDiff_NewValue as the provided ConfigFieldDiffNewValue0
+func (t *ConfigFieldDiff_NewValue) FromConfigFieldDiffNewValue0(v ConfigFieldDiffNewValue0) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeConfigFieldDiffNewValue0 performs a merge with any union data inside the ConfigFieldDiff_NewValue, using the provided ConfigFieldDiffNewValue0
+func (t *ConfigFieldDiff_NewValue) MergeConfigFieldDiffNewValue0(v ConfigFieldDiffNewValue0) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsConfigFieldDiffNewValue1 returns the union data inside the ConfigFieldDiff_NewValue as a ConfigFieldDiffNewValue1
+func (t ConfigFieldDiff_NewValue) AsConfigFieldDiffNewValue1() (ConfigFieldDiffNewValue1, error) {
+	var body ConfigFieldDiffNewValue1
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromConfigFieldDiffNewValue1 overwrites any union data inside the ConfigFieldDiff_NewValue as the provided ConfigFieldDiffNewValue1
+func (t *ConfigFieldDiff_NewValue) FromConfigFieldDiffNewValue1(v ConfigFieldDiffNewValue1) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeConfigFieldDiffNewValue1 performs a merge with any union data inside the ConfigFieldDiff_NewValue, using the provided ConfigFieldDiffNewValue1
+func (t *ConfigFieldDiff_NewValue) MergeConfigFieldDiffNewValue1(v ConfigFieldDiffNewValue1) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsConfigFieldDiffNewValue2 returns the union data inside the ConfigFieldDiff_NewValue as a ConfigFieldDiffNewValue2
+func (t ConfigFieldDiff_NewValue) AsConfigFieldDiffNewValue2() (ConfigFieldDiffNewValue2, error) {
+	var body ConfigFieldDiffNewValue2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromConfigFieldDiffNewValue2 overwrites any union data inside the ConfigFieldDiff_NewValue as the provided ConfigFieldDiffNewValue2
+func (t *ConfigFieldDiff_NewValue) FromConfigFieldDiffNewValue2(v ConfigFieldDiffNewValue2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeConfigFieldDiffNewValue2 performs a merge with any union data inside the ConfigFieldDiff_NewValue, using the provided ConfigFieldDiffNewValue2
+func (t *ConfigFieldDiff_NewValue) MergeConfigFieldDiffNewValue2(v ConfigFieldDiffNewValue2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsConfigFieldDiffNewValue3 returns the union data inside the ConfigFieldDiff_NewValue as a ConfigFieldDiffNewValue3
+func (t ConfigFieldDiff_NewValue) AsConfigFieldDiffNewValue3() (ConfigFieldDiffNewValue3, error) {
+	var body ConfigFieldDiffNewValue3
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromConfigFieldDiffNewValue3 overwrites any union data inside the ConfigFieldDiff_NewValue as the provided ConfigFieldDiffNewValue3
+func (t *ConfigFieldDiff_NewValue) FromConfigFieldDiffNewValue3(v ConfigFieldDiffNewValue3) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeConfigFieldDiffNewValue3 performs a merge with any union data inside the ConfigFieldDiff_NewValue, using the provided ConfigFieldDiffNewValue3
+func (t *ConfigFieldDiff_NewValue) MergeConfigFieldDiffNewValue3(v ConfigFieldDiffNewValue3) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t ConfigFieldDiff_NewValue) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *ConfigFieldDiff_NewValue) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsConfigFieldDiffOldValue0 returns the union data inside the ConfigFieldDiff_OldValue as a ConfigFieldDiffOldValue0
+func (t ConfigFieldDiff_OldValue) AsConfigFieldDiffOldValue0() (ConfigFieldDiffOldValue0, error) {
+	var body ConfigFieldDiffOldValue0
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromConfigFieldDiffOldValue0 overwrites any union data inside the ConfigFieldDiff_OldValue as the provided ConfigFieldDiffOldValue0
+func (t *ConfigFieldDiff_OldValue) FromConfigFieldDiffOldValue0(v ConfigFieldDiffOldValue0) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeConfigFieldDiffOldValue0 performs a merge with any union data inside the ConfigFieldDiff_OldValue, using the provided ConfigFieldDiffOldValue0
+func (t *ConfigFieldDiff_OldValue) MergeConfigFieldDiffOldValue0(v ConfigFieldDiffOldValue0) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsConfigFieldDiffOldValue1 returns the union data inside the ConfigFieldDiff_OldValue as a ConfigFieldDiffOldValue1
+func (t ConfigFieldDiff_OldValue) AsConfigFieldDiffOldValue1() (ConfigFieldDiffOldValue1, error) {
+	var body ConfigFieldDiffOldValue1
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromConfigFieldDiffOldValue1 overwrites any union data inside the ConfigFieldDiff_OldValue as the provided ConfigFieldDiffOldValue1
+func (t *ConfigFieldDiff_OldValue) FromConfigFieldDiffOldValue1(v ConfigFieldDiffOldValue1) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeConfigFieldDiffOldValue1 performs a merge with any union data inside the ConfigFieldDiff_OldValue, using the provided ConfigFieldDiffOldValue1
+func (t *ConfigFieldDiff_OldValue) MergeConfigFieldDiffOldValue1(v ConfigFieldDiffOldValue1) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsConfigFieldDiffOldValue2 returns the union data inside the ConfigFieldDiff_OldValue as a ConfigFieldDiffOldValue2
+func (t ConfigFieldDiff_OldValue) AsConfigFieldDiffOldValue2() (ConfigFieldDiffOldValue2, error) {
+	var body ConfigFieldDiffOldValue2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromConfigFieldDiffOldValue2 overwrites any union data inside the ConfigFieldDiff_OldValue as the provided ConfigFieldDiffOldValue2
+func (t *ConfigFieldDiff_OldValue) FromConfigFieldDiffOldValue2(v ConfigFieldDiffOldValue2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeConfigFieldDiffOldValue2 performs a merge with any union data inside the ConfigFieldDiff_OldValue, using the provided ConfigFieldDiffOldValue2
+func (t *ConfigFieldDiff_OldValue) MergeConfigFieldDiffOldValue2(v ConfigFieldDiffOldValue2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsConfigFieldDiffOldValue3 returns the union data inside the ConfigFieldDiff_OldValue as a ConfigFieldDiffOldValue3
+func (t ConfigFieldDiff_OldValue) AsConfigFieldDiffOldValue3() (ConfigFieldDiffOldValue3, error) {
+	var body ConfigFieldDiffOldValue3
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromConfigFieldDiffOldValue3 overwrites any union data inside the ConfigFieldDiff_OldValue as the provided ConfigFieldDiffOldValue3
+func (t *ConfigFieldDiff_OldValue) FromConfigFieldDiffOldValue3(v ConfigFieldDiffOldValue3) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeConfigFieldDiffOldValue3 performs a merge with any union data inside the ConfigFieldDiff_OldValue, using the provided ConfigFieldDiffOldValue3
+func (t *ConfigFieldDiff_OldValue) MergeConfigFieldDiffOldValue3(v ConfigFieldDiffOldValue3) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t ConfigFieldDiff_OldValue) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *ConfigFieldDiff_OldValue) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }
@@ -3712,6 +5383,9 @@ type ClientInterface interface {
 
 	CreateBotV1OrgsOrgIdBotsPost(ctx context.Context, orgId string, body CreateBotV1OrgsOrgIdBotsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGet request
+	GetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGet(ctx context.Context, orgId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// SearchBotsV1OrgsOrgIdBotsSearchPostWithBody request with any body
 	SearchBotsV1OrgsOrgIdBotsSearchPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -3736,6 +5410,11 @@ type ClientInterface interface {
 
 	UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatch(ctx context.Context, orgId string, botSlug string, body UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// CopyBotV1OrgsOrgIdBotsBotSlugCopyPostWithBody request with any body
+	CopyBotV1OrgsOrgIdBotsBotSlugCopyPostWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CopyBotV1OrgsOrgIdBotsBotSlugCopyPost(ctx context.Context, orgId string, botSlug string, body CopyBotV1OrgsOrgIdBotsBotSlugCopyPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGet request
 	ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGet(ctx context.Context, orgId string, botSlug string, params *ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -3755,6 +5434,9 @@ type ClientInterface interface {
 
 	// RestartBotV1OrgsOrgIdBotsBotSlugRestartPost request
 	RestartBotV1OrgsOrgIdBotsBotSlugRestartPost(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ResumeBotV1OrgsOrgIdBotsBotSlugResumePost request
+	ResumeBotV1OrgsOrgIdBotsBotSlugResumePost(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// UnassignSkillsV1OrgsOrgIdBotsBotSlugSkillsDeleteWithBody request with any body
 	UnassignSkillsV1OrgsOrgIdBotsBotSlugSkillsDeleteWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -3777,6 +5459,9 @@ type ClientInterface interface {
 	// UnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDelete request
 	UnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDelete(ctx context.Context, orgId string, botSlug string, skillSlug string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// SuspendBotV1OrgsOrgIdBotsBotSlugSuspendPost request
+	SuspendBotV1OrgsOrgIdBotsBotSlugSuspendPost(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteWithBody request with any body
 	UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -3795,6 +5480,11 @@ type ClientInterface interface {
 
 	ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPut(ctx context.Context, orgId string, botSlug string, body ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// CheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPostWithBody request with any body
+	CheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPostWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPost(ctx context.Context, orgId string, botSlug string, body CheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostWithBody request with any body
 	RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -3802,6 +5492,17 @@ type ClientInterface interface {
 
 	// ListCredentialsV1OrgsOrgIdCredentialsGet request
 	ListCredentialsV1OrgsOrgIdCredentialsGet(ctx context.Context, orgId string, params *ListCredentialsV1OrgsOrgIdCredentialsGetParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksGet request
+	GetCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksGet(ctx context.Context, orgId string, credentialId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPutWithBody request with any body
+	PutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPutWithBody(ctx context.Context, orgId string, credentialId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPut(ctx context.Context, orgId string, credentialId string, body PutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetCredentialUsageV1OrgsOrgIdCredentialsCredentialIdUsageGet request
+	GetCredentialUsageV1OrgsOrgIdCredentialsCredentialIdUsageGet(ctx context.Context, orgId string, credentialId string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ListMcpServersV1OrgsOrgIdMcpServersGet request
 	ListMcpServersV1OrgsOrgIdMcpServersGet(ctx context.Context, orgId string, params *ListMcpServersV1OrgsOrgIdMcpServersGetParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -3863,6 +5564,16 @@ type ClientInterface interface {
 
 	CreateSkillV1OrgsOrgIdSkillsPost(ctx context.Context, orgId string, body CreateSkillV1OrgsOrgIdSkillsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// ImportSkillV1OrgsOrgIdSkillsImportPostWithBody request with any body
+	ImportSkillV1OrgsOrgIdSkillsImportPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	ImportSkillV1OrgsOrgIdSkillsImportPost(ctx context.Context, orgId string, body ImportSkillV1OrgsOrgIdSkillsImportPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostWithBody request with any body
+	PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPost(ctx context.Context, orgId string, body PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// DeleteSkillV1OrgsOrgIdSkillsSkillSlugDelete request
 	DeleteSkillV1OrgsOrgIdSkillsSkillSlugDelete(ctx context.Context, orgId string, skillSlug string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -3873,6 +5584,11 @@ type ClientInterface interface {
 	UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchWithBody(ctx context.Context, orgId string, skillSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatch(ctx context.Context, orgId string, skillSlug string, body UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// RefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPostWithBody request with any body
+	RefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPostWithBody(ctx context.Context, orgId string, skillSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	RefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPost(ctx context.Context, orgId string, skillSlug string, body RefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ListToolsV1OrgsOrgIdToolsGet request
 	ListToolsV1OrgsOrgIdToolsGet(ctx context.Context, orgId string, params *ListToolsV1OrgsOrgIdToolsGetParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -3919,6 +5635,18 @@ func (c *Client) CreateBotV1OrgsOrgIdBotsPostWithBody(ctx context.Context, orgId
 
 func (c *Client) CreateBotV1OrgsOrgIdBotsPost(ctx context.Context, orgId string, body CreateBotV1OrgsOrgIdBotsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewCreateBotV1OrgsOrgIdBotsPostRequest(c.Server, orgId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGet(ctx context.Context, orgId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGetRequest(c.Server, orgId)
 	if err != nil {
 		return nil, err
 	}
@@ -4037,6 +5765,30 @@ func (c *Client) UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatch(ctx context.Co
 	return c.Client.Do(req)
 }
 
+func (c *Client) CopyBotV1OrgsOrgIdBotsBotSlugCopyPostWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCopyBotV1OrgsOrgIdBotsBotSlugCopyPostRequestWithBody(c.Server, orgId, botSlug, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CopyBotV1OrgsOrgIdBotsBotSlugCopyPost(ctx context.Context, orgId string, botSlug string, body CopyBotV1OrgsOrgIdBotsBotSlugCopyPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCopyBotV1OrgsOrgIdBotsBotSlugCopyPostRequest(c.Server, orgId, botSlug, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGet(ctx context.Context, orgId string, botSlug string, params *ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetRequest(c.Server, orgId, botSlug, params)
 	if err != nil {
@@ -4111,6 +5863,18 @@ func (c *Client) GetBotResourcesV1OrgsOrgIdBotsBotSlugResourcesGet(ctx context.C
 
 func (c *Client) RestartBotV1OrgsOrgIdBotsBotSlugRestartPost(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewRestartBotV1OrgsOrgIdBotsBotSlugRestartPostRequest(c.Server, orgId, botSlug)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ResumeBotV1OrgsOrgIdBotsBotSlugResumePost(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewResumeBotV1OrgsOrgIdBotsBotSlugResumePostRequest(c.Server, orgId, botSlug)
 	if err != nil {
 		return nil, err
 	}
@@ -4217,6 +5981,18 @@ func (c *Client) UnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDelete(ctx co
 	return c.Client.Do(req)
 }
 
+func (c *Client) SuspendBotV1OrgsOrgIdBotsBotSlugSuspendPost(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSuspendBotV1OrgsOrgIdBotsBotSlugSuspendPostRequest(c.Server, orgId, botSlug)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteRequestWithBody(c.Server, orgId, botSlug, contentType, body)
 	if err != nil {
@@ -4301,6 +6077,30 @@ func (c *Client) ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPut(ctx context.Context,
 	return c.Client.Do(req)
 }
 
+func (c *Client) CheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPostWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPostRequestWithBody(c.Server, orgId, botSlug, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPost(ctx context.Context, orgId string, botSlug string, body CheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPostRequest(c.Server, orgId, botSlug, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewRetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostRequestWithBody(c.Server, orgId, botSlug, contentType, body)
 	if err != nil {
@@ -4327,6 +6127,54 @@ func (c *Client) RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPost(ctx conte
 
 func (c *Client) ListCredentialsV1OrgsOrgIdCredentialsGet(ctx context.Context, orgId string, params *ListCredentialsV1OrgsOrgIdCredentialsGetParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewListCredentialsV1OrgsOrgIdCredentialsGetRequest(c.Server, orgId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksGet(ctx context.Context, orgId string, credentialId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksGetRequest(c.Server, orgId, credentialId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPutWithBody(ctx context.Context, orgId string, credentialId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPutRequestWithBody(c.Server, orgId, credentialId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPut(ctx context.Context, orgId string, credentialId string, body PutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPutRequest(c.Server, orgId, credentialId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetCredentialUsageV1OrgsOrgIdCredentialsCredentialIdUsageGet(ctx context.Context, orgId string, credentialId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetCredentialUsageV1OrgsOrgIdCredentialsCredentialIdUsageGetRequest(c.Server, orgId, credentialId)
 	if err != nil {
 		return nil, err
 	}
@@ -4601,6 +6449,54 @@ func (c *Client) CreateSkillV1OrgsOrgIdSkillsPost(ctx context.Context, orgId str
 	return c.Client.Do(req)
 }
 
+func (c *Client) ImportSkillV1OrgsOrgIdSkillsImportPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewImportSkillV1OrgsOrgIdSkillsImportPostRequestWithBody(c.Server, orgId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ImportSkillV1OrgsOrgIdSkillsImportPost(ctx context.Context, orgId string, body ImportSkillV1OrgsOrgIdSkillsImportPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewImportSkillV1OrgsOrgIdSkillsImportPostRequest(c.Server, orgId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostRequestWithBody(c.Server, orgId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPost(ctx context.Context, orgId string, body PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostRequest(c.Server, orgId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) DeleteSkillV1OrgsOrgIdSkillsSkillSlugDelete(ctx context.Context, orgId string, skillSlug string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewDeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteRequest(c.Server, orgId, skillSlug)
 	if err != nil {
@@ -4639,6 +6535,30 @@ func (c *Client) UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchWithBody(ctx context.
 
 func (c *Client) UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatch(ctx context.Context, orgId string, skillSlug string, body UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchRequest(c.Server, orgId, skillSlug, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) RefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPostWithBody(ctx context.Context, orgId string, skillSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPostRequestWithBody(c.Server, orgId, skillSlug, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) RefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPost(ctx context.Context, orgId string, skillSlug string, body RefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPostRequest(c.Server, orgId, skillSlug, body)
 	if err != nil {
 		return nil, err
 	}
@@ -4768,6 +6688,22 @@ func NewListBotsV1OrgsOrgIdBotsGetRequest(server string, orgId string, params *L
 
 		}
 
+		if params.IncludePendingDeletion != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "include_pending_deletion", runtime.ParamLocationQuery, *params.IncludePendingDeletion); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
 		queryURL.RawQuery = queryValues.Encode()
 	}
 
@@ -4822,6 +6758,40 @@ func NewCreateBotV1OrgsOrgIdBotsPostRequestWithBody(server string, orgId string,
 	}
 
 	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGetRequest generates requests for GetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGet
+func NewGetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGetRequest(server string, orgId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/bots/hosting-options", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
 
 	return req, nil
 }
@@ -5095,6 +7065,60 @@ func NewUpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchRequestWithBody(server s
 	}
 
 	req, err := http.NewRequest("PATCH", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewCopyBotV1OrgsOrgIdBotsBotSlugCopyPostRequest calls the generic CopyBotV1OrgsOrgIdBotsBotSlugCopyPost builder with application/json body
+func NewCopyBotV1OrgsOrgIdBotsBotSlugCopyPostRequest(server string, orgId string, botSlug string, body CopyBotV1OrgsOrgIdBotsBotSlugCopyPostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCopyBotV1OrgsOrgIdBotsBotSlugCopyPostRequestWithBody(server, orgId, botSlug, "application/json", bodyReader)
+}
+
+// NewCopyBotV1OrgsOrgIdBotsBotSlugCopyPostRequestWithBody generates requests for CopyBotV1OrgsOrgIdBotsBotSlugCopyPost with any type of body
+func NewCopyBotV1OrgsOrgIdBotsBotSlugCopyPostRequestWithBody(server string, orgId string, botSlug string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "bot_slug", runtime.ParamLocationPath, botSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/bots/%s/copy", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
 	if err != nil {
 		return nil, err
 	}
@@ -5392,6 +7416,47 @@ func NewRestartBotV1OrgsOrgIdBotsBotSlugRestartPostRequest(server string, orgId 
 	return req, nil
 }
 
+// NewResumeBotV1OrgsOrgIdBotsBotSlugResumePostRequest generates requests for ResumeBotV1OrgsOrgIdBotsBotSlugResumePost
+func NewResumeBotV1OrgsOrgIdBotsBotSlugResumePostRequest(server string, orgId string, botSlug string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "bot_slug", runtime.ParamLocationPath, botSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/bots/%s/resume", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewUnassignSkillsV1OrgsOrgIdBotsBotSlugSkillsDeleteRequest calls the generic UnassignSkillsV1OrgsOrgIdBotsBotSlugSkillsDelete builder with application/json body
 func NewUnassignSkillsV1OrgsOrgIdBotsBotSlugSkillsDeleteRequest(server string, orgId string, botSlug string, body UnassignSkillsV1OrgsOrgIdBotsBotSlugSkillsDeleteJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
@@ -5643,6 +7708,47 @@ func NewUnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDeleteRequest(server s
 	return req, nil
 }
 
+// NewSuspendBotV1OrgsOrgIdBotsBotSlugSuspendPostRequest generates requests for SuspendBotV1OrgsOrgIdBotsBotSlugSuspendPost
+func NewSuspendBotV1OrgsOrgIdBotsBotSlugSuspendPostRequest(server string, orgId string, botSlug string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "bot_slug", runtime.ParamLocationPath, botSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/bots/%s/suspend", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewUnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteRequest calls the generic UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDelete builder with application/json body
 func NewUnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteRequest(server string, orgId string, botSlug string, body UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
@@ -5846,6 +7952,60 @@ func NewReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutRequestWithBody(server string,
 	return req, nil
 }
 
+// NewCheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPostRequest calls the generic CheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPost builder with application/json body
+func NewCheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPostRequest(server string, orgId string, botSlug string, body CheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPostRequestWithBody(server, orgId, botSlug, "application/json", bodyReader)
+}
+
+// NewCheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPostRequestWithBody generates requests for CheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPost with any type of body
+func NewCheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPostRequestWithBody(server string, orgId string, botSlug string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "bot_slug", runtime.ParamLocationPath, botSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/bots/%s/tools/permission-check", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewRetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostRequest calls the generic RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPost builder with application/json body
 func NewRetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostRequest(server string, orgId string, botSlug string, body RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
@@ -5962,6 +8122,142 @@ func NewListCredentialsV1OrgsOrgIdCredentialsGetRequest(server string, orgId str
 		}
 
 		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksGetRequest generates requests for GetCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksGet
+func NewGetCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksGetRequest(server string, orgId string, credentialId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "credential_id", runtime.ParamLocationPath, credentialId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/credentials/%s/bot-links", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPutRequest calls the generic PutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPut builder with application/json body
+func NewPutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPutRequest(server string, orgId string, credentialId string, body PutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPutJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPutRequestWithBody(server, orgId, credentialId, "application/json", bodyReader)
+}
+
+// NewPutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPutRequestWithBody generates requests for PutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPut with any type of body
+func NewPutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPutRequestWithBody(server string, orgId string, credentialId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "credential_id", runtime.ParamLocationPath, credentialId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/credentials/%s/bot-links", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetCredentialUsageV1OrgsOrgIdCredentialsCredentialIdUsageGetRequest generates requests for GetCredentialUsageV1OrgsOrgIdCredentialsCredentialIdUsageGet
+func NewGetCredentialUsageV1OrgsOrgIdCredentialsCredentialIdUsageGetRequest(server string, orgId string, credentialId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "credential_id", runtime.ParamLocationPath, credentialId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/credentials/%s/usage", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
 	}
 
 	req, err := http.NewRequest("GET", queryURL.String(), nil)
@@ -6724,6 +9020,100 @@ func NewCreateSkillV1OrgsOrgIdSkillsPostRequestWithBody(server string, orgId str
 	return req, nil
 }
 
+// NewImportSkillV1OrgsOrgIdSkillsImportPostRequest calls the generic ImportSkillV1OrgsOrgIdSkillsImportPost builder with application/json body
+func NewImportSkillV1OrgsOrgIdSkillsImportPostRequest(server string, orgId string, body ImportSkillV1OrgsOrgIdSkillsImportPostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewImportSkillV1OrgsOrgIdSkillsImportPostRequestWithBody(server, orgId, "application/json", bodyReader)
+}
+
+// NewImportSkillV1OrgsOrgIdSkillsImportPostRequestWithBody generates requests for ImportSkillV1OrgsOrgIdSkillsImportPost with any type of body
+func NewImportSkillV1OrgsOrgIdSkillsImportPostRequestWithBody(server string, orgId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/skills/import", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewPreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostRequest calls the generic PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPost builder with application/json body
+func NewPreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostRequest(server string, orgId string, body PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostRequestWithBody(server, orgId, "application/json", bodyReader)
+}
+
+// NewPreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostRequestWithBody generates requests for PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPost with any type of body
+func NewPreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostRequestWithBody(server string, orgId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/skills/import/preview", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewDeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteRequest generates requests for DeleteSkillV1OrgsOrgIdSkillsSkillSlugDelete
 func NewDeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteRequest(server string, orgId string, skillSlug string) (*http.Request, error) {
 	var err error
@@ -6851,6 +9241,60 @@ func NewUpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchRequestWithBody(server string,
 	}
 
 	req, err := http.NewRequest("PATCH", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewRefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPostRequest calls the generic RefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPost builder with application/json body
+func NewRefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPostRequest(server string, orgId string, skillSlug string, body RefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewRefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPostRequestWithBody(server, orgId, skillSlug, "application/json", bodyReader)
+}
+
+// NewRefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPostRequestWithBody generates requests for RefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPost with any type of body
+func NewRefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPostRequestWithBody(server string, orgId string, skillSlug string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "skill_slug", runtime.ParamLocationPath, skillSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/skills/%s/refresh", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
 	if err != nil {
 		return nil, err
 	}
@@ -7043,6 +9487,9 @@ type ClientWithResponsesInterface interface {
 
 	CreateBotV1OrgsOrgIdBotsPostWithResponse(ctx context.Context, orgId string, body CreateBotV1OrgsOrgIdBotsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateBotV1OrgsOrgIdBotsPostResponse, error)
 
+	// GetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGetWithResponse request
+	GetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGetWithResponse(ctx context.Context, orgId string, reqEditors ...RequestEditorFn) (*GetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGetResponse, error)
+
 	// SearchBotsV1OrgsOrgIdBotsSearchPostWithBodyWithResponse request with any body
 	SearchBotsV1OrgsOrgIdBotsSearchPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SearchBotsV1OrgsOrgIdBotsSearchPostResponse, error)
 
@@ -7067,6 +9514,11 @@ type ClientWithResponsesInterface interface {
 
 	UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchWithResponse(ctx context.Context, orgId string, botSlug string, body UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchResponse, error)
 
+	// CopyBotV1OrgsOrgIdBotsBotSlugCopyPostWithBodyWithResponse request with any body
+	CopyBotV1OrgsOrgIdBotsBotSlugCopyPostWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CopyBotV1OrgsOrgIdBotsBotSlugCopyPostResponse, error)
+
+	CopyBotV1OrgsOrgIdBotsBotSlugCopyPostWithResponse(ctx context.Context, orgId string, botSlug string, body CopyBotV1OrgsOrgIdBotsBotSlugCopyPostJSONRequestBody, reqEditors ...RequestEditorFn) (*CopyBotV1OrgsOrgIdBotsBotSlugCopyPostResponse, error)
+
 	// ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetWithResponse request
 	ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetWithResponse(ctx context.Context, orgId string, botSlug string, params *ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetParams, reqEditors ...RequestEditorFn) (*ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetResponse, error)
 
@@ -7086,6 +9538,9 @@ type ClientWithResponsesInterface interface {
 
 	// RestartBotV1OrgsOrgIdBotsBotSlugRestartPostWithResponse request
 	RestartBotV1OrgsOrgIdBotsBotSlugRestartPostWithResponse(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*RestartBotV1OrgsOrgIdBotsBotSlugRestartPostResponse, error)
+
+	// ResumeBotV1OrgsOrgIdBotsBotSlugResumePostWithResponse request
+	ResumeBotV1OrgsOrgIdBotsBotSlugResumePostWithResponse(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*ResumeBotV1OrgsOrgIdBotsBotSlugResumePostResponse, error)
 
 	// UnassignSkillsV1OrgsOrgIdBotsBotSlugSkillsDeleteWithBodyWithResponse request with any body
 	UnassignSkillsV1OrgsOrgIdBotsBotSlugSkillsDeleteWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UnassignSkillsV1OrgsOrgIdBotsBotSlugSkillsDeleteResponse, error)
@@ -7108,6 +9563,9 @@ type ClientWithResponsesInterface interface {
 	// UnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDeleteWithResponse request
 	UnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDeleteWithResponse(ctx context.Context, orgId string, botSlug string, skillSlug string, reqEditors ...RequestEditorFn) (*UnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDeleteResponse, error)
 
+	// SuspendBotV1OrgsOrgIdBotsBotSlugSuspendPostWithResponse request
+	SuspendBotV1OrgsOrgIdBotsBotSlugSuspendPostWithResponse(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*SuspendBotV1OrgsOrgIdBotsBotSlugSuspendPostResponse, error)
+
 	// UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteWithBodyWithResponse request with any body
 	UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteResponse, error)
 
@@ -7126,6 +9584,11 @@ type ClientWithResponsesInterface interface {
 
 	ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutWithResponse(ctx context.Context, orgId string, botSlug string, body ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutJSONRequestBody, reqEditors ...RequestEditorFn) (*ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutResponse, error)
 
+	// CheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPostWithBodyWithResponse request with any body
+	CheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPostWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPostResponse, error)
+
+	CheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPostWithResponse(ctx context.Context, orgId string, botSlug string, body CheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPostJSONRequestBody, reqEditors ...RequestEditorFn) (*CheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPostResponse, error)
+
 	// RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostWithBodyWithResponse request with any body
 	RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostResponse, error)
 
@@ -7133,6 +9596,17 @@ type ClientWithResponsesInterface interface {
 
 	// ListCredentialsV1OrgsOrgIdCredentialsGetWithResponse request
 	ListCredentialsV1OrgsOrgIdCredentialsGetWithResponse(ctx context.Context, orgId string, params *ListCredentialsV1OrgsOrgIdCredentialsGetParams, reqEditors ...RequestEditorFn) (*ListCredentialsV1OrgsOrgIdCredentialsGetResponse, error)
+
+	// GetCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksGetWithResponse request
+	GetCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksGetWithResponse(ctx context.Context, orgId string, credentialId string, reqEditors ...RequestEditorFn) (*GetCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksGetResponse, error)
+
+	// PutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPutWithBodyWithResponse request with any body
+	PutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPutWithBodyWithResponse(ctx context.Context, orgId string, credentialId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPutResponse, error)
+
+	PutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPutWithResponse(ctx context.Context, orgId string, credentialId string, body PutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPutJSONRequestBody, reqEditors ...RequestEditorFn) (*PutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPutResponse, error)
+
+	// GetCredentialUsageV1OrgsOrgIdCredentialsCredentialIdUsageGetWithResponse request
+	GetCredentialUsageV1OrgsOrgIdCredentialsCredentialIdUsageGetWithResponse(ctx context.Context, orgId string, credentialId string, reqEditors ...RequestEditorFn) (*GetCredentialUsageV1OrgsOrgIdCredentialsCredentialIdUsageGetResponse, error)
 
 	// ListMcpServersV1OrgsOrgIdMcpServersGetWithResponse request
 	ListMcpServersV1OrgsOrgIdMcpServersGetWithResponse(ctx context.Context, orgId string, params *ListMcpServersV1OrgsOrgIdMcpServersGetParams, reqEditors ...RequestEditorFn) (*ListMcpServersV1OrgsOrgIdMcpServersGetResponse, error)
@@ -7194,6 +9668,16 @@ type ClientWithResponsesInterface interface {
 
 	CreateSkillV1OrgsOrgIdSkillsPostWithResponse(ctx context.Context, orgId string, body CreateSkillV1OrgsOrgIdSkillsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateSkillV1OrgsOrgIdSkillsPostResponse, error)
 
+	// ImportSkillV1OrgsOrgIdSkillsImportPostWithBodyWithResponse request with any body
+	ImportSkillV1OrgsOrgIdSkillsImportPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ImportSkillV1OrgsOrgIdSkillsImportPostResponse, error)
+
+	ImportSkillV1OrgsOrgIdSkillsImportPostWithResponse(ctx context.Context, orgId string, body ImportSkillV1OrgsOrgIdSkillsImportPostJSONRequestBody, reqEditors ...RequestEditorFn) (*ImportSkillV1OrgsOrgIdSkillsImportPostResponse, error)
+
+	// PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostWithBodyWithResponse request with any body
+	PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostResponse, error)
+
+	PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostWithResponse(ctx context.Context, orgId string, body PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostJSONRequestBody, reqEditors ...RequestEditorFn) (*PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostResponse, error)
+
 	// DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteWithResponse request
 	DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteWithResponse(ctx context.Context, orgId string, skillSlug string, reqEditors ...RequestEditorFn) (*DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteResponse, error)
 
@@ -7204,6 +9688,11 @@ type ClientWithResponsesInterface interface {
 	UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchWithBodyWithResponse(ctx context.Context, orgId string, skillSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchResponse, error)
 
 	UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchWithResponse(ctx context.Context, orgId string, skillSlug string, body UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchResponse, error)
+
+	// RefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPostWithBodyWithResponse request with any body
+	RefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPostWithBodyWithResponse(ctx context.Context, orgId string, skillSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPostResponse, error)
+
+	RefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPostWithResponse(ctx context.Context, orgId string, skillSlug string, body RefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPostJSONRequestBody, reqEditors ...RequestEditorFn) (*RefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPostResponse, error)
 
 	// ListToolsV1OrgsOrgIdToolsGetWithResponse request
 	ListToolsV1OrgsOrgIdToolsGetWithResponse(ctx context.Context, orgId string, params *ListToolsV1OrgsOrgIdToolsGetParams, reqEditors ...RequestEditorFn) (*ListToolsV1OrgsOrgIdToolsGetResponse, error)
@@ -7275,6 +9764,29 @@ func (r CreateBotV1OrgsOrgIdBotsPostResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r CreateBotV1OrgsOrgIdBotsPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGetResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *BotHostingOptions
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r GetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGetResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -7419,6 +9931,29 @@ func (r UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchResponse) StatusCode() i
 	return 0
 }
 
+type CopyBotV1OrgsOrgIdBotsBotSlugCopyPostResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON201                       *BotCopyResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r CopyBotV1OrgsOrgIdBotsBotSlugCopyPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CopyBotV1OrgsOrgIdBotsBotSlugCopyPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetResponse struct {
 	Body                          []byte
 	HTTPResponse                  *http.Response
@@ -7556,6 +10091,29 @@ func (r RestartBotV1OrgsOrgIdBotsBotSlugRestartPostResponse) StatusCode() int {
 	return 0
 }
 
+type ResumeBotV1OrgsOrgIdBotsBotSlugResumePostResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *BotResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r ResumeBotV1OrgsOrgIdBotsBotSlugResumePostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ResumeBotV1OrgsOrgIdBotsBotSlugResumePostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type UnassignSkillsV1OrgsOrgIdBotsBotSlugSkillsDeleteResponse struct {
 	Body                          []byte
 	HTTPResponse                  *http.Response
@@ -7669,6 +10227,29 @@ func (r UnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDeleteResponse) Status
 	return 0
 }
 
+type SuspendBotV1OrgsOrgIdBotsBotSlugSuspendPostResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *BotResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r SuspendBotV1OrgsOrgIdBotsBotSlugSuspendPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r SuspendBotV1OrgsOrgIdBotsBotSlugSuspendPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteResponse struct {
 	Body                          []byte
 	HTTPResponse                  *http.Response
@@ -7760,6 +10341,29 @@ func (r ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutResponse) StatusCode() int {
 	return 0
 }
 
+type CheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPostResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *ToolPermissionCheckResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r CheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostResponse struct {
 	Body                          []byte
 	HTTPResponse                  *http.Response
@@ -7800,6 +10404,75 @@ func (r ListCredentialsV1OrgsOrgIdCredentialsGetResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r ListCredentialsV1OrgsOrgIdCredentialsGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksGetResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *CredentialBotLinksResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r GetCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPutResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *CredentialBotLinksResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r PutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPutResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPutResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetCredentialUsageV1OrgsOrgIdCredentialsCredentialIdUsageGetResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *CredentialUsageResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r GetCredentialUsageV1OrgsOrgIdCredentialsCredentialIdUsageGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetCredentialUsageV1OrgsOrgIdCredentialsCredentialIdUsageGetResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -8185,6 +10858,52 @@ func (r CreateSkillV1OrgsOrgIdSkillsPostResponse) StatusCode() int {
 	return 0
 }
 
+type ImportSkillV1OrgsOrgIdSkillsImportPostResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON201                       *SkillResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r ImportSkillV1OrgsOrgIdSkillsImportPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ImportSkillV1OrgsOrgIdSkillsImportPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *SkillImportPreviewResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteResponse struct {
 	Body                          []byte
 	HTTPResponse                  *http.Response
@@ -8247,6 +10966,29 @@ func (r UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type RefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPostResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *SkillResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r RefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r RefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPostResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -8334,6 +11076,15 @@ func (c *ClientWithResponses) CreateBotV1OrgsOrgIdBotsPostWithResponse(ctx conte
 	return ParseCreateBotV1OrgsOrgIdBotsPostResponse(rsp)
 }
 
+// GetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGetWithResponse request returning *GetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGetResponse
+func (c *ClientWithResponses) GetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGetWithResponse(ctx context.Context, orgId string, reqEditors ...RequestEditorFn) (*GetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGetResponse, error) {
+	rsp, err := c.GetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGet(ctx, orgId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGetResponse(rsp)
+}
+
 // SearchBotsV1OrgsOrgIdBotsSearchPostWithBodyWithResponse request with arbitrary body returning *SearchBotsV1OrgsOrgIdBotsSearchPostResponse
 func (c *ClientWithResponses) SearchBotsV1OrgsOrgIdBotsSearchPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SearchBotsV1OrgsOrgIdBotsSearchPostResponse, error) {
 	rsp, err := c.SearchBotsV1OrgsOrgIdBotsSearchPostWithBody(ctx, orgId, contentType, body, reqEditors...)
@@ -8412,6 +11163,23 @@ func (c *ClientWithResponses) UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchWi
 	return ParseUpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchResponse(rsp)
 }
 
+// CopyBotV1OrgsOrgIdBotsBotSlugCopyPostWithBodyWithResponse request with arbitrary body returning *CopyBotV1OrgsOrgIdBotsBotSlugCopyPostResponse
+func (c *ClientWithResponses) CopyBotV1OrgsOrgIdBotsBotSlugCopyPostWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CopyBotV1OrgsOrgIdBotsBotSlugCopyPostResponse, error) {
+	rsp, err := c.CopyBotV1OrgsOrgIdBotsBotSlugCopyPostWithBody(ctx, orgId, botSlug, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCopyBotV1OrgsOrgIdBotsBotSlugCopyPostResponse(rsp)
+}
+
+func (c *ClientWithResponses) CopyBotV1OrgsOrgIdBotsBotSlugCopyPostWithResponse(ctx context.Context, orgId string, botSlug string, body CopyBotV1OrgsOrgIdBotsBotSlugCopyPostJSONRequestBody, reqEditors ...RequestEditorFn) (*CopyBotV1OrgsOrgIdBotsBotSlugCopyPostResponse, error) {
+	rsp, err := c.CopyBotV1OrgsOrgIdBotsBotSlugCopyPost(ctx, orgId, botSlug, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCopyBotV1OrgsOrgIdBotsBotSlugCopyPostResponse(rsp)
+}
+
 // ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetWithResponse request returning *ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetResponse
 func (c *ClientWithResponses) ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetWithResponse(ctx context.Context, orgId string, botSlug string, params *ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetParams, reqEditors ...RequestEditorFn) (*ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetResponse, error) {
 	rsp, err := c.ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGet(ctx, orgId, botSlug, params, reqEditors...)
@@ -8472,6 +11240,15 @@ func (c *ClientWithResponses) RestartBotV1OrgsOrgIdBotsBotSlugRestartPostWithRes
 		return nil, err
 	}
 	return ParseRestartBotV1OrgsOrgIdBotsBotSlugRestartPostResponse(rsp)
+}
+
+// ResumeBotV1OrgsOrgIdBotsBotSlugResumePostWithResponse request returning *ResumeBotV1OrgsOrgIdBotsBotSlugResumePostResponse
+func (c *ClientWithResponses) ResumeBotV1OrgsOrgIdBotsBotSlugResumePostWithResponse(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*ResumeBotV1OrgsOrgIdBotsBotSlugResumePostResponse, error) {
+	rsp, err := c.ResumeBotV1OrgsOrgIdBotsBotSlugResumePost(ctx, orgId, botSlug, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseResumeBotV1OrgsOrgIdBotsBotSlugResumePostResponse(rsp)
 }
 
 // UnassignSkillsV1OrgsOrgIdBotsBotSlugSkillsDeleteWithBodyWithResponse request with arbitrary body returning *UnassignSkillsV1OrgsOrgIdBotsBotSlugSkillsDeleteResponse
@@ -8543,6 +11320,15 @@ func (c *ClientWithResponses) UnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlug
 	return ParseUnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDeleteResponse(rsp)
 }
 
+// SuspendBotV1OrgsOrgIdBotsBotSlugSuspendPostWithResponse request returning *SuspendBotV1OrgsOrgIdBotsBotSlugSuspendPostResponse
+func (c *ClientWithResponses) SuspendBotV1OrgsOrgIdBotsBotSlugSuspendPostWithResponse(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*SuspendBotV1OrgsOrgIdBotsBotSlugSuspendPostResponse, error) {
+	rsp, err := c.SuspendBotV1OrgsOrgIdBotsBotSlugSuspendPost(ctx, orgId, botSlug, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSuspendBotV1OrgsOrgIdBotsBotSlugSuspendPostResponse(rsp)
+}
+
 // UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteWithBodyWithResponse request with arbitrary body returning *UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteResponse
 func (c *ClientWithResponses) UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteResponse, error) {
 	rsp, err := c.UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteWithBody(ctx, orgId, botSlug, contentType, body, reqEditors...)
@@ -8603,6 +11389,23 @@ func (c *ClientWithResponses) ReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutWithResp
 	return ParseReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutResponse(rsp)
 }
 
+// CheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPostWithBodyWithResponse request with arbitrary body returning *CheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPostResponse
+func (c *ClientWithResponses) CheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPostWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPostResponse, error) {
+	rsp, err := c.CheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPostWithBody(ctx, orgId, botSlug, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPostResponse(rsp)
+}
+
+func (c *ClientWithResponses) CheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPostWithResponse(ctx context.Context, orgId string, botSlug string, body CheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPostJSONRequestBody, reqEditors ...RequestEditorFn) (*CheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPostResponse, error) {
+	rsp, err := c.CheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPost(ctx, orgId, botSlug, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPostResponse(rsp)
+}
+
 // RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostWithBodyWithResponse request with arbitrary body returning *RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostResponse
 func (c *ClientWithResponses) RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostResponse, error) {
 	rsp, err := c.RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostWithBody(ctx, orgId, botSlug, contentType, body, reqEditors...)
@@ -8627,6 +11430,41 @@ func (c *ClientWithResponses) ListCredentialsV1OrgsOrgIdCredentialsGetWithRespon
 		return nil, err
 	}
 	return ParseListCredentialsV1OrgsOrgIdCredentialsGetResponse(rsp)
+}
+
+// GetCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksGetWithResponse request returning *GetCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksGetResponse
+func (c *ClientWithResponses) GetCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksGetWithResponse(ctx context.Context, orgId string, credentialId string, reqEditors ...RequestEditorFn) (*GetCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksGetResponse, error) {
+	rsp, err := c.GetCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksGet(ctx, orgId, credentialId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksGetResponse(rsp)
+}
+
+// PutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPutWithBodyWithResponse request with arbitrary body returning *PutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPutResponse
+func (c *ClientWithResponses) PutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPutWithBodyWithResponse(ctx context.Context, orgId string, credentialId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPutResponse, error) {
+	rsp, err := c.PutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPutWithBody(ctx, orgId, credentialId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPutResponse(rsp)
+}
+
+func (c *ClientWithResponses) PutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPutWithResponse(ctx context.Context, orgId string, credentialId string, body PutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPutJSONRequestBody, reqEditors ...RequestEditorFn) (*PutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPutResponse, error) {
+	rsp, err := c.PutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPut(ctx, orgId, credentialId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPutResponse(rsp)
+}
+
+// GetCredentialUsageV1OrgsOrgIdCredentialsCredentialIdUsageGetWithResponse request returning *GetCredentialUsageV1OrgsOrgIdCredentialsCredentialIdUsageGetResponse
+func (c *ClientWithResponses) GetCredentialUsageV1OrgsOrgIdCredentialsCredentialIdUsageGetWithResponse(ctx context.Context, orgId string, credentialId string, reqEditors ...RequestEditorFn) (*GetCredentialUsageV1OrgsOrgIdCredentialsCredentialIdUsageGetResponse, error) {
+	rsp, err := c.GetCredentialUsageV1OrgsOrgIdCredentialsCredentialIdUsageGet(ctx, orgId, credentialId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetCredentialUsageV1OrgsOrgIdCredentialsCredentialIdUsageGetResponse(rsp)
 }
 
 // ListMcpServersV1OrgsOrgIdMcpServersGetWithResponse request returning *ListMcpServersV1OrgsOrgIdMcpServersGetResponse
@@ -8821,6 +11659,40 @@ func (c *ClientWithResponses) CreateSkillV1OrgsOrgIdSkillsPostWithResponse(ctx c
 	return ParseCreateSkillV1OrgsOrgIdSkillsPostResponse(rsp)
 }
 
+// ImportSkillV1OrgsOrgIdSkillsImportPostWithBodyWithResponse request with arbitrary body returning *ImportSkillV1OrgsOrgIdSkillsImportPostResponse
+func (c *ClientWithResponses) ImportSkillV1OrgsOrgIdSkillsImportPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ImportSkillV1OrgsOrgIdSkillsImportPostResponse, error) {
+	rsp, err := c.ImportSkillV1OrgsOrgIdSkillsImportPostWithBody(ctx, orgId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseImportSkillV1OrgsOrgIdSkillsImportPostResponse(rsp)
+}
+
+func (c *ClientWithResponses) ImportSkillV1OrgsOrgIdSkillsImportPostWithResponse(ctx context.Context, orgId string, body ImportSkillV1OrgsOrgIdSkillsImportPostJSONRequestBody, reqEditors ...RequestEditorFn) (*ImportSkillV1OrgsOrgIdSkillsImportPostResponse, error) {
+	rsp, err := c.ImportSkillV1OrgsOrgIdSkillsImportPost(ctx, orgId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseImportSkillV1OrgsOrgIdSkillsImportPostResponse(rsp)
+}
+
+// PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostWithBodyWithResponse request with arbitrary body returning *PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostResponse
+func (c *ClientWithResponses) PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostResponse, error) {
+	rsp, err := c.PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostWithBody(ctx, orgId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostResponse(rsp)
+}
+
+func (c *ClientWithResponses) PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostWithResponse(ctx context.Context, orgId string, body PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostJSONRequestBody, reqEditors ...RequestEditorFn) (*PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostResponse, error) {
+	rsp, err := c.PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPost(ctx, orgId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostResponse(rsp)
+}
+
 // DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteWithResponse request returning *DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteResponse
 func (c *ClientWithResponses) DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteWithResponse(ctx context.Context, orgId string, skillSlug string, reqEditors ...RequestEditorFn) (*DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteResponse, error) {
 	rsp, err := c.DeleteSkillV1OrgsOrgIdSkillsSkillSlugDelete(ctx, orgId, skillSlug, reqEditors...)
@@ -8854,6 +11726,23 @@ func (c *ClientWithResponses) UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchWithResp
 		return nil, err
 	}
 	return ParseUpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchResponse(rsp)
+}
+
+// RefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPostWithBodyWithResponse request with arbitrary body returning *RefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPostResponse
+func (c *ClientWithResponses) RefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPostWithBodyWithResponse(ctx context.Context, orgId string, skillSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPostResponse, error) {
+	rsp, err := c.RefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPostWithBody(ctx, orgId, skillSlug, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPostResponse(rsp)
+}
+
+func (c *ClientWithResponses) RefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPostWithResponse(ctx context.Context, orgId string, skillSlug string, body RefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPostJSONRequestBody, reqEditors ...RequestEditorFn) (*RefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPostResponse, error) {
+	rsp, err := c.RefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPost(ctx, orgId, skillSlug, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPostResponse(rsp)
 }
 
 // ListToolsV1OrgsOrgIdToolsGetWithResponse request returning *ListToolsV1OrgsOrgIdToolsGetResponse
@@ -8960,6 +11849,39 @@ func ParseCreateBotV1OrgsOrgIdBotsPostResponse(rsp *http.Response) (*CreateBotV1
 			return nil, err
 		}
 		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGetResponse parses an HTTP response from a GetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGetWithResponse call
+func ParseGetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGetResponse(rsp *http.Response) (*GetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest BotHostingOptions
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest ProblemDetails
@@ -9171,6 +12093,39 @@ func ParseUpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchResponse(rsp *http.Res
 	return response, nil
 }
 
+// ParseCopyBotV1OrgsOrgIdBotsBotSlugCopyPostResponse parses an HTTP response from a CopyBotV1OrgsOrgIdBotsBotSlugCopyPostWithResponse call
+func ParseCopyBotV1OrgsOrgIdBotsBotSlugCopyPostResponse(rsp *http.Response) (*CopyBotV1OrgsOrgIdBotsBotSlugCopyPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CopyBotV1OrgsOrgIdBotsBotSlugCopyPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest BotCopyResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetResponse parses an HTTP response from a ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetWithResponse call
 func ParseListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetResponse(rsp *http.Response) (*ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -9362,6 +12317,39 @@ func ParseRestartBotV1OrgsOrgIdBotsBotSlugRestartPostResponse(rsp *http.Response
 	return response, nil
 }
 
+// ParseResumeBotV1OrgsOrgIdBotsBotSlugResumePostResponse parses an HTTP response from a ResumeBotV1OrgsOrgIdBotsBotSlugResumePostWithResponse call
+func ParseResumeBotV1OrgsOrgIdBotsBotSlugResumePostResponse(rsp *http.Response) (*ResumeBotV1OrgsOrgIdBotsBotSlugResumePostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ResumeBotV1OrgsOrgIdBotsBotSlugResumePostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest BotResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseUnassignSkillsV1OrgsOrgIdBotsBotSlugSkillsDeleteResponse parses an HTTP response from a UnassignSkillsV1OrgsOrgIdBotsBotSlugSkillsDeleteWithResponse call
 func ParseUnassignSkillsV1OrgsOrgIdBotsBotSlugSkillsDeleteResponse(rsp *http.Response) (*UnassignSkillsV1OrgsOrgIdBotsBotSlugSkillsDeleteResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -9513,6 +12501,39 @@ func ParseUnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDeleteResponse(rsp *
 	return response, nil
 }
 
+// ParseSuspendBotV1OrgsOrgIdBotsBotSlugSuspendPostResponse parses an HTTP response from a SuspendBotV1OrgsOrgIdBotsBotSlugSuspendPostWithResponse call
+func ParseSuspendBotV1OrgsOrgIdBotsBotSlugSuspendPostResponse(rsp *http.Response) (*SuspendBotV1OrgsOrgIdBotsBotSlugSuspendPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &SuspendBotV1OrgsOrgIdBotsBotSlugSuspendPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest BotResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseUnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteResponse parses an HTTP response from a UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteWithResponse call
 func ParseUnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteResponse(rsp *http.Response) (*UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -9638,6 +12659,39 @@ func ParseReplaceToolsV1OrgsOrgIdBotsBotSlugToolsPutResponse(rsp *http.Response)
 	return response, nil
 }
 
+// ParseCheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPostResponse parses an HTTP response from a CheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPostWithResponse call
+func ParseCheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPostResponse(rsp *http.Response) (*CheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CheckToolPermissionsV1OrgsOrgIdBotsBotSlugToolsPermissionCheckPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ToolPermissionCheckResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseRetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostResponse parses an HTTP response from a RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostWithResponse call
 func ParseRetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostResponse(rsp *http.Response) (*RetryToolSyncV1OrgsOrgIdBotsBotSlugToolsRetrySyncPostResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -9687,6 +12741,105 @@ func ParseListCredentialsV1OrgsOrgIdCredentialsGetResponse(rsp *http.Response) (
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest []CredentialResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksGetResponse parses an HTTP response from a GetCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksGetWithResponse call
+func ParseGetCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksGetResponse(rsp *http.Response) (*GetCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CredentialBotLinksResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPutResponse parses an HTTP response from a PutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPutWithResponse call
+func ParsePutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPutResponse(rsp *http.Response) (*PutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPutResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPutResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CredentialBotLinksResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetCredentialUsageV1OrgsOrgIdCredentialsCredentialIdUsageGetResponse parses an HTTP response from a GetCredentialUsageV1OrgsOrgIdCredentialsCredentialIdUsageGetWithResponse call
+func ParseGetCredentialUsageV1OrgsOrgIdCredentialsCredentialIdUsageGetResponse(rsp *http.Response) (*GetCredentialUsageV1OrgsOrgIdCredentialsCredentialIdUsageGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetCredentialUsageV1OrgsOrgIdCredentialsCredentialIdUsageGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CredentialUsageResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -10228,6 +13381,72 @@ func ParseCreateSkillV1OrgsOrgIdSkillsPostResponse(rsp *http.Response) (*CreateS
 	return response, nil
 }
 
+// ParseImportSkillV1OrgsOrgIdSkillsImportPostResponse parses an HTTP response from a ImportSkillV1OrgsOrgIdSkillsImportPostWithResponse call
+func ParseImportSkillV1OrgsOrgIdSkillsImportPostResponse(rsp *http.Response) (*ImportSkillV1OrgsOrgIdSkillsImportPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ImportSkillV1OrgsOrgIdSkillsImportPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest SkillResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostResponse parses an HTTP response from a PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostWithResponse call
+func ParsePreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostResponse(rsp *http.Response) (*PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SkillImportPreviewResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseDeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteResponse parses an HTTP response from a DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteWithResponse call
 func ParseDeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteResponse(rsp *http.Response) (*DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -10296,6 +13515,39 @@ func ParseUpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchResponse(rsp *http.Response)
 	}
 
 	response := &UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SkillResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseRefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPostResponse parses an HTTP response from a RefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPostWithResponse call
+func ParseRefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPostResponse(rsp *http.Response) (*RefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &RefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPostResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}

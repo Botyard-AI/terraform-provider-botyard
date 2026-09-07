@@ -49,7 +49,14 @@ type botConfigModel struct {
 	Session          *botSessionModel    `tfsdk:"session"`
 }
 
-// botModelModel mirrors ModelConfigPatch (currently just `primary`).
+// botModelModel mirrors the old ModelConfigPatch (just `primary`).
+//
+// DEPRECATED / INERT. The Botyard API removed `model` from
+// OpenClawConfigPatch and made `ModelConfig.primary` a read-only projection
+// of the authoritative `chain`. Nothing this block sends is applied, and
+// nothing can be read back. It is left in place here rather than removed
+// because removing it is a breaking schema change for practitioners and needs
+// its own task and design; this file only stops pretending it round-trips.
 type botModelModel struct {
 	Primary *botModelRefModel `tfsdk:"primary"`
 }
@@ -345,10 +352,15 @@ func mapBotConfig(dc *client.OpenClawBotConfig, cfg *botConfigModel) {
 	cfg.ThinkingDefault = enumPtrToStr(dc.ThinkingDefault)
 	cfg.ReasoningDefault = enumPtrToStr(dc.ReasoningDefault)
 
-	if cfg.Model != nil && cfg.Model.Primary != nil && dc.Model != nil && dc.Model.Primary != nil {
-		cfg.Model.Primary.Model = types.StringValue(dc.Model.Primary.Model)
-		cfg.Model.Primary.Provider = strPtrToStr(dc.Model.Primary.Provider)
-	}
+	// `config.model` is deliberately NOT refreshed. The API's ModelConfig no
+	// longer carries `primary` at all: routing is derived from the
+	// authoritative `chain`, and `model` was dropped from OpenClawConfigPatch
+	// entirely, so there is neither a value to read back nor a field to write.
+	// The `model` block on this resource is therefore inert against the
+	// current API and is scheduled for removal/migration under its own task —
+	// see the note on `botModelModel`. Refreshing it here from a field that no
+	// longer exists is not possible; leaving the practitioner's configured
+	// value untouched matches how every other undeclared nested block behaves.
 	if cfg.Identity != nil {
 		cfg.Identity.Emoji = strPtrToStr(dc.Identity.Emoji)
 		cfg.Identity.Theme = strPtrToStr(dc.Identity.Theme)
