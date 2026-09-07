@@ -174,13 +174,11 @@ func TestMapBotConfig_RefreshesScalarsAndDeclaredNested(t *testing.T) {
 	dc := &client.OpenClawBotConfig{
 		SystemPromptMode: &spm,
 		ThinkingDefault:  &td,
-		Model:            &client.ModelConfig{Primary: &client.ModelRef{Model: "gpt-5.4", Provider: strp("botyard")}},
 		Identity:         client.IdentityConfig{Emoji: strp("🤖"), Theme: strp("dark")},
 		Heartbeat:        &client.HeartbeatConfig{Every: &every, AckMaxChars: &ack},
 		Session:          &client.SessionConfig{WriteLockMaxHoldMs: &wlock},
 	}
 	cfg := &botConfigModel{
-		Model:     &botModelModel{Primary: &botModelRefModel{}},
 		Identity:  &botIdentityModel{},
 		Heartbeat: &botHeartbeatModel{},
 		Session:   &botSessionModel{},
@@ -196,9 +194,9 @@ func TestMapBotConfig_RefreshesScalarsAndDeclaredNested(t *testing.T) {
 	if !cfg.ReasoningDefault.IsNull() {
 		t.Errorf("reasoning_default should be null (server nil), got %q", cfg.ReasoningDefault.ValueString())
 	}
-	if cfg.Model.Primary.Model.ValueString() != "gpt-5.4" || cfg.Model.Primary.Provider.ValueString() != "botyard" {
-		t.Errorf("model primary = %+v", cfg.Model.Primary)
-	}
+	// `config.model` is intentionally absent: the API's ModelConfig no longer
+	// carries `primary` (it is derived from `chain`), so there is nothing for
+	// mapBotConfig to refresh. See the note on botModelModel.
 	if cfg.Identity.Emoji.ValueString() != "🤖" || cfg.Identity.Theme.ValueString() != "dark" {
 		t.Errorf("identity = %+v", cfg.Identity)
 	}
@@ -215,7 +213,6 @@ func TestMapBotConfig_RefreshesScalarsAndDeclaredNested(t *testing.T) {
 // diff for config the practitioner never declared.
 func TestMapBotConfig_UndeclaredNestedNotPopulated(t *testing.T) {
 	dc := &client.OpenClawBotConfig{
-		Model:    &client.ModelConfig{Primary: &client.ModelRef{Model: "gpt-5.4"}},
 		Identity: client.IdentityConfig{Emoji: strp("🤖")},
 	}
 	cfg := &botConfigModel{} // nothing declared

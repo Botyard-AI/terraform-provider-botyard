@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-framework/diag"
@@ -51,7 +52,12 @@ type McpServerResourceModel struct {
 	SecretFileMounts types.Map    `tfsdk:"secret_file_mounts"`
 	PodHostMode      types.String `tfsdk:"pod_host_mode"`
 	// managed_remote variant
-	EndpointURL types.String `tfsdk:"endpoint_url"`
+	EndpointURL   types.String `tfsdk:"endpoint_url"`
+	StaticHeaders types.Map    `tfsdk:"static_headers"`
+	SecretHeaders types.Map    `tfsdk:"secret_headers"`
+	// Write-only: present in config, never in plan or state. Read it from
+	// req.Config, never from req.Plan / req.State.
+	AcknowledgedCredentialHost types.String `tfsdk:"acknowledged_credential_host"`
 	// computed
 	DesiredState     types.String `tfsdk:"desired_state"`
 	ObservedState    types.String `tfsdk:"observed_state"`
@@ -187,6 +193,51 @@ func (r *McpServerResource) Schema(_ context.Context, _ resource.SchemaRequest, 
 				Optional:            true,
 				MarkdownDescription: "Vendor-hosted MCP URL. Required when `runtime_kind = managed_remote`.",
 			},
+			"static_headers": schema.MapAttribute{
+				Optional:    true,
+				Computed:    true,
+				ElementType: types.StringType,
+				MarkdownDescription: "Non-sensitive outbound headers added to every request to `endpoint_url` " +
+					"(`managed_remote` only). Full replacement when declared. A plaintext `Authorization` " +
+					"header is rejected — the API stores this map in the clear and returns it verbatim on read, " +
+					"so a credential belongs in `secret_headers` instead. Leave the argument out entirely and " +
+					"Terraform will not manage or send it, so headers configured in the Botyard app are left alone.",
+				PlanModifiers: []planmodifier.Map{mapplanmodifier.UseStateForUnknown()},
+			},
+			"secret_headers": schema.MapAttribute{
+				Optional:    true,
+				Computed:    true,
+				ElementType: types.StringType,
+				MarkdownDescription: "Header name → Runtime Vault key path, e.g. " +
+					"`{ Authorization = \"mcp.posthog.authorization_header\" }` (`managed_remote` only). The " +
+					"values are dotted **key paths, not secrets**: the secret itself is resolved from the org's " +
+					"Runtime Vault for each outbound request and is never returned by the API, never written to " +
+					"Terraform state, and never shown in a plan. Because the paths are only pointers they are " +
+					"deliberately not marked sensitive — they must stay readable for drift detection to work.\n\n" +
+					"~> **The stored secret is sent verbatim.** Botyard does not add a scheme prefix, so a vault " +
+					"secret backing an `Authorization` header must itself contain `Bearer <token>`, not a bare " +
+					"token. A bare token produces a 401 from the vendor at request time, not an error at apply " +
+					"time.\n\n" +
+					"Setting this on a server whose endpoint host the operator chose also requires " +
+					"`acknowledged_credential_host`. Full replacement when declared; leave the argument out " +
+					"entirely and Terraform will not manage or send it.",
+				PlanModifiers: []planmodifier.Map{mapplanmodifier.UseStateForUnknown()},
+			},
+			"acknowledged_credential_host": schema.StringAttribute{
+				Optional:  true,
+				WriteOnly: true,
+				MarkdownDescription: "Host you accept will receive this server's Runtime Vault secrets — it must " +
+					"equal the host of `endpoint_url`. The API requires it when a submission would start sending " +
+					"`secret_headers` to a host you nominated: on create, and on an update that re-points " +
+					"`endpoint_url` at a **different host**. Changing only the path on the same host needs " +
+					"nothing. Accepting a destination is recorded as an audit event.\n\n" +
+					"This is a **write-only** argument: it is sent with the request and never stored in " +
+					"Terraform state or plan, which is what it should be — it is a one-shot acceptance, not " +
+					"configuration, and the API does not return it on read. Requires Terraform 1.11 or later. " +
+					"Because it never enters state it also never produces a diff of its own: set it in the same " +
+					"apply that creates the server or moves the endpoint, and leave it in place afterwards " +
+					"(harmless) or remove it (also harmless — removing it is not a change).",
+			},
 			"desired_state":     schema.StringAttribute{Computed: true, MarkdownDescription: "Control-plane desired state."},
 			"observed_state":    schema.StringAttribute{Computed: true, MarkdownDescription: "Observed lifecycle state."},
 			"tool_count":        schema.Int64Attribute{Computed: true, MarkdownDescription: "Number of tools the server advertises."},
@@ -246,7 +297,14 @@ func validateMcpServerConfig(cfg McpServerResourceModel) diag.Diagnostics {
 				"`port` is required when runtime_kind = container_image.")
 		}
 		forbid("endpoint_url", !cfg.EndpointURL.IsNull(), "managed_remote")
+		// Mirrors the API's own rule: container_image rows reject every
+		// managed-remote field, so catch it at plan time instead of trading a
+		// round-trip for the same 422.
+		forbid("static_headers", !cfg.StaticHeaders.IsNull(), "managed_remote")
+		forbid("secret_headers", !cfg.SecretHeaders.IsNull(), "managed_remote")
+		forbid("acknowledged_credential_host", !cfg.AcknowledgedCredentialHost.IsNull(), "managed_remote")
 	case client.McpRuntimeManagedRemote:
+		diags.Append(validateNoPlaintextAuthorizationHeader(cfg.StaticHeaders)...)
 		if cfg.EndpointURL.IsNull() {
 			diags.AddAttributeError(path.Root("endpoint_url"), "Missing endpoint_url",
 				"`endpoint_url` is required when runtime_kind = managed_remote.")
@@ -268,14 +326,54 @@ func validateMcpServerConfig(cfg McpServerResourceModel) diag.Diagnostics {
 	return diags
 }
 
+// validateNoPlaintextAuthorizationHeader mirrors the single backend header rule
+// worth failing at plan time rather than at apply time.
+//
+// The server rule lives in `validate_managed_remote_headers` in
+// `core/src/botyard_core/models/mcp_servers.py` at Botyard-AI/botyard
+// cece37a813b577ad79369f31cc28ba5d4b04874e: a header named `authorization`
+// (compared case-insensitively) in `static_headers` is rejected outright,
+// because `static_headers` is stored in the clear and returned verbatim, so a
+// bearer token there is a leaked credential rather than a configured one.
+//
+// This is the only backend header rule reproduced here, deliberately. Every
+// other rule (header-name charset, hop-by-hop bans, the 32-header cap, the
+// dotted vault-path shape) is enforced by the API and reported through the
+// normal apply-time error; duplicating those buys a slightly earlier message at
+// the cost of two implementations that can drift. This one is different in kind:
+// it is the rule that stops secret material being written into a plaintext
+// column and into Terraform state, and failing it at plan time keeps the token
+// out of the apply entirely.
+func validateNoPlaintextAuthorizationHeader(staticHeaders types.Map) diag.Diagnostics {
+	var diags diag.Diagnostics
+	if staticHeaders.IsNull() || staticHeaders.IsUnknown() {
+		return diags
+	}
+	for name := range staticHeaders.Elements() {
+		if strings.EqualFold(name, "authorization") {
+			diags.AddAttributeError(path.Root("static_headers"), "Plaintext Authorization header",
+				"`static_headers` is stored and returned in the clear, so it cannot carry an "+
+					"`Authorization` value. Put a Runtime Vault key path in `secret_headers` instead, e.g. "+
+					"`secret_headers = { Authorization = \"mcp.<slug>.authorization_header\" }`. The stored "+
+					"secret is sent verbatim, so it must itself contain `Bearer <token>`.")
+			break
+		}
+	}
+	return diags
+}
+
 func (r *McpServerResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	var plan McpServerResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+	// acknowledged_credential_host is write-only: the framework nullifies it in
+	// the plan, so the submitted value has to come from the config.
+	var ackHost types.String
+	resp.Diagnostics.Append(req.Config.GetAttribute(ctx, path.Root("acknowledged_credential_host"), &ackHost)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	body, diags := buildCreateJSON(ctx, plan)
+	body, diags := buildCreateJSON(ctx, plan, ackHost)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -321,14 +419,20 @@ func (r *McpServerResource) Read(ctx context.Context, req resource.ReadRequest, 
 }
 
 func (r *McpServerResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	var plan, state McpServerResourceModel
+	var plan, state, cfg McpServerResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+	// The config is read alongside the plan for two reasons: it is the only
+	// place the write-only acknowledgement exists, and it is the only way to
+	// tell "the practitioner declared an empty header map" from "the
+	// practitioner never mentioned headers" — the plan collapses both to a
+	// value, because the attributes are Optional+Computed.
+	resp.Diagnostics.Append(req.Config.Get(ctx, &cfg)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	body, diags := buildUpdateJSON(ctx, plan, state.RuntimeKind.ValueString())
+	body, diags := buildUpdateJSON(ctx, plan, cfg, state.RuntimeKind.ValueString())
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -374,7 +478,9 @@ func (r *McpServerResource) ImportState(ctx context.Context, req resource.Import
 }
 
 // buildCreateJSON marshals the concrete per-kind create variant to JSON.
-func buildCreateJSON(ctx context.Context, plan McpServerResourceModel) ([]byte, diag.Diagnostics) {
+// ackHost carries the write-only acknowledged_credential_host, which the caller
+// must read from the resource config — it is absent from the plan by design.
+func buildCreateJSON(ctx context.Context, plan McpServerResourceModel, ackHost types.String) ([]byte, diag.Diagnostics) {
 	var diags diag.Diagnostics
 	switch plan.RuntimeKind.ValueString() {
 	case client.McpRuntimeManagedRemote:
@@ -386,6 +492,13 @@ func buildCreateJSON(ctx context.Context, plan McpServerResourceModel) ([]byte, 
 			Transport:             transportPtr(plan.Transport),
 			RequestTimeoutSeconds: int64ToIntPtr(plan.RequestTimeoutSeconds),
 			EndpointUrl:           plan.EndpointURL.ValueString(),
+			// Both header maps are Optional+Computed, so an undeclared map is
+			// unknown at create time; mapToStrMapPtr yields nil for that and the
+			// `omitempty` tag drops the key, letting the API apply its own
+			// default of {}.
+			StaticHeaders:              mapToStrMapPtr(ctx, plan.StaticHeaders, &diags),
+			SecretHeaders:              mapToStrMapPtr(ctx, plan.SecretHeaders, &diags),
+			AcknowledgedCredentialHost: strToPtr(ackHost),
 		}
 		out, err := json.Marshal(body)
 		if err != nil {
@@ -422,7 +535,22 @@ func buildCreateJSON(ctx context.Context, plan McpServerResourceModel) ([]byte, 
 // McpServerUpdate type has no `omitempty`, so a nil field would serialize as an
 // explicit JSON null; the API rejects cross-kind fields being present, hence the
 // dynamic body limited to the active kind.
-func buildUpdateJSON(ctx context.Context, plan McpServerResourceModel, kind string) ([]byte, diag.Diagnostics) {
+//
+// The two header maps and the acknowledgement are keyed off the *config*, not
+// the plan: they are only sent when the practitioner declared them. Two reasons,
+// and both matter.
+//
+//  1. Not sending them is what keeps a server whose headers were configured in
+//     the Botyard app from being clobbered by an unrelated `terraform apply`.
+//     The API treats an omitted field as UNSET and an included one as a full
+//     replacement, so an undeclared map must not appear in the body at all.
+//  2. `static_headers` / `secret_headers` are non-nullable on the API's
+//     `McpServerUpdate`, so an explicit JSON `null` is a 422 rather than a
+//     no-op — omission is the only way to say "leave these alone".
+//
+// A declared-but-empty map (`static_headers = {}`) is a real instruction and is
+// sent as `{}`, which clears them.
+func buildUpdateJSON(ctx context.Context, plan, cfg McpServerResourceModel, kind string) ([]byte, diag.Diagnostics) {
 	var diags diag.Diagnostics
 	body := map[string]json.RawMessage{
 		"name":                    rawString(plan.Name),
@@ -433,6 +561,18 @@ func buildUpdateJSON(ctx context.Context, plan McpServerResourceModel, kind stri
 	switch kind {
 	case client.McpRuntimeManagedRemote:
 		body["endpoint_url"] = rawString(plan.EndpointURL)
+		if !cfg.StaticHeaders.IsNull() {
+			body["static_headers"] = rawStrMap(ctx, plan.StaticHeaders, &diags)
+		}
+		if !cfg.SecretHeaders.IsNull() {
+			body["secret_headers"] = rawStrMap(ctx, plan.SecretHeaders, &diags)
+		}
+		// Unlike the header maps this is never UNSET server-side: an omitted
+		// acknowledgement means "not acknowledged", which is the refusal. Send
+		// it only when the practitioner supplied one.
+		if !cfg.AcknowledgedCredentialHost.IsNull() {
+			body["acknowledged_credential_host"] = rawString(cfg.AcknowledgedCredentialHost)
+		}
 	default: // container_image
 		body["image"] = rawString(plan.Image)
 		body["port"] = rawInt64(plan.Port)
@@ -473,6 +613,8 @@ func mapDetail(ctx context.Context, d *client.McpServerDetail, m *McpServerResou
 		m.SecretFileMounts = strMapToMap(ctx, c.SecretFileMounts, diags)
 		m.PodHostMode = podHostModeToStr(c.PodHostMode)
 		m.EndpointURL = types.StringNull()
+		m.StaticHeaders = types.MapNull(types.StringType)
+		m.SecretHeaders = types.MapNull(types.StringType)
 		m.DesiredState = types.StringValue(string(c.DesiredState))
 		m.ObservedState = types.StringValue(string(c.ObservedState))
 		m.ToolCount = types.Int64Value(int64(c.ToolCount))
@@ -492,6 +634,12 @@ func mapDetail(ctx context.Context, d *client.McpServerDetail, m *McpServerResou
 		m.Transport = types.StringValue(string(c.Transport))
 		m.RequestTimeoutSeconds = intPtrToInt64(c.RequestTimeoutSeconds)
 		m.EndpointURL = types.StringValue(c.EndpointUrl)
+		// Both header maps round-trip. `secret_headers` values are Runtime
+		// Vault key paths, never secret values, so reading them back is both
+		// safe and necessary — without it there is nothing to detect drift
+		// against, and an imported server would plan dirty.
+		m.StaticHeaders = strMapToMap(ctx, c.StaticHeaders, diags)
+		m.SecretHeaders = strMapToMap(ctx, c.SecretHeaders, diags)
 		// container-only fields are null for this variant
 		m.Image = types.StringNull()
 		m.Port = types.Int64Null()
