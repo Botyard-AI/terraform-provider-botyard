@@ -54,6 +54,10 @@ func containerModel() McpServerResourceModel {
 		SecretFileMounts: types.MapNull(types.StringType),
 		PodHostMode:      types.StringValue("pod_localhost"),
 		EndpointURL:      types.StringNull(),
+		StaticHeaders:    types.MapNull(types.StringType),
+		SecretHeaders:    types.MapNull(types.StringType),
+
+		AcknowledgedCredentialHost: types.StringNull(),
 	}
 }
 
@@ -73,7 +77,21 @@ func managedModel() McpServerResourceModel {
 		SecretFileMounts: types.MapNull(types.StringType),
 		PodHostMode:      types.StringNull(),
 		EndpointURL:      types.StringValue("https://example.com/mcp"),
+		StaticHeaders:    types.MapNull(types.StringType),
+		SecretHeaders:    types.MapNull(types.StringType),
+
+		AcknowledgedCredentialHost: types.StringNull(),
 	}
+}
+
+// strMap is a small helper for building a known types.Map of strings.
+func strMap(t *testing.T, kv map[string]string) types.Map {
+	t.Helper()
+	m, d := types.MapValueFrom(context.Background(), types.StringType, kv)
+	if d.HasError() {
+		t.Fatalf("build map: %v", d)
+	}
+	return m
 }
 
 func TestValidateMcpServerConfig(t *testing.T) {
@@ -121,7 +139,7 @@ func TestValidateMcpServerConfig(t *testing.T) {
 }
 
 func TestBuildCreateJSON_ContainerImage(t *testing.T) {
-	body, diags := buildCreateJSON(context.Background(), containerModel())
+	body, diags := buildCreateJSON(context.Background(), containerModel(), types.StringNull())
 	if diags.HasError() {
 		t.Fatalf("diags: %v", diags)
 	}
@@ -141,7 +159,7 @@ func TestBuildCreateJSON_ContainerImage(t *testing.T) {
 }
 
 func TestBuildCreateJSON_ManagedRemote(t *testing.T) {
-	body, diags := buildCreateJSON(context.Background(), managedModel())
+	body, diags := buildCreateJSON(context.Background(), managedModel(), types.StringNull())
 	if diags.HasError() {
 		t.Fatalf("diags: %v", diags)
 	}
@@ -158,7 +176,7 @@ func TestBuildCreateJSON_ManagedRemote(t *testing.T) {
 
 func TestBuildUpdateJSON_SparsePerKind(t *testing.T) {
 	// container update: no endpoint_url key (would be rejected by the API)
-	body, diags := buildUpdateJSON(context.Background(), containerModel(), client.McpRuntimeContainerImage)
+	body, diags := buildUpdateJSON(context.Background(), containerModel(), containerModel(), client.McpRuntimeContainerImage)
 	if diags.HasError() {
 		t.Fatalf("diags: %v", diags)
 	}
@@ -171,7 +189,7 @@ func TestBuildUpdateJSON_SparsePerKind(t *testing.T) {
 	}
 
 	// managed update: no container-only keys
-	body, diags = buildUpdateJSON(context.Background(), managedModel(), client.McpRuntimeManagedRemote)
+	body, diags = buildUpdateJSON(context.Background(), managedModel(), managedModel(), client.McpRuntimeManagedRemote)
 	if diags.HasError() {
 		t.Fatalf("diags: %v", diags)
 	}
@@ -257,5 +275,265 @@ func TestMapDetail_ManagedRemote(t *testing.T) {
 	}
 	if !m.Image.IsNull() || !m.Port.IsNull() || !m.PodHostMode.IsNull() {
 		t.Error("container-only fields (incl pod_host_mode) should be null for managed_remote")
+	}
+}
+
+// --- managed-remote request headers ------------------------------------------
+
+// TestValidateMcpServerConfig_HeadersAreManagedRemoteOnly proves the provider
+// refuses header configuration on a container_image server at plan time, which
+// is the same rule the API enforces on create and update.
+func TestValidateMcpServerConfig_HeadersAreManagedRemoteOnly(t *testing.T) {
+	for _, tc := range []struct {
+		name  string
+		apply func(*McpServerResourceModel)
+	}{
+		{"static_headers", func(m *McpServerResourceModel) {
+			m.StaticHeaders = strMap(t, map[string]string{"X-Trace": "on"})
+		}},
+		{"secret_headers", func(m *McpServerResourceModel) {
+			m.SecretHeaders = strMap(t, map[string]string{"Authorization": "mcp.posthog.authorization_header"})
+		}},
+		{"acknowledged_credential_host", func(m *McpServerResourceModel) {
+			m.AcknowledgedCredentialHost = types.StringValue("mcp.posthog.com")
+		}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			bad := containerModel()
+			tc.apply(&bad)
+			if !validateMcpServerConfig(bad).HasError() {
+				t.Errorf("container_image with %s should error", tc.name)
+			}
+		})
+	}
+}
+
+// TestValidateMcpServerConfig_HeadersAllowedOnManagedRemote proves the same
+// three arguments are accepted on a managed_remote server.
+func TestValidateMcpServerConfig_HeadersAllowedOnManagedRemote(t *testing.T) {
+	ok := managedModel()
+	ok.StaticHeaders = strMap(t, map[string]string{"X-Trace": "on"})
+	ok.SecretHeaders = strMap(t, map[string]string{"Authorization": "mcp.posthog.authorization_header"})
+	ok.AcknowledgedCredentialHost = types.StringValue("mcp.posthog.com")
+	if d := validateMcpServerConfig(ok); d.HasError() {
+		t.Errorf("valid managed_remote header config errored: %v", d)
+	}
+}
+
+// TestValidateMcpServerConfig_RejectsPlaintextAuthorization mirrors the server's
+// `validate_managed_remote_headers` rule: an Authorization value belongs in
+// secret_headers as a vault key path, never in the plaintext map. The match is
+// case-insensitive, as it is server-side.
+func TestValidateMcpServerConfig_RejectsPlaintextAuthorization(t *testing.T) {
+	for _, name := range []string{"Authorization", "authorization", "AUTHORIZATION"} {
+		bad := managedModel()
+		bad.StaticHeaders = strMap(t, map[string]string{name: "Bearer hunter2"})
+		if !validateMcpServerConfig(bad).HasError() {
+			t.Errorf("static_headers %q should be rejected", name)
+		}
+	}
+	// A vault-backed Authorization in secret_headers is the supported shape.
+	ok := managedModel()
+	ok.SecretHeaders = strMap(t, map[string]string{"Authorization": "mcp.posthog.authorization_header"})
+	if d := validateMcpServerConfig(ok); d.HasError() {
+		t.Errorf("vault-backed Authorization errored: %v", d)
+	}
+	// Any other static header name is none of the provider's business.
+	ok = managedModel()
+	ok.StaticHeaders = strMap(t, map[string]string{"X-Api-Version": "2026-09-01"})
+	if d := validateMcpServerConfig(ok); d.HasError() {
+		t.Errorf("ordinary static header errored: %v", d)
+	}
+}
+
+// TestBuildCreateJSON_ManagedRemoteHeaders proves headers and the write-only
+// acknowledgement reach the create body, and that the acknowledgement is taken
+// from the config argument rather than from the (always-null) plan field.
+func TestBuildCreateJSON_ManagedRemoteHeaders(t *testing.T) {
+	plan := managedModel()
+	plan.StaticHeaders = strMap(t, map[string]string{"X-Api-Version": "2026-09-01"})
+	plan.SecretHeaders = strMap(t, map[string]string{"Authorization": "mcp.posthog.authorization_header"})
+
+	body, diags := buildCreateJSON(context.Background(), plan, types.StringValue("mcp.posthog.com"))
+	if diags.HasError() {
+		t.Fatalf("diags: %v", diags)
+	}
+	m := decodeObj(t, body)
+	static := decodeObj(t, m["static_headers"])
+	if jsonStr(t, static["X-Api-Version"]) != "2026-09-01" {
+		t.Errorf("static_headers = %s", m["static_headers"])
+	}
+	secret := decodeObj(t, m["secret_headers"])
+	if jsonStr(t, secret["Authorization"]) != "mcp.posthog.authorization_header" {
+		t.Errorf("secret_headers = %s", m["secret_headers"])
+	}
+	if jsonStr(t, m["acknowledged_credential_host"]) != "mcp.posthog.com" {
+		t.Errorf("acknowledged_credential_host = %s", m["acknowledged_credential_host"])
+	}
+}
+
+// TestBuildCreateJSON_ManagedRemoteOmitsUndeclaredHeaders proves an undeclared
+// header map is left out of the create body entirely so the API applies its own
+// default, rather than being sent as an explicit null.
+func TestBuildCreateJSON_ManagedRemoteOmitsUndeclaredHeaders(t *testing.T) {
+	body, diags := buildCreateJSON(context.Background(), managedModel(), types.StringNull())
+	if diags.HasError() {
+		t.Fatalf("diags: %v", diags)
+	}
+	m := decodeObj(t, body)
+	for _, k := range []string{"static_headers", "secret_headers"} {
+		if _, ok := m[k]; ok {
+			t.Errorf("undeclared %q must be omitted from the create body, got %s", k, m[k])
+		}
+	}
+}
+
+// TestBuildUpdateJSON_OmitsUndeclaredHeaders is the anti-clobber test: a
+// practitioner who never declared headers must not have the server's headers
+// replaced by an unrelated apply. The API treats an omitted field as UNSET and
+// an included one as a full replacement, so the key must be absent — not null,
+// and not an empty object.
+func TestBuildUpdateJSON_OmitsUndeclaredHeaders(t *testing.T) {
+	plan, cfg := managedModel(), managedModel()
+	// The plan carries values refreshed from the server (Optional+Computed +
+	// UseStateForUnknown); the config does not, because nothing was declared.
+	plan.StaticHeaders = strMap(t, map[string]string{"X-Set-In-The-App": "1"})
+	plan.SecretHeaders = strMap(t, map[string]string{"Authorization": "mcp.posthog.authorization_header"})
+
+	body, diags := buildUpdateJSON(context.Background(), plan, cfg, client.McpRuntimeManagedRemote)
+	if diags.HasError() {
+		t.Fatalf("diags: %v", diags)
+	}
+	m := decodeObj(t, body)
+	for _, k := range []string{"static_headers", "secret_headers", "acknowledged_credential_host"} {
+		if _, ok := m[k]; ok {
+			t.Errorf("undeclared %q must not be sent in a PATCH, got %s", k, m[k])
+		}
+	}
+	// The rest of the sparse PATCH is unaffected.
+	if jsonStr(t, m["endpoint_url"]) != "https://example.com/mcp" {
+		t.Errorf("endpoint_url = %s", m["endpoint_url"])
+	}
+}
+
+// TestBuildUpdateJSON_SendsDeclaredHeaders proves declared headers are sent as a
+// full replacement, that a declared-but-empty map is sent as {} (the documented
+// way to clear headers), and that the write-only acknowledgement is read from
+// the config.
+func TestBuildUpdateJSON_SendsDeclaredHeaders(t *testing.T) {
+	plan, cfg := managedModel(), managedModel()
+	headers := strMap(t, map[string]string{"Authorization": "mcp.posthog.authorization_header"})
+	empty := strMap(t, map[string]string{})
+	plan.SecretHeaders, cfg.SecretHeaders = headers, headers
+	plan.StaticHeaders, cfg.StaticHeaders = empty, empty
+	cfg.AcknowledgedCredentialHost = types.StringValue("mcp.posthog.com")
+
+	body, diags := buildUpdateJSON(context.Background(), plan, cfg, client.McpRuntimeManagedRemote)
+	if diags.HasError() {
+		t.Fatalf("diags: %v", diags)
+	}
+	m := decodeObj(t, body)
+	secret := decodeObj(t, m["secret_headers"])
+	if jsonStr(t, secret["Authorization"]) != "mcp.posthog.authorization_header" {
+		t.Errorf("secret_headers = %s", m["secret_headers"])
+	}
+	if string(m["static_headers"]) != "{}" {
+		t.Errorf("declared-empty static_headers should clear via {}, got %s", m["static_headers"])
+	}
+	if jsonStr(t, m["acknowledged_credential_host"]) != "mcp.posthog.com" {
+		t.Errorf("acknowledged_credential_host = %s", m["acknowledged_credential_host"])
+	}
+}
+
+// TestBuildUpdateJSON_ContainerImageNeverSendsHeaders proves the container
+// branch cannot emit managed-remote fields even if a model somehow carries them.
+func TestBuildUpdateJSON_ContainerImageNeverSendsHeaders(t *testing.T) {
+	plan, cfg := containerModel(), containerModel()
+	headers := strMap(t, map[string]string{"X-Trace": "on"})
+	plan.StaticHeaders, cfg.StaticHeaders = headers, headers
+	plan.SecretHeaders, cfg.SecretHeaders = headers, headers
+	cfg.AcknowledgedCredentialHost = types.StringValue("example.com")
+
+	body, diags := buildUpdateJSON(context.Background(), plan, cfg, client.McpRuntimeContainerImage)
+	if diags.HasError() {
+		t.Fatalf("diags: %v", diags)
+	}
+	m := decodeObj(t, body)
+	for _, k := range []string{"static_headers", "secret_headers", "acknowledged_credential_host", "endpoint_url"} {
+		if _, ok := m[k]; ok {
+			t.Errorf("container_image update must omit %q, got %s", k, m[k])
+		}
+	}
+}
+
+// TestMapDetail_ManagedRemoteRoundTripsHeaders proves read/import populates both
+// header maps, which is what makes a plan clean immediately after import.
+func TestMapDetail_ManagedRemoteRoundTripsHeaders(t *testing.T) {
+	ts := time.Date(2026, 9, 7, 10, 0, 0, 0, time.UTC)
+	d := &client.McpServerDetail{
+		RuntimeKind: client.McpRuntimeManagedRemote,
+		Managed: &client.ManagedRemoteMcpServerDetail{
+			McpServerId:      "m-3",
+			OrgId:            "org-1",
+			Slug:             "posthog",
+			Name:             "PostHog",
+			Transport:        client.McpServerTransportStreamableHttp,
+			EndpointUrl:      "https://mcp.posthog.com/mcp",
+			StaticHeaders:    &map[string]string{"X-Api-Version": "2026-09-01"},
+			SecretHeaders:    &map[string]string{"Authorization": "mcp.posthog.authorization_header"},
+			DesiredState:     client.McpServerDesiredStateRunning,
+			ObservedState:    client.McpServerStateRunning,
+			CreatedAt:        ts,
+			UpdatedAt:        ts,
+			ConfigGeneration: 1,
+		},
+	}
+	var m McpServerResourceModel
+	var diags diag.Diagnostics
+	mapDetail(context.Background(), d, &m, &diags)
+	if diags.HasError() {
+		t.Fatalf("diags: %v", diags)
+	}
+	if got := m.StaticHeaders.Elements()["X-Api-Version"]; got.String() != `"2026-09-01"` {
+		t.Errorf("static_headers not round-tripped: %v", m.StaticHeaders)
+	}
+	// The vault key path is read back verbatim: it is a pointer, not a secret,
+	// and drift detection depends on it being in state.
+	if got := m.SecretHeaders.Elements()["Authorization"]; got.String() != `"mcp.posthog.authorization_header"` {
+		t.Errorf("secret_headers not round-tripped: %v", m.SecretHeaders)
+	}
+}
+
+// TestMapDetail_ContainerImageNullsHeaders proves the container variant nulls
+// the managed-remote header maps rather than leaving a stale value behind.
+func TestMapDetail_ContainerImageNullsHeaders(t *testing.T) {
+	ts := time.Date(2026, 9, 7, 10, 0, 0, 0, time.UTC)
+	d := &client.McpServerDetail{
+		RuntimeKind: client.McpRuntimeContainerImage,
+		Container: &client.ContainerImageMcpServerDetail{
+			McpServerId:   "m-4",
+			OrgId:         "org-1",
+			Slug:          "local",
+			Name:          "Local",
+			Transport:     client.McpServerTransportStreamableHttp,
+			Image:         "ghcr.io/x:1",
+			Port:          8080,
+			DesiredState:  client.McpServerDesiredStateRunning,
+			ObservedState: client.McpServerStateRunning,
+			CreatedAt:     ts,
+			UpdatedAt:     ts,
+		},
+	}
+	m := McpServerResourceModel{
+		StaticHeaders: strMap(t, map[string]string{"stale": "value"}),
+		SecretHeaders: strMap(t, map[string]string{"stale": "value"}),
+	}
+	var diags diag.Diagnostics
+	mapDetail(context.Background(), d, &m, &diags)
+	if diags.HasError() {
+		t.Fatalf("diags: %v", diags)
+	}
+	if !m.StaticHeaders.IsNull() || !m.SecretHeaders.IsNull() {
+		t.Error("header maps should be null for container_image")
 	}
 }
