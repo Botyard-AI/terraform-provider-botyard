@@ -450,6 +450,60 @@ func TestMapBotDesiredConfig_PresentButEmptyDiscriminator(t *testing.T) {
 	}
 }
 
+// TestMapBotDesiredConfig_NullUnionRejected proves a whole-union `null` — and
+// the zero-value union a server that omitted `desired_config` entirely produces
+// — is rejected rather than taken for the legacy absent-key shape.
+//
+// Regression: botTypeDiscriminator unmarshalled the raw union into a
+// map[string]json.RawMessage, and `null` unmarshals into a map as (nil, nil).
+// A nil map is indistinguishable from an empty object, so `bot_type` read as
+// absent and the legacy OpenClaw fallback applied — and AsOpenClawBotConfig()
+// happily decodes `null` into a zero-value config, so a bot with no config at
+// all would have mapped cleanly. `BotResponse.desired_config` is required by
+// the schema; the legacy shape is an OBJECT lacking only the discriminator,
+// never the absence of the config itself.
+func TestMapBotDesiredConfig_NullUnionRejected(t *testing.T) {
+	t.Run("explicit null union", func(t *testing.T) {
+		cfg := &botConfigModel{}
+		err := mapBotDesiredConfig(desiredConfig(t, `null`), cfg)
+		if err == nil {
+			t.Fatal("want an error for a null desired_config union")
+		}
+		if !strings.Contains(err.Error(), "no desired_config") {
+			t.Errorf("error = %q, want it to name the missing desired_config", err)
+		}
+	})
+
+	t.Run("omitted field yields zero-value union", func(t *testing.T) {
+		// The shape a response whose `desired_config` key was absent produces:
+		// the field is never assigned, so the union holds nil and marshals to
+		// `null`. Decoded through a struct so this is the real path, not a
+		// hand-built zero value.
+		var envelope struct {
+			DesiredConfig client.BotResponse_DesiredConfig `json:"desired_config"`
+		}
+		if err := json.Unmarshal([]byte(`{"slug":"x"}`), &envelope); err != nil {
+			t.Fatalf("unmarshal envelope: %v", err)
+		}
+		cfg := &botConfigModel{}
+		err := mapBotDesiredConfig(&envelope.DesiredConfig, cfg)
+		if err == nil {
+			t.Fatal("want an error for an omitted desired_config")
+		}
+		// Assert the *reason*, not just that something failed. Before the
+		// null-union guard this case did error — but incidentally, from
+		// AsOpenClawBotConfig() hitting "unexpected end of JSON input" on a nil
+		// union, after the legacy fallback had already misclassified it. The
+		// error must name the missing desired_config instead.
+		if !strings.Contains(err.Error(), "no desired_config") {
+			t.Errorf("error = %q, want it to name the missing desired_config", err)
+		}
+		if !cfg.ThinkingDefault.IsNull() {
+			t.Errorf("thinking_default = %q, want nothing mapped", cfg.ThinkingDefault.ValueString())
+		}
+	})
+}
+
 // TestBotTypeDiscriminator proves the helper distinguishes the three shapes the
 // generated Discriminator() collapses into one.
 func TestBotTypeDiscriminator(t *testing.T) {

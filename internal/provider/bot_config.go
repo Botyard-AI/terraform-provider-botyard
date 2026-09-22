@@ -1,6 +1,7 @@
 package provider
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 
@@ -349,12 +350,26 @@ func buildSessionPatch(s *botSessionModel) (json.RawMessage, bool) {
 // two are contract violations that must not be defaulted. So probe the raw
 // union object instead.
 //
+// The legacy shape this tolerates is an *object* that merely lacks the
+// discriminator. It is not "no config at all": `BotResponse.desired_config` is
+// required by the schema, so a whole-union `null` — which is also what a
+// zero-value union marshals to, i.e. a `desired_config` the server omitted — is
+// itself a contract violation and must not reach the absent-key fallback.
+// Unmarshalling `null` into a map succeeds and leaves the map nil, which is
+// indistinguishable from an empty object, so the raw bytes are checked first.
+//
 // Returns (value, present, error). `present` is true whenever the key exists,
 // including when its value is `null` or `""`; in those cases value is "".
 func botTypeDiscriminator(dc *client.BotResponse_DesiredConfig) (string, bool, error) {
 	raw, err := dc.MarshalJSON()
 	if err != nil {
 		return "", false, fmt.Errorf("reading desired_config: %w", err)
+	}
+	if trimmed := bytes.TrimSpace(raw); len(trimmed) == 0 || bytes.Equal(trimmed, []byte("null")) {
+		return "", false, fmt.Errorf(
+			"bot response carries no desired_config; the API marks it required " +
+				"and always returns a concrete config object",
+		)
 	}
 	var obj map[string]json.RawMessage
 	if err := json.Unmarshal(raw, &obj); err != nil {
