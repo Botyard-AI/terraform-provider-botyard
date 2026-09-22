@@ -319,3 +319,99 @@ func TestValidateConfig(t *testing.T) {
 		})
 	}
 }
+
+// --- clearing a removed prompt_ref (Rivet, PR #24 round 1) -----------------
+
+// REGRESSION: `prompt_ref` is Optional WITHOUT Computed, so removing it from
+// the config plans as an explicit null rather than resolving to the prior state
+// value. A sparse patch that merely OMITS the key means "no change" to the API
+// (core's patch_model applies only what is in model_fields_set), so the old ref
+// survives the apply, the refresh restores it over the planned null, and the
+// practitioner gets a diff that can never converge — set, remove, and the
+// resource is permanently out of sync with no way to clear the field.
+func TestBuildNativeConfigPatch_RemovedPromptRefIsExplicitlyCleared(t *testing.T) {
+	raw := buildNativeConfigPatch(&botNativeConfigModel{
+		PromptTemplate: types.StringValue("x"),
+		PromptRef:      types.StringNull(), // removed from the config
+	})
+	var got map[string]json.RawMessage
+	if err := json.Unmarshal(raw, &got); err != nil {
+		t.Fatalf("decode patch: %v", err)
+	}
+	v, present := got["prompt_ref"]
+	if !present {
+		t.Fatal("a removed prompt_ref must be sent as an explicit null, not omitted: " +
+			"omission means \"no change\", so the server keeps the old ref and the plan never converges")
+	}
+	if string(v) != "null" {
+		t.Fatalf("prompt_ref = %s, want null", v)
+	}
+}
+
+// The full set -> remove -> refresh lifecycle, which is where the bug actually
+// bites: state must end up null, matching the plan, rather than being restored
+// to the stale server value.
+func TestNativeConfigLifecycle_SetThenRemovePromptRefConverges(t *testing.T) {
+	// 1. Declared with a ref. The patch carries it.
+	declared := &botNativeConfigModel{
+		PromptTemplate: types.StringValue("x"),
+		PromptRef:      types.StringValue("prompts/anvil@3"),
+	}
+	set := decodeSub(t, buildNativeConfigPatch(declared))
+	if string(set["prompt_ref"]) != `"prompts/anvil@3"` {
+		t.Fatalf("prompt_ref = %s", set["prompt_ref"])
+	}
+
+	// 2. Practitioner removes it: the planned value is null.
+	removed := &botNativeConfigModel{
+		PromptTemplate: types.StringValue("x"),
+		PromptRef:      types.StringNull(),
+	}
+	cleared := decodeSub(t, buildNativeConfigPatch(removed))
+	if string(cleared["prompt_ref"]) != "null" {
+		t.Fatalf("clearing patch prompt_ref = %s, want null", cleared["prompt_ref"])
+	}
+
+	// 3. The API honours the null, so the refreshed config carries no ref, and
+	//    the mapped state is null — equal to the plan, hence convergence.
+	nc := nativeBotConfig(t, `{"bot_type":"native","model":{"model":"m"},"prompt_template":"x"}`)
+	mapNativeBotConfig(nc, removed)
+	if !removed.PromptRef.IsNull() {
+		t.Fatalf("post-refresh prompt_ref = %q, want null", removed.PromptRef.ValueString())
+	}
+}
+
+// An UNKNOWN prompt_ref (e.g. interpolated from another resource that has not
+// been created yet) must be OMITTED, never nulled — "not resolved yet" is not
+// "clear it". Getting this wrong would silently wipe the field on any config
+// that computes the ref.
+func TestBuildNativeConfigPatch_UnknownPromptRefIsOmittedNotCleared(t *testing.T) {
+	raw := buildNativeConfigPatch(&botNativeConfigModel{
+		PromptTemplate: types.StringValue("x"),
+		PromptRef:      types.StringUnknown(),
+	})
+	var got map[string]json.RawMessage
+	if err := json.Unmarshal(raw, &got); err != nil {
+		t.Fatalf("decode patch: %v", err)
+	}
+	if v, present := got["prompt_ref"]; present {
+		t.Fatalf("unknown prompt_ref must be omitted, got %s", v)
+	}
+}
+
+// prompt_template must NEVER be nulled. It is Optional+Computed so it does not
+// plan to null, but the deeper reason is that NativeBotConfig.prompt_template
+// is a non-nullable `str` and NativeConfigPatch carries no validator discarding
+// a null for it (unlike OpenClaw's _treat_null_system_prompt_mode_as_unset).
+// An explicit null would be applied by patch_model onto a field that cannot
+// hold it, then dropped at persistence — one value live, another on reload.
+func TestBuildNativeConfigPatch_NullPromptTemplateIsOmittedNotNulled(t *testing.T) {
+	raw := buildNativeConfigPatch(&botNativeConfigModel{PromptTemplate: types.StringNull()})
+	var got map[string]json.RawMessage
+	if err := json.Unmarshal(raw, &got); err != nil {
+		t.Fatalf("decode patch: %v", err)
+	}
+	if v, present := got["prompt_template"]; present {
+		t.Fatalf("prompt_template must be omitted when null, never sent as null; got %s", v)
+	}
+}

@@ -496,6 +496,41 @@ func putStr(m map[string]json.RawMessage, key string, v types.String) {
 	}
 }
 
+// putStrOrNull is putStr's counterpart for a CLEARABLE field — one that is
+// Optional WITHOUT Computed, so removing it from the config plans as an
+// explicit null rather than resolving to the prior state value.
+//
+// It emits an explicit JSON null in that case, because a sparse patch that
+// merely OMITS the key means "no change" server-side: the old value survives,
+// the refresh restores it over the planned null, and Terraform never
+// converges. Same rule the top-level `avatar_url` already follows via
+// rawString.
+//
+// An UNKNOWN value is still omitted, not nulled — unknown means "not resolved
+// yet", which is emphatically not "clear it".
+//
+// *** ONLY FOR FIELDS THAT ARE NULLABLE ON THE TARGET CONFIG MODEL. ***
+// Sending null for a non-nullable target is actively harmful: core's
+// patch_model() applies anything in model_fields_set, so an explicit null
+// writes None onto a field that cannot hold it, which is then dropped at
+// persistence (exclude_none=True) — one value live, a different one on
+// reload. That is the exact hazard core guards with
+// _treat_null_system_prompt_mode_as_unset, and NativeConfigPatch has no such
+// guard for prompt_template. Use putStr for those; keep them Computed so they
+// never plan to null in the first place.
+func putStrOrNull(m map[string]json.RawMessage, key string, v types.String) {
+	if v.IsUnknown() {
+		return
+	}
+	if v.IsNull() {
+		m[key] = json.RawMessage("null")
+		return
+	}
+	if b, err := json.Marshal(v.ValueString()); err == nil {
+		m[key] = b
+	}
+}
+
 func putInt64(m map[string]json.RawMessage, key string, v types.Int64) {
 	if v.IsNull() || v.IsUnknown() {
 		return

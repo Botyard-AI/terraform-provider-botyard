@@ -87,7 +87,8 @@ func botNativeConfigSchemaAttribute() schema.SingleNestedAttribute {
 			"prompt_ref": schema.StringAttribute{
 				Optional: true,
 				MarkdownDescription: "Optional managed-prompt ref naming the template source. Pins the template to a " +
-					"directory-versioned prompt instead of the inline `prompt_template`.",
+					"directory-versioned prompt instead of the inline `prompt_template`. Removing it from the " +
+					"configuration clears the stored ref (sends JSON null).",
 			},
 			"tool_search": schema.SingleNestedAttribute{
 				Optional: true,
@@ -154,8 +155,14 @@ func buildNativeConfigPatch(cfg *botNativeConfigModel) json.RawMessage {
 	m := map[string]json.RawMessage{
 		"bot_type": json.RawMessage(`"` + botTypeNative + `"`),
 	}
+	// prompt_template is Optional+Computed, so it never plans to null —
+	// omitting an absent value is correct, and emitting null would be WRONG:
+	// NativeBotConfig.prompt_template is a non-nullable `str` (minLength 1) and
+	// NativeConfigPatch has no validator discarding a null for it.
 	putStr(m, "prompt_template", cfg.PromptTemplate)
-	putStr(m, "prompt_ref", cfg.PromptRef)
+	// prompt_ref is Optional-only and nullable on the target, so a removal must
+	// be sent as an explicit null or the server keeps the old ref forever.
+	putStrOrNull(m, "prompt_ref", cfg.PromptRef)
 	if v, ok := buildToolSearchPatch(cfg.ToolSearch); ok {
 		m["tool_search"] = v
 	}

@@ -268,7 +268,7 @@ Optional:
 
 Optional:
 
-- `prompt_ref` (String) Optional managed-prompt ref naming the template source. Pins the template to a directory-versioned prompt instead of the inline `prompt_template`.
+- `prompt_ref` (String) Optional managed-prompt ref naming the template source. Pins the template to a directory-versioned prompt instead of the inline `prompt_template`. Removing it from the configuration clears the stored ref (sends JSON null).
 - `prompt_template` (String) Bot instructions template, rendered into the stable prefix of the system prompt. The platform supplies a default when omitted.
 - `tool_search` (Attributes) Defer tool schemas out of the prompt behind a search surface — the same owner-facing setting OpenClaw bots carry. (see [below for nested schema](#nestedatt--native_config--tool_search))
 
