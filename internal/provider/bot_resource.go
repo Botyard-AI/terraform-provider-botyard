@@ -197,7 +197,10 @@ func (r *BotResource) Create(ctx context.Context, req resource.CreateRequest, re
 	mapBotResource(apiResp.JSON201, &plan)
 	// The create POST embeds the config, so the 201 already reflects the merged
 	// desired_config — refresh the declared config leaves from it.
-	mapBotConfig(&apiResp.JSON201.DesiredConfig, plan.Config)
+	if err := mapBotDesiredConfig(&apiResp.JSON201.DesiredConfig, plan.Config); err != nil {
+		resp.Diagnostics.AddError("Unexpected bot config in create response", err.Error())
+		return
+	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
@@ -224,7 +227,10 @@ func (r *BotResource) Read(ctx context.Context, req resource.ReadRequest, resp *
 			fmt.Sprintf("Read returned HTTP %d: %s", apiResp.StatusCode(), describeAPIError(apiResp.Body)))
 	case botReadOK:
 		mapBotResource(apiResp.JSON200, &state)
-		mapBotConfig(&apiResp.JSON200.DesiredConfig, state.Config)
+		if err := mapBotDesiredConfig(&apiResp.JSON200.DesiredConfig, state.Config); err != nil {
+			resp.Diagnostics.AddError("Unexpected bot config in read response", err.Error())
+			return
+		}
 		resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 	}
 }
@@ -268,7 +274,10 @@ func (r *BotResource) Update(ctx context.Context, req resource.UpdateRequest, re
 	}
 
 	mapBotResource(final, &plan)
-	mapBotConfig(&final.DesiredConfig, plan.Config)
+	if err := mapBotDesiredConfig(&final.DesiredConfig, plan.Config); err != nil {
+		resp.Diagnostics.AddError("Unexpected bot config in update response", err.Error())
+		return
+	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 

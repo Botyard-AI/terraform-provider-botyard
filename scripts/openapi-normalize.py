@@ -19,7 +19,21 @@ Pipeline (in order):
    strip 3.1-only ``contentMediaType``/``contentEncoding``. Running after the
    collapse ensures a numeric ``exclusiveMinimum`` merged up out of a collapsed
    union branch is still fixed.
-3. ``prune``: keep only operations whose tag set intersects ``--keep-tags`` and
+3. ``require_discriminators``: for every ``discriminator``, mark the
+   ``propertyName`` ``required`` on each mapped variant schema. OAS 3.0 §4.7.24
+   already demands this ("the property MUST be required"), but FastAPI emits the
+   const-tagged discriminator as an optional property with a ``default``.
+   oapi-codegen then types the field as a *pointer* while still emitting
+   ``v.BotType = "openclaw"`` (a value assignment) in the generated union
+   ``From…``/``Merge…`` helpers, and the generated client does not compile:
+
+       botyard.gen.go:6670: cannot use "openclaw" (untyped string constant)
+           as *OpenClawBotConfigBotType value in assignment
+
+   Making the property required yields a value-typed field and the helpers
+   compile. Unions whose discriminator was already required (``runtime_kind`` on
+   the MCP server schemas) are unaffected — this pass is a no-op for them.
+4. ``prune``: keep only operations whose tag set intersects ``--keep-tags`` and
    prune ``components`` to the transitively-reachable schemas. Also drop the
    catch-all ``default`` response's ``application/json`` entry (see below).
 
@@ -113,6 +127,68 @@ def fix_scalars(node: Any) -> None:
     elif isinstance(node, list):
         for item in node:
             fix_scalars(item)
+
+
+def _resolve_component_schema(spec: dict[str, Any], ref: str) -> dict[str, Any] | None:
+    """Resolve a ``#/components/schemas/<name>`` ref to its schema object."""
+    if not isinstance(ref, str) or not ref.startswith("#/components/schemas/"):
+        return None
+    target = spec.get("components", {}).get("schemas", {}).get(ref.split("/")[-1])
+    return target if isinstance(target, dict) else None
+
+
+def _variant_refs(node: dict[str, Any], disc: dict[str, Any]) -> list[str]:
+    """Every variant schema ref a discriminator selects between.
+
+    Prefers the explicit ``mapping`` (values may be a full ``$ref`` or a bare
+    component name), and falls back to the sibling ``oneOf``/``anyOf`` refs when
+    the discriminator carries no mapping.
+    """
+    refs: list[str] = []
+    mapping = disc.get("mapping")
+    if isinstance(mapping, dict):
+        for value in mapping.values():
+            if not isinstance(value, str):
+                continue
+            refs.append(value if value.startswith("#/") else f"#/components/schemas/{value}")
+    if not refs:
+        for key in ("oneOf", "anyOf"):
+            arr = node.get(key)
+            if isinstance(arr, list):
+                refs.extend(b["$ref"] for b in arr if isinstance(b, dict) and "$ref" in b)
+    return refs
+
+
+_ROOT = object()  # sentinel: the spec contains JSON nulls, so None is not usable
+
+
+def require_discriminators(spec: dict[str, Any], node: Any = _ROOT) -> None:
+    """Mark every discriminator ``propertyName`` required on its variant schemas.
+
+    OAS 3.0 requires this; FastAPI does not emit it. See the module docstring for
+    the oapi-codegen miscompile this prevents. Only touches variants that
+    actually declare the property, and never reorders or duplicates an existing
+    ``required`` entry.
+    """
+    if node is _ROOT:
+        node = spec
+    if isinstance(node, dict):
+        disc = node.get("discriminator")
+        if isinstance(disc, dict):
+            prop = disc.get("propertyName")
+            if isinstance(prop, str):
+                for ref in _variant_refs(node, disc):
+                    variant = _resolve_component_schema(spec, ref)
+                    if variant is None or prop not in variant.get("properties", {}):
+                        continue
+                    required = variant.setdefault("required", [])
+                    if isinstance(required, list) and prop not in required:
+                        required.append(prop)
+        for v in node.values():
+            require_discriminators(spec, v)
+    elif isinstance(node, list):
+        for item in node:
+            require_discriminators(spec, item)
 
 
 def collect_refs(node: Any, acc: set[str]) -> None:
@@ -218,6 +294,7 @@ def normalize_spec(
     """Full in-place normalization; returns the same spec for convenience."""
     collapse_nullable(spec)
     fix_scalars(spec)
+    require_discriminators(spec)
     prune(spec, keep_tags, exclude_paths, exclude_operations)
     return spec
 

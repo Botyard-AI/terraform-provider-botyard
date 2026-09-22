@@ -513,14 +513,19 @@ func buildCreateJSON(ctx context.Context, plan McpServerResourceModel, ackHost t
 			Description:           strToPtr(plan.Description),
 			Transport:             transportPtr(plan.Transport),
 			RequestTimeoutSeconds: int64ToIntPtr(plan.RequestTimeoutSeconds),
-			Image:                 plan.Image.ValueString(),
-			Port:                  int(plan.Port.ValueInt64()),
-			Command:               listToStrSlicePtr(ctx, plan.Command, &diags),
-			Args:                  listToStrSlicePtr(ctx, plan.Args, &diags),
-			EnvPlaintext:          mapToStrMapPtr(ctx, plan.EnvPlaintext, &diags),
-			EnvSecretRefs:         mapToStrMapPtr(ctx, plan.EnvSecretRefs, &diags),
-			SecretFileMounts:      mapToStrMapPtr(ctx, plan.SecretFileMounts, &diags),
-			PodHostMode:           podHostModePtr(plan.PodHostMode),
+			// `image`/`port` are no longer required by the API (a catalog-backed
+			// create can fill them), so the generated fields are pointers. The
+			// resource schema still requires both for a container_image server,
+			// so these are non-nil in practice; the helpers keep a null/unknown
+			// value out of the request body rather than sending a zero value.
+			Image:            strToPtr(plan.Image),
+			Port:             int64ToIntPtr(plan.Port),
+			Command:          listToStrSlicePtr(ctx, plan.Command, &diags),
+			Args:             listToStrSlicePtr(ctx, plan.Args, &diags),
+			EnvPlaintext:     mapToStrMapPtr(ctx, plan.EnvPlaintext, &diags),
+			EnvSecretRefs:    mapToStrMapPtr(ctx, plan.EnvSecretRefs, &diags),
+			SecretFileMounts: mapToStrMapPtr(ctx, plan.SecretFileMounts, &diags),
+			PodHostMode:      podHostModePtr(plan.PodHostMode),
 		}
 		out, err := json.Marshal(body)
 		if err != nil {

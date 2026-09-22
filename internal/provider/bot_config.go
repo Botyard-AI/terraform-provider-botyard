@@ -2,6 +2,7 @@ package provider
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
@@ -336,6 +337,41 @@ func buildSessionPatch(s *botSessionModel) (json.RawMessage, bool) {
 		return nil, false
 	}
 	return marshalObj(inner), true
+}
+
+// mapBotDesiredConfig refreshes cfg from the bot's merged `desired_config`.
+//
+// `BotResponse.desired_config` became a discriminated union (`bot_type`:
+// `openclaw` | `native`) when the API gained native bots, so the concrete
+// config has to be selected before it can be mapped. The `config` block on
+// botyard_bot models the OpenClaw surface only; a server-side `native` bot
+// under a declared `config` block is a genuine contradiction rather than
+// something to map silently, so it is reported instead of no-oped. A nil cfg
+// (config not managed by this resource) short-circuits before decoding.
+func mapBotDesiredConfig(dc *client.BotResponse_DesiredConfig, cfg *botConfigModel) error {
+	if cfg == nil {
+		return nil
+	}
+	// A response with no `bot_type` at all predates the union (the API only had
+	// OpenClaw bots then, and still always serializes the field — it is a
+	// plain defaulted pydantic field, not exclude_unset). Read that shape as
+	// `openclaw` rather than failing every Read against an older deployment.
+	botType, err := dc.Discriminator()
+	if err != nil || botType == "" {
+		botType = string(client.OpenClawBotConfigBotTypeOpenclaw)
+	}
+	if botType != string(client.OpenClawBotConfigBotTypeOpenclaw) {
+		return fmt.Errorf(
+			"bot reports bot_type %q, but the `config` block models the `openclaw` config surface",
+			botType,
+		)
+	}
+	oc, err := dc.AsOpenClawBotConfig()
+	if err != nil {
+		return fmt.Errorf("decoding openclaw desired_config: %w", err)
+	}
+	mapBotConfig(&oc, cfg)
+	return nil
 }
 
 // mapBotConfig refreshes the modeled config leaves from the server's merged

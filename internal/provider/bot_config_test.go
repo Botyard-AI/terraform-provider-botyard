@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-framework/diag"
@@ -305,7 +306,9 @@ func TestBotResource_UpdateConfigRoundTrip(t *testing.T) {
 		t.Errorf("sent config.thinking_default = %s", inner["thinking_default"])
 	}
 	// The merged response mapped back.
-	mapBotConfig(&got.DesiredConfig, cfg)
+	if err := mapBotDesiredConfig(&got.DesiredConfig, cfg); err != nil {
+		t.Fatalf("mapBotDesiredConfig: %v", err)
+	}
 	if cfg.ThinkingDefault.ValueString() != "high" || cfg.SystemPromptMode.ValueString() != "openclaw" {
 		t.Errorf("mapped config = %+v", cfg)
 	}
@@ -364,8 +367,76 @@ func TestBotResource_CreateWithConfigRoundTrip(t *testing.T) {
 	if jsonStr(t, sentCfg["thinking_default"]) != "high" {
 		t.Errorf("create body config = %s", decodeObj(t, gotBodyRaw)["config"])
 	}
-	mapBotConfig(&resp.JSON201.DesiredConfig, plan.Config)
+	if err := mapBotDesiredConfig(&resp.JSON201.DesiredConfig, plan.Config); err != nil {
+		t.Fatalf("mapBotDesiredConfig: %v", err)
+	}
 	if plan.Config.ThinkingDefault.ValueString() != "high" {
 		t.Errorf("mapped thinking_default = %q", plan.Config.ThinkingDefault.ValueString())
+	}
+}
+
+// desiredConfig builds a BotResponse_DesiredConfig from raw JSON, the way an
+// API response is decoded.
+func desiredConfig(t *testing.T, raw string) *client.BotResponse_DesiredConfig {
+	t.Helper()
+	var dc client.BotResponse_DesiredConfig
+	if err := json.Unmarshal([]byte(raw), &dc); err != nil {
+		t.Fatalf("unmarshal desired_config: %v", err)
+	}
+	return &dc
+}
+
+// TestMapBotDesiredConfig_OpenClawVariant proves the openclaw arm of the
+// desired_config union is selected and mapped.
+func TestMapBotDesiredConfig_OpenClawVariant(t *testing.T) {
+	dc := desiredConfig(t, `{"bot_type":"openclaw","thinking_default":"high","identity":{"emoji":"🤖"}}`)
+	cfg := &botConfigModel{Identity: &botIdentityModel{}}
+	if err := mapBotDesiredConfig(dc, cfg); err != nil {
+		t.Fatalf("mapBotDesiredConfig: %v", err)
+	}
+	if cfg.ThinkingDefault.ValueString() != "high" {
+		t.Errorf("thinking_default = %q", cfg.ThinkingDefault.ValueString())
+	}
+	if cfg.Identity.Emoji.ValueString() != "🤖" {
+		t.Errorf("identity.emoji = %q", cfg.Identity.Emoji.ValueString())
+	}
+}
+
+// TestMapBotDesiredConfig_MissingDiscriminator proves a response with no
+// `bot_type` (the pre-union shape) is still read as an openclaw config rather
+// than failing the whole Read.
+func TestMapBotDesiredConfig_MissingDiscriminator(t *testing.T) {
+	dc := desiredConfig(t, `{"thinking_default":"low"}`)
+	cfg := &botConfigModel{}
+	if err := mapBotDesiredConfig(dc, cfg); err != nil {
+		t.Fatalf("mapBotDesiredConfig: %v", err)
+	}
+	if cfg.ThinkingDefault.ValueString() != "low" {
+		t.Errorf("thinking_default = %q", cfg.ThinkingDefault.ValueString())
+	}
+}
+
+// TestMapBotDesiredConfig_NativeVariantReported proves a native bot under a
+// declared `config` block is reported rather than silently mapped from a
+// config surface it does not have.
+func TestMapBotDesiredConfig_NativeVariantReported(t *testing.T) {
+	dc := desiredConfig(t, `{"bot_type":"native","prompt_template":"x","model":"y"}`)
+	cfg := &botConfigModel{}
+	err := mapBotDesiredConfig(dc, cfg)
+	if err == nil {
+		t.Fatal("want an error for a native bot under a declared config block")
+	}
+	if !strings.Contains(err.Error(), "native") {
+		t.Errorf("error should name the bot_type, got %v", err)
+	}
+}
+
+// TestMapBotDesiredConfig_NilCfgNoop proves an unmanaged config short-circuits
+// before the union is decoded (so an undeclared block never errors on a native
+// bot).
+func TestMapBotDesiredConfig_NilCfgNoop(t *testing.T) {
+	dc := desiredConfig(t, `{"bot_type":"native","prompt_template":"x","model":"y"}`)
+	if err := mapBotDesiredConfig(dc, nil); err != nil {
+		t.Fatalf("nil cfg must be a no-op, got %v", err)
 	}
 }

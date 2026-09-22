@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -36,6 +37,11 @@ const (
 	AndBotFilterFieldKindAnd AndBotFilterFieldKind = "and"
 )
 
+// Defines values for AndMcpCatalogFilterFieldKind.
+const (
+	AndMcpCatalogFilterFieldKindAnd AndMcpCatalogFilterFieldKind = "and"
+)
+
 // Defines values for ApiProtocol.
 const (
 	ApiProtocolAnthropic          ApiProtocol = "anthropic"
@@ -50,6 +56,16 @@ const (
 	AuthMethodApiKey AuthMethod = "api_key"
 	AuthMethodNone   AuthMethod = "none"
 	AuthMethodOauth  AuthMethod = "oauth"
+)
+
+// Defines values for BasicHeaderSchemeScheme.
+const (
+	BasicHeaderSchemeSchemeBasic BasicHeaderSchemeScheme = "basic"
+)
+
+// Defines values for BearerHeaderSchemeScheme.
+const (
+	BearerHeaderSchemeSchemeBearer BearerHeaderSchemeScheme = "bearer"
 )
 
 // Defines values for BotAccess.
@@ -139,9 +155,22 @@ const (
 	CommandsConfigOwnerDisplayRaw  CommandsConfigOwnerDisplay = "raw"
 )
 
+// Defines values for ComposioConnectionState.
+const (
+	ComposioConnectionStateConnected ComposioConnectionState = "connected"
+	ComposioConnectionStateExpired   ComposioConnectionState = "expired"
+	ComposioConnectionStateFailed    ComposioConnectionState = "failed"
+	ComposioConnectionStatePending   ComposioConnectionState = "pending"
+)
+
 // Defines values for ConditionBotFilterFieldKind.
 const (
 	ConditionBotFilterFieldKindCondition ConditionBotFilterFieldKind = "condition"
+)
+
+// Defines values for ConditionMcpCatalogFilterFieldKind.
+const (
+	ConditionMcpCatalogFilterFieldKindCondition ConditionMcpCatalogFilterFieldKind = "condition"
 )
 
 // Defines values for ConfigFieldDiffKind.
@@ -187,10 +216,12 @@ const (
 // Defines values for CredentialProvider.
 const (
 	CredentialProviderAnthropic       CredentialProvider = "anthropic"
+	CredentialProviderAvolaflow       CredentialProvider = "avolaflow"
 	CredentialProviderAzureOpenai     CredentialProvider = "azure_openai"
 	CredentialProviderBrave           CredentialProvider = "brave"
 	CredentialProviderChatgptCodex    CredentialProvider = "chatgpt_codex"
 	CredentialProviderClaudeMax       CredentialProvider = "claude_max"
+	CredentialProviderComposio        CredentialProvider = "composio"
 	CredentialProviderCustom          CredentialProvider = "custom"
 	CredentialProviderDinero          CredentialProvider = "dinero"
 	CredentialProviderEconomic        CredentialProvider = "economic"
@@ -331,16 +362,36 @@ const (
 	ManagedRemoteMcpServerSummaryRuntimeKindManagedRemote ManagedRemoteMcpServerSummaryRuntimeKind = "managed_remote"
 )
 
-// Defines values for McpCatalogFormFieldAllowedModes.
+// Defines values for McpCatalogBillingImplicationsChargeAction.
 const (
-	McpCatalogFormFieldAllowedModesPlaintext McpCatalogFormFieldAllowedModes = "plaintext"
-	McpCatalogFormFieldAllowedModesSecretRef McpCatalogFormFieldAllowedModes = "secret_ref"
+	McpCatalogBillingImplicationsChargeActionCreateMcpServer McpCatalogBillingImplicationsChargeAction = "create_mcp_server"
 )
 
-// Defines values for McpCatalogFormFieldDefaultMode.
+// Defines values for McpCatalogBillingImplicationsMeterName.
 const (
-	McpCatalogFormFieldDefaultModePlaintext McpCatalogFormFieldDefaultMode = "plaintext"
-	McpCatalogFormFieldDefaultModeSecretRef McpCatalogFormFieldDefaultMode = "secret_ref"
+	McpCatalogBillingImplicationsMeterNameMcpServerCount McpCatalogBillingImplicationsMeterName = "mcp_server_count"
+)
+
+// Defines values for McpCatalogCredentialRequirementKind.
+const (
+	McpCatalogCredentialRequirementKindIntegration  McpCatalogCredentialRequirementKind = "integration"
+	McpCatalogCredentialRequirementKindRuntimeVault McpCatalogCredentialRequirementKind = "runtime_vault"
+)
+
+// Defines values for McpCatalogEntrySource.
+const (
+	McpCatalogEntrySourceBotyardBuiltin McpCatalogEntrySource = "botyard_builtin"
+	McpCatalogEntrySourceCustomTemplate McpCatalogEntrySource = "custom_template"
+)
+
+// Defines values for McpCatalogFilterField.
+const (
+	McpCatalogFilterFieldDescription       McpCatalogFilterField = "description"
+	McpCatalogFilterFieldMcpCatalogEntryId McpCatalogFilterField = "mcp_catalog_entry_id"
+	McpCatalogFilterFieldName              McpCatalogFilterField = "name"
+	McpCatalogFilterFieldPackagingKind     McpCatalogFilterField = "packaging_kind"
+	McpCatalogFilterFieldSlug              McpCatalogFilterField = "slug"
+	McpCatalogFilterFieldSource            McpCatalogFilterField = "source"
 )
 
 // Defines values for McpCatalogFormFieldDisplay.
@@ -378,14 +429,14 @@ const (
 	McpCatalogFormFieldTargetTypeArg      McpCatalogFormFieldTargetType = "arg"
 	McpCatalogFormFieldTargetTypeEnv      McpCatalogFormFieldTargetType = "env"
 	McpCatalogFormFieldTargetTypeFile     McpCatalogFormFieldTargetType = "file"
+	McpCatalogFormFieldTargetTypeHeader   McpCatalogFormFieldTargetType = "header"
 	McpCatalogFormFieldTargetTypeTopLevel McpCatalogFormFieldTargetType = "top_level"
 )
 
-// Defines values for McpCatalogFormFieldValueMode.
+// Defines values for McpCatalogFormInputMode.
 const (
-	McpCatalogFormFieldValueModeIntegration McpCatalogFormFieldValueMode = "integration"
-	McpCatalogFormFieldValueModePlaintext   McpCatalogFormFieldValueMode = "plaintext"
-	McpCatalogFormFieldValueModeSecretRef   McpCatalogFormFieldValueMode = "secret_ref"
+	McpCatalogFormInputModePlaintext McpCatalogFormInputMode = "plaintext"
+	McpCatalogFormInputModeSecretRef McpCatalogFormInputMode = "secret_ref"
 )
 
 // Defines values for McpCatalogFormSpecLockedConfig.
@@ -400,10 +451,69 @@ const (
 	McpCatalogFormSpecVersionN1 McpCatalogFormSpecVersion = 1
 )
 
+// Defines values for McpCatalogFormValueMode.
+const (
+	McpCatalogFormValueModeIntegration McpCatalogFormValueMode = "integration"
+	McpCatalogFormValueModePlaintext   McpCatalogFormValueMode = "plaintext"
+	McpCatalogFormValueModeSecretRef   McpCatalogFormValueMode = "secret_ref"
+)
+
+// Defines values for McpCatalogPackagingKind.
+const (
+	McpCatalogPackagingKindContainerImage McpCatalogPackagingKind = "container_image"
+	McpCatalogPackagingKindManagedRemote  McpCatalogPackagingKind = "managed_remote"
+	McpCatalogPackagingKindNpx            McpCatalogPackagingKind = "npx"
+)
+
+// Defines values for McpCatalogProvisioningImplicationsTriggerAction.
+const (
+	McpCatalogProvisioningImplicationsTriggerActionCreateMcpServer McpCatalogProvisioningImplicationsTriggerAction = "create_mcp_server"
+)
+
+// Defines values for McpCatalogVendorAuthMode.
+const (
+	McpCatalogVendorAuthModeApiKey          McpCatalogVendorAuthMode = "api_key"
+	McpCatalogVendorAuthModeBasic           McpCatalogVendorAuthMode = "basic"
+	McpCatalogVendorAuthModeBearerToken     McpCatalogVendorAuthMode = "bearer_token"
+	McpCatalogVendorAuthModeNoAuth          McpCatalogVendorAuthMode = "no_auth"
+	McpCatalogVendorAuthModeOauth2Managed   McpCatalogVendorAuthMode = "oauth2_managed"
+	McpCatalogVendorAuthModeOauth2Unmanaged McpCatalogVendorAuthMode = "oauth2_unmanaged"
+	McpCatalogVendorAuthModeOther           McpCatalogVendorAuthMode = "other"
+)
+
+// Defines values for McpConsentShape.
+const (
+	McpConsentShapeCustom           McpConsentShape = "custom"
+	McpConsentShapeMailbox          McpConsentShape = "mailbox"
+	McpConsentShapeNone             McpConsentShape = "none"
+	McpConsentShapePersonalIdentity McpConsentShape = "personal_identity"
+	McpConsentShapeSharedAccount    McpConsentShape = "shared_account"
+)
+
+// Defines values for McpHandshakeFailureKind.
+const (
+	McpHandshakeFailureKindHostAllowlist403     McpHandshakeFailureKind = "host_allowlist_403"
+	McpHandshakeFailureKindOther                McpHandshakeFailureKind = "other"
+	McpHandshakeFailureKindSessionTerminated    McpHandshakeFailureKind = "session_terminated"
+	McpHandshakeFailureKindUpstreamAuthRejected McpHandshakeFailureKind = "upstream_auth_rejected"
+)
+
+// Defines values for McpHandshakeOutcome.
+const (
+	McpHandshakeOutcomeFailed    McpHandshakeOutcome = "failed"
+	McpHandshakeOutcomeSucceeded McpHandshakeOutcome = "succeeded"
+)
+
 // Defines values for McpPodHostMode.
 const (
 	McpPodHostModeNatural      McpPodHostMode = "natural"
 	McpPodHostModePodLocalhost McpPodHostMode = "pod_localhost"
+)
+
+// Defines values for McpServerAccess.
+const (
+	McpServerAccessOpen       McpServerAccess = "open"
+	McpServerAccessRestricted McpServerAccess = "restricted"
 )
 
 // Defines values for McpServerDesiredState.
@@ -411,6 +521,12 @@ const (
 	McpServerDesiredStateDeleted McpServerDesiredState = "deleted"
 	McpServerDesiredStateRunning McpServerDesiredState = "running"
 	McpServerDesiredStateStopped McpServerDesiredState = "stopped"
+)
+
+// Defines values for McpServerRuntimeKind.
+const (
+	McpServerRuntimeKindContainerImage McpServerRuntimeKind = "container_image"
+	McpServerRuntimeKindManagedRemote  McpServerRuntimeKind = "managed_remote"
 )
 
 // Defines values for McpServerSetupSource.
@@ -451,6 +567,16 @@ const (
 const (
 	ModelConfigInputImage ModelConfigInput = "image"
 	ModelConfigInputText  ModelConfigInput = "text"
+)
+
+// Defines values for NativeBotConfigBotType.
+const (
+	NativeBotConfigBotTypeNative NativeBotConfigBotType = "native"
+)
+
+// Defines values for NativeConfigPatchBotType.
+const (
+	NativeConfigPatchBotTypeNative NativeConfigPatchBotType = "native"
 )
 
 // Defines values for ObservedState.
@@ -553,6 +679,11 @@ const (
 	OrBotFilterFieldKindOr OrBotFilterFieldKind = "or"
 )
 
+// Defines values for OrMcpCatalogFilterFieldKind.
+const (
+	OrMcpCatalogFilterFieldKindOr OrMcpCatalogFilterFieldKind = "or"
+)
+
 // Defines values for PermissionAction.
 const (
 	PermissionActionCreate PermissionAction = "create"
@@ -572,10 +703,11 @@ const (
 
 // Defines values for PermissionSource.
 const (
-	PermissionSourceActorGrant PermissionSource = "actor_grant"
-	PermissionSourceRoleBundle PermissionSource = "role_bundle"
-	PermissionSourceRoleDelta  PermissionSource = "role_delta"
-	PermissionSourceSelfGrant  PermissionSource = "self_grant"
+	PermissionSourceActorGrant     PermissionSource = "actor_grant"
+	PermissionSourceResourceMember PermissionSource = "resource_member"
+	PermissionSourceRoleBundle     PermissionSource = "role_bundle"
+	PermissionSourceRoleDelta      PermissionSource = "role_delta"
+	PermissionSourceSelfGrant      PermissionSource = "self_grant"
 )
 
 // Defines values for RequirementStatus.
@@ -600,6 +732,7 @@ const (
 	ResourceActivity             Resource = "activity"
 	ResourceApiKey               Resource = "api_key"
 	ResourceApp                  Resource = "app"
+	ResourceApproval             Resource = "approval"
 	ResourceAuditEvent           Resource = "audit_event"
 	ResourceBilling              Resource = "billing"
 	ResourceBoard                Resource = "board"
@@ -619,6 +752,7 @@ const (
 	ResourceExternalChat         Resource = "external_chat"
 	ResourceFile                 Resource = "file"
 	ResourceFleet                Resource = "fleet"
+	ResourceHostCommand          Resource = "host_command"
 	ResourceImage                Resource = "image"
 	ResourceInboxMessage         Resource = "inbox_message"
 	ResourceInstallation         Resource = "installation"
@@ -627,7 +761,9 @@ const (
 	ResourceInvitation           Resource = "invitation"
 	ResourceIssue                Resource = "issue"
 	ResourceMaintenancePolicy    Resource = "maintenance_policy"
+	ResourceMcpCatalog           Resource = "mcp_catalog"
 	ResourceMcpServer            Resource = "mcp_server"
+	ResourceMcpServerLogs        Resource = "mcp_server_logs"
 	ResourceMember               Resource = "member"
 	ResourceMemory               Resource = "memory"
 	ResourceMessage              Resource = "message"
@@ -726,13 +862,15 @@ const (
 
 // Defines values for ToolResourceKind.
 const (
-	ToolResourceKindNone    ToolResourceKind = "none"
-	ToolResourceKindSelfBot ToolResourceKind = "self_bot"
+	ToolResourceKindMcpServer ToolResourceKind = "mcp_server"
+	ToolResourceKindNone      ToolResourceKind = "none"
+	ToolResourceKindSelfBot   ToolResourceKind = "self_bot"
 )
 
 // Defines values for ToolRuntime.
 const (
 	ToolRuntimeMcp      ToolRuntime = "mcp"
+	ToolRuntimeNative   ToolRuntime = "native"
 	ToolRuntimeOpenclaw ToolRuntime = "openclaw"
 )
 
@@ -778,6 +916,11 @@ const (
 	UsageErrorScopeMissing  UsageError = "scope_missing"
 	UsageErrorTokenExpired  UsageError = "token_expired"
 	UsageErrorUpstreamError UsageError = "upstream_error"
+)
+
+// Defines values for VerbatimHeaderSchemeScheme.
+const (
+	VerbatimHeaderSchemeSchemeVerbatim VerbatimHeaderSchemeScheme = "verbatim"
 )
 
 // ActiveHoursConfig Active hours window for heartbeat scheduling.
@@ -850,11 +993,48 @@ type AndBotFilterField_Filters_Item struct {
 // AndBotFilterFieldKind defines model for AndBotFilterField.Kind.
 type AndBotFilterFieldKind string
 
+// AndMcpCatalogFilterField defines model for And_McpCatalogFilterField_.
+type AndMcpCatalogFilterField struct {
+	Filters []AndMcpCatalogFilterField_Filters_Item `json:"filters"`
+	Kind    *AndMcpCatalogFilterFieldKind           `json:"kind,omitempty"`
+}
+
+// AndMcpCatalogFilterField_Filters_Item defines model for And_McpCatalogFilterField_.filters.Item.
+type AndMcpCatalogFilterField_Filters_Item struct {
+	union json.RawMessage
+}
+
+// AndMcpCatalogFilterFieldKind defines model for AndMcpCatalogFilterField.Kind.
+type AndMcpCatalogFilterFieldKind string
+
 // ApiProtocol Wire protocol for communicating with a provider.
 type ApiProtocol string
 
 // AuthMethod Authentication method for provider credentials.
 type AuthMethod string
+
+// BasicHeaderScheme “Basic base64(username:password)“ — RFC 7617.
+//
+// Carries the username because only the password is secret. This is the
+// case that makes the scheme a *model* rather than a bare enum: a scheme can
+// need parameters, and there is nowhere to put them on an enum member.
+type BasicHeaderScheme struct {
+	Scheme BasicHeaderSchemeScheme `json:"scheme"`
+
+	// Username Username paired with the vault-held password
+	Username string `json:"username"`
+}
+
+// BasicHeaderSchemeScheme defines model for BasicHeaderScheme.Scheme.
+type BasicHeaderSchemeScheme string
+
+// BearerHeaderScheme “Bearer <token>“ — RFC 6750, and what every Tier-1 vendor wants.
+type BearerHeaderScheme struct {
+	Scheme BearerHeaderSchemeScheme `json:"scheme"`
+}
+
+// BearerHeaderSchemeScheme defines model for BearerHeaderScheme.Scheme.
+type BearerHeaderSchemeScheme string
 
 // BotAccess Bot visibility within its organization.
 type BotAccess string
@@ -874,13 +1054,13 @@ type BotChatReadiness struct {
 
 // BotConfigUpdate Request to update bot config via hot-reload.
 type BotConfigUpdate struct {
-	// Config Patchable fields for OpenClaw bot configs.
-	//
-	// Structure mirrors ``OpenClawBotConfig`` so that ``patch_model()`` can
-	// apply updates recursively. All fields are optional — only provided
-	// fields are applied. Use ``model_fields_set`` to distinguish unset
-	// from explicitly-set-to-None.
-	Config OpenClawConfigPatch `json:"config"`
+	// Config Partial config update — only set fields are applied
+	Config BotConfigUpdate_Config `json:"config"`
+}
+
+// BotConfigUpdate_Config Partial config update — only set fields are applied
+type BotConfigUpdate_Config struct {
+	union json.RawMessage
 }
 
 // BotCopyRequest Request to copy an existing bot's definition into a new bot.
@@ -913,6 +1093,9 @@ type BotCopyResponse struct {
 
 	// SkippedPrivateCredentialCount Number of bot-private credentials on the source that were not copied. Private credentials are secret material owned by the source bot, so the copy starts without them and must be given its own before it can use those providers.
 	SkippedPrivateCredentialCount *int `json:"skipped_private_credential_count,omitempty"`
+
+	// SkippedUnavailableToolCount Number of the source's tool assignments that were not copied because their catalog entry is no longer enabled or available to this organization. The copy has every tool it can still be given; these have no current equivalent to assign.
+	SkippedUnavailableToolCount *int `json:"skipped_unavailable_tool_count,omitempty"`
 }
 
 // BotCreate Request to create a bot from guided form fields.
@@ -920,13 +1103,8 @@ type BotCreate struct {
 	// AvatarUrl Avatar image URL — an image data URI (DiceBear SVG, or an uploaded WebP/PNG/JPEG) or an https:// URL. Max 16384 characters.
 	AvatarUrl *string `json:"avatar_url"`
 
-	// Config Patchable fields for OpenClaw bot configs.
-	//
-	// Structure mirrors ``OpenClawBotConfig`` so that ``patch_model()`` can
-	// apply updates recursively. All fields are optional — only provided
-	// fields are applied. Use ``model_fields_set`` to distinguish unset
-	// from explicitly-set-to-None.
-	Config OpenClawConfigPatch `json:"config"`
+	// Config Initial bot config (applied on top of defaults)
+	Config BotCreate_Config `json:"config"`
 
 	// Description Short human-facing description / role for the bot (e.g. 'Platform developer'). Display metadata only — not injected into the bot's system prompt.
 	Description *string `json:"description"`
@@ -966,7 +1144,7 @@ type BotCreate struct {
 	// Name Bot display name
 	Name string `json:"name"`
 
-	// Resources Per-bot resource customisation on top of the tier preset — a sparse list of MeteredResource line-items (only the resources being set; omitted resources use the preset). Enterprise plan only — rejected with 403 otherwise.
+	// Resources Per-bot resource customisation on top of the plan preset — a sparse list of MeteredResource line-items (only the resources being set; omitted resources use the preset). Available on every plan, subject to the plan's resource maximums.
 	Resources *ResourceQuantities `json:"resources"`
 
 	// SkillIds Skills to assign at creation (the wizard's final selection).
@@ -977,6 +1155,11 @@ type BotCreate struct {
 
 	// ToolIds Tools to assign at creation (the wizard's final selection).
 	ToolIds *[]string `json:"tool_ids,omitempty"`
+}
+
+// BotCreate_Config Initial bot config (applied on top of defaults)
+type BotCreate_Config struct {
+	union json.RawMessage
 }
 
 // BotCredentialAssign Request to set the bot's credential assignments for one or more scopes.
@@ -1177,19 +1360,8 @@ type BotResponse struct {
 	CreatedAt        time.Time `json:"created_at"`
 
 	// Description Short human-facing description / role for the bot (e.g. 'Platform developer'). Display metadata only — not injected into the bot's system prompt.
-	Description *string `json:"description"`
-
-	// DesiredConfig Platform-level bot config — the input to version-specific serialization.
-	//
-	// Only includes fields that are platform-specific or that we explicitly
-	// control. OpenClaw fills defaults for everything else at load time.
-	//
-	// Stored as JSONB in bots.desired_config. The ``bot_type`` field acts as
-	// the discriminator for a future union of bot-type configs.
-	//
-	// ``extra="ignore"`` ensures old data with removed fields doesn't break
-	// on read (schema evolution safety).
-	DesiredConfig OpenClawBotConfig `json:"desired_config"`
+	Description   *string                   `json:"description"`
+	DesiredConfig BotResponse_DesiredConfig `json:"desired_config"`
 
 	// DesiredState Control-plane intent for a bot's lifecycle.
 	//
@@ -1304,6 +1476,11 @@ type BotResponse struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
+// BotResponse_DesiredConfig defines model for BotResponse.DesiredConfig.
+type BotResponse_DesiredConfig struct {
+	union json.RawMessage
+}
+
 // BotRestartResponse Response for a user-triggered bot container restart.
 type BotRestartResponse struct {
 	Message string `json:"message"`
@@ -1392,7 +1569,7 @@ type BotStorageClass string
 // BotTemplateResponse A bot template with files, default skill IDs, and optional config.
 type BotTemplateResponse struct {
 	// Config Default bot config patch (heartbeat, model, etc.) applied at deploy time
-	Config *OpenClawConfigPatch `json:"config"`
+	Config *BotTemplateResponse_Config `json:"config"`
 
 	// Description Short description for the template card
 	Description string `json:"description"`
@@ -1420,6 +1597,11 @@ type BotTemplateResponse struct {
 
 	// ToolIds IDs of tools to auto-assign when using this template
 	ToolIds []string `json:"tool_ids"`
+}
+
+// BotTemplateResponse_Config Default bot config patch (heartbeat, model, etc.) applied at deploy time
+type BotTemplateResponse_Config struct {
+	union json.RawMessage
 }
 
 // BotTier Bot subscription tier.
@@ -1457,6 +1639,29 @@ type BotToolAssignmentResponse struct {
 	Name string `json:"name"`
 
 	// Runtime Where a tool executes — determines enforcement mechanism.
+	//
+	// Each member names a *different* enforcement point, which is the bar a new
+	// member has to clear. The value appears in every
+	// :meth:`ToolCatalog.build_slug` result, so it is a durable public contract:
+	// ``mcp:botyard:send_email``, ``openclaw::exec``, ``native::host_read``.
+	//
+	// * ``mcp`` — the platform serves the tool over MCP. Enforcement is in the
+	//   gateway, which is also why these rows are reachable from every harness.
+	// * ``openclaw`` — the identifier of a builtin compiled into the OpenClaw
+	//   agent. The platform serves nothing; enforcement is writing the agent's
+	//   own config (``tools.allow``).
+	// * ``native`` — the identifier of a builtin compiled into ``botyardd``, the
+	//   native runtime daemon. The platform serves nothing here either, and the
+	//   gateway never sees the call: the daemon intercepts every ``host_*`` name
+	//   before it reaches upstream. Enforcement is the daemon's own
+	//   ``HostPolicy`` (``runtime/botyard-runtime/src/host_tools/policy.rs``),
+	//   which fails closed by default.
+	//
+	// ``native`` is deliberately *not* folded into ``openclaw``. The two are the
+	// same **shape** — a builtin, enforced by configuring the agent that owns it —
+	// but they are different agents, and :data:`~botyard_core.hosting.
+	// _HARNESS_TOOL_RUNTIMES` is keyed on this value. Reusing ``openclaw`` would
+	// advertise ``host_read`` to OpenClaw bots, where the name means nothing.
 	Runtime ToolRuntime `json:"runtime"`
 
 	// RuntimeToolName Internal runtime tool name
@@ -1511,7 +1716,7 @@ type BotUpdate struct {
 	// Description Short human-facing description / role for the bot (e.g. 'Platform developer'). Display metadata only — not injected into the bot's system prompt. Send null to clear; omit to leave unchanged.
 	Description *string `json:"description"`
 
-	// Resources Per-bot resource customisation — a sparse list of MeteredResource line-items (only the resources being changed). Send a block to set resources on top of the tier defaults; send null to reset to the tier defaults; omit to leave unchanged. Enterprise plan only.
+	// Resources Per-bot resource customisation — a sparse list of MeteredResource line-items (only the resources being changed). Send a block to set resources on top of the plan defaults; send null to reset to the plan defaults; omit to leave unchanged. Available on every plan, subject to the plan's resource maximums.
 	Resources *ResourceQuantities `json:"resources"`
 
 	// RuntimePrivilegeMode Privilege level requested for the bot runtime pod.
@@ -1561,7 +1766,7 @@ type BrowserConfig struct {
 // the version-specific serializers to emit the CLI backend block, and by the
 // bridge to key the token store via “slug“.
 type ClaudeCodeProviderEntry struct {
-	// BinaryPath Absolute path to the claude CLI binary on the bot pod
+	// BinaryPath DEPRECATED — absolute path to the claude CLI binary on the bot pod. Ignored once the platform-owned CLI path is enabled: the executed command is derived from platform component state, not from this value. Retained only as the fallback for bots that predate the stable component symlink.
 	BinaryPath string `json:"binary_path"`
 
 	// KeyPath Dot-delimited secret key path, e.g. credentials.<uuid>.oauth_token
@@ -1721,6 +1926,275 @@ type CompactionConfigPatch struct {
 	TruncateAfterCompaction *bool `json:"truncate_after_compaction"`
 }
 
+// ComposioConnectionDetail The pollable state of one authorisation attempt.
+type ComposioConnectionDetail struct {
+	// ComposioConnectionId Identifier for this authorisation attempt
+	ComposioConnectionId string `json:"composio_connection_id"`
+
+	// CreatedAt When the authorisation was started
+	CreatedAt time.Time `json:"created_at"`
+
+	// DeadlineAt When this attempt stops being pollable. Show it: it is the bound that keeps a vendor status Botyard does not recognise from leaving the customer waiting indefinitely, and after it passes the honest answer is 'not connected'.
+	DeadlineAt time.Time `json:"deadline_at"`
+
+	// DisplayName Name the tile will be created under, as resolved when the flow started. NULL only for attempts that predate the field. Echoed back so a resumed attempt — a reload, a restored tab — can show the name it will install under rather than re-deriving a different one.
+	DisplayName *string `json:"display_name"`
+
+	// LinkExpiresAt When the authorisation link itself stops working, as the vendor reported it. Composio varies the lifetime — 5 minutes and 10 have both been observed — so read it here rather than assuming one. Always earlier than ``deadline_at``, and it is not the deadline: a consent screen already open can still succeed after the link that opened it stops working, which is the ordinary case rather than an error. Use this only to stop offering the link again; keep counting down to ``deadline_at``.
+	LinkExpiresAt *time.Time `json:"link_expires_at"`
+
+	// McpCatalogEntryId Catalog tile this authorisation will install
+	McpCatalogEntryId string `json:"mcp_catalog_entry_id"`
+
+	// McpServerId The installed MCP server; set only once ``status`` is ``connected``
+	McpServerId *string `json:"mcp_server_id"`
+
+	// Status Lifecycle of one connect-first install attempt.
+	//
+	// Persisted as ``VARCHAR`` under a CHECK constraint rather than a native
+	// PostgreSQL enum, for the same reason as
+	// :class:`~botyard_core.models.database.botyard.org_composio_project.ComposioProjectStatus`:
+	// adding a state stays a one-statement migration.
+	//
+	// Named ``...State`` rather than ``...Status`` on purpose: the vendor's own
+	// status vocabulary is
+	// :class:`~botyard_core.services.composio.client.ComposioConnectionStatus`,
+	// and the two are read side by side in the poll path. These four are Botyard's own
+	// reading of an install attempt, and the mapping between them is a decision
+	// this service makes rather than a rename — notably ``UNKNOWN`` on the vendor
+	// side maps to no terminal state here at all, only to "keep waiting until
+	// ``deadline_at``".
+	Status ComposioConnectionState `json:"status"`
+
+	// ToolkitSlug Composio toolkit being authorised
+	ToolkitSlug string `json:"toolkit_slug"`
+}
+
+// ComposioConnectionStart The response to starting a flow: where to send the customer, and what to poll.
+//
+// Both halves are needed and neither substitutes for the other. The redirect
+// is single-use and transient; “connection“ is the durable handle that
+// survives the customer closing the popup, which is the case the whole flow
+// exists to make recoverable.
+type ComposioConnectionStart struct {
+	// Connection The pollable state of one authorisation attempt.
+	Connection ComposioConnectionDetail `json:"connection"`
+
+	// RedirectUrl Composio-hosted authorisation URL to open. Treat as a credential for the life of the link — do not log it, store it, or share it outside the browser doing the authorising. Returned exactly once; polling will not repeat it.
+	RedirectUrl string `json:"redirect_url"`
+}
+
+// ComposioConnectionStartRequest Everything a caller may say about an authorisation it is starting.
+//
+// Three fields, and the asymmetry between them is the security property rather
+// than an inconsistency. “mcp_catalog_entry_id“ is an id the platform wrote,
+// and the toolkit, the auth config name, the user id and above all the
+// **callback URL** are derived server-side from that entry and from deployment
+// settings. Composio does not validate callbacks, so any field here that could
+// reach one would be an open redirect carrying a fresh connected-account
+// handle.
+//
+// “display_name“ reaches none of that. It is inert text, read exactly once —
+// at completion, as the name of the MCP server being created — and it is here
+// because the alternative was worse than the risk: deriving the name from the
+// catalogue entry meant every second install of a connect-first toolkit
+// collided on a name the operator never chose and could not change, so two
+// Slack workspaces were not expressible at all (#2632).
+//
+// “mcp_connect_request_id“ is the third, and it is the one field here that is
+// a *reference to something the caller did not necessarily ask for*, so it is
+// checked rather than trusted. It says "this attempt answers that in-chat ask",
+// which is what makes the ask resumable and what decides — at settlement — which
+// bot is told the tile landed, in which conversation. An unchecked id would
+// therefore let any member who may install a tile aim a developer message at any
+// bot in the org, in a conversation they need not be able to read. The service
+// accepts it only when the ask is in the caller's own org and names the same
+// catalogue entry as the attempt; anything else is rejected rather than quietly
+// ignored, because silently dropping it would produce an attempt that settles
+// and tells nobody.
+type ComposioConnectionStartRequest struct {
+	// DisplayName Name for the MCP server this authorisation will install, unique per org. Omitted, blank, or whitespace falls back to the catalogue entry's own name, which is what a first install of a tile ordinarily wants. Supply it to install a second instance of a toolkit the org already has — a second Slack workspace, a sandbox alongside a production tile. Checked for availability when the flow starts, so a collision is reported while the field is still on screen rather than after the customer has authorised at the vendor.
+	DisplayName *string `json:"display_name"`
+
+	// McpCatalogEntryId Catalog entry for the Composio tile being connected and installed
+	McpCatalogEntryId string `json:"mcp_catalog_entry_id"`
+
+	// McpConnectRequestId The in-chat connect ask this attempt answers, if it came from a card. Binding it is what lets the ask be resumed after the browser goes away, and what tells the requesting bot its tile landed. Omit it for an install started from the MCP wizard, which has no ask behind it. Must name an ask in your own organization for the same catalogue entry.
+	McpConnectRequestId *string `json:"mcp_connect_request_id"`
+}
+
+// ComposioConnectionState Lifecycle of one connect-first install attempt.
+//
+// Persisted as “VARCHAR“ under a CHECK constraint rather than a native
+// PostgreSQL enum, for the same reason as
+// :class:`~botyard_core.models.database.botyard.org_composio_project.ComposioProjectStatus`:
+// adding a state stays a one-statement migration.
+//
+// Named “...State“ rather than “...Status“ on purpose: the vendor's own
+// status vocabulary is
+// :class:`~botyard_core.services.composio.client.ComposioConnectionStatus`,
+// and the two are read side by side in the poll path. These four are Botyard's own
+// reading of an install attempt, and the mapping between them is a decision
+// this service makes rather than a rename — notably “UNKNOWN“ on the vendor
+// side maps to no terminal state here at all, only to "keep waiting until
+// “deadline_at“".
+type ComposioConnectionState string
+
+// ComposioCredentialFieldSpec One input a credential form must render, as the vendor describes it.
+//
+// Public catalogue metadata throughout: a *description* of a credential, never
+// one. Nothing here is ever echoed back with a value in it, which is why this
+// shape has no “value“ field even though it would be convenient for a form
+// that wants to round-trip its own state.
+type ComposioCredentialFieldSpec struct {
+	// Default The vendor's suggested value, to prefill the input with
+	Default *string `json:"default"`
+
+	// Description The vendor's own help text for this field, if it ships one
+	Description *string `json:"description"`
+
+	// DisplayName Label to show the customer
+	DisplayName string `json:"display_name"`
+
+	// IsSecret Whether to mask this input. The vendor's own answer, spot-checked across the catalogue and correct every time. It governs **masking only**: every collected value is stored as a secret regardless, so that a vendor flipping this flag can never silently downgrade a live credential.
+	IsSecret *bool `json:"is_secret,omitempty"`
+
+	// Name Wire key to submit this value under. Frequently a meaningless slot — ``builder_io`` calls its public key ``generic_api_key`` and its private key ``generic_id`` — so never infer sensitivity from it. Use ``is_secret``.
+	Name string `json:"name"`
+
+	// Required Whether the install is refused without it. About *presence*, not about being the credential — several toolkits require only a host or subdomain and make the key itself optional.
+	Required *bool `json:"required,omitempty"`
+}
+
+// ComposioCredentialForm The fields to render for one API-key tile's install form.
+//
+// Read live from the vendor on every request rather than from the catalogue,
+// which is the decision the whole flow rests on: Composio accepts field names
+// outside its own spec *silently* and answers 201 “ACTIVE“, so a stored copy
+// that drifted would not fail on submit — it would store the customer's
+// credential under a key the vendor ignores and hand back a tile that looks
+// connected and cannot authenticate.
+type ComposioCredentialForm struct {
+	// Fields In the vendor's order, required fields first
+	Fields []ComposioCredentialFieldSpec `json:"fields"`
+
+	// McpCatalogEntryId Catalog tile this form installs
+	McpCatalogEntryId string `json:"mcp_catalog_entry_id"`
+
+	// ToolkitSlug Composio toolkit the fields belong to
+	ToolkitSlug string `json:"toolkit_slug"`
+}
+
+// ComposioCredentialInstallRequest A submitted credential form.
+//
+// “values“ is credential material. It is never logged, never echoed into an
+// error, and the vendor's own error body is withheld on this path for the same
+// reason — on the create endpoint that body can echo the request that produced
+// it. Everything the customer needs in order to correct a mistake is derived
+// from the *spec*, which is public.
+//
+// Keys are checked against the live spec rather than trusted: an unknown name
+// is accepted silently by the vendor, so a submission carrying one is a
+// connection that cannot authenticate, reported as a success.
+type ComposioCredentialInstallRequest struct {
+	// DisplayName Name for the MCP server this install creates, unique per org. Omitted, blank, or whitespace falls back to the catalogue entry's own name. Supply it to install a second instance of a toolkit the org already has against a different vendor account. Checked for availability before any vendor object or vault entry exists, so a collision costs the customer nothing to correct.
+	DisplayName *string `json:"display_name"`
+
+	// McpCatalogEntryId Catalog entry for the Composio tile being installed
+	McpCatalogEntryId string `json:"mcp_catalog_entry_id"`
+
+	// Values Vendor field name to value, as named by ``ComposioCredentialForm.fields``. Blank optional values are dropped rather than forwarded; an empty string is a value as far as the vendor is concerned.
+	Values map[string]string `json:"values"`
+}
+
+// ComposioCredentialState What an installed tile's credential section renders.
+//
+// A sibling of :class:`ComposioCredentialForm` rather than a subclass of it,
+// even though it reads as "the install form plus state". Narrowing an
+// inherited “fields“ to a subclass of its element type is unsound as typing
+// — a “ComposioCredentialForm“ reference could append a plain spec to it —
+// and buying that unsoundness with a “type: ignore“ to save four lines is
+// not a trade this contract should make.
+//
+// Returned for any MCP server the caller can see, including ones that have
+// nothing to do with Composio: the answer there is “editable=False“ with no
+// fields, not a 404. A read that distinguishes "not a Composio tile" from "no
+// such server" by status code would make the Configuration tab branch on error
+// codes to decide whether to draw a section, and a 404 in a browser console is
+// a support question every time it is not a bug.
+type ComposioCredentialState struct {
+	// Editable Whether this tile's credentials can be replaced from here. False for anything that is not a live Composio credential-form install — an OAuth tile, a plain remote server, a tile whose vendor objects are missing. Hide the section rather than rendering a form whose submit is going to be refused. Note that a tile with nothing stored is still editable: submitting every required field is how a tile installed before Botyard kept its own copy gets one.
+	Editable bool `json:"editable"`
+
+	// Fields In the vendor's order, required fields first, each carrying whether a value is stored. Empty when ``editable`` is false.
+	Fields *[]ComposioCredentialStateField `json:"fields,omitempty"`
+
+	// McpServerId The installed tile these credentials belong to
+	McpServerId string `json:"mcp_server_id"`
+
+	// ToolkitSlug Composio toolkit the fields belong to; NULL when this is not a Composio tile
+	ToolkitSlug *string `json:"toolkit_slug"`
+}
+
+// ComposioCredentialStateField One input on an *installed* tile's credential form.
+//
+// The install form's field plus the one thing an edit form needs that an
+// install form does not: whether Botyard is already holding a value for it.
+// Deliberately an extension of :class:`ComposioCredentialFieldSpec` rather
+// than a parallel shape, because the fields themselves are the same live
+// vendor spec read the same way — an edit form that rendered a *stored* copy
+// of the spec would drift from the vendor exactly as an install form would.
+//
+// “is_set“ is the only thing ever said about a stored value. Not its length,
+// not a masked prefix, not its age: a suffix or a length is a real reduction
+// of the search space for the value, and no part of this screen needs one to
+// do its job. The input beside it is always empty, and leaving it empty means
+// "leave this one alone".
+type ComposioCredentialStateField struct {
+	// Default The vendor's suggested value, to prefill the input with
+	Default *string `json:"default"`
+
+	// Description The vendor's own help text for this field, if it ships one
+	Description *string `json:"description"`
+
+	// DisplayName Label to show the customer
+	DisplayName string `json:"display_name"`
+
+	// IsSecret Whether to mask this input. The vendor's own answer, spot-checked across the catalogue and correct every time. It governs **masking only**: every collected value is stored as a secret regardless, so that a vendor flipping this flag can never silently downgrade a live credential.
+	IsSecret *bool `json:"is_secret,omitempty"`
+
+	// IsSet Whether Botyard holds a stored value for this field. Render it as a 'set' indicator next to an **empty** input — never as a value, a mask, or a length. False on a field the customer has never filled in, and false for every field of a tile installed before Botyard kept its own copy.
+	IsSet *bool `json:"is_set,omitempty"`
+
+	// Name Wire key to submit this value under. Frequently a meaningless slot — ``builder_io`` calls its public key ``generic_api_key`` and its private key ``generic_id`` — so never infer sensitivity from it. Use ``is_secret``.
+	Name string `json:"name"`
+
+	// Required Whether the install is refused without it. About *presence*, not about being the credential — several toolkits require only a host or subdomain and make the key itself optional.
+	Required *bool `json:"required,omitempty"`
+}
+
+// ComposioCredentialUpdateRequest A submitted credential *edit*.
+//
+// The same material, and the same handling rules, as
+// :class:`ComposioCredentialInstallRequest`: never logged, never echoed into
+// an error, and the vendor's own error body withheld because on this path it
+// can echo the request that produced it.
+//
+// **Blank means "leave unchanged", and that is the only reading available.**
+// Composio has no in-place credential update — a “PATCH“ of a connected
+// account returns “200 {"success": true}“ and silently discards the
+// credential (probed 2026-09-18), and “/refresh“ answers 409 telling the
+// caller to make a new connection — so every edit rebuilds the whole
+// connection from the whole field set, drawn from the vault for the fields the
+// customer left alone. A blank input therefore cannot mean "clear this field":
+// there is no request that clears one and keeps the rest, and inventing one
+// would mean submitting a connection the vendor would reject or, worse,
+// accept.
+type ComposioCredentialUpdateRequest struct {
+	// Values Vendor field name to new value, as named by ``ComposioCredentialState.fields``. Send only the fields being changed: an omitted or blank field keeps its stored value. A submission with nothing non-blank in it is refused rather than treated as a no-op rotation, because rebuilding the connection is not free — it replaces the vendor account the tile's live session is pinned to.
+	Values map[string]string `json:"values"`
+}
+
 // ConditionBotFilterField defines model for Condition_BotFilterField_.
 type ConditionBotFilterField struct {
 	// Field Fields filterable via the bot search endpoint.
@@ -1734,6 +2208,20 @@ type ConditionBotFilterField struct {
 
 // ConditionBotFilterFieldKind defines model for ConditionBotFilterField.Kind.
 type ConditionBotFilterFieldKind string
+
+// ConditionMcpCatalogFilterField defines model for Condition_McpCatalogFilterField_.
+type ConditionMcpCatalogFilterField struct {
+	// Field Filterable fields on the MCP catalogue search endpoint.
+	Field McpCatalogFilterField               `json:"field"`
+	Kind  *ConditionMcpCatalogFilterFieldKind `json:"kind,omitempty"`
+
+	// Operator Comparison operators allowed in a Condition leaf.
+	Operator FilterOp    `json:"operator"`
+	Value    interface{} `json:"value"`
+}
+
+// ConditionMcpCatalogFilterFieldKind defines model for ConditionMcpCatalogFilterField.Kind.
+type ConditionMcpCatalogFilterFieldKind string
 
 // ConfigFieldDiff One differing field between “desired_config“ and “reconciled_config_json“.
 //
@@ -1792,6 +2280,9 @@ type ContainerImageMcpServerCreate struct {
 	// Args Argv-style arguments appended to command/entrypoint
 	Args *[]string `json:"args"`
 
+	// CatalogFormAnswers Answers to the linked template's setup form, keyed by form field id. The platform projects each answer onto the target the template declares for that field, so a caller never has to compile the form into env vars, mounts or headers itself — and never has to restate a value the template owns. Requires ``mcp_catalog_entry_id``; an unknown field id, a mode the field does not allow, or a missing required answer is refused by name. Answers are projected after template inheritance, so an answer always beats the template's baked default. Answering a field and also writing its target directly is refused rather than silently resolved one way or the other.
+	CatalogFormAnswers *map[string]McpCatalogFormFieldValue `json:"catalog_form_answers,omitempty"`
+
 	// Command Argv-style entrypoint override (null = use image default)
 	Command *[]string `json:"command"`
 
@@ -1807,8 +2298,8 @@ type ContainerImageMcpServerCreate struct {
 	// EnvSecretRefs Env-var name → secret_key_path references resolved at runtime by secrets-service. Values are pointers (not secrets) and safe to return.
 	EnvSecretRefs *map[string]string `json:"env_secret_refs,omitempty"`
 
-	// Image Container image reference (e.g. ``ghcr.io/foo/mcp:1.0``)
-	Image string `json:"image"`
+	// Image Container image reference (e.g. ``ghcr.io/foo/mcp:1.0``). Required on a free-form create; omit it when ``mcp_catalog_entry_id`` is set and the template supplies it. A template that pins the image rejects any other value, so restating it is at best redundant and at worst the only thing standing between a caller and a satisfiable call (PlatDev #2441).
+	Image *string `json:"image"`
 
 	// IntegrationCredentialIds Integration connections this server is linked to. Unlike every other field here this does not become container configuration: the pod is authorized to fetch short-lived access tokens for these connections and is injected with nothing. The list is the desired state — an update that omits an id unlinks it.
 	IntegrationCredentialIds *[]string `json:"integration_credential_ids,omitempty"`
@@ -1839,8 +2330,8 @@ type ContainerImageMcpServerCreate struct {
 	// ``managed_remote`` (the vendor host is always preserved).
 	PodHostMode *McpPodHostMode `json:"pod_host_mode,omitempty"`
 
-	// Port Container port the streamable-http transport listens on
-	Port int `json:"port"`
+	// Port Container port the streamable-http transport listens on. Required on a free-form create; omit it when ``mcp_catalog_entry_id`` is set and the template supplies it.
+	Port *int `json:"port"`
 
 	// RequestTimeoutSeconds Override (seconds) for the gateway's request timeout when proxying tool calls to this MCP. Omit/null to inherit the gateway default. Applies to both runtime kinds.
 	RequestTimeoutSeconds *int `json:"request_timeout_seconds"`
@@ -1863,6 +2354,21 @@ type ContainerImageMcpServerCreateRuntimeKind string
 
 // ContainerImageMcpServerDetail Full row for a container-image MCP server — detail view.
 type ContainerImageMcpServerDetail struct {
+	// Access MCP server reachability within its organization.
+	//
+	// The one-for-one mirror of :class:`BotAccess`, and deliberately so — epic
+	// #2672 D10 chose to reproduce the bot access mode rather than invent a
+	// narrower one, because the alternative (an ambient term discriminated by
+	// actor type, "all bots but no humans") would have been a new capability in
+	// the shared policy engine rather than a column on this table.
+	//
+	// ``OPEN`` therefore means **fully** open: the listing rule's ambient term
+	// admits every principal the base permission admits, and ``mcp_server.read``
+	// is held by ``org:member`` *and* ``org:viewer`` and by API-key actors. It is
+	// not "every bot in the org"; it is everyone. The ``restricted`` default
+	// exists so that is only ever true because somebody chose it.
+	Access *McpServerAccess `json:"access,omitempty"`
+
 	// Args Argv-style arguments appended to command
 	Args *[]string `json:"args"`
 
@@ -1889,6 +2395,9 @@ type ContainerImageMcpServerDetail struct {
 
 	// EnvSecretRefs Env-var name → secret_key_path references resolved at runtime. Safe to expose (it's a pointer, not the secret value).
 	EnvSecretRefs *map[string]string `json:"env_secret_refs,omitempty"`
+
+	// HandshakeAttempts Recent tools/list handshake attempts, oldest first — timestamp, outcome and the diagnostic error for each. Populated for both runtime kinds, and the only way to diagnose a managed_remote server (it has no pod, so it has no pod logs). Never contains credential values.
+	HandshakeAttempts *[]McpHandshakeAttempt `json:"handshake_attempts,omitempty"`
 
 	// Image Container image reference
 	Image string `json:"image"`
@@ -1968,6 +2477,9 @@ type ContainerImageMcpServerDetail struct {
 	// SetupFormValues Form-shaped setup values derived from the current server config
 	SetupFormValues *map[string]McpCatalogFormFieldValue `json:"setup_form_values,omitempty"`
 
+	// SetupLogoHref Same-origin URL to render this server's setup logo from, or null when no artwork is cached. Prefer this over setup_logo_url for display: the logo is painted through a CSS mask, which is a CORS-restricted resource, so a third-party URL that sends no Access-Control-Allow-Origin header paints nothing at all
+	SetupLogoHref *string `json:"setup_logo_href"`
+
 	// SetupLogoUrl Logo URL inherited from the setup catalog source, if any
 	SetupLogoUrl *string `json:"setup_logo_url"`
 
@@ -1985,6 +2497,9 @@ type ContainerImageMcpServerDetail struct {
 
 	// ToolListCachedAt When tool_list_cached was last refreshed
 	ToolListCachedAt *time.Time `json:"tool_list_cached_at"`
+
+	// ToolListStale True when the cached tool list predates a failed handshake (or a FAILED row) and may no longer reflect a working server — the tools are shown for reference, not as evidence of health.
+	ToolListStale *bool `json:"tool_list_stale,omitempty"`
 
 	// Transport Wire transport a deployed MCP server exposes to the gateway.
 	Transport McpServerTransport `json:"transport"`
@@ -2050,6 +2565,9 @@ type ContainerImageMcpServerSummary struct {
 	// SetupCatalogSlug Canonical catalog slug this server was created from, if any
 	SetupCatalogSlug *string `json:"setup_catalog_slug"`
 
+	// SetupLogoHref Same-origin URL to render this server's setup logo from, or null when no artwork is cached. Prefer this over setup_logo_url for display: the logo is painted through a CSS mask, which is a CORS-restricted resource, so a third-party URL that sends no Access-Control-Allow-Origin header paints nothing at all
+	SetupLogoHref *string `json:"setup_logo_href"`
+
 	// SetupLogoUrl Logo URL inherited from the setup catalog source, if any
 	SetupLogoUrl *string `json:"setup_logo_url"`
 
@@ -2061,6 +2579,9 @@ type ContainerImageMcpServerSummary struct {
 
 	// ToolCount Number of tools in the last successful tools/list snapshot (0 if uncached)
 	ToolCount int `json:"tool_count"`
+
+	// ToolListStale True when the cached tool list predates a failed handshake (or a FAILED row) and may no longer reflect a working server — the tools are shown for reference, not as evidence of health.
+	ToolListStale *bool `json:"tool_list_stale,omitempty"`
 
 	// Transport Wire transport a deployed MCP server exposes to the gateway.
 	Transport McpServerTransport `json:"transport"`
@@ -2260,6 +2781,9 @@ type CredentialResponse struct {
 	// Managed True when Botyard provisions and funds this credential (managed credits) rather than BYOK
 	Managed *bool `json:"managed,omitempty"`
 
+	// OauthAuthorized False when this is an OAuth credential that has never had tokens stored against it — the row exists but there is no secret behind it, so every request through it fails and assigning it to a bot is rejected. Always true for non-OAuth credentials. Clients use this to offer an in-place reconnect rather than inferring the state from oauth_config.
+	OauthAuthorized *bool `json:"oauth_authorized,omitempty"`
+
 	// OauthConfig OAuth metadata (no secrets)
 	OauthConfig *map[string]interface{} `json:"oauth_config"`
 	OrgId       string                  `json:"org_id"`
@@ -2353,7 +2877,7 @@ type EffectivePermissionResponse struct {
 
 	// Source Which authority put a permission on an actor.
 	//
-	// Four authorities, distinguished by **who can change them** — which is the
+	// Five authorities, distinguished by **who can change them** — which is the
 	// only distinction a permissions view exists to make:
 	//
 	// ``ROLE_BUNDLE``
@@ -2369,19 +2893,31 @@ type EffectivePermissionResponse struct {
 	// ``SELF_GRANT``
 	//     The permanent, instance-scoped grant a bot holds over its own record.
 	//     Code-defined and never persisted, so there is no row to delete.
+	// ``RESOURCE_MEMBER``
+	//     Instance-scoped authority synthesised from a ``resource_members`` row by
+	//     ``RESOURCE_ROLE_BUNDLES`` (#2940). Also never persisted as a grant, so
+	//     there is no grant row to delete — the way to remove it is to change or
+	//     remove the *membership*, which is why it must not render as revocable
+	//     here: the delete button would point at the wrong table.
 	//
-	// ``ROLE_BUNDLE`` and ``SELF_GRANT`` are therefore **not revocable**, and a UI
-	// must render them as such rather than as a grant with a missing delete button
-	// — an action that reports success and changes nothing is worse than no action.
+	// ``ROLE_BUNDLE``, ``SELF_GRANT`` and ``RESOURCE_MEMBER`` are therefore **not
+	// revocable**, and a UI must render them as such rather than as a grant with a
+	// missing delete button — an action that reports success and changes nothing is
+	// worse than no action.
 	//
 	// The MCP audit path's flat ``grant_source`` label (``org_viewer``,
-	// ``bot_unrestricted``, ...) is derivable from ``(source, role_key)``, so the
+	// ``org_bot_default``, ...) is derivable from ``(source, role_key)``, so the
 	// two surfaces stay reconcilable instead of forking into a third vocabulary.
 	Source PermissionSource `json:"source"`
 }
 
 // FilterNodeBotFilterField defines model for FilterNode_BotFilterField_.
 type FilterNodeBotFilterField struct {
+	union json.RawMessage
+}
+
+// FilterNodeMcpCatalogFilterField defines model for FilterNode_McpCatalogFilterField_.
+type FilterNodeMcpCatalogFilterField struct {
 	union json.RawMessage
 }
 
@@ -2611,8 +3147,11 @@ type LlmChainState struct {
 
 // ManagedRemoteMcpServerCreate Register a new MCP server that Botyard proxies to a vendor-hosted URL.
 type ManagedRemoteMcpServerCreate struct {
-	// AcknowledgedCredentialHost Destination host the caller accepts will receive this server's Runtime Vault secrets. Required when ``secret_headers`` are set and the endpoint is not the catalog template's own; must equal the host of ``endpoint_url``. Naming the host rather than sending a bare flag is deliberate: it proves the caller knew *where* the secret was going, and a host changed after the confirmation was shown no longer matches. Recorded to the audit trail.
+	// AcknowledgedCredentialHost Destination the caller accepts will receive this server's Runtime Vault secrets. Required when ``secret_headers`` are set and the endpoint is not on the catalog template's own authority; must equal the authority of ``endpoint_url`` — its host, plus ``:port`` when the port is not the scheme default, so a default-port endpoint is named by host alone. Naming the destination rather than sending a bare flag is deliberate: it proves the caller knew *where* the secret was going, and a destination changed after the confirmation was shown no longer matches. Recorded to the audit trail.
 	AcknowledgedCredentialHost *string `json:"acknowledged_credential_host"`
+
+	// CatalogFormAnswers Answers to the linked template's setup form, keyed by form field id. The platform projects each answer onto the target the template declares for that field, so a caller never has to compile the form into env vars, mounts or headers itself — and never has to restate a value the template owns. Requires ``mcp_catalog_entry_id``; an unknown field id, a mode the field does not allow, or a missing required answer is refused by name. Answers are projected after template inheritance, so an answer always beats the template's baked default. Answering a field and also writing its target directly is refused rather than silently resolved one way or the other.
+	CatalogFormAnswers *map[string]McpCatalogFormFieldValue `json:"catalog_form_answers,omitempty"`
 
 	// Description Optional free-form description shown alongside the server in the UI
 	Description *string `json:"description"`
@@ -2632,6 +3171,9 @@ type ManagedRemoteMcpServerCreate struct {
 	// RuntimeKind Runtime kind tag — always ``managed_remote`` for this variant
 	RuntimeKind ManagedRemoteMcpServerCreateRuntimeKind `json:"runtime_kind"`
 
+	// SecretHeaderSchemes Header name to the scheme composing its outbound value from the resolved vault secret, so the vault holds the RAW credential. Omit for a header whose stored value is already the complete header value; omission is verbatim, which keeps pre-scheme rows working.
+	SecretHeaderSchemes *map[string]ManagedRemoteMcpServerCreate_SecretHeaderSchemes_AdditionalProperties `json:"secret_header_schemes,omitempty"`
+
 	// SecretHeaders Header name to Runtime Vault key path resolved just in time
 	SecretHeaders *map[string]string `json:"secret_headers,omitempty"`
 
@@ -2648,8 +3190,28 @@ type ManagedRemoteMcpServerCreate struct {
 // ManagedRemoteMcpServerCreateRuntimeKind Runtime kind tag — always “managed_remote“ for this variant
 type ManagedRemoteMcpServerCreateRuntimeKind string
 
+// ManagedRemoteMcpServerCreate_SecretHeaderSchemes_AdditionalProperties defines model for ManagedRemoteMcpServerCreate.secret_header_schemes.AdditionalProperties.
+type ManagedRemoteMcpServerCreate_SecretHeaderSchemes_AdditionalProperties struct {
+	union json.RawMessage
+}
+
 // ManagedRemoteMcpServerDetail Full row for a managed-remote MCP server — detail view.
 type ManagedRemoteMcpServerDetail struct {
+	// Access MCP server reachability within its organization.
+	//
+	// The one-for-one mirror of :class:`BotAccess`, and deliberately so — epic
+	// #2672 D10 chose to reproduce the bot access mode rather than invent a
+	// narrower one, because the alternative (an ambient term discriminated by
+	// actor type, "all bots but no humans") would have been a new capability in
+	// the shared policy engine rather than a column on this table.
+	//
+	// ``OPEN`` therefore means **fully** open: the listing rule's ambient term
+	// admits every principal the base permission admits, and ``mcp_server.read``
+	// is held by ``org:member`` *and* ``org:viewer`` and by API-key actors. It is
+	// not "every bot in the org"; it is everyone. The ``restricted`` default
+	// exists so that is only ever true because somebody chose it.
+	Access *McpServerAccess `json:"access,omitempty"`
+
 	// ConfigGeneration Monotonic config generation counter bumped on every provisioning-relevant update
 	ConfigGeneration int `json:"config_generation"`
 
@@ -2664,6 +3226,9 @@ type ManagedRemoteMcpServerDetail struct {
 
 	// EndpointUrl Managed-remote MCP endpoint URL
 	EndpointUrl string `json:"endpoint_url"`
+
+	// HandshakeAttempts Recent tools/list handshake attempts, oldest first — timestamp, outcome and the diagnostic error for each. Populated for both runtime kinds, and the only way to diagnose a managed_remote server (it has no pod, so it has no pod logs). Never contains credential values.
+	HandshakeAttempts *[]McpHandshakeAttempt `json:"handshake_attempts,omitempty"`
 
 	// LastError Last reconciler error message, if any
 	LastError *string `json:"last_error"`
@@ -2696,6 +3261,9 @@ type ManagedRemoteMcpServerDetail struct {
 	// RuntimeKind Runtime kind tag — always ``managed_remote`` for this variant
 	RuntimeKind ManagedRemoteMcpServerDetailRuntimeKind `json:"runtime_kind"`
 
+	// SecretHeaderSchemes Header name to the scheme composing its outbound value from the resolved vault secret. A header absent here is sent verbatim, which is what every row created before schemes existed does. Declarations only — no secret material is returned.
+	SecretHeaderSchemes *map[string]ManagedRemoteMcpServerDetail_SecretHeaderSchemes_AdditionalProperties `json:"secret_header_schemes,omitempty"`
+
 	// SecretHeaders Header name to Runtime Vault key path; secret values are never returned
 	SecretHeaders *map[string]string `json:"secret_headers,omitempty"`
 
@@ -2713,6 +3281,9 @@ type ManagedRemoteMcpServerDetail struct {
 
 	// SetupFormValues Form-shaped setup values derived from the current server config
 	SetupFormValues *map[string]McpCatalogFormFieldValue `json:"setup_form_values,omitempty"`
+
+	// SetupLogoHref Same-origin URL to render this server's setup logo from, or null when no artwork is cached. Prefer this over setup_logo_url for display: the logo is painted through a CSS mask, which is a CORS-restricted resource, so a third-party URL that sends no Access-Control-Allow-Origin header paints nothing at all
+	SetupLogoHref *string `json:"setup_logo_href"`
 
 	// SetupLogoUrl Logo URL inherited from the setup catalog source, if any
 	SetupLogoUrl *string `json:"setup_logo_url"`
@@ -2735,6 +3306,9 @@ type ManagedRemoteMcpServerDetail struct {
 	// ToolListCachedAt When tool_list_cached was last refreshed
 	ToolListCachedAt *time.Time `json:"tool_list_cached_at"`
 
+	// ToolListStale True when the cached tool list predates a failed handshake (or a FAILED row) and may no longer reflect a working server — the tools are shown for reference, not as evidence of health.
+	ToolListStale *bool `json:"tool_list_stale,omitempty"`
+
 	// Transport Wire transport a deployed MCP server exposes to the gateway.
 	Transport McpServerTransport `json:"transport"`
 
@@ -2744,6 +3318,11 @@ type ManagedRemoteMcpServerDetail struct {
 
 // ManagedRemoteMcpServerDetailRuntimeKind Runtime kind tag — always “managed_remote“ for this variant
 type ManagedRemoteMcpServerDetailRuntimeKind string
+
+// ManagedRemoteMcpServerDetail_SecretHeaderSchemes_AdditionalProperties defines model for ManagedRemoteMcpServerDetail.secret_header_schemes.AdditionalProperties.
+type ManagedRemoteMcpServerDetail_SecretHeaderSchemes_AdditionalProperties struct {
+	union json.RawMessage
+}
 
 // ManagedRemoteMcpServerSummary Summary projection of a managed-remote MCP server row.
 type ManagedRemoteMcpServerSummary struct {
@@ -2793,6 +3372,9 @@ type ManagedRemoteMcpServerSummary struct {
 	// SetupCatalogSlug Canonical catalog slug this server was created from, if any
 	SetupCatalogSlug *string `json:"setup_catalog_slug"`
 
+	// SetupLogoHref Same-origin URL to render this server's setup logo from, or null when no artwork is cached. Prefer this over setup_logo_url for display: the logo is painted through a CSS mask, which is a CORS-restricted resource, so a third-party URL that sends no Access-Control-Allow-Origin header paints nothing at all
+	SetupLogoHref *string `json:"setup_logo_href"`
+
 	// SetupLogoUrl Logo URL inherited from the setup catalog source, if any
 	SetupLogoUrl *string `json:"setup_logo_url"`
 
@@ -2805,6 +3387,9 @@ type ManagedRemoteMcpServerSummary struct {
 	// ToolCount Number of tools in the last successful tools/list snapshot (0 if uncached)
 	ToolCount int `json:"tool_count"`
 
+	// ToolListStale True when the cached tool list predates a failed handshake (or a FAILED row) and may no longer reflect a working server — the tools are shown for reference, not as evidence of health.
+	ToolListStale *bool `json:"tool_list_stale,omitempty"`
+
 	// Transport Wire transport a deployed MCP server exposes to the gateway.
 	Transport McpServerTransport `json:"transport"`
 
@@ -2815,16 +3400,182 @@ type ManagedRemoteMcpServerSummary struct {
 // ManagedRemoteMcpServerSummaryRuntimeKind Runtime kind tag — always “managed_remote“ for this variant
 type ManagedRemoteMcpServerSummaryRuntimeKind string
 
+// McpCatalogBillingImplications Billing facts for explicitly creating from a catalogue entry.
+type McpCatalogBillingImplications struct {
+	// ChargeAction Action that may require paid capacity; reads never charge
+	ChargeAction *McpCatalogBillingImplicationsChargeAction `json:"charge_action"`
+	MeterName    *McpCatalogBillingImplicationsMeterName    `json:"meter_name"`
+
+	// Metered Whether the created server consumes hosted MCP capacity
+	Metered bool `json:"metered"`
+}
+
+// McpCatalogBillingImplicationsChargeAction Action that may require paid capacity; reads never charge
+type McpCatalogBillingImplicationsChargeAction string
+
+// McpCatalogBillingImplicationsMeterName defines model for McpCatalogBillingImplications.MeterName.
+type McpCatalogBillingImplicationsMeterName string
+
+// McpCatalogCredentialRequirement Safe credential slot required or accepted by a catalogue template.
+type McpCatalogCredentialRequirement struct {
+	CredentialProvider *CredentialProvider `json:"credential_provider"`
+
+	// FieldId Stable form field or template slot identifier
+	FieldId string `json:"field_id"`
+
+	// Kind Runtime Vault reference or linked provider connection
+	Kind     McpCatalogCredentialRequirementKind `json:"kind"`
+	Required bool                                `json:"required"`
+
+	// SuggestedSecretPath Suggested Runtime Vault key path; never a secret value
+	SuggestedSecretPath *string `json:"suggested_secret_path"`
+}
+
+// McpCatalogCredentialRequirementKind Runtime Vault reference or linked provider connection
+type McpCatalogCredentialRequirementKind string
+
+// McpCatalogEntryDetail Side-effect-free, secret-free creation contract for one catalogue entry.
+type McpCatalogEntryDetail struct {
+	// Billing Billing facts for explicitly creating from a catalogue entry.
+	Billing             McpCatalogBillingImplications `json:"billing"`
+	ConfigurationFields *[]McpCatalogFormField        `json:"configuration_fields,omitempty"`
+
+	// ConsentNote Tile-specific disclosure that must be shown to the human approving this install, when the tile carries one. Not a description: it is what the approver is agreeing to, not what the tile does. An addendum to consent_shape for the four canned shapes, never a replacement for one; when consent_shape is 'custom' this text is the body of the disclosure headed by consent_title, and is always present
+	ConsentNote *string `json:"consent_note"`
+
+	// ConsentShape What a customer is actually agreeing to when they authorise a tile.
+	//
+	// For the four *canned* members the member selects the disclosure and the
+	// *copy* belongs to the frontend. That split is most of the point of the type:
+	// an operator picking a member cannot mistype a claim about the customer's
+	// data, and an operator who has never seen this file is not silently asked to
+	// compose one.
+	//
+	// Before this existed the App shipped one hardcoded paragraph above every
+	// Authorise button, asserting all three of *connects as you*, *shared
+	// org-wide*, and *carries your private surface*. That is true of Slack and
+	// false of Google Ads, where the account being linked belongs to the company,
+	// not to the person clicking. A disclosure that overstates is not harmless: it
+	// trains people to skip the next one.
+	//
+	// ``SHARED_ACCOUNT`` and ``NONE`` both drop the personal-surface claim, and
+	// they are not the same. ``SHARED_ACCOUNT`` still has an authorisation step
+	// and still shares one credential across every bot in the org — the customer
+	// needs to know that — whereas ``NONE`` is a tile with nothing to disclose at
+	// all. Collapsing them would put a tile with real org-wide reach behind
+	// silence.
+	//
+	// :attr:`NONE` is deliberately explicit rather than modelled as an absent
+	// value. The column is NOT NULL precisely so that "no warning" is something an
+	// operator chose and can be seen to have chosen, instead of the state a row
+	// falls into when nobody got round to classifying it.
+	//
+	// **Why :attr:`CUSTOM` exists, and why it is not the exception that eats the
+	// rule.** A closed enum is correct when the platform owns the claim. The rule
+	// it was borrowed from guards a statement about *Botyard's own* data handling
+	// ("your prompts are never used for training"), which an operator must not be
+	// able to forge or soften. This disclosure is a different sentence: it
+	// describes what a *third-party* OAuth tile hands over, which is precisely the
+	// thing the operator knows and the platform does not. There is no platform
+	// claim to impersonate here — the operator is the accountable author of the
+	// true statement, and four canned members can only ever approximate it. The
+	// "admin" in question is Botyard staff in Admin -> MCP catalogue; the threat
+	// model is an honest typo, not a hostile tenant.
+	//
+	// The cost is real and was accepted deliberately rather than argued away: a
+	// *stale* custom disclosure is worse than a generic-but-true one, because
+	// specificity reads as authority. The mitigations are an audit trail that
+	// keeps both sides of every edit (see
+	// :class:`~botyard_core.audit_events.AdminMcpCatalogEntryUpdatedContent`) and
+	// deliberate selection, not prohibition.
+	//
+	// ``CUSTOM`` is the one member whose *note* is load-bearing: it replaces the
+	// platform paragraph rather than sitting beneath it, so a ``CUSTOM`` row with
+	// no note is a shape naming a text that does not exist — an empty warning box
+	// at the Authorise click. That state is refused by the API and by
+	// ``ck_mcp_catalog_custom_shape_requires_consent_note``, and unlike
+	// ``operator_consent_note_required`` the requirement is intrinsic to the
+	// member rather than a separate flag an operator sets.
+	ConsentShape *McpConsentShape `json:"consent_shape,omitempty"`
+
+	// ConsentTitle Headline of an operator-authored disclosure, present only when consent_shape is 'custom'. Read it together with consent_note: the two are one disclosure, and quoting the body to the approving human without the headline drops the part they would have read first
+	ConsentTitle           *string                            `json:"consent_title"`
+	CreateGuidance         string                             `json:"create_guidance"`
+	CredentialRequirements *[]McpCatalogCredentialRequirement `json:"credential_requirements,omitempty"`
+	Description            *string                            `json:"description"`
+
+	// EndpointUrl Vendor endpoint this template pins (managed_remote entries only). Locked unless ``configuration_fields`` exposes a top-level ``endpoint_url`` target.
+	EndpointUrl     *string `json:"endpoint_url"`
+	FormSpecVersion *int    `json:"form_spec_version"`
+
+	// Image Container image this template pins (container_image entries only). Locked unless ``configuration_fields`` exposes a top-level ``image`` target, so a configured create must pass exactly this value.
+	Image             *string `json:"image"`
+	McpCatalogEntryId string  `json:"mcp_catalog_entry_id"`
+	Name              string  `json:"name"`
+
+	// PackagingKind How a catalog tile is packaged, which is not how its rows run.
+	//
+	// Open-ended: a package-manager backed tile is a new label here and needs no
+	// change to :class:`McpServerRuntimeKind`, because it still installs as one of
+	// the runtimes that already exist. ``npx`` is the standing example — an npx
+	// tile is deployed as a ``container_image`` row running the shared npx runner.
+	//
+	// Shares the ``mcp_server_runtime_kind`` Postgres type with
+	// :class:`McpServerRuntimeKind`; the labels are a superset, so the two map
+	// onto the same type without a migration.
+	PackagingKind McpCatalogPackagingKind `json:"packaging_kind"`
+
+	// Port Container port this template pins (container_image entries only). Locked unless ``configuration_fields`` exposes a top-level ``port`` target, so a configured create must pass exactly this value.
+	Port *int `json:"port"`
+
+	// Provisioning Externally visible effects of the explicit creation action.
+	Provisioning McpCatalogProvisioningImplications `json:"provisioning"`
+
+	// RequiresConnect True when this tile is installed by *authorising* it, not by filling in a form. The create path refuses it: the server row is created only once a human has returned from the vendor's consent screen connected. Such a tile reads as zero-config — no configuration_fields, no credential_requirements — so without this flag the contract is indistinguishable from a one-call install that it is not.
+	RequiresConnect *bool `json:"requires_connect,omitempty"`
+
+	// RequiresCredentials True when this tile is installed by a human entering the vendor's credentials into a Botyard form. The create path refuses it, and like a connect-first tile it reads as zero-config here — the fields are not in this contract because they come from the vendor and are read live when the form is rendered. An agent must not attempt to collect the credential itself; chat is not an acceptable channel for one.
+	RequiresCredentials *bool `json:"requires_credentials,omitempty"`
+
+	// RuntimeKind How an org-scoped MCP server row actually runs.
+	//
+	// Deliberately closed. Every member here is a shape a ``provider_mcp_servers``
+	// row can hold and a create body can name, and every create/update model pins
+	// one of them as a ``Literal`` discriminator. A value that cannot appear on a
+	// row does not belong in this enum: it used to carry ``npx``, which no row has
+	// ever held and no create model would accept, and advertising it to agents as
+	// a runtime kind produced calls the tool could only refuse (PlatDev #2475).
+	//
+	// How a *catalog tile* is packaged is a separate vocabulary —
+	// :class:`McpCatalogPackagingKind` — related to this one by exactly one public
+	// translation, :func:`server_runtime_kind_for_packaging`.
+	RuntimeKind McpServerRuntimeKind `json:"runtime_kind"`
+	Slug        string               `json:"slug"`
+
+	// Source Who owns a reusable MCP catalog entry.
+	Source            McpCatalogEntrySource `json:"source"`
+	TemplateUpdatedAt time.Time             `json:"template_updated_at"`
+
+	// Transport Wire transport a deployed MCP server exposes to the gateway.
+	Transport McpServerTransport `json:"transport"`
+}
+
+// McpCatalogEntrySource Who owns a reusable MCP catalog entry.
+type McpCatalogEntrySource string
+
+// McpCatalogFilterField Filterable fields on the MCP catalogue search endpoint.
+type McpCatalogFilterField string
+
 // McpCatalogFormField One field in a template-specific MCP catalog form.
 type McpCatalogFormField struct {
 	// AllowedModes Allowed input modes for text_or_secret_ref fields
-	AllowedModes *[]McpCatalogFormFieldAllowedModes `json:"allowed_modes"`
+	AllowedModes *[]McpCatalogFormInputMode `json:"allowed_modes"`
 
 	// CredentialProvider Provider whose connected credentials this field offers. Required for integration fields, rejected on every other kind.
 	CredentialProvider *CredentialProvider `json:"credential_provider"`
 
 	// DefaultMode Initial input mode for text_or_secret_ref fields
-	DefaultMode *McpCatalogFormFieldDefaultMode `json:"default_mode"`
+	DefaultMode *McpCatalogFormInputMode `json:"default_mode"`
 
 	// DefaultValue Optional user-facing default value supplied by the template form spec
 	DefaultValue *string `json:"default_value"`
@@ -2860,12 +3611,6 @@ type McpCatalogFormField struct {
 	Target *McpCatalogFormFieldTarget `json:"target"`
 }
 
-// McpCatalogFormFieldAllowedModes defines model for McpCatalogFormField.AllowedModes.
-type McpCatalogFormFieldAllowedModes string
-
-// McpCatalogFormFieldDefaultMode Initial input mode for text_or_secret_ref fields
-type McpCatalogFormFieldDefaultMode string
-
 // McpCatalogFormFieldDisplay Optional widget hint for how the setup form renders this field, orthogonal to kind. select fields accept dropdown (default), radio, or segmented; boolean fields accept switch (default) or checkbox. When null the field renders with its kind's default widget, so untagged fields are unchanged.
 type McpCatalogFormFieldDisplay string
 
@@ -2877,7 +3622,7 @@ type McpCatalogFormFieldTarget struct {
 	// Index Argument index for arg targets when the field replaces an argv slot
 	Index *int `json:"index"`
 
-	// Name Env var name for env targets or argument placeholder name for arg targets
+	// Name Env var name for env targets, argument placeholder name for arg targets, or HTTP header name for header targets
 	Name *string `json:"name"`
 
 	// Path Absolute container file path for file targets. The field's secret reference compiles into secret_file_mounts[path] (mounted read-only) instead of an env var. Validated with the same rules as secret_file_mounts keys.
@@ -2886,6 +3631,9 @@ type McpCatalogFormFieldTarget struct {
 	// Property Supported top-level create property for top_level targets
 	Property *McpCatalogFormFieldTargetProperty `json:"property"`
 
+	// Scheme How a header target composes its outbound value from the operator's secret. Declared by the template author rather than chosen by the operator: it is a property of what the vendor accepts, not of the credential typed in. Null sends the value verbatim.
+	Scheme *McpCatalogFormFieldTarget_Scheme `json:"scheme"`
+
 	// Type Compiler target bucket
 	Type McpCatalogFormFieldTargetType `json:"type"`
 }
@@ -2893,20 +3641,38 @@ type McpCatalogFormFieldTarget struct {
 // McpCatalogFormFieldTargetProperty Supported top-level create property for top_level targets
 type McpCatalogFormFieldTargetProperty string
 
+// McpCatalogFormFieldTarget_Scheme How a header target composes its outbound value from the operator's secret. Declared by the template author rather than chosen by the operator: it is a property of what the vendor accepts, not of the credential typed in. Null sends the value verbatim.
+type McpCatalogFormFieldTarget_Scheme struct {
+	union json.RawMessage
+}
+
 // McpCatalogFormFieldTargetType Compiler target bucket
 type McpCatalogFormFieldTargetType string
 
 // McpCatalogFormFieldValue Current value for one dynamic MCP catalog form field.
 type McpCatalogFormFieldValue struct {
-	// Mode How this value should be interpreted. plaintext and secret_ref are the two input modes of a text_or_secret_ref field. integration is not an input mode at all — it marks the value of an integration field, which is the id of the connection this server is linked to. Nothing is injected into the pod for it.
-	Mode *McpCatalogFormFieldValueMode `json:"mode,omitempty"`
+	// Mode How a *stored* form value should be interpreted.
+	//
+	// A strict superset of :class:`McpCatalogFormInputMode`, and deliberately so.
+	// ``integration`` is not an input mode: it marks the value of an integration
+	// field, which is the id of the connection this server is linked to, and
+	// nothing is injected into the pod for it. No form ever offers it as a choice.
+	//
+	// The two sets were previously four hand-copied ``Literal`` blocks with no
+	// assertion of their relationship — adding a member to one and not the others
+	// would have drifted silently (PlatDev #2518).
+	Mode *McpCatalogFormValueMode `json:"mode,omitempty"`
 
 	// Value Plaintext value or secret reference path for the field; the linked connection's credential id for integration fields
 	Value *string `json:"value,omitempty"`
 }
 
-// McpCatalogFormFieldValueMode How this value should be interpreted. plaintext and secret_ref are the two input modes of a text_or_secret_ref field. integration is not an input mode at all — it marks the value of an integration field, which is the id of the connection this server is linked to. Nothing is injected into the pod for it.
-type McpCatalogFormFieldValueMode string
+// McpCatalogFormInputMode A mode an operator (or agent) can *answer* a form field in.
+//
+// Both members name a way of supplying a value: a literal, or a pointer to
+// one in the Runtime Vault. What a field offers is its “allowed_modes“; the
+// one it starts on is its “default_mode“.
+type McpCatalogFormInputMode string
 
 // McpCatalogFormSpec Botyard-owned dynamic form spec for curated MCP catalog entries.
 type McpCatalogFormSpec struct {
@@ -2925,6 +3691,200 @@ type McpCatalogFormSpecLockedConfig string
 
 // McpCatalogFormSpecVersion Form spec version
 type McpCatalogFormSpecVersion int
+
+// McpCatalogFormValueMode How a *stored* form value should be interpreted.
+//
+// A strict superset of :class:`McpCatalogFormInputMode`, and deliberately so.
+// “integration“ is not an input mode: it marks the value of an integration
+// field, which is the id of the connection this server is linked to, and
+// nothing is injected into the pod for it. No form ever offers it as a choice.
+//
+// The two sets were previously four hand-copied “Literal“ blocks with no
+// assertion of their relationship — adding a member to one and not the others
+// would have drifted silently (PlatDev #2518).
+type McpCatalogFormValueMode string
+
+// McpCatalogPackagingKind How a catalog tile is packaged, which is not how its rows run.
+//
+// Open-ended: a package-manager backed tile is a new label here and needs no
+// change to :class:`McpServerRuntimeKind`, because it still installs as one of
+// the runtimes that already exist. “npx“ is the standing example — an npx
+// tile is deployed as a “container_image“ row running the shared npx runner.
+//
+// Shares the “mcp_server_runtime_kind“ Postgres type with
+// :class:`McpServerRuntimeKind`; the labels are a superset, so the two map
+// onto the same type without a migration.
+type McpCatalogPackagingKind string
+
+// McpCatalogProvisioningImplications Externally visible effects of the explicit creation action.
+type McpCatalogProvisioningImplications struct {
+	ContactsExternalEndpoint bool                                             `json:"contacts_external_endpoint"`
+	CreatesServer            *bool                                            `json:"creates_server,omitempty"`
+	ProvisionsHostedRuntime  bool                                             `json:"provisions_hosted_runtime"`
+	TriggerAction            *McpCatalogProvisioningImplicationsTriggerAction `json:"trigger_action,omitempty"`
+}
+
+// McpCatalogProvisioningImplicationsTriggerAction defines model for McpCatalogProvisioningImplications.TriggerAction.
+type McpCatalogProvisioningImplicationsTriggerAction string
+
+// McpCatalogSearchRequest Request body for “POST /v1/orgs/{org_id}/mcp-servers/catalog/search“.
+type McpCatalogSearchRequest struct {
+	// Pagination Query parameters for offset-based paginated endpoints.
+	Pagination *PaginationParams                `json:"pagination,omitempty"`
+	Where      *FilterNodeMcpCatalogFilterField `json:"where"`
+}
+
+// McpCatalogVendorAuthMode How an end user proves identity to the vendor behind a catalog entry.
+//
+// Coarse on purpose. Vendors describe dozens of auth schemes and Composio
+// alone advertises nine across its toolkits; what the product needs is not a
+// faithful transcription of the vendor's taxonomy but the small number of
+// distinctions that change what we show a customer and whether the tile can
+// work at all.
+//
+// The load-bearing one is “OAUTH2_UNMANAGED“. A toolkit can advertise OAuth2
+// and still have no Botyard-registered OAuth client behind it, which looks
+// identical to “OAUTH2_MANAGED“ right up to the point where the customer
+// clicks connect and the flow dies. Roughly 87 Composio toolkits are in that
+// state. Recording the distinction is what lets us seed them without shipping
+// a tile that installs cleanly and then cannot authorise.
+//
+// “OTHER“ is the catch-all and exists so an unrecognised vendor scheme
+// downgrades a single tile's disclosure rather than failing an import of
+// thousands. A row that lands here is seeded disabled.
+type McpCatalogVendorAuthMode string
+
+// McpConnectRequestState What became of one in-chat connect ask, as the card reads it on mount.
+//
+// Deliberately *not* a status of its own. The ask row stores no lifecycle —
+// “ComposioConnectService.get_status“ is the sole compare-and-set authority
+// over an authorisation, and a second stored status would be a second authority
+// for the same fact — so this is the ask plus at most one attempt, and the card
+// derives what to draw from the attempt's own state.
+//
+// One ask can have produced several attempts (the duplicate-name check answers
+// 409 with the name field still on screen, so rename-and-retry is ordinary), so
+// “connection“ is the *resolved* one: the authorisation that succeeded if any
+// did, else the one still in flight, else the most recent to have ended. Which
+// is to say: the answer to "is there anything here for the reader to know or to
+// resume", never a list for a client to choose from.
+//
+// “redirect_url“ is absent, as it is from every read. Resuming an attempt
+// means resuming its **poll**, not recovering its link.
+type McpConnectRequestState struct {
+	// Connection The attempt this ask resolves to, or NULL if nobody has pressed connect yet — which is the ordinary state of a card nobody has acted on, not an error. A ``pending`` attempt here is one to resume polling, including the case where the browser that started it is long gone.
+	Connection *ComposioConnectionDetail `json:"connection"`
+
+	// McpCatalogEntryId Catalogue tile the ask would authorise
+	McpCatalogEntryId string `json:"mcp_catalog_entry_id"`
+
+	// RequestId The ask this state belongs to
+	RequestId string `json:"request_id"`
+}
+
+// McpConsentShape What a customer is actually agreeing to when they authorise a tile.
+//
+// For the four *canned* members the member selects the disclosure and the
+// *copy* belongs to the frontend. That split is most of the point of the type:
+// an operator picking a member cannot mistype a claim about the customer's
+// data, and an operator who has never seen this file is not silently asked to
+// compose one.
+//
+// Before this existed the App shipped one hardcoded paragraph above every
+// Authorise button, asserting all three of *connects as you*, *shared
+// org-wide*, and *carries your private surface*. That is true of Slack and
+// false of Google Ads, where the account being linked belongs to the company,
+// not to the person clicking. A disclosure that overstates is not harmless: it
+// trains people to skip the next one.
+//
+// “SHARED_ACCOUNT“ and “NONE“ both drop the personal-surface claim, and
+// they are not the same. “SHARED_ACCOUNT“ still has an authorisation step
+// and still shares one credential across every bot in the org — the customer
+// needs to know that — whereas “NONE“ is a tile with nothing to disclose at
+// all. Collapsing them would put a tile with real org-wide reach behind
+// silence.
+//
+// :attr:`NONE` is deliberately explicit rather than modelled as an absent
+// value. The column is NOT NULL precisely so that "no warning" is something an
+// operator chose and can be seen to have chosen, instead of the state a row
+// falls into when nobody got round to classifying it.
+//
+// **Why :attr:`CUSTOM` exists, and why it is not the exception that eats the
+// rule.** A closed enum is correct when the platform owns the claim. The rule
+// it was borrowed from guards a statement about *Botyard's own* data handling
+// ("your prompts are never used for training"), which an operator must not be
+// able to forge or soften. This disclosure is a different sentence: it
+// describes what a *third-party* OAuth tile hands over, which is precisely the
+// thing the operator knows and the platform does not. There is no platform
+// claim to impersonate here — the operator is the accountable author of the
+// true statement, and four canned members can only ever approximate it. The
+// "admin" in question is Botyard staff in Admin -> MCP catalogue; the threat
+// model is an honest typo, not a hostile tenant.
+//
+// The cost is real and was accepted deliberately rather than argued away: a
+// *stale* custom disclosure is worse than a generic-but-true one, because
+// specificity reads as authority. The mitigations are an audit trail that
+// keeps both sides of every edit (see
+// :class:`~botyard_core.audit_events.AdminMcpCatalogEntryUpdatedContent`) and
+// deliberate selection, not prohibition.
+//
+// “CUSTOM“ is the one member whose *note* is load-bearing: it replaces the
+// platform paragraph rather than sitting beneath it, so a “CUSTOM“ row with
+// no note is a shape naming a text that does not exist — an empty warning box
+// at the Authorise click. That state is refused by the API and by
+// “ck_mcp_catalog_custom_shape_requires_consent_note“, and unlike
+// “operator_consent_note_required“ the requirement is intrinsic to the
+// member rather than a separate flag an operator sets.
+type McpConsentShape string
+
+// McpHandshakeAttempt One recorded “tools/list“ handshake attempt against an MCP server.
+//
+// The reconciler appends one of these per attempt — success or failure —
+// so a server's owner can diagnose a broken server through ordinary
+// org-scoped tooling instead of needing cluster log access. Attempts are
+// org-scoped implicitly: they live on the “provider_mcp_servers“ row and
+// are only ever read through org-filtered queries.
+//
+// **This model must never carry a credential.** “extra="forbid"“ plus the
+// absence of any value-bearing field is the mechanical guard: the failure
+// path records key *paths* and header *names* (the pointers already exposed
+// on the server detail) and the exception text, never a resolved header
+// value. The provisioner cannot leak one by accident either — managed-remote
+// headers are resolved inside the outbound httpx auth flow, so the phase
+// that writes this record never holds the plaintext.
+type McpHandshakeAttempt struct {
+	// AttemptedAt When the handshake attempt was made (UTC)
+	AttemptedAt time.Time `json:"attempted_at"`
+
+	// Error Diagnostic message for a failed attempt — the underlying handshake error plus the remedy, identical to the ``last_error`` this attempt produced. Never contains a credential value.
+	Error *string `json:"error"`
+
+	// FailureKind Classification of the failure; null on a successful attempt
+	FailureKind *McpHandshakeFailureKind `json:"failure_kind"`
+
+	// Outcome Whether a recorded ``tools/list`` handshake attempt worked.
+	Outcome McpHandshakeOutcome `json:"outcome"`
+
+	// ToolCount Tools returned by a successful attempt; null on a failed attempt
+	ToolCount *int `json:"tool_count"`
+}
+
+// McpHandshakeFailureKind Classification of a “tools/list“ handshake failure.
+//
+// Lives here (rather than beside the reconciler that produces it) because
+// the value is persisted on “provider_mcp_servers.handshake_attempts“ and
+// projected into the org-facing API/MCP contracts — model layers must be
+// able to name the type without importing the provisioner service package.
+// :mod:`botyard_core.services.provisioner.mcp_handshake` re-exports it for
+// the reconciler's own call sites.
+//
+// The reconciler maps this + the server's “runtime_kind“ /
+// “pod_host_mode“ into a “last_error“ that tells the server's owner
+// (who only sees “get_mcp_server“) exactly which knob to turn.
+type McpHandshakeFailureKind string
+
+// McpHandshakeOutcome Whether a recorded “tools/list“ handshake attempt worked.
+type McpHandshakeOutcome string
 
 // McpPodHostMode How Botyard sets the HTTP “Host“ when connecting to an in-cluster MCP pod.
 //
@@ -2946,8 +3906,371 @@ type McpCatalogFormSpecVersion int
 // “managed_remote“ (the vendor host is always preserved).
 type McpPodHostMode string
 
+// McpServerAccess MCP server reachability within its organization.
+//
+// The one-for-one mirror of :class:`BotAccess`, and deliberately so — epic
+// #2672 D10 chose to reproduce the bot access mode rather than invent a
+// narrower one, because the alternative (an ambient term discriminated by
+// actor type, "all bots but no humans") would have been a new capability in
+// the shared policy engine rather than a column on this table.
+//
+// “OPEN“ therefore means **fully** open: the listing rule's ambient term
+// admits every principal the base permission admits, and “mcp_server.read“
+// is held by “org:member“ *and* “org:viewer“ and by API-key actors. It is
+// not "every bot in the org"; it is everyone. The “restricted“ default
+// exists so that is only ever true because somebody chose it.
+type McpServerAccess string
+
+// McpServerAccessUpdate Request to set an MCP server's org-level access mode (epic #2672 D10).
+//
+// A body of one required field, on a route of its own, rather than a field on
+// “McpServerUpdate“. The separation is the authorization statement: “PATCH“
+// is gated on org-wide “mcp_server.update“, and who reaches a server is a
+// per-instance question that an instance owner — who may be a plain
+// “org:member“ — must be able to answer for their own server. Folding the
+// mode into the patch body would have made the narrower authority documented
+// and the wider one effective.
+//
+// “access“ is required, with no default. On a route whose entire purpose is
+// to set one value, a default would let an empty body silently mean
+// “restricted“: a request that reads as "leave it alone" and closes the
+// server instead.
+type McpServerAccessUpdate struct {
+	// Access MCP server reachability within its organization.
+	//
+	// The one-for-one mirror of :class:`BotAccess`, and deliberately so — epic
+	// #2672 D10 chose to reproduce the bot access mode rather than invent a
+	// narrower one, because the alternative (an ambient term discriminated by
+	// actor type, "all bots but no humans") would have been a new capability in
+	// the shared policy engine rather than a column on this table.
+	//
+	// ``OPEN`` therefore means **fully** open: the listing rule's ambient term
+	// admits every principal the base permission admits, and ``mcp_server.read``
+	// is held by ``org:member`` *and* ``org:viewer`` and by API-key actors. It is
+	// not "every bot in the org"; it is everyone. The ``restricted`` default
+	// exists so that is only ever true because somebody chose it.
+	Access McpServerAccess `json:"access"`
+}
+
+// McpServerAssignments Per-bot coverage of one MCP server's tools, for every bot in the org.
+//
+// “total_count“ is the denominator every row shares — the number of live
+// tools this server currently exposes — so the caller renders "n of m"
+// without a second read, and bots holding nothing are still listed (that is
+// how you grant to a bot that has never used this server).
+type McpServerAssignments struct {
+	// Bots Every bot in the org, assigned or not, ordered by name
+	Bots []McpServerBotAssignment `json:"bots"`
+
+	// McpServerId UUID of the MCP server
+	McpServerId string `json:"mcp_server_id"`
+
+	// TotalCount Live tools this server currently exposes
+	TotalCount int `json:"total_count"`
+}
+
+// McpServerBotAssignment One org bot's coverage of a single MCP server's tools.
+//
+// The read behind the server page's Assignments tab, which is **bot-first**:
+// the bot is the subject and the server's tools are the object ("this bot
+// holds 12 of Outlook's 42 tools"), rather than fanning one tool out across
+// bots. Writes still go through the per-bot assignment endpoints — this model
+// is a projection, never an authorization decision.
+//
+// “assigned_count“ counts only live tool rows (“deleted_at IS NULL“), so a
+// bot still holding a retired row from a deleted-and-recreated server is not
+// credited with coverage it does not have. Those orphans are invisible here by
+// construction: their “mcp_server_id“ was nulled by the delete.
+type McpServerBotAssignment struct {
+	// AssignedCount How many of this server's live tools the bot currently holds
+	AssignedCount int `json:"assigned_count"`
+
+	// AvatarUrl Bot avatar URL, if set
+	AvatarUrl *string `json:"avatar_url"`
+
+	// BotId UUID of the bot
+	BotId string `json:"bot_id"`
+
+	// Name Display name of the bot
+	Name string `json:"name"`
+
+	// Slug URL slug of the bot
+	Slug string `json:"slug"`
+
+	// SyncStatus Worst-case async config-apply status across this bot's assignments from this server (failed > pending > synced), or null when it holds none. Worst-case rather than an aggregate so a single stuck row stays visible.
+	SyncStatus *SyncStatus `json:"sync_status"`
+}
+
+// McpServerCatalogEntry Reusable MCP setup catalog entry.
+//
+// “name“, “description“ and “logo_url“ carry the **resolved** copy: the
+// operator's override when one is set, the vendor's text otherwise. The
+// resolution happens here, at validation, rather than at each call site —
+// “validation_alias“ points the fields at the ORM row's “display_*“
+// hybrids, so every reader that builds this model “from_attributes“ gets the
+// override whether or not it knew the override existed.
+//
+// “consent_note“ resolves the same way but has no vendor fallback: it is
+// operator-authored or absent. It is a separate field from “description“
+// rather than a longer description because the two are read at different
+// moments — the description while browsing, the note at the click of
+// Authorise — and because a consent string sharing a slot with browsing copy
+// can be deleted by an edit nobody reviews as a safety change.
+//
+// That indirection is the point. The operator-owned columns exist so Botyard
+// can put its own words on a tile — for Slack, a consent disclosure saying the
+// connection authorises as the approving human. A projection that read the
+// vendor columns directly would drop that text without failing anything, which
+// is the exact shape of the “tool_scope“ bug in platform-development #2497:
+// an override nobody reads.
+//
+// “populate_by_name“ keeps “McpServerCatalogEntry(name=...)“ working for
+// the callers that build this model from a dict rather than an ORM row.
+type McpServerCatalogEntry struct {
+	// Args Arguments appended to command
+	Args *[]string `json:"args"`
+
+	// Command Entrypoint override
+	Command *[]string `json:"command"`
+
+	// ConnectAuthMode How this tile is installed, or null when it needs neither flow. Branch on this only for *copy*, never to decide which flow applies: requires_connect and requires_credentials already answer that, and this field is null unless one of them is true. 'oauth2_managed' means the customer signs in to the vendor; 'api_key' means they enter credentials into a Botyard form that stores them — and note that despite the name, some toolkits in this mode ask for a username and password, so copy should say 'credentials' rather than 'API key'. A client that does not recognise the value should fall back to the neutral wording rather than assume a sign-in.
+	ConnectAuthMode *McpCatalogVendorAuthMode `json:"connect_auth_mode"`
+
+	// ConsentNote Tile-specific disclosure text to show at the authorisation step. Null for most tiles. For the four canned shapes this is an addendum to consent_shape and never a replacement for it; when consent_shape is 'custom' it is the BODY of the disclosure, beneath consent_title, and is always present
+	ConsentNote *string `json:"consent_note"`
+
+	// ConsentShape What a customer is actually agreeing to when they authorise a tile.
+	//
+	// For the four *canned* members the member selects the disclosure and the
+	// *copy* belongs to the frontend. That split is most of the point of the type:
+	// an operator picking a member cannot mistype a claim about the customer's
+	// data, and an operator who has never seen this file is not silently asked to
+	// compose one.
+	//
+	// Before this existed the App shipped one hardcoded paragraph above every
+	// Authorise button, asserting all three of *connects as you*, *shared
+	// org-wide*, and *carries your private surface*. That is true of Slack and
+	// false of Google Ads, where the account being linked belongs to the company,
+	// not to the person clicking. A disclosure that overstates is not harmless: it
+	// trains people to skip the next one.
+	//
+	// ``SHARED_ACCOUNT`` and ``NONE`` both drop the personal-surface claim, and
+	// they are not the same. ``SHARED_ACCOUNT`` still has an authorisation step
+	// and still shares one credential across every bot in the org — the customer
+	// needs to know that — whereas ``NONE`` is a tile with nothing to disclose at
+	// all. Collapsing them would put a tile with real org-wide reach behind
+	// silence.
+	//
+	// :attr:`NONE` is deliberately explicit rather than modelled as an absent
+	// value. The column is NOT NULL precisely so that "no warning" is something an
+	// operator chose and can be seen to have chosen, instead of the state a row
+	// falls into when nobody got round to classifying it.
+	//
+	// **Why :attr:`CUSTOM` exists, and why it is not the exception that eats the
+	// rule.** A closed enum is correct when the platform owns the claim. The rule
+	// it was borrowed from guards a statement about *Botyard's own* data handling
+	// ("your prompts are never used for training"), which an operator must not be
+	// able to forge or soften. This disclosure is a different sentence: it
+	// describes what a *third-party* OAuth tile hands over, which is precisely the
+	// thing the operator knows and the platform does not. There is no platform
+	// claim to impersonate here — the operator is the accountable author of the
+	// true statement, and four canned members can only ever approximate it. The
+	// "admin" in question is Botyard staff in Admin -> MCP catalogue; the threat
+	// model is an honest typo, not a hostile tenant.
+	//
+	// The cost is real and was accepted deliberately rather than argued away: a
+	// *stale* custom disclosure is worse than a generic-but-true one, because
+	// specificity reads as authority. The mitigations are an audit trail that
+	// keeps both sides of every edit (see
+	// :class:`~botyard_core.audit_events.AdminMcpCatalogEntryUpdatedContent`) and
+	// deliberate selection, not prohibition.
+	//
+	// ``CUSTOM`` is the one member whose *note* is load-bearing: it replaces the
+	// platform paragraph rather than sitting beneath it, so a ``CUSTOM`` row with
+	// no note is a shape naming a text that does not exist — an empty warning box
+	// at the Authorise click. That state is refused by the API and by
+	// ``ck_mcp_catalog_custom_shape_requires_consent_note``, and unlike
+	// ``operator_consent_note_required`` the requirement is intrinsic to the
+	// member rather than a separate flag an operator sets.
+	ConsentShape *McpConsentShape `json:"consent_shape,omitempty"`
+
+	// ConsentTitle Headline of an operator-authored disclosure. Non-null only when consent_shape is 'custom', where it is always present and renders in the same bold slot the client uses for its own disclosure titles. Null for every other shape: their titles are client-owned copy, and an addendum carrying its own headline would outrank the disclosure it sits beneath
+	ConsentTitle *string `json:"consent_title"`
+
+	// CreatedAt When the catalog entry was created
+	CreatedAt time.Time `json:"created_at"`
+
+	// Description Optional summary; the operator's override when one is set
+	Description *string `json:"description"`
+
+	// Enabled Whether this entry appears in setup flows
+	Enabled bool `json:"enabled"`
+
+	// EndpointUrl Managed remote endpoint URL
+	EndpointUrl *string `json:"endpoint_url"`
+
+	// EnvPlaintext Non-sensitive environment variables
+	EnvPlaintext *map[string]string `json:"env_plaintext,omitempty"`
+
+	// EnvSecretRefs Env-var name to secret key path references
+	EnvSecretRefs *map[string]string `json:"env_secret_refs,omitempty"`
+
+	// FormSpec Optional dynamic setup form rendered for this catalog entry
+	FormSpec *McpCatalogFormSpec `json:"form_spec"`
+
+	// FormSpecVersion Dynamic form spec version, null when no template form is configured
+	FormSpecVersion *int `json:"form_spec_version"`
+
+	// Image Container image reference
+	Image *string `json:"image"`
+
+	// LogoHref Same-origin URL to render this entry's logo from, or null when no artwork is cached. Prefer this over logo_url for display: the logo is painted through a CSS mask, which is a CORS-restricted resource, so a third-party URL that sends no Access-Control-Allow-Origin header paints nothing at all. Suppressed when the operator has overridden the logo, so that the override wins over the cached copy of the artwork it replaced
+	LogoHref *string `json:"logo_href"`
+
+	// LogoUrl The logo URL to display: the operator's override when one is set, otherwise the vendor's own as imported. Provenance only when no override exists — prefer logo_href in that case, which is same-origin
+	LogoUrl *string `json:"logo_url"`
+
+	// McpCatalogEntryId UUID of the catalog entry
+	McpCatalogEntryId string `json:"mcp_catalog_entry_id"`
+
+	// Name Human-readable label; the operator's override when one is set
+	Name string `json:"name"`
+
+	// OrgId Owning org for custom templates; null for Botyard built-ins
+	OrgId *string `json:"org_id"`
+
+	// PackagingKind How a catalog tile is packaged, which is not how its rows run.
+	//
+	// Open-ended: a package-manager backed tile is a new label here and needs no
+	// change to :class:`McpServerRuntimeKind`, because it still installs as one of
+	// the runtimes that already exist. ``npx`` is the standing example — an npx
+	// tile is deployed as a ``container_image`` row running the shared npx runner.
+	//
+	// Shares the ``mcp_server_runtime_kind`` Postgres type with
+	// :class:`McpServerRuntimeKind`; the labels are a superset, so the two map
+	// onto the same type without a migration.
+	PackagingKind McpCatalogPackagingKind `json:"packaging_kind"`
+
+	// Port Container port
+	Port *int `json:"port"`
+
+	// RequiresConnect Whether installing this tile is an authorisation rather than a form. True means the customer is sent to the vendor to approve access and the server is created only once they return connected, so a client must offer the authorisation step instead of the configuration form: the tile has no fields to fill in, and the ordinary create path refuses it.
+	RequiresConnect bool `json:"requires_connect"`
+
+	// RequiresCredentials Whether installing this tile means collecting the vendor's credentials in a Botyard form. Mutually exclusive with requires_connect: a client offers the credential form when this is true, the authorisation step when requires_connect is true, and the ordinary configuration form when neither is. The fields to render are not in this payload and must be fetched per-tile, because they come from the vendor and are read live rather than stored.
+	RequiresCredentials *bool `json:"requires_credentials,omitempty"`
+
+	// SecretFileMounts Container file path to secret key path references
+	SecretFileMounts *map[string]string `json:"secret_file_mounts,omitempty"`
+
+	// Slug URL-safe catalog identifier
+	Slug string `json:"slug"`
+
+	// SortOrder Stable display order
+	SortOrder int `json:"sort_order"`
+
+	// Source Who owns a reusable MCP catalog entry.
+	Source McpCatalogEntrySource `json:"source"`
+
+	// Transport Wire transport a deployed MCP server exposes to the gateway.
+	Transport McpServerTransport `json:"transport"`
+
+	// UpdatedAt Last update timestamp
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
 // McpServerDesiredState Control-plane intent for an MCP server.
 type McpServerDesiredState string
+
+// McpServerMember One principal on an MCP server's member list, with display fields resolved.
+//
+// The membership row itself is polymorphic on both axes and carries no
+// foreign key to any principal table, so “name“ and “avatar_url“ are
+// resolved alongside it rather than joined — see
+// “botyard_core.services.api.resource_members.resolve_member_identities“.
+// Both are optional because a membership row outlives the principal it names:
+// “actor_id“ has no referential integrity, so a deleted bot leaves a row
+// that an owner still needs to see in order to remove it.
+//
+// “role“ is a plain string, not an enum. The vocabulary is per resource type
+// and grows a runtime half when customer-defined roles arrive
+// (“botyard_core.authz.membership“); freezing it into the wire contract here
+// would put a client-side migration in front of every new role.
+type McpServerMember struct {
+	// ActorId ID of the member principal, in its own table's namespace
+	ActorId string `json:"actor_id"`
+
+	// ActorType Type of an authenticated principal or a message author.
+	//
+	// ``USER``/``API_KEY``/``BOT``/``MCP_WORKLOAD`` are authenticatable
+	// *principals* — they can carry a credential, populate ``AuthContext``, and be
+	// the subject of an authz decision. ``TEAMS_USER`` is a message-author-only
+	// label for an external
+	// Microsoft Teams sender: it is written to
+	// ``conversation_messages.sender_actor_type`` so an inbound Teams turn is
+	// attributed honestly, but it is NEVER an authenticated principal. The
+	// principal path (``AuthContext``, JWT claims, the ``authz`` engine) rejects
+	// it via :data:`PRINCIPAL_ACTOR_TYPES` / :func:`assert_principal_actor_type`.
+	ActorType ActorType `json:"actor_type"`
+
+	// AvatarUrl Avatar for user and bot members; always null for API keys
+	AvatarUrl *string `json:"avatar_url"`
+
+	// CreatedAt When the membership was created
+	CreatedAt time.Time `json:"created_at"`
+
+	// Name Display name of the principal; null when it no longer exists
+	Name *string `json:"name"`
+
+	// Role Capacity the principal is attached in, e.g. 'owner', 'member'
+	Role string `json:"role"`
+}
+
+// McpServerMemberAdd Request to put a principal on an MCP server's member list, or change its role.
+//
+// Add-or-update, so the body is the *desired* state of one membership rather
+// than a request to create one: sending it twice is not an error, which is what
+// makes "an owner re-adds the person who was stranded" a safe instruction
+// rather than one that fails the second time somebody tries it.
+//
+// “actor_type“ is explicit rather than inferred from the id. Ids are UUIDs
+// drawn from three different tables and nothing about their shape says which,
+// so inference would be a guess that silently writes a row matching nobody —
+// the exact accepted-and-inert failure this endpoint validates against.
+type McpServerMemberAdd struct {
+	// ActorId ID of the principal, in its own table's namespace
+	ActorId string `json:"actor_id"`
+
+	// ActorType Type of an authenticated principal or a message author.
+	//
+	// ``USER``/``API_KEY``/``BOT``/``MCP_WORKLOAD`` are authenticatable
+	// *principals* — they can carry a credential, populate ``AuthContext``, and be
+	// the subject of an authz decision. ``TEAMS_USER`` is a message-author-only
+	// label for an external
+	// Microsoft Teams sender: it is written to
+	// ``conversation_messages.sender_actor_type`` so an inbound Teams turn is
+	// attributed honestly, but it is NEVER an authenticated principal. The
+	// principal path (``AuthContext``, JWT claims, the ``authz`` engine) rejects
+	// it via :data:`PRINCIPAL_ACTOR_TYPES` / :func:`assert_principal_actor_type`.
+	ActorType ActorType `json:"actor_type"`
+
+	// Role Capacity to attach the principal in. 'member' reaches the server; 'owner' additionally edits this list. Defaults to the lesser of the two.
+	Role *string `json:"role,omitempty"`
+}
+
+// McpServerRuntimeKind How an org-scoped MCP server row actually runs.
+//
+// Deliberately closed. Every member here is a shape a “provider_mcp_servers“
+// row can hold and a create body can name, and every create/update model pins
+// one of them as a “Literal“ discriminator. A value that cannot appear on a
+// row does not belong in this enum: it used to carry “npx“, which no row has
+// ever held and no create model would accept, and advertising it to agents as
+// a runtime kind produced calls the tool could only refuse (PlatDev #2475).
+//
+// How a *catalog tile* is packaged is a separate vocabulary —
+// :class:`McpCatalogPackagingKind` — related to this one by exactly one public
+// translation, :func:`server_runtime_kind_for_packaging`.
+type McpServerRuntimeKind string
 
 // McpServerSetupSource How an MCP server row was created in the setup flow.
 type McpServerSetupSource string
@@ -2974,7 +4297,7 @@ type McpServerTransport string
 // either requires delete-and-recreate so the reconciler doesn't need to
 // re-plan pod primitives mid-flight.
 type McpServerUpdate struct {
-	// AcknowledgedCredentialHost Destination host the caller accepts will receive this server's Runtime Vault secrets. Required when re-pointing ``endpoint_url`` at a different host on a managed-remote row that has ``secret_headers``; must equal the host of the new ``endpoint_url``. Changing only the path on the same host needs nothing — the secret already goes there. Naming the host rather than sending a bare flag is deliberate: it proves the caller knew *where* the secret was going, and a host changed after the confirmation was shown no longer matches. Recorded to the audit trail.
+	// AcknowledgedCredentialHost Destination the caller accepts will receive this server's Runtime Vault secrets. Required when re-pointing ``endpoint_url`` at a different authority on a managed-remote row that has ``secret_headers``; must equal the authority of the new ``endpoint_url`` — its host, plus ``:port`` when the port is not the scheme default. Changing only the path on the same authority needs nothing — the secret already goes there; changing the port does need it, because a different port can be a separately operated listener. Naming the destination rather than sending a bare flag is deliberate: it proves the caller knew *where* the secret was going, and a destination changed after the confirmation was shown no longer matches. Recorded to the audit trail.
 	AcknowledgedCredentialHost *string `json:"acknowledged_credential_host"`
 
 	// Args Argv-style arguments appended to command. Container-image rows only.
@@ -3036,6 +4359,9 @@ type McpServerUpdate struct {
 	// SecretFileMounts Absolute container file path → secret_key_path mounted as read-only files (full replacement). Container-image rows only.
 	SecretFileMounts *map[string]string `json:"secret_file_mounts"`
 
+	// SecretHeaderSchemes Header name to the scheme composing its outbound value from the resolved vault secret (full replacement; send {} to clear and send every header verbatim). Every name must appear in the resulting ``secret_headers``. Managed-remote rows only.
+	SecretHeaderSchemes *map[string]McpServerUpdate_SecretHeaderSchemes_AdditionalProperties `json:"secret_header_schemes,omitempty"`
+
 	// SecretHeaders Header name to Runtime Vault key path (full replacement; send {} to clear). Managed-remote rows only.
 	SecretHeaders *map[string]string `json:"secret_headers,omitempty"`
 
@@ -3044,6 +4370,11 @@ type McpServerUpdate struct {
 
 	// StaticHeaders Non-sensitive outbound headers (full replacement; send {} to clear). Managed-remote rows only.
 	StaticHeaders *map[string]string `json:"static_headers,omitempty"`
+}
+
+// McpServerUpdate_SecretHeaderSchemes_AdditionalProperties defines model for McpServerUpdate.secret_header_schemes.AdditionalProperties.
+type McpServerUpdate_SecretHeaderSchemes_AdditionalProperties struct {
+	union json.RawMessage
 }
 
 // McpToolSummary A single tool advertised by an MCP server's “tools/list“ handshake.
@@ -3155,6 +4486,138 @@ type ModelConfig struct {
 // ModelConfigInput defines model for ModelConfig.Input.
 type ModelConfigInput string
 
+// ModelRef A reference to a model within an OpenClaw provider.
+//
+// Mirrors OpenClaw's “ModelRef“ type (“{ provider, model }“).
+// The provider field is the key in “models.providers“ (e.g. “"botyard"“),
+// and model is the model ID within that provider (e.g. “"gpt-5.4"“).
+type ModelRef struct {
+	Model    string  `json:"model"`
+	Provider *string `json:"provider,omitempty"`
+}
+
+// NativeBotConfig Platform-level native bot config — input to broker prompt rendering.
+//
+// Stored as JSONB in bots.desired_config when bot_type=native. The
+// “bot_type“ field is the discriminator for the BotConfig union.
+//
+// “extra="ignore"“ mirrors OpenClawBotConfig: old data with removed
+// fields still reads (schema evolution safety).
+type NativeBotConfig struct {
+	BotType NativeBotConfigBotType `json:"bot_type"`
+
+	// HostPolicy Optional operator host policy rendered as BOTYARD_HOST_POLICY. Absent means the daemon default (service_owner disabled: no turn capability, no host services).
+	HostPolicy *map[string]interface{} `json:"host_policy"`
+
+	// Model A reference to a model within an OpenClaw provider.
+	//
+	// Mirrors OpenClaw's ``ModelRef`` type (``{ provider, model }``).
+	// The provider field is the key in ``models.providers`` (e.g. ``"botyard"``),
+	// and model is the model ID within that provider (e.g. ``"gpt-5.4"``).
+	Model ModelRef `json:"model"`
+
+	// PromptRef Optional managed-prompt ref naming the template source (directory version pins content)
+	PromptRef *string `json:"prompt_ref"`
+
+	// PromptTemplate Bot instructions template rendered into the system prompt stable prefix
+	PromptTemplate string `json:"prompt_template"`
+
+	// ToolSearch Tool Search: defer tool schemas out of the prompt behind a search surface.
+	//
+	// One runtime-agnostic setting for one user-facing concept. The *mechanism*
+	// differs per agent runtime, and the runtime is derived from the primary
+	// model ref's provider rather than chosen by the owner — so asking the owner
+	// to pick the right per-runtime switch would be asking about an
+	// implementation detail they cannot see. Config generation does the mapping:
+	//
+	// ==================  ===================================================
+	// runtime             mechanism
+	// ==================  ===================================================
+	// ``claude-cli``      ``cliBackends.claude-cli.env.ENABLE_TOOL_SEARCH`` =
+	//                     ``"true"`` / ``"auto:N"`` / ``"false"``
+	// ``pi`` (embedded)   ``tools.toolSearch`` =
+	//                     ``{"enabled": true, "mode": "tools"}``, or absent
+	// ==================  ===================================================
+	//
+	// With it on, the runtime withholds tool *schemas* from the prompt and
+	// exposes a search surface instead; the model searches (or selects by exact
+	// name) and then calls the real tool. Measured against the real Botyard
+	// catalogue: 117,933 -> 43,863 input tokens (-62.8%) on ``claude-cli``, and
+	// 85,317 -> 15,719 (-82%) on the embedded loop.
+	//
+	// Runtime-specific caveats worth knowing before turning this on:
+	//
+	// * **claude-cli.** We set ``ENABLE_TOOL_SEARCH`` explicitly rather than
+	//   relying on Claude Code's default. The CLI's default mode is on, but it
+	//   *self-disables* whenever ``ANTHROPIC_BASE_URL`` is not a first-party
+	//   Anthropic host, logging "...is not a first-party Anthropic host. Set
+	//   ENABLE_TOOL_SEARCH=true (or auto / auto:N) if your proxy forwards
+	//   tool_reference blocks." Every Botyard bot points at the bridge's
+	//   loopback stream-proxy, so the feature is off fleet-wide unless we opt
+	//   in. Our proxy chain does forward the ``anthropic-beta`` header and
+	//   ``tool_reference`` blocks — verified end-to-end with a full
+	//   search-then-call round trip. Requires a model supporting
+	//   ``tool_reference`` (Sonnet 4+ / Opus 4+); haiku is on Claude Code's
+	//   unsupported list and silently keeps the full catalog, which is safe —
+	//   just not cheaper.
+	// * **pi (embedded).** OpenClaw's ``tools.toolSearch`` applies to embedded
+	//   runs only; a CLI backend never reaches that code path, since it hands
+	//   our ``mcp.servers`` verbatim to the CLI, which then talks to the Botyard
+	//   MCP server directly. We select ``mode: "tools"`` — the structured
+	//   search/describe/call surface — which is the mode that was measured.
+	//
+	// **Defaults to auto.** Claude Code defers only when the deferrable schemas
+	// exceed 10% of the context window. OpenClaw's embedded runtime has no
+	// threshold mechanism, so the runtime mapping treats ``auto`` as enabled.
+	// Owners can still select ``off`` explicitly from the bot detail page.
+	ToolSearch *ToolSearchConfig `json:"tool_search,omitempty"`
+}
+
+// NativeBotConfigBotType defines model for NativeBotConfig.BotType.
+type NativeBotConfigBotType string
+
+// NativeConfigConversion Explicit repair of an existing hosted-native agent's legacy config.
+type NativeConfigConversion struct {
+	// Config Platform-level native bot config — input to broker prompt rendering.
+	//
+	// Stored as JSONB in bots.desired_config when bot_type=native. The
+	// ``bot_type`` field is the discriminator for the BotConfig union.
+	//
+	// ``extra="ignore"`` mirrors OpenClawBotConfig: old data with removed
+	// fields still reads (schema evolution safety).
+	Config NativeBotConfig `json:"config"`
+
+	// ExpectedGeneration Config generation read before requesting conversion
+	ExpectedGeneration int `json:"expected_generation"`
+}
+
+// NativeConfigPatch Patchable fields for native bot configs.
+//
+// Minimal by design: model ref + prompt ref/template + host policy only.
+// Structure mirrors “NativeBotConfig“ so “patch_model()“ applies updates
+// recursively without manual field mapping.
+type NativeConfigPatch struct {
+	BotType *NativeConfigPatchBotType `json:"bot_type,omitempty"`
+
+	// HostPolicy Operator host policy (service_owner disabled|native)
+	HostPolicy *map[string]interface{} `json:"host_policy"`
+
+	// Model Model ref override
+	Model *ModelRef `json:"model"`
+
+	// PromptRef Managed-prompt ref naming the template source
+	PromptRef *string `json:"prompt_ref"`
+
+	// PromptTemplate Bot instructions template
+	PromptTemplate *string `json:"prompt_template"`
+
+	// ToolSearch Tool Search overrides (see ToolSearchConfigPatch)
+	ToolSearch *ToolSearchConfigPatch `json:"tool_search"`
+}
+
+// NativeConfigPatchBotType defines model for NativeConfigPatch.BotType.
+type NativeConfigPatchBotType string
+
 // ObservedState Operator's view of where a bot is in the reconciler phase pipeline.
 //
 // Phase sub-states (“provisioning:*“ / “updating:*“) track progress
@@ -3175,9 +4638,9 @@ type ObservedState string
 // “extra="ignore"“ ensures old data with removed fields doesn't break
 // on read (schema evolution safety).
 type OpenClawBotConfig struct {
-	Addons  *[]AddonInput             `json:"addons"`
-	AgentId *string                   `json:"agent_id,omitempty"`
-	BotType *OpenClawBotConfigBotType `json:"bot_type,omitempty"`
+	Addons  *[]AddonInput            `json:"addons"`
+	AgentId *string                  `json:"agent_id,omitempty"`
+	BotType OpenClawBotConfigBotType `json:"bot_type"`
 
 	// Browser OpenClaw browser plugin configuration.
 	//
@@ -3485,6 +4948,20 @@ type OrBotFilterField_Filters_Item struct {
 // OrBotFilterFieldKind defines model for OrBotFilterField.Kind.
 type OrBotFilterFieldKind string
 
+// OrMcpCatalogFilterField defines model for Or_McpCatalogFilterField_.
+type OrMcpCatalogFilterField struct {
+	Filters []OrMcpCatalogFilterField_Filters_Item `json:"filters"`
+	Kind    *OrMcpCatalogFilterFieldKind           `json:"kind,omitempty"`
+}
+
+// OrMcpCatalogFilterField_Filters_Item defines model for Or_McpCatalogFilterField_.filters.Item.
+type OrMcpCatalogFilterField_Filters_Item struct {
+	union json.RawMessage
+}
+
+// OrMcpCatalogFilterFieldKind defines model for OrMcpCatalogFilterField.Kind.
+type OrMcpCatalogFilterFieldKind string
+
 // PaginatedResponseBotListItem defines model for PaginatedResponse_BotListItem_.
 type PaginatedResponseBotListItem struct {
 	// HasMore Whether more items exist beyond this page
@@ -3492,6 +4969,18 @@ type PaginatedResponseBotListItem struct {
 	Items   []BotListItem `json:"items"`
 	Limit   int           `json:"limit"`
 	Offset  int           `json:"offset"`
+
+	// Total Total number of items matching the query
+	Total int `json:"total"`
+}
+
+// PaginatedResponseMcpServerCatalogEntry defines model for PaginatedResponse_McpServerCatalogEntry_.
+type PaginatedResponseMcpServerCatalogEntry struct {
+	// HasMore Whether more items exist beyond this page
+	HasMore bool                    `json:"has_more"`
+	Items   []McpServerCatalogEntry `json:"items"`
+	Limit   int                     `json:"limit"`
+	Offset  int                     `json:"offset"`
 
 	// Total Total number of items matching the query
 	Total int `json:"total"`
@@ -3583,7 +5072,7 @@ type PermissionScopeShape string
 
 // PermissionSource Which authority put a permission on an actor.
 //
-// Four authorities, distinguished by **who can change them** — which is the
+// Five authorities, distinguished by **who can change them** — which is the
 // only distinction a permissions view exists to make:
 //
 // “ROLE_BUNDLE“
@@ -3607,12 +5096,21 @@ type PermissionScopeShape string
 //	The permanent, instance-scoped grant a bot holds over its own record.
 //	Code-defined and never persisted, so there is no row to delete.
 //
-// “ROLE_BUNDLE“ and “SELF_GRANT“ are therefore **not revocable**, and a UI
-// must render them as such rather than as a grant with a missing delete button
-// — an action that reports success and changes nothing is worse than no action.
+// “RESOURCE_MEMBER“
+//
+//	Instance-scoped authority synthesised from a ``resource_members`` row by
+//	``RESOURCE_ROLE_BUNDLES`` (#2940). Also never persisted as a grant, so
+//	there is no grant row to delete — the way to remove it is to change or
+//	remove the *membership*, which is why it must not render as revocable
+//	here: the delete button would point at the wrong table.
+//
+// “ROLE_BUNDLE“, “SELF_GRANT“ and “RESOURCE_MEMBER“ are therefore **not
+// revocable**, and a UI must render them as such rather than as a grant with a
+// missing delete button — an action that reports success and changes nothing is
+// worse than no action.
 //
 // The MCP audit path's flat “grant_source“ label (“org_viewer“,
-// “bot_unrestricted“, ...) is derivable from “(source, role_key)“, so the
+// “org_bot_default“, ...) is derivable from “(source, role_key)“, so the
 // two surfaces stay reconcilable instead of forking into a third vocabulary.
 type PermissionSource string
 
@@ -4287,6 +5785,29 @@ type ToolResponse struct {
 	OrgId *string `json:"org_id"`
 
 	// Runtime Where a tool executes — determines enforcement mechanism.
+	//
+	// Each member names a *different* enforcement point, which is the bar a new
+	// member has to clear. The value appears in every
+	// :meth:`ToolCatalog.build_slug` result, so it is a durable public contract:
+	// ``mcp:botyard:send_email``, ``openclaw::exec``, ``native::host_read``.
+	//
+	// * ``mcp`` — the platform serves the tool over MCP. Enforcement is in the
+	//   gateway, which is also why these rows are reachable from every harness.
+	// * ``openclaw`` — the identifier of a builtin compiled into the OpenClaw
+	//   agent. The platform serves nothing; enforcement is writing the agent's
+	//   own config (``tools.allow``).
+	// * ``native`` — the identifier of a builtin compiled into ``botyardd``, the
+	//   native runtime daemon. The platform serves nothing here either, and the
+	//   gateway never sees the call: the daemon intercepts every ``host_*`` name
+	//   before it reaches upstream. Enforcement is the daemon's own
+	//   ``HostPolicy`` (``runtime/botyard-runtime/src/host_tools/policy.rs``),
+	//   which fails closed by default.
+	//
+	// ``native`` is deliberately *not* folded into ``openclaw``. The two are the
+	// same **shape** — a builtin, enforced by configuring the agent that owns it —
+	// but they are different agents, and :data:`~botyard_core.hosting.
+	// _HARNESS_TOOL_RUNTIMES` is keyed on this value. Reusing ``openclaw`` would
+	// advertise ``host_read`` to OpenClaw bots, where the name means nothing.
 	Runtime ToolRuntime `json:"runtime"`
 
 	// RuntimeToolName Internal name used by the runtime — MCP function name or OpenClaw tool ID
@@ -4300,6 +5821,29 @@ type ToolResponse struct {
 }
 
 // ToolRuntime Where a tool executes — determines enforcement mechanism.
+//
+// Each member names a *different* enforcement point, which is the bar a new
+// member has to clear. The value appears in every
+// :meth:`ToolCatalog.build_slug` result, so it is a durable public contract:
+// “mcp:botyard:send_email“, “openclaw::exec“, “native::host_read“.
+//
+//   - “mcp“ — the platform serves the tool over MCP. Enforcement is in the
+//     gateway, which is also why these rows are reachable from every harness.
+//   - “openclaw“ — the identifier of a builtin compiled into the OpenClaw
+//     agent. The platform serves nothing; enforcement is writing the agent's
+//     own config (“tools.allow“).
+//   - “native“ — the identifier of a builtin compiled into “botyardd“, the
+//     native runtime daemon. The platform serves nothing here either, and the
+//     gateway never sees the call: the daemon intercepts every “host_*“ name
+//     before it reaches upstream. Enforcement is the daemon's own
+//     “HostPolicy“ (“runtime/botyard-runtime/src/host_tools/policy.rs“),
+//     which fails closed by default.
+//
+// “native“ is deliberately *not* folded into “openclaw“. The two are the
+// same **shape** — a builtin, enforced by configuring the agent that owns it —
+// but they are different agents, and :data:`~botyard_core.hosting.
+// _HARNESS_TOOL_RUNTIMES` is keyed on this value. Reusing “openclaw“ would
+// advertise “host_read“ to OpenClaw bots, where the name means nothing.
 type ToolRuntime string
 
 // ToolSearchConfig Tool Search: defer tool schemas out of the prompt behind a search surface.
@@ -4383,6 +5927,22 @@ type ToolSearchConfigPatch struct {
 // ToolSearchConfigPatchMode always (defer every turn) | auto (defer above the threshold) | off (never defer). Applies whatever mechanism the bot's runtime uses — Claude Code's ENABLE_TOOL_SEARCH on claude-cli bots, OpenClaw's tools.toolSearch on embedded (pi) bots.
 type ToolSearchConfigPatchMode string
 
+// ToolServabilityResponse One catalog tool annotated with servability for a hosting profile.
+//
+// The pre-creation companion to the plain catalog listing: a picker for a
+// “(hosting_type, harness)“ profile offers the servable rows and shows
+// the rest disabled with “unservable_reason“.
+type ToolServabilityResponse struct {
+	// Servable Whether the profile's runtime can serve this tool
+	Servable bool `json:"servable"`
+
+	// Tool Tool catalog entry.
+	Tool ToolResponse `json:"tool"`
+
+	// UnservableReason Why the profile cannot serve this tool (null when servable)
+	UnservableReason *string `json:"unservable_reason"`
+}
+
 // ToolsConfig Tools and execution security policy.
 //
 // Per-tool-domain settings (e.g. sessions visibility) used to live here
@@ -4437,6 +5997,20 @@ type UsageWindowResponse struct {
 	// UsedPercent Percent of the window consumed (0-100).
 	UsedPercent float32 `json:"used_percent"`
 }
+
+// VerbatimHeaderScheme Send the secret exactly as stored — the pre-existing behaviour.
+//
+// This is what every row created before schemes existed does, and it stays
+// the default, so the rows whose vault value already embeds “Bearer “ keep
+// working untouched. It is also the deliberate escape hatch for any vendor
+// whose credential format we do not model, which is the same shape Postman
+// settled on: a closed set of composed types, plus one verbatim path.
+type VerbatimHeaderScheme struct {
+	Scheme VerbatimHeaderSchemeScheme `json:"scheme"`
+}
+
+// VerbatimHeaderSchemeScheme defines model for VerbatimHeaderScheme.Scheme.
+type VerbatimHeaderSchemeScheme string
 
 // WorkspaceStorageMetrics defines model for WorkspaceStorageMetrics.
 type WorkspaceStorageMetrics struct {
@@ -4509,6 +6083,24 @@ type ListToolsV1OrgsOrgIdToolsGetParams struct {
 	McpServer *string `form:"mcp_server,omitempty" json:"mcp_server,omitempty"`
 }
 
+// ListServableToolsV1OrgsOrgIdToolsServableGetParams defines parameters for ListServableToolsV1OrgsOrgIdToolsServableGet.
+type ListServableToolsV1OrgsOrgIdToolsServableGetParams struct {
+	// HostingType Who runs the bot's runtime
+	HostingType BotHostingType `form:"hosting_type" json:"hosting_type"`
+
+	// Harness Which agent software the bot runs
+	Harness BotHarness `form:"harness" json:"harness"`
+
+	// Runtime Filter by runtime
+	Runtime *ToolRuntime `form:"runtime,omitempty" json:"runtime,omitempty"`
+
+	// Domain Filter by domain
+	Domain *string `form:"domain,omitempty" json:"domain,omitempty"`
+
+	// McpServer Filter by MCP server name
+	McpServer *string `form:"mcp_server,omitempty" json:"mcp_server,omitempty"`
+}
+
 // CreateBotV1OrgsOrgIdBotsPostJSONRequestBody defines body for CreateBotV1OrgsOrgIdBotsPost for application/json ContentType.
 type CreateBotV1OrgsOrgIdBotsPostJSONRequestBody = BotCreate
 
@@ -4520,6 +6112,9 @@ type UpdateBotV1OrgsOrgIdBotsBotSlugPatchJSONRequestBody = BotUpdate
 
 // UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchJSONRequestBody defines body for UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatch for application/json ContentType.
 type UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchJSONRequestBody = BotConfigUpdate
+
+// ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostJSONRequestBody defines body for ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePost for application/json ContentType.
+type ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostJSONRequestBody = NativeConfigConversion
 
 // CopyBotV1OrgsOrgIdBotsBotSlugCopyPostJSONRequestBody defines body for CopyBotV1OrgsOrgIdBotsBotSlugCopyPost for application/json ContentType.
 type CopyBotV1OrgsOrgIdBotsBotSlugCopyPostJSONRequestBody = BotCopyRequest
@@ -4557,8 +6152,26 @@ type PutCredentialBotLinksV1OrgsOrgIdCredentialsCredentialIdBotLinksPutJSONReque
 // CreateMcpServerV1OrgsOrgIdMcpServersPostJSONRequestBody defines body for CreateMcpServerV1OrgsOrgIdMcpServersPost for application/json ContentType.
 type CreateMcpServerV1OrgsOrgIdMcpServersPostJSONRequestBody CreateMcpServerV1OrgsOrgIdMcpServersPostJSONBody
 
+// SearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostJSONRequestBody defines body for SearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPost for application/json ContentType.
+type SearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostJSONRequestBody = McpCatalogSearchRequest
+
+// StartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPostJSONRequestBody defines body for StartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPost for application/json ContentType.
+type StartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPostJSONRequestBody = ComposioConnectionStartRequest
+
+// InstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPostJSONRequestBody defines body for InstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPost for application/json ContentType.
+type InstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPostJSONRequestBody = ComposioCredentialInstallRequest
+
 // UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchJSONRequestBody defines body for UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatch for application/json ContentType.
 type UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchJSONRequestBody = McpServerUpdate
+
+// SetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPutJSONRequestBody defines body for SetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPut for application/json ContentType.
+type SetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPutJSONRequestBody = McpServerAccessUpdate
+
+// UpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPutJSONRequestBody defines body for UpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPut for application/json ContentType.
+type UpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPutJSONRequestBody = ComposioCredentialUpdateRequest
+
+// AddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPutJSONRequestBody defines body for AddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPut for application/json ContentType.
+type AddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPutJSONRequestBody = McpServerMemberAdd
 
 // CreateSecretPolicyV1OrgsOrgIdSecretPoliciesPostJSONRequestBody defines body for CreateSecretPolicyV1OrgsOrgIdSecretPoliciesPost for application/json ContentType.
 type CreateSecretPolicyV1OrgsOrgIdSecretPoliciesPostJSONRequestBody = SecretPolicyCreateRequest
@@ -4829,6 +6442,369 @@ func (t AndBotFilterField_Filters_Item) MarshalJSON() ([]byte, error) {
 }
 
 func (t *AndBotFilterField_Filters_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsAndMcpCatalogFilterField returns the union data inside the AndMcpCatalogFilterField_Filters_Item as a AndMcpCatalogFilterField
+func (t AndMcpCatalogFilterField_Filters_Item) AsAndMcpCatalogFilterField() (AndMcpCatalogFilterField, error) {
+	var body AndMcpCatalogFilterField
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAndMcpCatalogFilterField overwrites any union data inside the AndMcpCatalogFilterField_Filters_Item as the provided AndMcpCatalogFilterField
+func (t *AndMcpCatalogFilterField_Filters_Item) FromAndMcpCatalogFilterField(v AndMcpCatalogFilterField) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAndMcpCatalogFilterField performs a merge with any union data inside the AndMcpCatalogFilterField_Filters_Item, using the provided AndMcpCatalogFilterField
+func (t *AndMcpCatalogFilterField_Filters_Item) MergeAndMcpCatalogFilterField(v AndMcpCatalogFilterField) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsOrMcpCatalogFilterField returns the union data inside the AndMcpCatalogFilterField_Filters_Item as a OrMcpCatalogFilterField
+func (t AndMcpCatalogFilterField_Filters_Item) AsOrMcpCatalogFilterField() (OrMcpCatalogFilterField, error) {
+	var body OrMcpCatalogFilterField
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromOrMcpCatalogFilterField overwrites any union data inside the AndMcpCatalogFilterField_Filters_Item as the provided OrMcpCatalogFilterField
+func (t *AndMcpCatalogFilterField_Filters_Item) FromOrMcpCatalogFilterField(v OrMcpCatalogFilterField) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeOrMcpCatalogFilterField performs a merge with any union data inside the AndMcpCatalogFilterField_Filters_Item, using the provided OrMcpCatalogFilterField
+func (t *AndMcpCatalogFilterField_Filters_Item) MergeOrMcpCatalogFilterField(v OrMcpCatalogFilterField) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsConditionMcpCatalogFilterField returns the union data inside the AndMcpCatalogFilterField_Filters_Item as a ConditionMcpCatalogFilterField
+func (t AndMcpCatalogFilterField_Filters_Item) AsConditionMcpCatalogFilterField() (ConditionMcpCatalogFilterField, error) {
+	var body ConditionMcpCatalogFilterField
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromConditionMcpCatalogFilterField overwrites any union data inside the AndMcpCatalogFilterField_Filters_Item as the provided ConditionMcpCatalogFilterField
+func (t *AndMcpCatalogFilterField_Filters_Item) FromConditionMcpCatalogFilterField(v ConditionMcpCatalogFilterField) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeConditionMcpCatalogFilterField performs a merge with any union data inside the AndMcpCatalogFilterField_Filters_Item, using the provided ConditionMcpCatalogFilterField
+func (t *AndMcpCatalogFilterField_Filters_Item) MergeConditionMcpCatalogFilterField(v ConditionMcpCatalogFilterField) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t AndMcpCatalogFilterField_Filters_Item) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *AndMcpCatalogFilterField_Filters_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsOpenClawConfigPatch returns the union data inside the BotConfigUpdate_Config as a OpenClawConfigPatch
+func (t BotConfigUpdate_Config) AsOpenClawConfigPatch() (OpenClawConfigPatch, error) {
+	var body OpenClawConfigPatch
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromOpenClawConfigPatch overwrites any union data inside the BotConfigUpdate_Config as the provided OpenClawConfigPatch
+func (t *BotConfigUpdate_Config) FromOpenClawConfigPatch(v OpenClawConfigPatch) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeOpenClawConfigPatch performs a merge with any union data inside the BotConfigUpdate_Config, using the provided OpenClawConfigPatch
+func (t *BotConfigUpdate_Config) MergeOpenClawConfigPatch(v OpenClawConfigPatch) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsNativeConfigPatch returns the union data inside the BotConfigUpdate_Config as a NativeConfigPatch
+func (t BotConfigUpdate_Config) AsNativeConfigPatch() (NativeConfigPatch, error) {
+	var body NativeConfigPatch
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromNativeConfigPatch overwrites any union data inside the BotConfigUpdate_Config as the provided NativeConfigPatch
+func (t *BotConfigUpdate_Config) FromNativeConfigPatch(v NativeConfigPatch) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeNativeConfigPatch performs a merge with any union data inside the BotConfigUpdate_Config, using the provided NativeConfigPatch
+func (t *BotConfigUpdate_Config) MergeNativeConfigPatch(v NativeConfigPatch) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t BotConfigUpdate_Config) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *BotConfigUpdate_Config) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsOpenClawConfigPatch returns the union data inside the BotCreate_Config as a OpenClawConfigPatch
+func (t BotCreate_Config) AsOpenClawConfigPatch() (OpenClawConfigPatch, error) {
+	var body OpenClawConfigPatch
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromOpenClawConfigPatch overwrites any union data inside the BotCreate_Config as the provided OpenClawConfigPatch
+func (t *BotCreate_Config) FromOpenClawConfigPatch(v OpenClawConfigPatch) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeOpenClawConfigPatch performs a merge with any union data inside the BotCreate_Config, using the provided OpenClawConfigPatch
+func (t *BotCreate_Config) MergeOpenClawConfigPatch(v OpenClawConfigPatch) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsNativeConfigPatch returns the union data inside the BotCreate_Config as a NativeConfigPatch
+func (t BotCreate_Config) AsNativeConfigPatch() (NativeConfigPatch, error) {
+	var body NativeConfigPatch
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromNativeConfigPatch overwrites any union data inside the BotCreate_Config as the provided NativeConfigPatch
+func (t *BotCreate_Config) FromNativeConfigPatch(v NativeConfigPatch) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeNativeConfigPatch performs a merge with any union data inside the BotCreate_Config, using the provided NativeConfigPatch
+func (t *BotCreate_Config) MergeNativeConfigPatch(v NativeConfigPatch) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t BotCreate_Config) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *BotCreate_Config) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsOpenClawBotConfig returns the union data inside the BotResponse_DesiredConfig as a OpenClawBotConfig
+func (t BotResponse_DesiredConfig) AsOpenClawBotConfig() (OpenClawBotConfig, error) {
+	var body OpenClawBotConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromOpenClawBotConfig overwrites any union data inside the BotResponse_DesiredConfig as the provided OpenClawBotConfig
+func (t *BotResponse_DesiredConfig) FromOpenClawBotConfig(v OpenClawBotConfig) error {
+	v.BotType = "openclaw"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeOpenClawBotConfig performs a merge with any union data inside the BotResponse_DesiredConfig, using the provided OpenClawBotConfig
+func (t *BotResponse_DesiredConfig) MergeOpenClawBotConfig(v OpenClawBotConfig) error {
+	v.BotType = "openclaw"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsNativeBotConfig returns the union data inside the BotResponse_DesiredConfig as a NativeBotConfig
+func (t BotResponse_DesiredConfig) AsNativeBotConfig() (NativeBotConfig, error) {
+	var body NativeBotConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromNativeBotConfig overwrites any union data inside the BotResponse_DesiredConfig as the provided NativeBotConfig
+func (t *BotResponse_DesiredConfig) FromNativeBotConfig(v NativeBotConfig) error {
+	v.BotType = "native"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeNativeBotConfig performs a merge with any union data inside the BotResponse_DesiredConfig, using the provided NativeBotConfig
+func (t *BotResponse_DesiredConfig) MergeNativeBotConfig(v NativeBotConfig) error {
+	v.BotType = "native"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t BotResponse_DesiredConfig) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"bot_type"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t BotResponse_DesiredConfig) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "native":
+		return t.AsNativeBotConfig()
+	case "openclaw":
+		return t.AsOpenClawBotConfig()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t BotResponse_DesiredConfig) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *BotResponse_DesiredConfig) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsOpenClawConfigPatch returns the union data inside the BotTemplateResponse_Config as a OpenClawConfigPatch
+func (t BotTemplateResponse_Config) AsOpenClawConfigPatch() (OpenClawConfigPatch, error) {
+	var body OpenClawConfigPatch
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromOpenClawConfigPatch overwrites any union data inside the BotTemplateResponse_Config as the provided OpenClawConfigPatch
+func (t *BotTemplateResponse_Config) FromOpenClawConfigPatch(v OpenClawConfigPatch) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeOpenClawConfigPatch performs a merge with any union data inside the BotTemplateResponse_Config, using the provided OpenClawConfigPatch
+func (t *BotTemplateResponse_Config) MergeOpenClawConfigPatch(v OpenClawConfigPatch) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsNativeConfigPatch returns the union data inside the BotTemplateResponse_Config as a NativeConfigPatch
+func (t BotTemplateResponse_Config) AsNativeConfigPatch() (NativeConfigPatch, error) {
+	var body NativeConfigPatch
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromNativeConfigPatch overwrites any union data inside the BotTemplateResponse_Config as the provided NativeConfigPatch
+func (t *BotTemplateResponse_Config) FromNativeConfigPatch(v NativeConfigPatch) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeNativeConfigPatch performs a merge with any union data inside the BotTemplateResponse_Config, using the provided NativeConfigPatch
+func (t *BotTemplateResponse_Config) MergeNativeConfigPatch(v NativeConfigPatch) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t BotTemplateResponse_Config) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *BotTemplateResponse_Config) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }
@@ -5149,6 +7125,570 @@ func (t *FilterNodeBotFilterField) UnmarshalJSON(b []byte) error {
 	return err
 }
 
+// AsAndMcpCatalogFilterField returns the union data inside the FilterNodeMcpCatalogFilterField as a AndMcpCatalogFilterField
+func (t FilterNodeMcpCatalogFilterField) AsAndMcpCatalogFilterField() (AndMcpCatalogFilterField, error) {
+	var body AndMcpCatalogFilterField
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAndMcpCatalogFilterField overwrites any union data inside the FilterNodeMcpCatalogFilterField as the provided AndMcpCatalogFilterField
+func (t *FilterNodeMcpCatalogFilterField) FromAndMcpCatalogFilterField(v AndMcpCatalogFilterField) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAndMcpCatalogFilterField performs a merge with any union data inside the FilterNodeMcpCatalogFilterField, using the provided AndMcpCatalogFilterField
+func (t *FilterNodeMcpCatalogFilterField) MergeAndMcpCatalogFilterField(v AndMcpCatalogFilterField) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsOrMcpCatalogFilterField returns the union data inside the FilterNodeMcpCatalogFilterField as a OrMcpCatalogFilterField
+func (t FilterNodeMcpCatalogFilterField) AsOrMcpCatalogFilterField() (OrMcpCatalogFilterField, error) {
+	var body OrMcpCatalogFilterField
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromOrMcpCatalogFilterField overwrites any union data inside the FilterNodeMcpCatalogFilterField as the provided OrMcpCatalogFilterField
+func (t *FilterNodeMcpCatalogFilterField) FromOrMcpCatalogFilterField(v OrMcpCatalogFilterField) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeOrMcpCatalogFilterField performs a merge with any union data inside the FilterNodeMcpCatalogFilterField, using the provided OrMcpCatalogFilterField
+func (t *FilterNodeMcpCatalogFilterField) MergeOrMcpCatalogFilterField(v OrMcpCatalogFilterField) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsConditionMcpCatalogFilterField returns the union data inside the FilterNodeMcpCatalogFilterField as a ConditionMcpCatalogFilterField
+func (t FilterNodeMcpCatalogFilterField) AsConditionMcpCatalogFilterField() (ConditionMcpCatalogFilterField, error) {
+	var body ConditionMcpCatalogFilterField
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromConditionMcpCatalogFilterField overwrites any union data inside the FilterNodeMcpCatalogFilterField as the provided ConditionMcpCatalogFilterField
+func (t *FilterNodeMcpCatalogFilterField) FromConditionMcpCatalogFilterField(v ConditionMcpCatalogFilterField) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeConditionMcpCatalogFilterField performs a merge with any union data inside the FilterNodeMcpCatalogFilterField, using the provided ConditionMcpCatalogFilterField
+func (t *FilterNodeMcpCatalogFilterField) MergeConditionMcpCatalogFilterField(v ConditionMcpCatalogFilterField) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t FilterNodeMcpCatalogFilterField) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *FilterNodeMcpCatalogFilterField) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsVerbatimHeaderScheme returns the union data inside the ManagedRemoteMcpServerCreate_SecretHeaderSchemes_AdditionalProperties as a VerbatimHeaderScheme
+func (t ManagedRemoteMcpServerCreate_SecretHeaderSchemes_AdditionalProperties) AsVerbatimHeaderScheme() (VerbatimHeaderScheme, error) {
+	var body VerbatimHeaderScheme
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromVerbatimHeaderScheme overwrites any union data inside the ManagedRemoteMcpServerCreate_SecretHeaderSchemes_AdditionalProperties as the provided VerbatimHeaderScheme
+func (t *ManagedRemoteMcpServerCreate_SecretHeaderSchemes_AdditionalProperties) FromVerbatimHeaderScheme(v VerbatimHeaderScheme) error {
+	v.Scheme = "verbatim"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeVerbatimHeaderScheme performs a merge with any union data inside the ManagedRemoteMcpServerCreate_SecretHeaderSchemes_AdditionalProperties, using the provided VerbatimHeaderScheme
+func (t *ManagedRemoteMcpServerCreate_SecretHeaderSchemes_AdditionalProperties) MergeVerbatimHeaderScheme(v VerbatimHeaderScheme) error {
+	v.Scheme = "verbatim"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsBearerHeaderScheme returns the union data inside the ManagedRemoteMcpServerCreate_SecretHeaderSchemes_AdditionalProperties as a BearerHeaderScheme
+func (t ManagedRemoteMcpServerCreate_SecretHeaderSchemes_AdditionalProperties) AsBearerHeaderScheme() (BearerHeaderScheme, error) {
+	var body BearerHeaderScheme
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBearerHeaderScheme overwrites any union data inside the ManagedRemoteMcpServerCreate_SecretHeaderSchemes_AdditionalProperties as the provided BearerHeaderScheme
+func (t *ManagedRemoteMcpServerCreate_SecretHeaderSchemes_AdditionalProperties) FromBearerHeaderScheme(v BearerHeaderScheme) error {
+	v.Scheme = "bearer"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeBearerHeaderScheme performs a merge with any union data inside the ManagedRemoteMcpServerCreate_SecretHeaderSchemes_AdditionalProperties, using the provided BearerHeaderScheme
+func (t *ManagedRemoteMcpServerCreate_SecretHeaderSchemes_AdditionalProperties) MergeBearerHeaderScheme(v BearerHeaderScheme) error {
+	v.Scheme = "bearer"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsBasicHeaderScheme returns the union data inside the ManagedRemoteMcpServerCreate_SecretHeaderSchemes_AdditionalProperties as a BasicHeaderScheme
+func (t ManagedRemoteMcpServerCreate_SecretHeaderSchemes_AdditionalProperties) AsBasicHeaderScheme() (BasicHeaderScheme, error) {
+	var body BasicHeaderScheme
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBasicHeaderScheme overwrites any union data inside the ManagedRemoteMcpServerCreate_SecretHeaderSchemes_AdditionalProperties as the provided BasicHeaderScheme
+func (t *ManagedRemoteMcpServerCreate_SecretHeaderSchemes_AdditionalProperties) FromBasicHeaderScheme(v BasicHeaderScheme) error {
+	v.Scheme = "basic"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeBasicHeaderScheme performs a merge with any union data inside the ManagedRemoteMcpServerCreate_SecretHeaderSchemes_AdditionalProperties, using the provided BasicHeaderScheme
+func (t *ManagedRemoteMcpServerCreate_SecretHeaderSchemes_AdditionalProperties) MergeBasicHeaderScheme(v BasicHeaderScheme) error {
+	v.Scheme = "basic"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t ManagedRemoteMcpServerCreate_SecretHeaderSchemes_AdditionalProperties) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"scheme"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t ManagedRemoteMcpServerCreate_SecretHeaderSchemes_AdditionalProperties) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "basic":
+		return t.AsBasicHeaderScheme()
+	case "bearer":
+		return t.AsBearerHeaderScheme()
+	case "verbatim":
+		return t.AsVerbatimHeaderScheme()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t ManagedRemoteMcpServerCreate_SecretHeaderSchemes_AdditionalProperties) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *ManagedRemoteMcpServerCreate_SecretHeaderSchemes_AdditionalProperties) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsVerbatimHeaderScheme returns the union data inside the ManagedRemoteMcpServerDetail_SecretHeaderSchemes_AdditionalProperties as a VerbatimHeaderScheme
+func (t ManagedRemoteMcpServerDetail_SecretHeaderSchemes_AdditionalProperties) AsVerbatimHeaderScheme() (VerbatimHeaderScheme, error) {
+	var body VerbatimHeaderScheme
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromVerbatimHeaderScheme overwrites any union data inside the ManagedRemoteMcpServerDetail_SecretHeaderSchemes_AdditionalProperties as the provided VerbatimHeaderScheme
+func (t *ManagedRemoteMcpServerDetail_SecretHeaderSchemes_AdditionalProperties) FromVerbatimHeaderScheme(v VerbatimHeaderScheme) error {
+	v.Scheme = "verbatim"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeVerbatimHeaderScheme performs a merge with any union data inside the ManagedRemoteMcpServerDetail_SecretHeaderSchemes_AdditionalProperties, using the provided VerbatimHeaderScheme
+func (t *ManagedRemoteMcpServerDetail_SecretHeaderSchemes_AdditionalProperties) MergeVerbatimHeaderScheme(v VerbatimHeaderScheme) error {
+	v.Scheme = "verbatim"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsBearerHeaderScheme returns the union data inside the ManagedRemoteMcpServerDetail_SecretHeaderSchemes_AdditionalProperties as a BearerHeaderScheme
+func (t ManagedRemoteMcpServerDetail_SecretHeaderSchemes_AdditionalProperties) AsBearerHeaderScheme() (BearerHeaderScheme, error) {
+	var body BearerHeaderScheme
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBearerHeaderScheme overwrites any union data inside the ManagedRemoteMcpServerDetail_SecretHeaderSchemes_AdditionalProperties as the provided BearerHeaderScheme
+func (t *ManagedRemoteMcpServerDetail_SecretHeaderSchemes_AdditionalProperties) FromBearerHeaderScheme(v BearerHeaderScheme) error {
+	v.Scheme = "bearer"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeBearerHeaderScheme performs a merge with any union data inside the ManagedRemoteMcpServerDetail_SecretHeaderSchemes_AdditionalProperties, using the provided BearerHeaderScheme
+func (t *ManagedRemoteMcpServerDetail_SecretHeaderSchemes_AdditionalProperties) MergeBearerHeaderScheme(v BearerHeaderScheme) error {
+	v.Scheme = "bearer"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsBasicHeaderScheme returns the union data inside the ManagedRemoteMcpServerDetail_SecretHeaderSchemes_AdditionalProperties as a BasicHeaderScheme
+func (t ManagedRemoteMcpServerDetail_SecretHeaderSchemes_AdditionalProperties) AsBasicHeaderScheme() (BasicHeaderScheme, error) {
+	var body BasicHeaderScheme
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBasicHeaderScheme overwrites any union data inside the ManagedRemoteMcpServerDetail_SecretHeaderSchemes_AdditionalProperties as the provided BasicHeaderScheme
+func (t *ManagedRemoteMcpServerDetail_SecretHeaderSchemes_AdditionalProperties) FromBasicHeaderScheme(v BasicHeaderScheme) error {
+	v.Scheme = "basic"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeBasicHeaderScheme performs a merge with any union data inside the ManagedRemoteMcpServerDetail_SecretHeaderSchemes_AdditionalProperties, using the provided BasicHeaderScheme
+func (t *ManagedRemoteMcpServerDetail_SecretHeaderSchemes_AdditionalProperties) MergeBasicHeaderScheme(v BasicHeaderScheme) error {
+	v.Scheme = "basic"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t ManagedRemoteMcpServerDetail_SecretHeaderSchemes_AdditionalProperties) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"scheme"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t ManagedRemoteMcpServerDetail_SecretHeaderSchemes_AdditionalProperties) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "basic":
+		return t.AsBasicHeaderScheme()
+	case "bearer":
+		return t.AsBearerHeaderScheme()
+	case "verbatim":
+		return t.AsVerbatimHeaderScheme()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t ManagedRemoteMcpServerDetail_SecretHeaderSchemes_AdditionalProperties) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *ManagedRemoteMcpServerDetail_SecretHeaderSchemes_AdditionalProperties) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsVerbatimHeaderScheme returns the union data inside the McpCatalogFormFieldTarget_Scheme as a VerbatimHeaderScheme
+func (t McpCatalogFormFieldTarget_Scheme) AsVerbatimHeaderScheme() (VerbatimHeaderScheme, error) {
+	var body VerbatimHeaderScheme
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromVerbatimHeaderScheme overwrites any union data inside the McpCatalogFormFieldTarget_Scheme as the provided VerbatimHeaderScheme
+func (t *McpCatalogFormFieldTarget_Scheme) FromVerbatimHeaderScheme(v VerbatimHeaderScheme) error {
+	v.Scheme = "verbatim"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeVerbatimHeaderScheme performs a merge with any union data inside the McpCatalogFormFieldTarget_Scheme, using the provided VerbatimHeaderScheme
+func (t *McpCatalogFormFieldTarget_Scheme) MergeVerbatimHeaderScheme(v VerbatimHeaderScheme) error {
+	v.Scheme = "verbatim"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsBearerHeaderScheme returns the union data inside the McpCatalogFormFieldTarget_Scheme as a BearerHeaderScheme
+func (t McpCatalogFormFieldTarget_Scheme) AsBearerHeaderScheme() (BearerHeaderScheme, error) {
+	var body BearerHeaderScheme
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBearerHeaderScheme overwrites any union data inside the McpCatalogFormFieldTarget_Scheme as the provided BearerHeaderScheme
+func (t *McpCatalogFormFieldTarget_Scheme) FromBearerHeaderScheme(v BearerHeaderScheme) error {
+	v.Scheme = "bearer"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeBearerHeaderScheme performs a merge with any union data inside the McpCatalogFormFieldTarget_Scheme, using the provided BearerHeaderScheme
+func (t *McpCatalogFormFieldTarget_Scheme) MergeBearerHeaderScheme(v BearerHeaderScheme) error {
+	v.Scheme = "bearer"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsBasicHeaderScheme returns the union data inside the McpCatalogFormFieldTarget_Scheme as a BasicHeaderScheme
+func (t McpCatalogFormFieldTarget_Scheme) AsBasicHeaderScheme() (BasicHeaderScheme, error) {
+	var body BasicHeaderScheme
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBasicHeaderScheme overwrites any union data inside the McpCatalogFormFieldTarget_Scheme as the provided BasicHeaderScheme
+func (t *McpCatalogFormFieldTarget_Scheme) FromBasicHeaderScheme(v BasicHeaderScheme) error {
+	v.Scheme = "basic"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeBasicHeaderScheme performs a merge with any union data inside the McpCatalogFormFieldTarget_Scheme, using the provided BasicHeaderScheme
+func (t *McpCatalogFormFieldTarget_Scheme) MergeBasicHeaderScheme(v BasicHeaderScheme) error {
+	v.Scheme = "basic"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t McpCatalogFormFieldTarget_Scheme) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"scheme"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t McpCatalogFormFieldTarget_Scheme) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "basic":
+		return t.AsBasicHeaderScheme()
+	case "bearer":
+		return t.AsBearerHeaderScheme()
+	case "verbatim":
+		return t.AsVerbatimHeaderScheme()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t McpCatalogFormFieldTarget_Scheme) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *McpCatalogFormFieldTarget_Scheme) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsVerbatimHeaderScheme returns the union data inside the McpServerUpdate_SecretHeaderSchemes_AdditionalProperties as a VerbatimHeaderScheme
+func (t McpServerUpdate_SecretHeaderSchemes_AdditionalProperties) AsVerbatimHeaderScheme() (VerbatimHeaderScheme, error) {
+	var body VerbatimHeaderScheme
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromVerbatimHeaderScheme overwrites any union data inside the McpServerUpdate_SecretHeaderSchemes_AdditionalProperties as the provided VerbatimHeaderScheme
+func (t *McpServerUpdate_SecretHeaderSchemes_AdditionalProperties) FromVerbatimHeaderScheme(v VerbatimHeaderScheme) error {
+	v.Scheme = "verbatim"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeVerbatimHeaderScheme performs a merge with any union data inside the McpServerUpdate_SecretHeaderSchemes_AdditionalProperties, using the provided VerbatimHeaderScheme
+func (t *McpServerUpdate_SecretHeaderSchemes_AdditionalProperties) MergeVerbatimHeaderScheme(v VerbatimHeaderScheme) error {
+	v.Scheme = "verbatim"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsBearerHeaderScheme returns the union data inside the McpServerUpdate_SecretHeaderSchemes_AdditionalProperties as a BearerHeaderScheme
+func (t McpServerUpdate_SecretHeaderSchemes_AdditionalProperties) AsBearerHeaderScheme() (BearerHeaderScheme, error) {
+	var body BearerHeaderScheme
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBearerHeaderScheme overwrites any union data inside the McpServerUpdate_SecretHeaderSchemes_AdditionalProperties as the provided BearerHeaderScheme
+func (t *McpServerUpdate_SecretHeaderSchemes_AdditionalProperties) FromBearerHeaderScheme(v BearerHeaderScheme) error {
+	v.Scheme = "bearer"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeBearerHeaderScheme performs a merge with any union data inside the McpServerUpdate_SecretHeaderSchemes_AdditionalProperties, using the provided BearerHeaderScheme
+func (t *McpServerUpdate_SecretHeaderSchemes_AdditionalProperties) MergeBearerHeaderScheme(v BearerHeaderScheme) error {
+	v.Scheme = "bearer"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsBasicHeaderScheme returns the union data inside the McpServerUpdate_SecretHeaderSchemes_AdditionalProperties as a BasicHeaderScheme
+func (t McpServerUpdate_SecretHeaderSchemes_AdditionalProperties) AsBasicHeaderScheme() (BasicHeaderScheme, error) {
+	var body BasicHeaderScheme
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBasicHeaderScheme overwrites any union data inside the McpServerUpdate_SecretHeaderSchemes_AdditionalProperties as the provided BasicHeaderScheme
+func (t *McpServerUpdate_SecretHeaderSchemes_AdditionalProperties) FromBasicHeaderScheme(v BasicHeaderScheme) error {
+	v.Scheme = "basic"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeBasicHeaderScheme performs a merge with any union data inside the McpServerUpdate_SecretHeaderSchemes_AdditionalProperties, using the provided BasicHeaderScheme
+func (t *McpServerUpdate_SecretHeaderSchemes_AdditionalProperties) MergeBasicHeaderScheme(v BasicHeaderScheme) error {
+	v.Scheme = "basic"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t McpServerUpdate_SecretHeaderSchemes_AdditionalProperties) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"scheme"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t McpServerUpdate_SecretHeaderSchemes_AdditionalProperties) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "basic":
+		return t.AsBasicHeaderScheme()
+	case "bearer":
+		return t.AsBearerHeaderScheme()
+	case "verbatim":
+		return t.AsVerbatimHeaderScheme()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t McpServerUpdate_SecretHeaderSchemes_AdditionalProperties) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *McpServerUpdate_SecretHeaderSchemes_AdditionalProperties) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
 // AsAndBotFilterField returns the union data inside the OrBotFilterField_Filters_Item as a AndBotFilterField
 func (t OrBotFilterField_Filters_Item) AsAndBotFilterField() (AndBotFilterField, error) {
 	var body AndBotFilterField
@@ -5233,6 +7773,94 @@ func (t OrBotFilterField_Filters_Item) MarshalJSON() ([]byte, error) {
 }
 
 func (t *OrBotFilterField_Filters_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsAndMcpCatalogFilterField returns the union data inside the OrMcpCatalogFilterField_Filters_Item as a AndMcpCatalogFilterField
+func (t OrMcpCatalogFilterField_Filters_Item) AsAndMcpCatalogFilterField() (AndMcpCatalogFilterField, error) {
+	var body AndMcpCatalogFilterField
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAndMcpCatalogFilterField overwrites any union data inside the OrMcpCatalogFilterField_Filters_Item as the provided AndMcpCatalogFilterField
+func (t *OrMcpCatalogFilterField_Filters_Item) FromAndMcpCatalogFilterField(v AndMcpCatalogFilterField) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAndMcpCatalogFilterField performs a merge with any union data inside the OrMcpCatalogFilterField_Filters_Item, using the provided AndMcpCatalogFilterField
+func (t *OrMcpCatalogFilterField_Filters_Item) MergeAndMcpCatalogFilterField(v AndMcpCatalogFilterField) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsOrMcpCatalogFilterField returns the union data inside the OrMcpCatalogFilterField_Filters_Item as a OrMcpCatalogFilterField
+func (t OrMcpCatalogFilterField_Filters_Item) AsOrMcpCatalogFilterField() (OrMcpCatalogFilterField, error) {
+	var body OrMcpCatalogFilterField
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromOrMcpCatalogFilterField overwrites any union data inside the OrMcpCatalogFilterField_Filters_Item as the provided OrMcpCatalogFilterField
+func (t *OrMcpCatalogFilterField_Filters_Item) FromOrMcpCatalogFilterField(v OrMcpCatalogFilterField) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeOrMcpCatalogFilterField performs a merge with any union data inside the OrMcpCatalogFilterField_Filters_Item, using the provided OrMcpCatalogFilterField
+func (t *OrMcpCatalogFilterField_Filters_Item) MergeOrMcpCatalogFilterField(v OrMcpCatalogFilterField) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsConditionMcpCatalogFilterField returns the union data inside the OrMcpCatalogFilterField_Filters_Item as a ConditionMcpCatalogFilterField
+func (t OrMcpCatalogFilterField_Filters_Item) AsConditionMcpCatalogFilterField() (ConditionMcpCatalogFilterField, error) {
+	var body ConditionMcpCatalogFilterField
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromConditionMcpCatalogFilterField overwrites any union data inside the OrMcpCatalogFilterField_Filters_Item as the provided ConditionMcpCatalogFilterField
+func (t *OrMcpCatalogFilterField_Filters_Item) FromConditionMcpCatalogFilterField(v ConditionMcpCatalogFilterField) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeConditionMcpCatalogFilterField performs a merge with any union data inside the OrMcpCatalogFilterField_Filters_Item, using the provided ConditionMcpCatalogFilterField
+func (t *OrMcpCatalogFilterField_Filters_Item) MergeConditionMcpCatalogFilterField(v ConditionMcpCatalogFilterField) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t OrMcpCatalogFilterField_Filters_Item) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *OrMcpCatalogFilterField_Filters_Item) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }
@@ -5410,6 +8038,11 @@ type ClientInterface interface {
 
 	UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatch(ctx context.Context, orgId string, botSlug string, body UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostWithBody request with any body
+	ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePost(ctx context.Context, orgId string, botSlug string, body ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// CopyBotV1OrgsOrgIdBotsBotSlugCopyPostWithBody request with any body
 	CopyBotV1OrgsOrgIdBotsBotSlugCopyPostWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -5512,6 +8145,36 @@ type ClientInterface interface {
 
 	CreateMcpServerV1OrgsOrgIdMcpServersPost(ctx context.Context, orgId string, body CreateMcpServerV1OrgsOrgIdMcpServersPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// SearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostWithBody request with any body
+	SearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	SearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPost(ctx context.Context, orgId string, body SearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetMcpCatalogEntryV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdGet request
+	GetMcpCatalogEntryV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdGet(ctx context.Context, orgId string, mcpCatalogEntryId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetComposioCredentialFormV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdCredentialFormGet request
+	GetComposioCredentialFormV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdCredentialFormGet(ctx context.Context, orgId string, mcpCatalogEntryId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetMcpConnectRequestV1OrgsOrgIdMcpServersConnectRequestsRequestIdGet request
+	GetMcpConnectRequestV1OrgsOrgIdMcpServersConnectRequestsRequestIdGet(ctx context.Context, orgId string, requestId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// StartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPostWithBody request with any body
+	StartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	StartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPost(ctx context.Context, orgId string, body StartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// InstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPostWithBody request with any body
+	InstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	InstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPost(ctx context.Context, orgId string, body InstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CancelComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdDelete request
+	CancelComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdDelete(ctx context.Context, orgId string, composioConnectionId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdGet request
+	GetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdGet(ctx context.Context, orgId string, composioConnectionId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDelete request
 	DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDelete(ctx context.Context, orgId string, mcpServerId string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -5522,6 +8185,33 @@ type ClientInterface interface {
 	UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchWithBody(ctx context.Context, orgId string, mcpServerId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatch(ctx context.Context, orgId string, mcpServerId string, body UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// SetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPutWithBody request with any body
+	SetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPutWithBody(ctx context.Context, orgId string, mcpServerId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	SetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPut(ctx context.Context, orgId string, mcpServerId string, body SetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListMcpServerAssignmentsV1OrgsOrgIdMcpServersMcpServerIdAssignmentsGet request
+	ListMcpServerAssignmentsV1OrgsOrgIdMcpServersMcpServerIdAssignmentsGet(ctx context.Context, orgId string, mcpServerId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetComposioCredentialStateV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsGet request
+	GetComposioCredentialStateV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsGet(ctx context.Context, orgId string, mcpServerId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPutWithBody request with any body
+	UpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPutWithBody(ctx context.Context, orgId string, mcpServerId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPut(ctx context.Context, orgId string, mcpServerId string, body UpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListMcpServerMembersV1OrgsOrgIdMcpServersMcpServerIdMembersGet request
+	ListMcpServerMembersV1OrgsOrgIdMcpServersMcpServerIdMembersGet(ctx context.Context, orgId string, mcpServerId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// AddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPutWithBody request with any body
+	AddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPutWithBody(ctx context.Context, orgId string, mcpServerId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	AddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPut(ctx context.Context, orgId string, mcpServerId string, body AddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// RemoveMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersActorTypeActorIdDelete request
+	RemoveMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersActorTypeActorIdDelete(ctx context.Context, orgId string, mcpServerId string, actorType ActorType, actorId string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// RefreshMcpServerToolsV1OrgsOrgIdMcpServersMcpServerIdRefreshToolsPost request
 	RefreshMcpServerToolsV1OrgsOrgIdMcpServersMcpServerIdRefreshToolsPost(ctx context.Context, orgId string, mcpServerId string, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -5592,6 +8282,9 @@ type ClientInterface interface {
 
 	// ListToolsV1OrgsOrgIdToolsGet request
 	ListToolsV1OrgsOrgIdToolsGet(ctx context.Context, orgId string, params *ListToolsV1OrgsOrgIdToolsGetParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListServableToolsV1OrgsOrgIdToolsServableGet request
+	ListServableToolsV1OrgsOrgIdToolsServableGet(ctx context.Context, orgId string, params *ListServableToolsV1OrgsOrgIdToolsServableGetParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetToolV1OrgsOrgIdToolsToolIdGet request
 	GetToolV1OrgsOrgIdToolsToolIdGet(ctx context.Context, orgId string, toolId string, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -5755,6 +8448,30 @@ func (c *Client) UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchWithBody(ctx co
 
 func (c *Client) UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatch(ctx context.Context, orgId string, botSlug string, body UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchRequest(c.Server, orgId, botSlug, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostRequestWithBody(c.Server, orgId, botSlug, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePost(ctx context.Context, orgId string, botSlug string, body ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostRequest(c.Server, orgId, botSlug, body)
 	if err != nil {
 		return nil, err
 	}
@@ -6221,6 +8938,138 @@ func (c *Client) CreateMcpServerV1OrgsOrgIdMcpServersPost(ctx context.Context, o
 	return c.Client.Do(req)
 }
 
+func (c *Client) SearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostRequestWithBody(c.Server, orgId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) SearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPost(ctx context.Context, orgId string, body SearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostRequest(c.Server, orgId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetMcpCatalogEntryV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdGet(ctx context.Context, orgId string, mcpCatalogEntryId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetMcpCatalogEntryV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdGetRequest(c.Server, orgId, mcpCatalogEntryId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetComposioCredentialFormV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdCredentialFormGet(ctx context.Context, orgId string, mcpCatalogEntryId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetComposioCredentialFormV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdCredentialFormGetRequest(c.Server, orgId, mcpCatalogEntryId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetMcpConnectRequestV1OrgsOrgIdMcpServersConnectRequestsRequestIdGet(ctx context.Context, orgId string, requestId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetMcpConnectRequestV1OrgsOrgIdMcpServersConnectRequestsRequestIdGetRequest(c.Server, orgId, requestId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) StartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewStartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPostRequestWithBody(c.Server, orgId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) StartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPost(ctx context.Context, orgId string, body StartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewStartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPostRequest(c.Server, orgId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) InstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewInstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPostRequestWithBody(c.Server, orgId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) InstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPost(ctx context.Context, orgId string, body InstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewInstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPostRequest(c.Server, orgId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CancelComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdDelete(ctx context.Context, orgId string, composioConnectionId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCancelComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdDeleteRequest(c.Server, orgId, composioConnectionId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdGet(ctx context.Context, orgId string, composioConnectionId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdGetRequest(c.Server, orgId, composioConnectionId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDelete(ctx context.Context, orgId string, mcpServerId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewDeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteRequest(c.Server, orgId, mcpServerId)
 	if err != nil {
@@ -6259,6 +9108,126 @@ func (c *Client) UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchWithBody(ct
 
 func (c *Client) UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatch(ctx context.Context, orgId string, mcpServerId string, body UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchRequest(c.Server, orgId, mcpServerId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) SetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPutWithBody(ctx context.Context, orgId string, mcpServerId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPutRequestWithBody(c.Server, orgId, mcpServerId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) SetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPut(ctx context.Context, orgId string, mcpServerId string, body SetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPutRequest(c.Server, orgId, mcpServerId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListMcpServerAssignmentsV1OrgsOrgIdMcpServersMcpServerIdAssignmentsGet(ctx context.Context, orgId string, mcpServerId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListMcpServerAssignmentsV1OrgsOrgIdMcpServersMcpServerIdAssignmentsGetRequest(c.Server, orgId, mcpServerId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetComposioCredentialStateV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsGet(ctx context.Context, orgId string, mcpServerId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetComposioCredentialStateV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsGetRequest(c.Server, orgId, mcpServerId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPutWithBody(ctx context.Context, orgId string, mcpServerId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPutRequestWithBody(c.Server, orgId, mcpServerId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPut(ctx context.Context, orgId string, mcpServerId string, body UpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPutRequest(c.Server, orgId, mcpServerId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListMcpServerMembersV1OrgsOrgIdMcpServersMcpServerIdMembersGet(ctx context.Context, orgId string, mcpServerId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListMcpServerMembersV1OrgsOrgIdMcpServersMcpServerIdMembersGetRequest(c.Server, orgId, mcpServerId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) AddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPutWithBody(ctx context.Context, orgId string, mcpServerId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPutRequestWithBody(c.Server, orgId, mcpServerId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) AddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPut(ctx context.Context, orgId string, mcpServerId string, body AddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPutRequest(c.Server, orgId, mcpServerId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) RemoveMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersActorTypeActorIdDelete(ctx context.Context, orgId string, mcpServerId string, actorType ActorType, actorId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRemoveMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersActorTypeActorIdDeleteRequest(c.Server, orgId, mcpServerId, actorType, actorId)
 	if err != nil {
 		return nil, err
 	}
@@ -6571,6 +9540,18 @@ func (c *Client) RefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPost(ctx context.C
 
 func (c *Client) ListToolsV1OrgsOrgIdToolsGet(ctx context.Context, orgId string, params *ListToolsV1OrgsOrgIdToolsGetParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewListToolsV1OrgsOrgIdToolsGetRequest(c.Server, orgId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListServableToolsV1OrgsOrgIdToolsServableGet(ctx context.Context, orgId string, params *ListServableToolsV1OrgsOrgIdToolsServableGetParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListServableToolsV1OrgsOrgIdToolsServableGetRequest(c.Server, orgId, params)
 	if err != nil {
 		return nil, err
 	}
@@ -7065,6 +10046,60 @@ func NewUpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchRequestWithBody(server s
 	}
 
 	req, err := http.NewRequest("PATCH", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostRequest calls the generic ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePost builder with application/json body
+func NewConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostRequest(server string, orgId string, botSlug string, body ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostRequestWithBody(server, orgId, botSlug, "application/json", bodyReader)
+}
+
+// NewConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostRequestWithBody generates requests for ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePost with any type of body
+func NewConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostRequestWithBody(server string, orgId string, botSlug string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "bot_slug", runtime.ParamLocationPath, botSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/bots/%s/config/convert-native", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
 	if err != nil {
 		return nil, err
 	}
@@ -8371,6 +11406,352 @@ func NewCreateMcpServerV1OrgsOrgIdMcpServersPostRequestWithBody(server string, o
 	return req, nil
 }
 
+// NewSearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostRequest calls the generic SearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPost builder with application/json body
+func NewSearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostRequest(server string, orgId string, body SearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewSearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostRequestWithBody(server, orgId, "application/json", bodyReader)
+}
+
+// NewSearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostRequestWithBody generates requests for SearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPost with any type of body
+func NewSearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostRequestWithBody(server string, orgId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/mcp-servers/catalog/search", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetMcpCatalogEntryV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdGetRequest generates requests for GetMcpCatalogEntryV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdGet
+func NewGetMcpCatalogEntryV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdGetRequest(server string, orgId string, mcpCatalogEntryId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "mcp_catalog_entry_id", runtime.ParamLocationPath, mcpCatalogEntryId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/mcp-servers/catalog/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetComposioCredentialFormV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdCredentialFormGetRequest generates requests for GetComposioCredentialFormV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdCredentialFormGet
+func NewGetComposioCredentialFormV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdCredentialFormGetRequest(server string, orgId string, mcpCatalogEntryId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "mcp_catalog_entry_id", runtime.ParamLocationPath, mcpCatalogEntryId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/mcp-servers/catalog/%s/credential-form", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetMcpConnectRequestV1OrgsOrgIdMcpServersConnectRequestsRequestIdGetRequest generates requests for GetMcpConnectRequestV1OrgsOrgIdMcpServersConnectRequestsRequestIdGet
+func NewGetMcpConnectRequestV1OrgsOrgIdMcpServersConnectRequestsRequestIdGetRequest(server string, orgId string, requestId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "request_id", runtime.ParamLocationPath, requestId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/mcp-servers/connect-requests/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewStartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPostRequest calls the generic StartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPost builder with application/json body
+func NewStartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPostRequest(server string, orgId string, body StartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewStartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPostRequestWithBody(server, orgId, "application/json", bodyReader)
+}
+
+// NewStartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPostRequestWithBody generates requests for StartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPost with any type of body
+func NewStartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPostRequestWithBody(server string, orgId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/mcp-servers/connections", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewInstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPostRequest calls the generic InstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPost builder with application/json body
+func NewInstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPostRequest(server string, orgId string, body InstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewInstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPostRequestWithBody(server, orgId, "application/json", bodyReader)
+}
+
+// NewInstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPostRequestWithBody generates requests for InstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPost with any type of body
+func NewInstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPostRequestWithBody(server string, orgId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/mcp-servers/connections/credentials", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewCancelComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdDeleteRequest generates requests for CancelComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdDelete
+func NewCancelComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdDeleteRequest(server string, orgId string, composioConnectionId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "composio_connection_id", runtime.ParamLocationPath, composioConnectionId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/mcp-servers/connections/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdGetRequest generates requests for GetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdGet
+func NewGetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdGetRequest(server string, orgId string, composioConnectionId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "composio_connection_id", runtime.ParamLocationPath, composioConnectionId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/mcp-servers/connections/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewDeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteRequest generates requests for DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDelete
 func NewDeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteRequest(server string, orgId string, mcpServerId string) (*http.Request, error) {
 	var err error
@@ -8503,6 +11884,346 @@ func NewUpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchRequestWithBody(serv
 	}
 
 	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewSetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPutRequest calls the generic SetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPut builder with application/json body
+func NewSetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPutRequest(server string, orgId string, mcpServerId string, body SetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPutJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewSetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPutRequestWithBody(server, orgId, mcpServerId, "application/json", bodyReader)
+}
+
+// NewSetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPutRequestWithBody generates requests for SetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPut with any type of body
+func NewSetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPutRequestWithBody(server string, orgId string, mcpServerId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "mcp_server_id", runtime.ParamLocationPath, mcpServerId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/mcp-servers/%s/access", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewListMcpServerAssignmentsV1OrgsOrgIdMcpServersMcpServerIdAssignmentsGetRequest generates requests for ListMcpServerAssignmentsV1OrgsOrgIdMcpServersMcpServerIdAssignmentsGet
+func NewListMcpServerAssignmentsV1OrgsOrgIdMcpServersMcpServerIdAssignmentsGetRequest(server string, orgId string, mcpServerId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "mcp_server_id", runtime.ParamLocationPath, mcpServerId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/mcp-servers/%s/assignments", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetComposioCredentialStateV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsGetRequest generates requests for GetComposioCredentialStateV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsGet
+func NewGetComposioCredentialStateV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsGetRequest(server string, orgId string, mcpServerId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "mcp_server_id", runtime.ParamLocationPath, mcpServerId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/mcp-servers/%s/composio-credentials", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPutRequest calls the generic UpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPut builder with application/json body
+func NewUpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPutRequest(server string, orgId string, mcpServerId string, body UpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPutJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPutRequestWithBody(server, orgId, mcpServerId, "application/json", bodyReader)
+}
+
+// NewUpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPutRequestWithBody generates requests for UpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPut with any type of body
+func NewUpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPutRequestWithBody(server string, orgId string, mcpServerId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "mcp_server_id", runtime.ParamLocationPath, mcpServerId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/mcp-servers/%s/composio-credentials", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewListMcpServerMembersV1OrgsOrgIdMcpServersMcpServerIdMembersGetRequest generates requests for ListMcpServerMembersV1OrgsOrgIdMcpServersMcpServerIdMembersGet
+func NewListMcpServerMembersV1OrgsOrgIdMcpServersMcpServerIdMembersGetRequest(server string, orgId string, mcpServerId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "mcp_server_id", runtime.ParamLocationPath, mcpServerId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/mcp-servers/%s/members", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewAddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPutRequest calls the generic AddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPut builder with application/json body
+func NewAddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPutRequest(server string, orgId string, mcpServerId string, body AddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPutJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewAddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPutRequestWithBody(server, orgId, mcpServerId, "application/json", bodyReader)
+}
+
+// NewAddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPutRequestWithBody generates requests for AddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPut with any type of body
+func NewAddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPutRequestWithBody(server string, orgId string, mcpServerId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "mcp_server_id", runtime.ParamLocationPath, mcpServerId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/mcp-servers/%s/members", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewRemoveMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersActorTypeActorIdDeleteRequest generates requests for RemoveMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersActorTypeActorIdDelete
+func NewRemoveMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersActorTypeActorIdDeleteRequest(server string, orgId string, mcpServerId string, actorType ActorType, actorId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "mcp_server_id", runtime.ParamLocationPath, mcpServerId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam2 string
+
+	pathParam2, err = runtime.StyleParamWithLocation("simple", false, "actor_type", runtime.ParamLocationPath, actorType)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam3 string
+
+	pathParam3, err = runtime.StyleParamWithLocation("simple", false, "actor_id", runtime.ParamLocationPath, actorId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/mcp-servers/%s/members/%s/%s", pathParam0, pathParam1, pathParam2, pathParam3)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
 
 	return req, nil
 }
@@ -9392,6 +13113,118 @@ func NewListToolsV1OrgsOrgIdToolsGetRequest(server string, orgId string, params 
 	return req, nil
 }
 
+// NewListServableToolsV1OrgsOrgIdToolsServableGetRequest generates requests for ListServableToolsV1OrgsOrgIdToolsServableGet
+func NewListServableToolsV1OrgsOrgIdToolsServableGetRequest(server string, orgId string, params *ListServableToolsV1OrgsOrgIdToolsServableGetParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/tools/servable", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "hosting_type", runtime.ParamLocationQuery, params.HostingType); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "harness", runtime.ParamLocationQuery, params.Harness); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		if params.Runtime != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "runtime", runtime.ParamLocationQuery, *params.Runtime); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Domain != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "domain", runtime.ParamLocationQuery, *params.Domain); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.McpServer != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "mcp_server", runtime.ParamLocationQuery, *params.McpServer); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewGetToolV1OrgsOrgIdToolsToolIdGetRequest generates requests for GetToolV1OrgsOrgIdToolsToolIdGet
 func NewGetToolV1OrgsOrgIdToolsToolIdGetRequest(server string, orgId string, toolId string) (*http.Request, error) {
 	var err error
@@ -9514,6 +13347,11 @@ type ClientWithResponsesInterface interface {
 
 	UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchWithResponse(ctx context.Context, orgId string, botSlug string, body UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchResponse, error)
 
+	// ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostWithBodyWithResponse request with any body
+	ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostResponse, error)
+
+	ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostWithResponse(ctx context.Context, orgId string, botSlug string, body ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostJSONRequestBody, reqEditors ...RequestEditorFn) (*ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostResponse, error)
+
 	// CopyBotV1OrgsOrgIdBotsBotSlugCopyPostWithBodyWithResponse request with any body
 	CopyBotV1OrgsOrgIdBotsBotSlugCopyPostWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CopyBotV1OrgsOrgIdBotsBotSlugCopyPostResponse, error)
 
@@ -9616,6 +13454,36 @@ type ClientWithResponsesInterface interface {
 
 	CreateMcpServerV1OrgsOrgIdMcpServersPostWithResponse(ctx context.Context, orgId string, body CreateMcpServerV1OrgsOrgIdMcpServersPostJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateMcpServerV1OrgsOrgIdMcpServersPostResponse, error)
 
+	// SearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostWithBodyWithResponse request with any body
+	SearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostResponse, error)
+
+	SearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostWithResponse(ctx context.Context, orgId string, body SearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostJSONRequestBody, reqEditors ...RequestEditorFn) (*SearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostResponse, error)
+
+	// GetMcpCatalogEntryV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdGetWithResponse request
+	GetMcpCatalogEntryV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdGetWithResponse(ctx context.Context, orgId string, mcpCatalogEntryId string, reqEditors ...RequestEditorFn) (*GetMcpCatalogEntryV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdGetResponse, error)
+
+	// GetComposioCredentialFormV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdCredentialFormGetWithResponse request
+	GetComposioCredentialFormV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdCredentialFormGetWithResponse(ctx context.Context, orgId string, mcpCatalogEntryId string, reqEditors ...RequestEditorFn) (*GetComposioCredentialFormV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdCredentialFormGetResponse, error)
+
+	// GetMcpConnectRequestV1OrgsOrgIdMcpServersConnectRequestsRequestIdGetWithResponse request
+	GetMcpConnectRequestV1OrgsOrgIdMcpServersConnectRequestsRequestIdGetWithResponse(ctx context.Context, orgId string, requestId string, reqEditors ...RequestEditorFn) (*GetMcpConnectRequestV1OrgsOrgIdMcpServersConnectRequestsRequestIdGetResponse, error)
+
+	// StartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPostWithBodyWithResponse request with any body
+	StartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*StartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPostResponse, error)
+
+	StartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPostWithResponse(ctx context.Context, orgId string, body StartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*StartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPostResponse, error)
+
+	// InstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPostWithBodyWithResponse request with any body
+	InstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*InstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPostResponse, error)
+
+	InstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPostWithResponse(ctx context.Context, orgId string, body InstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*InstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPostResponse, error)
+
+	// CancelComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdDeleteWithResponse request
+	CancelComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdDeleteWithResponse(ctx context.Context, orgId string, composioConnectionId string, reqEditors ...RequestEditorFn) (*CancelComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdDeleteResponse, error)
+
+	// GetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdGetWithResponse request
+	GetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdGetWithResponse(ctx context.Context, orgId string, composioConnectionId string, reqEditors ...RequestEditorFn) (*GetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdGetResponse, error)
+
 	// DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteWithResponse request
 	DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteWithResponse(ctx context.Context, orgId string, mcpServerId string, reqEditors ...RequestEditorFn) (*DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteResponse, error)
 
@@ -9626,6 +13494,33 @@ type ClientWithResponsesInterface interface {
 	UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchWithBodyWithResponse(ctx context.Context, orgId string, mcpServerId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchResponse, error)
 
 	UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchWithResponse(ctx context.Context, orgId string, mcpServerId string, body UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchResponse, error)
+
+	// SetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPutWithBodyWithResponse request with any body
+	SetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPutWithBodyWithResponse(ctx context.Context, orgId string, mcpServerId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPutResponse, error)
+
+	SetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPutWithResponse(ctx context.Context, orgId string, mcpServerId string, body SetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPutJSONRequestBody, reqEditors ...RequestEditorFn) (*SetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPutResponse, error)
+
+	// ListMcpServerAssignmentsV1OrgsOrgIdMcpServersMcpServerIdAssignmentsGetWithResponse request
+	ListMcpServerAssignmentsV1OrgsOrgIdMcpServersMcpServerIdAssignmentsGetWithResponse(ctx context.Context, orgId string, mcpServerId string, reqEditors ...RequestEditorFn) (*ListMcpServerAssignmentsV1OrgsOrgIdMcpServersMcpServerIdAssignmentsGetResponse, error)
+
+	// GetComposioCredentialStateV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsGetWithResponse request
+	GetComposioCredentialStateV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsGetWithResponse(ctx context.Context, orgId string, mcpServerId string, reqEditors ...RequestEditorFn) (*GetComposioCredentialStateV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsGetResponse, error)
+
+	// UpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPutWithBodyWithResponse request with any body
+	UpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPutWithBodyWithResponse(ctx context.Context, orgId string, mcpServerId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPutResponse, error)
+
+	UpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPutWithResponse(ctx context.Context, orgId string, mcpServerId string, body UpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPutJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPutResponse, error)
+
+	// ListMcpServerMembersV1OrgsOrgIdMcpServersMcpServerIdMembersGetWithResponse request
+	ListMcpServerMembersV1OrgsOrgIdMcpServersMcpServerIdMembersGetWithResponse(ctx context.Context, orgId string, mcpServerId string, reqEditors ...RequestEditorFn) (*ListMcpServerMembersV1OrgsOrgIdMcpServersMcpServerIdMembersGetResponse, error)
+
+	// AddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPutWithBodyWithResponse request with any body
+	AddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPutWithBodyWithResponse(ctx context.Context, orgId string, mcpServerId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPutResponse, error)
+
+	AddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPutWithResponse(ctx context.Context, orgId string, mcpServerId string, body AddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPutJSONRequestBody, reqEditors ...RequestEditorFn) (*AddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPutResponse, error)
+
+	// RemoveMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersActorTypeActorIdDeleteWithResponse request
+	RemoveMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersActorTypeActorIdDeleteWithResponse(ctx context.Context, orgId string, mcpServerId string, actorType ActorType, actorId string, reqEditors ...RequestEditorFn) (*RemoveMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersActorTypeActorIdDeleteResponse, error)
 
 	// RefreshMcpServerToolsV1OrgsOrgIdMcpServersMcpServerIdRefreshToolsPostWithResponse request
 	RefreshMcpServerToolsV1OrgsOrgIdMcpServersMcpServerIdRefreshToolsPostWithResponse(ctx context.Context, orgId string, mcpServerId string, reqEditors ...RequestEditorFn) (*RefreshMcpServerToolsV1OrgsOrgIdMcpServersMcpServerIdRefreshToolsPostResponse, error)
@@ -9696,6 +13591,9 @@ type ClientWithResponsesInterface interface {
 
 	// ListToolsV1OrgsOrgIdToolsGetWithResponse request
 	ListToolsV1OrgsOrgIdToolsGetWithResponse(ctx context.Context, orgId string, params *ListToolsV1OrgsOrgIdToolsGetParams, reqEditors ...RequestEditorFn) (*ListToolsV1OrgsOrgIdToolsGetResponse, error)
+
+	// ListServableToolsV1OrgsOrgIdToolsServableGetWithResponse request
+	ListServableToolsV1OrgsOrgIdToolsServableGetWithResponse(ctx context.Context, orgId string, params *ListServableToolsV1OrgsOrgIdToolsServableGetParams, reqEditors ...RequestEditorFn) (*ListServableToolsV1OrgsOrgIdToolsServableGetResponse, error)
 
 	// GetToolV1OrgsOrgIdToolsToolIdGetWithResponse request
 	GetToolV1OrgsOrgIdToolsToolIdGetWithResponse(ctx context.Context, orgId string, toolId string, reqEditors ...RequestEditorFn) (*GetToolV1OrgsOrgIdToolsToolIdGetResponse, error)
@@ -9925,6 +13823,29 @@ func (r UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchResponse) Status() strin
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *BotResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -10530,6 +14451,190 @@ func (r CreateMcpServerV1OrgsOrgIdMcpServersPostResponse) StatusCode() int {
 	return 0
 }
 
+type SearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *PaginatedResponseMcpServerCatalogEntry
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r SearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r SearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetMcpCatalogEntryV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdGetResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *McpCatalogEntryDetail
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r GetMcpCatalogEntryV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetMcpCatalogEntryV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetComposioCredentialFormV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdCredentialFormGetResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *ComposioCredentialForm
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r GetComposioCredentialFormV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdCredentialFormGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetComposioCredentialFormV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdCredentialFormGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetMcpConnectRequestV1OrgsOrgIdMcpServersConnectRequestsRequestIdGetResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *McpConnectRequestState
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r GetMcpConnectRequestV1OrgsOrgIdMcpServersConnectRequestsRequestIdGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetMcpConnectRequestV1OrgsOrgIdMcpServersConnectRequestsRequestIdGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type StartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPostResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON201                       *ComposioConnectionStart
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r StartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r StartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type InstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPostResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON201                       *ComposioConnectionDetail
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r InstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r InstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CancelComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdDeleteResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *ComposioConnectionDetail
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r CancelComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdDeleteResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CancelComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdDeleteResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdGetResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *ComposioConnectionDetail
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r GetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteResponse struct {
 	Body                          []byte
 	HTTPResponse                  *http.Response
@@ -10596,6 +14701,168 @@ func (r UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchResponse) Status() s
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type SetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPutResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		union json.RawMessage
+	}
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r SetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPutResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r SetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPutResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListMcpServerAssignmentsV1OrgsOrgIdMcpServersMcpServerIdAssignmentsGetResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *McpServerAssignments
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r ListMcpServerAssignmentsV1OrgsOrgIdMcpServersMcpServerIdAssignmentsGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListMcpServerAssignmentsV1OrgsOrgIdMcpServersMcpServerIdAssignmentsGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetComposioCredentialStateV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsGetResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *ComposioCredentialState
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r GetComposioCredentialStateV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetComposioCredentialStateV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPutResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *ComposioCredentialState
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPutResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPutResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListMcpServerMembersV1OrgsOrgIdMcpServersMcpServerIdMembersGetResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *[]McpServerMember
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r ListMcpServerMembersV1OrgsOrgIdMcpServersMcpServerIdMembersGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListMcpServerMembersV1OrgsOrgIdMcpServersMcpServerIdMembersGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type AddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPutResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *[]McpServerMember
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r AddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPutResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r AddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPutResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type RemoveMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersActorTypeActorIdDeleteResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r RemoveMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersActorTypeActorIdDeleteResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r RemoveMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersActorTypeActorIdDeleteResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -11018,6 +15285,29 @@ func (r ListToolsV1OrgsOrgIdToolsGetResponse) StatusCode() int {
 	return 0
 }
 
+type ListServableToolsV1OrgsOrgIdToolsServableGetResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *[]ToolServabilityResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r ListServableToolsV1OrgsOrgIdToolsServableGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListServableToolsV1OrgsOrgIdToolsServableGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type GetToolV1OrgsOrgIdToolsToolIdGetResponse struct {
 	Body                          []byte
 	HTTPResponse                  *http.Response
@@ -11161,6 +15451,23 @@ func (c *ClientWithResponses) UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchWi
 		return nil, err
 	}
 	return ParseUpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchResponse(rsp)
+}
+
+// ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostWithBodyWithResponse request with arbitrary body returning *ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostResponse
+func (c *ClientWithResponses) ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostResponse, error) {
+	rsp, err := c.ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostWithBody(ctx, orgId, botSlug, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostResponse(rsp)
+}
+
+func (c *ClientWithResponses) ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostWithResponse(ctx context.Context, orgId string, botSlug string, body ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostJSONRequestBody, reqEditors ...RequestEditorFn) (*ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostResponse, error) {
+	rsp, err := c.ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePost(ctx, orgId, botSlug, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostResponse(rsp)
 }
 
 // CopyBotV1OrgsOrgIdBotsBotSlugCopyPostWithBodyWithResponse request with arbitrary body returning *CopyBotV1OrgsOrgIdBotsBotSlugCopyPostResponse
@@ -11493,6 +15800,102 @@ func (c *ClientWithResponses) CreateMcpServerV1OrgsOrgIdMcpServersPostWithRespon
 	return ParseCreateMcpServerV1OrgsOrgIdMcpServersPostResponse(rsp)
 }
 
+// SearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostWithBodyWithResponse request with arbitrary body returning *SearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostResponse
+func (c *ClientWithResponses) SearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostResponse, error) {
+	rsp, err := c.SearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostWithBody(ctx, orgId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostResponse(rsp)
+}
+
+func (c *ClientWithResponses) SearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostWithResponse(ctx context.Context, orgId string, body SearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostJSONRequestBody, reqEditors ...RequestEditorFn) (*SearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostResponse, error) {
+	rsp, err := c.SearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPost(ctx, orgId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostResponse(rsp)
+}
+
+// GetMcpCatalogEntryV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdGetWithResponse request returning *GetMcpCatalogEntryV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdGetResponse
+func (c *ClientWithResponses) GetMcpCatalogEntryV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdGetWithResponse(ctx context.Context, orgId string, mcpCatalogEntryId string, reqEditors ...RequestEditorFn) (*GetMcpCatalogEntryV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdGetResponse, error) {
+	rsp, err := c.GetMcpCatalogEntryV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdGet(ctx, orgId, mcpCatalogEntryId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetMcpCatalogEntryV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdGetResponse(rsp)
+}
+
+// GetComposioCredentialFormV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdCredentialFormGetWithResponse request returning *GetComposioCredentialFormV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdCredentialFormGetResponse
+func (c *ClientWithResponses) GetComposioCredentialFormV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdCredentialFormGetWithResponse(ctx context.Context, orgId string, mcpCatalogEntryId string, reqEditors ...RequestEditorFn) (*GetComposioCredentialFormV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdCredentialFormGetResponse, error) {
+	rsp, err := c.GetComposioCredentialFormV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdCredentialFormGet(ctx, orgId, mcpCatalogEntryId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetComposioCredentialFormV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdCredentialFormGetResponse(rsp)
+}
+
+// GetMcpConnectRequestV1OrgsOrgIdMcpServersConnectRequestsRequestIdGetWithResponse request returning *GetMcpConnectRequestV1OrgsOrgIdMcpServersConnectRequestsRequestIdGetResponse
+func (c *ClientWithResponses) GetMcpConnectRequestV1OrgsOrgIdMcpServersConnectRequestsRequestIdGetWithResponse(ctx context.Context, orgId string, requestId string, reqEditors ...RequestEditorFn) (*GetMcpConnectRequestV1OrgsOrgIdMcpServersConnectRequestsRequestIdGetResponse, error) {
+	rsp, err := c.GetMcpConnectRequestV1OrgsOrgIdMcpServersConnectRequestsRequestIdGet(ctx, orgId, requestId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetMcpConnectRequestV1OrgsOrgIdMcpServersConnectRequestsRequestIdGetResponse(rsp)
+}
+
+// StartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPostWithBodyWithResponse request with arbitrary body returning *StartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPostResponse
+func (c *ClientWithResponses) StartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*StartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPostResponse, error) {
+	rsp, err := c.StartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPostWithBody(ctx, orgId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseStartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPostResponse(rsp)
+}
+
+func (c *ClientWithResponses) StartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPostWithResponse(ctx context.Context, orgId string, body StartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*StartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPostResponse, error) {
+	rsp, err := c.StartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPost(ctx, orgId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseStartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPostResponse(rsp)
+}
+
+// InstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPostWithBodyWithResponse request with arbitrary body returning *InstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPostResponse
+func (c *ClientWithResponses) InstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*InstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPostResponse, error) {
+	rsp, err := c.InstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPostWithBody(ctx, orgId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseInstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPostResponse(rsp)
+}
+
+func (c *ClientWithResponses) InstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPostWithResponse(ctx context.Context, orgId string, body InstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*InstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPostResponse, error) {
+	rsp, err := c.InstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPost(ctx, orgId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseInstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPostResponse(rsp)
+}
+
+// CancelComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdDeleteWithResponse request returning *CancelComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdDeleteResponse
+func (c *ClientWithResponses) CancelComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdDeleteWithResponse(ctx context.Context, orgId string, composioConnectionId string, reqEditors ...RequestEditorFn) (*CancelComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdDeleteResponse, error) {
+	rsp, err := c.CancelComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdDelete(ctx, orgId, composioConnectionId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCancelComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdDeleteResponse(rsp)
+}
+
+// GetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdGetWithResponse request returning *GetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdGetResponse
+func (c *ClientWithResponses) GetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdGetWithResponse(ctx context.Context, orgId string, composioConnectionId string, reqEditors ...RequestEditorFn) (*GetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdGetResponse, error) {
+	rsp, err := c.GetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdGet(ctx, orgId, composioConnectionId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdGetResponse(rsp)
+}
+
 // DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteWithResponse request returning *DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteResponse
 func (c *ClientWithResponses) DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteWithResponse(ctx context.Context, orgId string, mcpServerId string, reqEditors ...RequestEditorFn) (*DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteResponse, error) {
 	rsp, err := c.DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDelete(ctx, orgId, mcpServerId, reqEditors...)
@@ -11526,6 +15929,93 @@ func (c *ClientWithResponses) UpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPat
 		return nil, err
 	}
 	return ParseUpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchResponse(rsp)
+}
+
+// SetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPutWithBodyWithResponse request with arbitrary body returning *SetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPutResponse
+func (c *ClientWithResponses) SetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPutWithBodyWithResponse(ctx context.Context, orgId string, mcpServerId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPutResponse, error) {
+	rsp, err := c.SetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPutWithBody(ctx, orgId, mcpServerId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPutResponse(rsp)
+}
+
+func (c *ClientWithResponses) SetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPutWithResponse(ctx context.Context, orgId string, mcpServerId string, body SetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPutJSONRequestBody, reqEditors ...RequestEditorFn) (*SetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPutResponse, error) {
+	rsp, err := c.SetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPut(ctx, orgId, mcpServerId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPutResponse(rsp)
+}
+
+// ListMcpServerAssignmentsV1OrgsOrgIdMcpServersMcpServerIdAssignmentsGetWithResponse request returning *ListMcpServerAssignmentsV1OrgsOrgIdMcpServersMcpServerIdAssignmentsGetResponse
+func (c *ClientWithResponses) ListMcpServerAssignmentsV1OrgsOrgIdMcpServersMcpServerIdAssignmentsGetWithResponse(ctx context.Context, orgId string, mcpServerId string, reqEditors ...RequestEditorFn) (*ListMcpServerAssignmentsV1OrgsOrgIdMcpServersMcpServerIdAssignmentsGetResponse, error) {
+	rsp, err := c.ListMcpServerAssignmentsV1OrgsOrgIdMcpServersMcpServerIdAssignmentsGet(ctx, orgId, mcpServerId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListMcpServerAssignmentsV1OrgsOrgIdMcpServersMcpServerIdAssignmentsGetResponse(rsp)
+}
+
+// GetComposioCredentialStateV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsGetWithResponse request returning *GetComposioCredentialStateV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsGetResponse
+func (c *ClientWithResponses) GetComposioCredentialStateV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsGetWithResponse(ctx context.Context, orgId string, mcpServerId string, reqEditors ...RequestEditorFn) (*GetComposioCredentialStateV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsGetResponse, error) {
+	rsp, err := c.GetComposioCredentialStateV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsGet(ctx, orgId, mcpServerId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetComposioCredentialStateV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsGetResponse(rsp)
+}
+
+// UpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPutWithBodyWithResponse request with arbitrary body returning *UpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPutResponse
+func (c *ClientWithResponses) UpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPutWithBodyWithResponse(ctx context.Context, orgId string, mcpServerId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPutResponse, error) {
+	rsp, err := c.UpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPutWithBody(ctx, orgId, mcpServerId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPutResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPutWithResponse(ctx context.Context, orgId string, mcpServerId string, body UpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPutJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPutResponse, error) {
+	rsp, err := c.UpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPut(ctx, orgId, mcpServerId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPutResponse(rsp)
+}
+
+// ListMcpServerMembersV1OrgsOrgIdMcpServersMcpServerIdMembersGetWithResponse request returning *ListMcpServerMembersV1OrgsOrgIdMcpServersMcpServerIdMembersGetResponse
+func (c *ClientWithResponses) ListMcpServerMembersV1OrgsOrgIdMcpServersMcpServerIdMembersGetWithResponse(ctx context.Context, orgId string, mcpServerId string, reqEditors ...RequestEditorFn) (*ListMcpServerMembersV1OrgsOrgIdMcpServersMcpServerIdMembersGetResponse, error) {
+	rsp, err := c.ListMcpServerMembersV1OrgsOrgIdMcpServersMcpServerIdMembersGet(ctx, orgId, mcpServerId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListMcpServerMembersV1OrgsOrgIdMcpServersMcpServerIdMembersGetResponse(rsp)
+}
+
+// AddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPutWithBodyWithResponse request with arbitrary body returning *AddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPutResponse
+func (c *ClientWithResponses) AddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPutWithBodyWithResponse(ctx context.Context, orgId string, mcpServerId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPutResponse, error) {
+	rsp, err := c.AddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPutWithBody(ctx, orgId, mcpServerId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPutResponse(rsp)
+}
+
+func (c *ClientWithResponses) AddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPutWithResponse(ctx context.Context, orgId string, mcpServerId string, body AddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPutJSONRequestBody, reqEditors ...RequestEditorFn) (*AddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPutResponse, error) {
+	rsp, err := c.AddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPut(ctx, orgId, mcpServerId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPutResponse(rsp)
+}
+
+// RemoveMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersActorTypeActorIdDeleteWithResponse request returning *RemoveMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersActorTypeActorIdDeleteResponse
+func (c *ClientWithResponses) RemoveMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersActorTypeActorIdDeleteWithResponse(ctx context.Context, orgId string, mcpServerId string, actorType ActorType, actorId string, reqEditors ...RequestEditorFn) (*RemoveMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersActorTypeActorIdDeleteResponse, error) {
+	rsp, err := c.RemoveMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersActorTypeActorIdDelete(ctx, orgId, mcpServerId, actorType, actorId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRemoveMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersActorTypeActorIdDeleteResponse(rsp)
 }
 
 // RefreshMcpServerToolsV1OrgsOrgIdMcpServersMcpServerIdRefreshToolsPostWithResponse request returning *RefreshMcpServerToolsV1OrgsOrgIdMcpServersMcpServerIdRefreshToolsPostResponse
@@ -11752,6 +16242,15 @@ func (c *ClientWithResponses) ListToolsV1OrgsOrgIdToolsGetWithResponse(ctx conte
 		return nil, err
 	}
 	return ParseListToolsV1OrgsOrgIdToolsGetResponse(rsp)
+}
+
+// ListServableToolsV1OrgsOrgIdToolsServableGetWithResponse request returning *ListServableToolsV1OrgsOrgIdToolsServableGetResponse
+func (c *ClientWithResponses) ListServableToolsV1OrgsOrgIdToolsServableGetWithResponse(ctx context.Context, orgId string, params *ListServableToolsV1OrgsOrgIdToolsServableGetParams, reqEditors ...RequestEditorFn) (*ListServableToolsV1OrgsOrgIdToolsServableGetResponse, error) {
+	rsp, err := c.ListServableToolsV1OrgsOrgIdToolsServableGet(ctx, orgId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListServableToolsV1OrgsOrgIdToolsServableGetResponse(rsp)
 }
 
 // GetToolV1OrgsOrgIdToolsToolIdGetWithResponse request returning *GetToolV1OrgsOrgIdToolsToolIdGetResponse
@@ -12069,6 +16568,39 @@ func ParseUpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchResponse(rsp *http.Res
 	}
 
 	response := &UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest BotResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostResponse parses an HTTP response from a ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostWithResponse call
+func ParseConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostResponse(rsp *http.Response) (*ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -12925,6 +17457,270 @@ func ParseCreateMcpServerV1OrgsOrgIdMcpServersPostResponse(rsp *http.Response) (
 	return response, nil
 }
 
+// ParseSearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostResponse parses an HTTP response from a SearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostWithResponse call
+func ParseSearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostResponse(rsp *http.Response) (*SearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &SearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PaginatedResponseMcpServerCatalogEntry
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetMcpCatalogEntryV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdGetResponse parses an HTTP response from a GetMcpCatalogEntryV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdGetWithResponse call
+func ParseGetMcpCatalogEntryV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdGetResponse(rsp *http.Response) (*GetMcpCatalogEntryV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetMcpCatalogEntryV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest McpCatalogEntryDetail
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetComposioCredentialFormV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdCredentialFormGetResponse parses an HTTP response from a GetComposioCredentialFormV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdCredentialFormGetWithResponse call
+func ParseGetComposioCredentialFormV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdCredentialFormGetResponse(rsp *http.Response) (*GetComposioCredentialFormV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdCredentialFormGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetComposioCredentialFormV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdCredentialFormGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ComposioCredentialForm
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetMcpConnectRequestV1OrgsOrgIdMcpServersConnectRequestsRequestIdGetResponse parses an HTTP response from a GetMcpConnectRequestV1OrgsOrgIdMcpServersConnectRequestsRequestIdGetWithResponse call
+func ParseGetMcpConnectRequestV1OrgsOrgIdMcpServersConnectRequestsRequestIdGetResponse(rsp *http.Response) (*GetMcpConnectRequestV1OrgsOrgIdMcpServersConnectRequestsRequestIdGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetMcpConnectRequestV1OrgsOrgIdMcpServersConnectRequestsRequestIdGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest McpConnectRequestState
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseStartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPostResponse parses an HTTP response from a StartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPostWithResponse call
+func ParseStartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPostResponse(rsp *http.Response) (*StartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &StartComposioConnectionV1OrgsOrgIdMcpServersConnectionsPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest ComposioConnectionStart
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseInstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPostResponse parses an HTTP response from a InstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPostWithResponse call
+func ParseInstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPostResponse(rsp *http.Response) (*InstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &InstallComposioConnectionWithCredentialsV1OrgsOrgIdMcpServersConnectionsCredentialsPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest ComposioConnectionDetail
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCancelComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdDeleteResponse parses an HTTP response from a CancelComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdDeleteWithResponse call
+func ParseCancelComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdDeleteResponse(rsp *http.Response) (*CancelComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdDeleteResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CancelComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdDeleteResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ComposioConnectionDetail
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdGetResponse parses an HTTP response from a GetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdGetWithResponse call
+func ParseGetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdGetResponse(rsp *http.Response) (*GetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ComposioConnectionDetail
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseDeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteResponse parses an HTTP response from a DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteWithResponse call
 func ParseDeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteResponse(rsp *http.Response) (*DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -13009,6 +17805,232 @@ func ParseUpdateMcpServerV1OrgsOrgIdMcpServersMcpServerIdPatchResponse(rsp *http
 		}
 		response.JSON200 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseSetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPutResponse parses an HTTP response from a SetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPutWithResponse call
+func ParseSetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPutResponse(rsp *http.Response) (*SetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPutResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &SetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPutResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			union json.RawMessage
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListMcpServerAssignmentsV1OrgsOrgIdMcpServersMcpServerIdAssignmentsGetResponse parses an HTTP response from a ListMcpServerAssignmentsV1OrgsOrgIdMcpServersMcpServerIdAssignmentsGetWithResponse call
+func ParseListMcpServerAssignmentsV1OrgsOrgIdMcpServersMcpServerIdAssignmentsGetResponse(rsp *http.Response) (*ListMcpServerAssignmentsV1OrgsOrgIdMcpServersMcpServerIdAssignmentsGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListMcpServerAssignmentsV1OrgsOrgIdMcpServersMcpServerIdAssignmentsGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest McpServerAssignments
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetComposioCredentialStateV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsGetResponse parses an HTTP response from a GetComposioCredentialStateV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsGetWithResponse call
+func ParseGetComposioCredentialStateV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsGetResponse(rsp *http.Response) (*GetComposioCredentialStateV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetComposioCredentialStateV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ComposioCredentialState
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPutResponse parses an HTTP response from a UpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPutWithResponse call
+func ParseUpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPutResponse(rsp *http.Response) (*UpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPutResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredentialsPutResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ComposioCredentialState
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListMcpServerMembersV1OrgsOrgIdMcpServersMcpServerIdMembersGetResponse parses an HTTP response from a ListMcpServerMembersV1OrgsOrgIdMcpServersMcpServerIdMembersGetWithResponse call
+func ParseListMcpServerMembersV1OrgsOrgIdMcpServersMcpServerIdMembersGetResponse(rsp *http.Response) (*ListMcpServerMembersV1OrgsOrgIdMcpServersMcpServerIdMembersGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListMcpServerMembersV1OrgsOrgIdMcpServersMcpServerIdMembersGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []McpServerMember
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseAddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPutResponse parses an HTTP response from a AddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPutWithResponse call
+func ParseAddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPutResponse(rsp *http.Response) (*AddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPutResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &AddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPutResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []McpServerMember
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseRemoveMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersActorTypeActorIdDeleteResponse parses an HTTP response from a RemoveMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersActorTypeActorIdDeleteWithResponse call
+func ParseRemoveMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersActorTypeActorIdDeleteResponse(rsp *http.Response) (*RemoveMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersActorTypeActorIdDeleteResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &RemoveMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersActorTypeActorIdDeleteResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest ProblemDetails
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -13588,6 +18610,39 @@ func ParseListToolsV1OrgsOrgIdToolsGetResponse(rsp *http.Response) (*ListToolsV1
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest []ToolResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListServableToolsV1OrgsOrgIdToolsServableGetResponse parses an HTTP response from a ListServableToolsV1OrgsOrgIdToolsServableGetWithResponse call
+func ParseListServableToolsV1OrgsOrgIdToolsServableGetResponse(rsp *http.Response) (*ListServableToolsV1OrgsOrgIdToolsServableGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListServableToolsV1OrgsOrgIdToolsServableGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []ToolServabilityResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}

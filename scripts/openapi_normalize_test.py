@@ -168,6 +168,87 @@ class TestNormalizeSpec(unittest.TestCase):
         assert "get" in path  # read operation kept
         assert "post" not in path  # excluded write operation dropped
 
+    def _disc_spec(self) -> dict:
+        """A discriminated oneOf shaped exactly like FastAPI emits it: the
+        const-tagged discriminator property is present but NOT required."""
+        return {
+            "openapi": "3.1.0",
+            "paths": {},
+            "components": {
+                "schemas": {
+                    "Parent": {
+                        "properties": {
+                            "config": {
+                                "oneOf": [
+                                    {"$ref": "#/components/schemas/OpenClawCfg"},
+                                    {"$ref": "#/components/schemas/NativeCfg"},
+                                ],
+                                "discriminator": {
+                                    "propertyName": "bot_type",
+                                    "mapping": {
+                                        "openclaw": "#/components/schemas/OpenClawCfg",
+                                        "native": "#/components/schemas/NativeCfg",
+                                    },
+                                },
+                            }
+                        }
+                    },
+                    "OpenClawCfg": {
+                        "properties": {
+                            "bot_type": {"type": "string", "const": "openclaw"},
+                            "token": {"type": "string"},
+                        },
+                        "required": ["token"],
+                    },
+                    "NativeCfg": {
+                        "properties": {"bot_type": {"type": "string", "const": "native"}}
+                    },
+                }
+            },
+        }
+
+    def test_discriminator_property_made_required(self):
+        spec = self._disc_spec()
+        norm.require_discriminators(spec)
+        schemas = spec["components"]["schemas"]
+        # Appended, not replacing the schema's existing required entries.
+        self.assertEqual(schemas["OpenClawCfg"]["required"], ["token", "bot_type"])
+        # Created for a variant that had no required list at all.
+        self.assertEqual(schemas["NativeCfg"]["required"], ["bot_type"])
+
+    def test_discriminator_pass_is_idempotent(self):
+        spec = self._disc_spec()
+        norm.require_discriminators(spec)
+        norm.require_discriminators(spec)
+        self.assertEqual(
+            spec["components"]["schemas"]["OpenClawCfg"]["required"], ["token", "bot_type"]
+        )
+
+    def test_discriminator_without_mapping_uses_oneof_refs(self):
+        spec = self._disc_spec()
+        del spec["components"]["schemas"]["Parent"]["properties"]["config"][
+            "discriminator"
+        ]["mapping"]
+        norm.require_discriminators(spec)
+        self.assertIn("bot_type", spec["components"]["schemas"]["NativeCfg"]["required"])
+
+    def test_discriminator_walk_survives_json_nulls(self):
+        """A JSON ``null`` anywhere in the spec must not restart the walk.
+
+        Regression: the recursion sentinel was ``None``, so recursing into a
+        real JSON null re-entered from the spec root and blew the stack.
+        """
+        spec = self._disc_spec()
+        spec["components"]["schemas"]["OpenClawCfg"]["properties"]["token"]["default"] = None
+        norm.require_discriminators(spec)  # must not raise RecursionError
+        self.assertIn("bot_type", spec["components"]["schemas"]["OpenClawCfg"]["required"])
+
+    def test_discriminator_skips_variant_without_the_property(self):
+        spec = self._disc_spec()
+        del spec["components"]["schemas"]["NativeCfg"]["properties"]["bot_type"]
+        norm.require_discriminators(spec)
+        self.assertNotIn("required", spec["components"]["schemas"]["NativeCfg"])
+
     def test_full_normalization(self):
         spec = norm.normalize_spec(self._spec(), {"bots"})
         # No residual null branches anywhere.

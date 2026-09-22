@@ -79,8 +79,8 @@ func TestCreateMcpServerTyped_ContainerImage(t *testing.T) {
 	create, _ := json.Marshal(ContainerImageMcpServerCreate{
 		RuntimeKind: ContainerImageMcpServerCreateRuntimeKind(McpRuntimeContainerImage),
 		Name:        "My MCP",
-		Image:       "ghcr.io/x:1",
-		Port:        8080,
+		Image:       ptrTo("ghcr.io/x:1"),
+		Port:        ptrTo(8080),
 	})
 	detail, status, body, err := c.CreateMcpServer(context.Background(), "org-1", create)
 	if err != nil {
@@ -123,3 +123,9 @@ func TestGetMcpServerTyped_NotFound(t *testing.T) {
 		t.Errorf("status=%d detail=%v, want 404/nil", status, detail)
 	}
 }
+
+// ptrTo is a test helper for the optional (pointer) fields on the generated
+// create bodies: `image` and `port` stopped being required on
+// ContainerImageMcpServerCreate when catalog-backed creation started filling
+// them server-side.
+func ptrTo[T any](v T) *T { return &v }
