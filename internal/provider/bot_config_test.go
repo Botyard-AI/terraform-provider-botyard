@@ -416,6 +416,75 @@ func TestMapBotDesiredConfig_MissingDiscriminator(t *testing.T) {
 	}
 }
 
+// TestMapBotDesiredConfig_PresentButEmptyDiscriminator proves a `bot_type` that
+// is present but empty or null fails closed rather than being defaulted to
+// openclaw. The current API always serializes a concrete bot_type, so these are
+// contract violations, not the legacy pre-union shape — defaulting them would
+// map a possibly-native config onto the OpenClaw surface.
+//
+// Regression: the generated Discriminator() returns ("", nil) for an absent key,
+// an explicit null and an explicit "" alike, so the original
+// `err != nil || botType == ""` check silently accepted all three.
+func TestMapBotDesiredConfig_PresentButEmptyDiscriminator(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		raw  string
+	}{
+		{"empty string", `{"bot_type":"","thinking_default":"low"}`},
+		{"explicit null", `{"bot_type":null,"thinking_default":"low"}`},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			cfg := &botConfigModel{}
+			err := mapBotDesiredConfig(desiredConfig(t, tc.raw), cfg)
+			if err == nil {
+				t.Fatal("want an error for a present-but-empty bot_type")
+			}
+			if !strings.Contains(err.Error(), "empty or null `bot_type`") {
+				t.Errorf("error = %q, want it to name the empty/null bot_type", err)
+			}
+			// Fail closed: nothing may be mapped from an invalid response.
+			if !cfg.ThinkingDefault.IsNull() {
+				t.Errorf("thinking_default = %q, want nothing mapped", cfg.ThinkingDefault.ValueString())
+			}
+		})
+	}
+}
+
+// TestBotTypeDiscriminator proves the helper distinguishes the three shapes the
+// generated Discriminator() collapses into one.
+func TestBotTypeDiscriminator(t *testing.T) {
+	for _, tc := range []struct {
+		name        string
+		raw         string
+		wantValue   string
+		wantPresent bool
+	}{
+		{"absent", `{"thinking_default":"low"}`, "", false},
+		{"null", `{"bot_type":null}`, "", true},
+		{"empty string", `{"bot_type":""}`, "", true},
+		{"openclaw", `{"bot_type":"openclaw"}`, "openclaw", true},
+		{"native", `{"bot_type":"native"}`, "native", true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			value, present, err := botTypeDiscriminator(desiredConfig(t, tc.raw))
+			if err != nil {
+				t.Fatalf("botTypeDiscriminator: %v", err)
+			}
+			if value != tc.wantValue || present != tc.wantPresent {
+				t.Errorf("= (%q, %v), want (%q, %v)", value, present, tc.wantValue, tc.wantPresent)
+			}
+		})
+	}
+}
+
+// TestBotTypeDiscriminator_NonStringIsAnError proves a structurally wrong
+// bot_type is reported rather than being read as absent and defaulted.
+func TestBotTypeDiscriminator_NonStringIsAnError(t *testing.T) {
+	if _, _, err := botTypeDiscriminator(desiredConfig(t, `{"bot_type":42}`)); err == nil {
+		t.Fatal("want an error for a non-string bot_type")
+	}
+}
+
 // TestMapBotDesiredConfig_NativeVariantReported proves a native bot under a
 // declared `config` block is reported rather than silently mapped from a
 // config surface it does not have.

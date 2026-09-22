@@ -339,6 +339,43 @@ func buildSessionPatch(s *botSessionModel) (json.RawMessage, bool) {
 	return marshalObj(inner), true
 }
 
+// botTypeDiscriminator reads `bot_type` out of a desired_config union and
+// reports whether the key was present at all.
+//
+// The generated `Discriminator()` cannot answer that question: it unmarshals
+// into a plain `string` field, so an absent key, an explicit JSON `null` and an
+// explicit `""` all come back as `("", nil)` — three very different things. An
+// absent key is a legacy pre-union response and is safe to default; the other
+// two are contract violations that must not be defaulted. So probe the raw
+// union object instead.
+//
+// Returns (value, present, error). `present` is true whenever the key exists,
+// including when its value is `null` or `""`; in those cases value is "".
+func botTypeDiscriminator(dc *client.BotResponse_DesiredConfig) (string, bool, error) {
+	raw, err := dc.MarshalJSON()
+	if err != nil {
+		return "", false, fmt.Errorf("reading desired_config: %w", err)
+	}
+	var obj map[string]json.RawMessage
+	if err := json.Unmarshal(raw, &obj); err != nil {
+		return "", false, fmt.Errorf("decoding desired_config object: %w", err)
+	}
+	valueRaw, ok := obj["bot_type"]
+	if !ok {
+		return "", false, nil
+	}
+	// A pointer target distinguishes `null` (nil) from `""` (non-nil, empty).
+	// Both are rejected by the caller, but neither may be read as absent.
+	var value *string
+	if err := json.Unmarshal(valueRaw, &value); err != nil {
+		return "", true, fmt.Errorf("decoding desired_config bot_type: %w", err)
+	}
+	if value == nil {
+		return "", true, nil
+	}
+	return *value, true, nil
+}
+
 // mapBotDesiredConfig refreshes cfg from the bot's merged `desired_config`.
 //
 // `BotResponse.desired_config` became a discriminated union (`bot_type`:
@@ -352,13 +389,27 @@ func mapBotDesiredConfig(dc *client.BotResponse_DesiredConfig, cfg *botConfigMod
 	if cfg == nil {
 		return nil
 	}
-	// A response with no `bot_type` at all predates the union (the API only had
-	// OpenClaw bots then, and still always serializes the field — it is a
-	// plain defaulted pydantic field, not exclude_unset). Read that shape as
-	// `openclaw` rather than failing every Read against an older deployment.
-	botType, err := dc.Discriminator()
-	if err != nil || botType == "" {
+	botType, present, err := botTypeDiscriminator(dc)
+	if err != nil {
+		return err
+	}
+	switch {
+	case !present:
+		// The key is genuinely absent: the response predates the union, when
+		// the API only had OpenClaw bots. Read that shape as `openclaw` rather
+		// than failing every Read against an older deployment.
 		botType = string(client.OpenClawBotConfigBotTypeOpenclaw)
+	case botType == "":
+		// The key is present but empty or null. The current API always
+		// serializes `bot_type` with a non-empty value — it is a plain
+		// defaulted pydantic field, not exclude_unset — so this is
+		// contract-invalid data, not a legacy shape. Fail closed: guessing
+		// `openclaw` here would map a possibly-native config onto the OpenClaw
+		// surface and silently corrupt state.
+		return fmt.Errorf(
+			"bot response carries an empty or null `bot_type` in desired_config; " +
+				"the API always serializes a concrete bot_type, so this response is invalid",
+		)
 	}
 	if botType != string(client.OpenClawBotConfigBotTypeOpenclaw) {
 		return fmt.Errorf(
