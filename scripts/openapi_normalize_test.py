@@ -185,5 +185,120 @@ class TestNormalizeSpec(unittest.TestCase):
         self.assertNotIn("Unused", schemas)
 
 
+class TestFixDiscriminatorProperties(unittest.TestCase):
+    """The pass that makes a union discriminator compile under oapi-codegen.
+
+    An OPTIONAL ``const`` discriminator becomes a single-value enum in the
+    down-converted spec, which oapi-codegen turns into a named enum type behind
+    a pointer — while its own From/Merge helpers assign a bare string to it, so
+    the generated file does not compile. Retyping the property to a plain
+    required string is what fixes that.
+    """
+
+    @staticmethod
+    def _member(name, value, required=False):
+        schema = {
+            "type": "object",
+            "properties": {
+                "bot_type": {
+                    "type": "string",
+                    "const": value,
+                    "default": value,
+                    "title": "Bot Type",
+                },
+                "field": {"type": "string"},
+            },
+        }
+        if required:
+            schema["required"] = ["bot_type"]
+        return name, schema
+
+    def _spec(self, **members):
+        schemas = dict(members)
+        schemas["BotConfig"] = {
+            "oneOf": [
+                {"$ref": "#/components/schemas/" + n} for n in members
+            ],
+            "discriminator": {"propertyName": "bot_type"},
+        }
+        return {"components": {"schemas": schemas}}
+
+    def test_optional_discriminator_flattened_and_required(self):
+        n1, s1 = self._member("OpenClawBotConfig", "openclaw")
+        n2, s2 = self._member("NativeBotConfig", "native")
+        spec = self._spec(**{n1: s1, n2: s2})
+        norm.fix_discriminator_properties(spec)
+        for name in (n1, n2):
+            schema = spec["components"]["schemas"][name]
+            prop = schema["properties"]["bot_type"]
+            self.assertEqual(prop["type"], "string")
+            self.assertNotIn("const", prop)
+            self.assertNotIn("enum", prop)
+            self.assertNotIn("default", prop)
+            self.assertEqual(prop["title"], "Bot Type")  # annotations survive
+            self.assertIn("bot_type", schema["required"])
+
+    def test_already_required_discriminator_untouched(self):
+        """A required discriminator generates a VALUE field and compiles fine.
+
+        Flattening it would delete the named enum constants the provider uses
+        (this is exactly what broke mcp_server_resource.go on the first cut).
+        """
+        name, schema = self._member("ManagedRemoteCreate", "managed_remote", required=True)
+        spec = self._spec(**{name: schema})
+        norm.fix_discriminator_properties(spec)
+        prop = spec["components"]["schemas"][name]["properties"]["bot_type"]
+        self.assertEqual(prop["const"], "managed_remote")
+
+    def test_mapping_only_target_is_rewritten(self):
+        """discriminator.mapping may name a schema the branch list does not."""
+        name, schema = self._member("MappedOnly", "mapped")
+        spec = {"components": {"schemas": {name: schema, "BotConfig": {
+            "oneOf": [],
+            "discriminator": {
+                "propertyName": "bot_type",
+                "mapping": {"mapped": "#/components/schemas/MappedOnly"},
+            },
+        }}}}
+        norm.fix_discriminator_properties(spec)
+        self.assertIn("bot_type", spec["components"]["schemas"][name]["required"])
+
+    def test_inline_branch_nested_refs_untouched(self):
+        """REGRESSION: only a branch that IS a $ref is a union member.
+
+        An inline branch's nested $refs are its property/item types. Collecting
+        them recursively would retype a shared schema's same-named property and
+        mark it required — corrupting a schema unrelated to the union.
+        """
+        spec = {
+            "components": {
+                "schemas": {
+                    # Shared, NOT a union member. Happens to have a `bot_type`.
+                    "Shared": {
+                        "type": "object",
+                        "properties": {
+                            "bot_type": {"type": "string", "const": "shared"}
+                        },
+                    },
+                    "Union": {
+                        "oneOf": [
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "nested": {"$ref": "#/components/schemas/Shared"}
+                                },
+                            }
+                        ],
+                        "discriminator": {"propertyName": "bot_type"},
+                    },
+                }
+            }
+        }
+        norm.fix_discriminator_properties(spec)
+        shared = spec["components"]["schemas"]["Shared"]
+        self.assertEqual(shared["properties"]["bot_type"]["const"], "shared")
+        self.assertNotIn("required", shared)
+
+
 if __name__ == "__main__":
     unittest.main()

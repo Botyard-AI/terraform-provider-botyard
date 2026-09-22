@@ -264,7 +264,7 @@ const cannedBotWithConfigJSON = `{
   "onboarding_state": "none", "health_status": "healthy",
   "desired_state": "running", "config_generation": 8,
   "created_at": "2026-07-20T10:00:00Z", "updated_at": "2026-07-20T12:00:00Z",
-  "desired_config": { "thinking_default": "high", "system_prompt_mode": "openclaw" }
+  "desired_config": { "bot_type": "openclaw", "thinking_default": "high", "system_prompt_mode": "openclaw" }
 }`
 
 // TestBotResource_UpdateConfigRoundTrip proves updateBotConfig targets the
@@ -304,8 +304,12 @@ func TestBotResource_UpdateConfigRoundTrip(t *testing.T) {
 	if jsonStr(t, inner["thinking_default"]) != "high" {
 		t.Errorf("sent config.thinking_default = %s", inner["thinking_default"])
 	}
-	// The merged response mapped back.
-	mapBotConfig(&got.DesiredConfig, cfg)
+	// The merged response mapped back through the union-aware adapter.
+	mapDiags := &diag.Diagnostics{}
+	mapBotDesiredConfig(&got.DesiredConfig, cfg, mapDiags)
+	if mapDiags.HasError() {
+		t.Fatalf("mapBotDesiredConfig: %v", mapDiags.Errors())
+	}
 	if cfg.ThinkingDefault.ValueString() != "high" || cfg.SystemPromptMode.ValueString() != "openclaw" {
 		t.Errorf("mapped config = %+v", cfg)
 	}
@@ -364,8 +368,67 @@ func TestBotResource_CreateWithConfigRoundTrip(t *testing.T) {
 	if jsonStr(t, sentCfg["thinking_default"]) != "high" {
 		t.Errorf("create body config = %s", decodeObj(t, gotBodyRaw)["config"])
 	}
-	mapBotConfig(&resp.JSON201.DesiredConfig, plan.Config)
+	mapDiags := &diag.Diagnostics{}
+	mapBotDesiredConfig(&resp.JSON201.DesiredConfig, plan.Config, mapDiags)
+	if mapDiags.HasError() {
+		t.Fatalf("mapBotDesiredConfig: %v", mapDiags.Errors())
+	}
 	if plan.Config.ThinkingDefault.ValueString() != "high" {
 		t.Errorf("mapped thinking_default = %q", plan.Config.ThinkingDefault.ValueString())
+	}
+}
+
+// --- mapBotDesiredConfig: the union-typed read path -------------------------
+//
+// `desired_config` became a discriminated union (OpenClawBotConfig |
+// NativeBotConfig) when the native harness landed. These prove the adapter
+// routes on `bot_type` and, critically, refuses a native config loudly instead
+// of mapping it through the OpenClaw mapper as an empty no-op.
+
+// unionDC decodes a raw desired_config JSON object into the generated union
+// wrapper, the same way the client does on a real response.
+func unionDC(t *testing.T, raw string) *client.BotResponse_DesiredConfig {
+	t.Helper()
+	dc := &client.BotResponse_DesiredConfig{}
+	if err := dc.UnmarshalJSON([]byte(raw)); err != nil {
+		t.Fatalf("decode desired_config: %v", err)
+	}
+	return dc
+}
+
+func TestMapBotDesiredConfig_OpenClaw(t *testing.T) {
+	dc := unionDC(t, `{"bot_type":"openclaw","thinking_default":"high"}`)
+	cfg := &botConfigModel{}
+	diags := &diag.Diagnostics{}
+	mapBotDesiredConfig(dc, cfg, diags)
+	if diags.HasError() {
+		t.Fatalf("unexpected diags: %v", diags.Errors())
+	}
+	if cfg.ThinkingDefault.ValueString() != "high" {
+		t.Errorf("thinking_default = %q", cfg.ThinkingDefault.ValueString())
+	}
+}
+
+// A native bot the practitioner declared a `config` block for is an error, not
+// a silent no-op: the block models the OpenClaw shape only, and mapping through
+// it would plan a diff forever.
+func TestMapBotDesiredConfig_NativeIsRefused(t *testing.T) {
+	dc := unionDC(t, `{"bot_type":"native","prompt_template":"default"}`)
+	cfg := &botConfigModel{}
+	diags := &diag.Diagnostics{}
+	mapBotDesiredConfig(dc, cfg, diags)
+	if !diags.HasError() {
+		t.Fatal("a native desired_config with a declared config block must error")
+	}
+}
+
+// But a native bot whose config is NOT declared is fine: this resource can
+// manage a native bot's name/description/avatar without touching its config.
+func TestMapBotDesiredConfig_NilCfgNoopEvenForNative(t *testing.T) {
+	dc := unionDC(t, `{"bot_type":"native","prompt_template":"default"}`)
+	diags := &diag.Diagnostics{}
+	mapBotDesiredConfig(dc, nil, diags)
+	if diags.HasError() {
+		t.Fatalf("undeclared config must be a no-op, got: %v", diags.Errors())
 	}
 }
