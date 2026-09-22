@@ -20,9 +20,10 @@ import (
 )
 
 var (
-	_ resource.Resource                = (*BotResource)(nil)
-	_ resource.ResourceWithConfigure   = (*BotResource)(nil)
-	_ resource.ResourceWithImportState = (*BotResource)(nil)
+	_ resource.Resource                   = (*BotResource)(nil)
+	_ resource.ResourceWithConfigure      = (*BotResource)(nil)
+	_ resource.ResourceWithImportState    = (*BotResource)(nil)
+	_ resource.ResourceWithValidateConfig = (*BotResource)(nil)
 )
 
 // BotResource manages a Botyard bot's desired-state record.
@@ -49,9 +50,19 @@ type BotResourceModel struct {
 	Description types.String `tfsdk:"description"`
 	AvatarURL   types.String `tfsdk:"avatar_url"`
 
-	// OpenClaw config overrides (Phase B). Nil when the practitioner does not
-	// declare a `config` block; managed via the create POST and PATCH /config.
-	Config *botConfigModel `tfsdk:"config"`
+	// Hosting pair. Optional+Computed: the API defaults these to
+	// (hosted, openclaw), and both are immutable server-side, so a change forces
+	// replacement. They must form a permitted pair — the API enforces that
+	// against the allowlist behind GET /bots/hosting-options.
+	HostingType types.String `tfsdk:"hosting_type"`
+	Harness     types.String `tfsdk:"harness"`
+
+	// Config overrides, one block per member of the API's BotConfig union. At
+	// most one may be declared (enforced at plan time in ValidateConfig); both
+	// are nil when the practitioner manages identity only. Managed via the
+	// create POST and PATCH /config.
+	Config       *botConfigModel       `tfsdk:"config"`
+	NativeConfig *botNativeConfigModel `tfsdk:"native_config"`
 
 	// Server-owned identity (computed).
 	ID        types.String `tfsdk:"id"`
@@ -129,7 +140,50 @@ func (r *BotResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *
 					"stores no avatar when omitted. Removing it from the config clears the stored value (sends JSON null).",
 			},
 
-			"config": botConfigSchemaAttribute(),
+			"hosting_type": schema.StringAttribute{
+				Optional: true,
+				Computed: true,
+				MarkdownDescription: "Who runs this bot's runtime: `hosted` (default) or `self_hosted`. Immutable — " +
+					"changing it forces replacement. Must form a permitted pair with `harness`; the API " +
+					"enforces the allowlist behind `GET /orgs/{org_id}/bots/hosting-options`.",
+				// ORDER IS LOAD-BEARING — see the note on `harness` below.
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.RequiresReplace(),
+				},
+			},
+			"harness": schema.StringAttribute{
+				Optional: true,
+				Computed: true,
+				MarkdownDescription: "Which agent software this bot runs: `openclaw` (default), `botyard_native`, " +
+					"or `claude_code`. Immutable — changing it forces replacement. Declare `config` for " +
+					"`openclaw` and `native_config` for `botyard_native`. The permitted pairs with " +
+					"`hosting_type` are `(hosted, openclaw)`, `(hosted, botyard_native)` and " +
+					"`(self_hosted, claude_code)`.",
+				// ORDER IS LOAD-BEARING: UseStateForUnknown MUST precede
+				// RequiresReplace on an Optional+Computed attribute.
+				//
+				// The framework chains modifiers in slice order, feeding each one the
+				// previous one's PlanValue, and RequiresReplace has NO unknown guard:
+				// it replaces whenever the plan value differs from state. For a
+				// practitioner who never wrote `harness` (every bot predating this
+				// attribute), the plan value arrives unknown, which differs from the
+				// refreshed state value "openclaw" — so RequiresReplace first would
+				// destroy and recreate EVERY EXISTING BOT on the next plan, taking its
+				// conversations and durable storage with it. Running
+				// UseStateForUnknown first resolves the unknown to the state value, so
+				// RequiresReplace then sees plan == state and correctly does nothing.
+				// Once RequiresReplace fires, no later modifier can unset it.
+				//
+				// Covered by TestBotSchema_ImmutableAttrsDoNotReplaceWhenUnconfigured.
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.RequiresReplace(),
+				},
+			},
+
+			"config":        botConfigSchemaAttribute(),
+			"native_config": botNativeConfigSchemaAttribute(),
 
 			"id":        stableComputedString("Unique bot identifier (UUID)."),
 			"slug":      stableComputedString("URL-friendly bot identifier, derived from the name at creation. Used as the import ID."),
@@ -153,6 +207,64 @@ func (r *BotResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *
 			"created_at":        stableComputedString("Creation timestamp (RFC 3339)."),
 			"updated_at":        liveComputedString("Last-update timestamp (RFC 3339)."),
 		},
+	}
+}
+
+// ValidateConfig rejects harness/config-block combinations at PLAN time.
+//
+// The point is where the failure happens. Without this, declaring
+// `native_config` on a bot the API will create as OpenClaw is a 201 with the
+// config silently dropped (the patch union has no discriminator — see
+// buildNativeConfigPatch), and declaring both blocks is a mid-apply 422 after
+// the bot already exists. Neither is a failure a practitioner can act on. A
+// plan-time diagnostic naming the offending attribute is.
+//
+// Unknown values (a harness fed from another resource's computed output) are
+// skipped rather than guessed: the checks below only fire on what the
+// practitioner literally wrote.
+func (r *BotResource) ValidateConfig(ctx context.Context, req resource.ValidateConfigRequest, resp *resource.ValidateConfigResponse) {
+	var cfg BotResourceModel
+	resp.Diagnostics.Append(req.Config.Get(ctx, &cfg)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	if cfg.Config != nil && cfg.NativeConfig != nil {
+		resp.Diagnostics.AddAttributeError(path.Root("native_config"),
+			"Conflicting config blocks",
+			"Only one of `config` and `native_config` may be declared: they model the two mutually "+
+				"exclusive shapes of a bot's config. Use `config` for `harness = \"openclaw\"` and "+
+				"`native_config` for `harness = \"botyard_native\"`.")
+		return
+	}
+
+	// An unknown harness cannot be checked; a null one means the API default,
+	// `openclaw`, which is exactly what a bare `config` block wants.
+	harness := cfg.Harness
+	if harness.IsUnknown() {
+		return
+	}
+	declared := harness.ValueString()
+	if harness.IsNull() {
+		declared = harnessOpenClaw
+	}
+
+	switch {
+	case cfg.NativeConfig != nil && declared != harnessNative:
+		detail := fmt.Sprintf("`native_config` describes a native bot, but this bot's harness is %q.", declared)
+		if harness.IsNull() {
+			detail = "`native_config` describes a native bot, but no `harness` is set, so the API will " +
+				"create this bot as `openclaw` — and because the config union carries no discriminator, " +
+				"the native config would be silently dropped rather than rejected."
+		}
+		resp.Diagnostics.AddAttributeError(path.Root("native_config"),
+			"Config block does not match the bot's harness",
+			detail+" Set `harness = \"botyard_native\"`, or use the `config` block instead.")
+	case cfg.Config != nil && declared == harnessNative:
+		resp.Diagnostics.AddAttributeError(path.Root("config"),
+			"Config block does not match the bot's harness",
+			"`config` models the OpenClaw config shape, but this bot's harness is `botyard_native`. "+
+				"Use the `native_config` block instead.")
 	}
 }
 
@@ -197,7 +309,7 @@ func (r *BotResource) Create(ctx context.Context, req resource.CreateRequest, re
 	mapBotResource(apiResp.JSON201, &plan)
 	// The create POST embeds the config, so the 201 already reflects the merged
 	// desired_config — refresh the declared config leaves from it.
-	mapBotDesiredConfig(&apiResp.JSON201.DesiredConfig, plan.Config, &resp.Diagnostics)
+	mapBotDesiredConfig(&apiResp.JSON201.DesiredConfig, plan.Config, plan.NativeConfig, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
@@ -224,7 +336,7 @@ func (r *BotResource) Read(ctx context.Context, req resource.ReadRequest, resp *
 			fmt.Sprintf("Read returned HTTP %d: %s", apiResp.StatusCode(), describeAPIError(apiResp.Body)))
 	case botReadOK:
 		mapBotResource(apiResp.JSON200, &state)
-		mapBotDesiredConfig(&apiResp.JSON200.DesiredConfig, state.Config, &resp.Diagnostics)
+		mapBotDesiredConfig(&apiResp.JSON200.DesiredConfig, state.Config, state.NativeConfig, &resp.Diagnostics)
 		resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 	}
 }
@@ -259,8 +371,8 @@ func (r *BotResource) Update(ctx context.Context, req resource.UpdateRequest, re
 	// The config PATCH returns the full, freshly-merged bot, so prefer its
 	// response for the final state mapping.
 	final := apiResp.JSON200
-	if plan.Config != nil {
-		cfgResp, ok := r.updateBotConfig(ctx, state.Slug.ValueString(), plan.Config, &resp.Diagnostics)
+	if plan.Config != nil || plan.NativeConfig != nil {
+		cfgResp, ok := r.updateBotConfig(ctx, state.Slug.ValueString(), plan, &resp.Diagnostics)
 		if !ok {
 			return
 		}
@@ -268,16 +380,17 @@ func (r *BotResource) Update(ctx context.Context, req resource.UpdateRequest, re
 	}
 
 	mapBotResource(final, &plan)
-	mapBotDesiredConfig(&final.DesiredConfig, plan.Config, &resp.Diagnostics)
+	mapBotDesiredConfig(&final.DesiredConfig, plan.Config, plan.NativeConfig, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
 // updateBotConfig applies the declared config via PATCH /config. The body wraps
-// the sparse OpenClawConfigPatch object in a BotConfigUpdate ({"config": {...}}).
-// Returns the merged bot on success; on failure it records a diagnostic and
-// returns ok=false so the caller aborts without setting state.
-func (r *BotResource) updateBotConfig(ctx context.Context, slug string, cfg *botConfigModel, diags *diag.Diagnostics) (*client.BotResponse, bool) {
-	body, err := json.Marshal(map[string]json.RawMessage{"config": buildBotConfigPatch(cfg)})
+// the sparse config patch — OpenClaw or native, whichever block is declared —
+// in a BotConfigUpdate ({"config": {...}}). Returns the merged bot on success;
+// on failure it records a diagnostic and returns ok=false so the caller aborts
+// without setting state.
+func (r *BotResource) updateBotConfig(ctx context.Context, slug string, plan BotResourceModel, diags *diag.Diagnostics) (*client.BotResponse, bool) {
+	body, err := json.Marshal(map[string]json.RawMessage{"config": buildCreateConfig(plan)})
 	if err != nil {
 		diags.AddError("Error encoding bot config", err.Error())
 		return nil, false
@@ -333,13 +446,41 @@ func buildBotCreateBody(plan BotResourceModel) ([]byte, diag.Diagnostics) {
 		"name":        rawString(plan.Name),
 		"description": rawString(plan.Description),
 		"avatar_url":  rawString(plan.AvatarURL),
-		"config":      buildBotConfigPatch(plan.Config),
+		"config":      buildCreateConfig(plan),
 	}
+	// Only send the hosting pair when the practitioner declared it. Omitting
+	// the keys lets the API apply its own defaults (hosted, openclaw); sending
+	// an explicit null would fail validation, since neither field is nullable.
+	putStr(body, "hosting_type", plan.HostingType)
+	putStr(body, "harness", plan.Harness)
 	out, err := json.Marshal(body)
 	if err != nil {
 		diags.AddError("Error encoding bot", err.Error())
 	}
 	return out, diags
+}
+
+// Harness values this resource reasons about. The generated client exposes
+// these as typed constants (client.BotHarnessOpenclaw etc.); these plain
+// strings are what the Terraform-side attribute holds.
+const (
+	harnessOpenClaw = "openclaw"
+	harnessNative   = "botyard_native"
+)
+
+// buildCreateConfig renders the `config` value of the create POST from whichever
+// config block is declared.
+//
+// The OpenClaw path is byte-for-byte what it was before native support existed,
+// including the bare `{}` for no block at all: `{}` validates as an empty
+// OpenClaw patch, which is the correct reading for a bot with no declared
+// config. Only the native path emits a `bot_type` discriminator, and it must —
+// see buildNativeConfigPatch for why omitting it silently drops the config.
+func buildCreateConfig(plan BotResourceModel) json.RawMessage {
+	if plan.NativeConfig != nil {
+		return buildNativeConfigPatch(plan.NativeConfig)
+	}
+	return buildBotConfigPatch(plan.Config)
 }
 
 // buildBotUpdateBody builds the PATCH /bots/{slug} body as a sparse
@@ -415,6 +556,9 @@ func mapBotResource(b *client.BotResponse, m *BotResourceModel) {
 	m.StorageClass = types.StringValue(string(b.StorageClass))
 	m.RuntimePrivilegeMode = types.StringValue(string(b.RuntimePrivilegeMode))
 	m.DurableRootOwnsHome = types.BoolValue(b.DurableRootOwnsHome)
+
+	m.HostingType = types.StringValue(string(b.HostingType))
+	m.Harness = types.StringValue(string(b.Harness))
 
 	m.Access = types.StringValue(string(b.Access))
 	m.DesiredState = types.StringValue(string(b.DesiredState))

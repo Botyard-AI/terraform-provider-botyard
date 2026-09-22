@@ -356,21 +356,28 @@ const (
 )
 
 // mapBotDesiredConfig refreshes the modeled config from a BotResponse's
-// union-typed `desired_config`, which is a discriminated union of
-// OpenClawBotConfig and NativeBotConfig as of the native harness.
+// union-typed `desired_config`, a discriminated union of OpenClawBotConfig and
+// NativeBotConfig, routing on `bot_type` to whichever block the practitioner
+// declared.
 //
-// A nil cfg (no `config` block declared) is a no-op and is checked FIRST, on
-// purpose: this resource can legitimately manage a native bot's name,
-// description and avatar without touching its config, and that must not become
-// an error just because the union gained a second member.
+// The no-block case is handled FIRST and is a no-op, on purpose: this resource
+// can legitimately manage a bot's name, description and avatar — of either
+// harness — without touching its config, and that must not become an error just
+// because the union has two members.
 //
-// When a config block IS declared and the bot is native, the practitioner is
-// managing a config shape this resource cannot express. Refusing here — rather
-// than mapping a native config through the OpenClaw mapper — keeps that a loud
-// failure instead of a silent no-op that plans a diff forever. Same reasoning
-// as botyard_skill refusing a non-`custom` provider in Read.
-func mapBotDesiredConfig(dc *client.BotResponse_DesiredConfig, cfg *botConfigModel, diags *diag.Diagnostics) {
-	if cfg == nil {
+// A block declared against the WRONG variant is a loud failure rather than a
+// silent no-op that would plan a diff forever. In practice ValidateConfig
+// catches that at plan time; this is the backstop for the case it cannot see —
+// a bot whose harness changed underneath Terraform, or an import of the wrong
+// shape. Same reasoning as botyard_skill refusing a non-`custom` provider in
+// Read.
+func mapBotDesiredConfig(
+	dc *client.BotResponse_DesiredConfig,
+	cfg *botConfigModel,
+	native *botNativeConfigModel,
+	diags *diag.Diagnostics,
+) {
+	if cfg == nil && native == nil {
 		return
 	}
 	botType, err := dc.Discriminator()
@@ -379,20 +386,44 @@ func mapBotDesiredConfig(dc *client.BotResponse_DesiredConfig, cfg *botConfigMod
 			"The API returned a desired_config without a readable `bot_type` discriminator: "+err.Error())
 		return
 	}
-	if botType != botTypeOpenClaw {
+
+	switch botType {
+	case botTypeOpenClaw:
+		if cfg == nil {
+			diags.AddError("Bot config type does not match the declared block",
+				"This bot's config is `bot_type = \"openclaw\"`, but a `native_config` block is declared. "+
+					"Use the `config` block for an OpenClaw bot, or remove the block to manage this bot's "+
+					"identity without its config.")
+			return
+		}
+		oc, err := dc.AsOpenClawBotConfig()
+		if err != nil {
+			diags.AddError("Unreadable bot config",
+				"The API returned an OpenClaw desired_config that could not be decoded: "+err.Error())
+			return
+		}
+		mapBotConfig(&oc, cfg)
+	case botTypeNative:
+		if native == nil {
+			diags.AddError("Bot config type does not match the declared block",
+				"This bot's config is `bot_type = \"native\"`, but a `config` block is declared, which models "+
+					"the OpenClaw shape only. Use the `native_config` block for a native bot, or remove the "+
+					"block to manage this bot's identity without its config.")
+			return
+		}
+		nc, err := dc.AsNativeBotConfig()
+		if err != nil {
+			diags.AddError("Unreadable bot config",
+				"The API returned a native desired_config that could not be decoded: "+err.Error())
+			return
+		}
+		mapNativeBotConfig(&nc, native)
+	default:
 		diags.AddError("Unsupported bot config type",
-			fmt.Sprintf("This bot's config is `bot_type = %q`, which the `config` block does not model "+
-				"(it models the OpenClaw shape only). Remove the `config` block to manage this bot's "+
-				"identity without its config.", botType))
-		return
+			fmt.Sprintf("This bot's config is `bot_type = %q`, which this provider version does not model. "+
+				"Remove the `config` / `native_config` block to manage this bot's identity without its "+
+				"config, or upgrade the provider.", botType))
 	}
-	oc, err := dc.AsOpenClawBotConfig()
-	if err != nil {
-		diags.AddError("Unreadable bot config",
-			"The API returned an OpenClaw desired_config that could not be decoded: "+err.Error())
-		return
-	}
-	mapBotConfig(&oc, cfg)
 }
 
 // mapBotConfig refreshes the modeled config leaves from the server's merged
