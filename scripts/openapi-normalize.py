@@ -22,6 +22,9 @@ Pipeline (in order):
 3. ``prune``: keep only operations whose tag set intersects ``--keep-tags`` and
    prune ``components`` to the transitively-reachable schemas. Also drop the
    catch-all ``default`` response's ``application/json`` entry (see below).
+4. ``fix_discriminator_properties`` (after prune, so it only walks kept
+   schemas): retype every discriminator property on a union member to a plain
+   required string (see below).
 
 (A final ``openapi-down-convert`` pass in generate-client.sh handles the version
 bump and any remaining 3.0 cleanups.)
@@ -209,6 +212,115 @@ def prune(
     spec["components"] = components
 
 
+def _component_schema_name(ref: Any) -> str | None:
+    """``"#/components/schemas/Foo"`` -> ``"Foo"``; anything else -> ``None``."""
+    if not isinstance(ref, str):
+        return None
+    parts = ref.lstrip("#/").split("/")
+    if len(parts) == 3 and parts[0] == "components" and parts[1] == "schemas":
+        return parts[2]
+    return None
+
+
+def fix_discriminator_properties(spec: dict[str, Any]) -> None:
+    """Retype each discriminator property on a union member to a required string.
+
+    *** THIS IS A CODEGEN BUG WORKAROUND, NOT A SPEC OPINION. *** For a
+    discriminated union, oapi-codegen emits ``From<Member>`` / ``Merge<Member>``
+    helpers that stamp the discriminator by plain assignment::
+
+        func (t *BotResponse_DesiredConfig) FromNativeBotConfig(v NativeBotConfig) error {
+            v.BotType = "native"
+            ...
+
+    FastAPI writes the discriminator as an optional ``{"type": "string", "const":
+    "native", "default": "native"}``. The down-converter turns 3.1 ``const`` into
+    a single-value ``enum``, and oapi-codegen turns *that* into a named enum type
+    — optional, so a pointer. The generated assignment above then does not
+    compile::
+
+        cannot use "native" (untyped string constant) as *NativeBotConfigBotType
+        value in assignment
+
+    i.e. **the generated package does not build at all** the moment any
+    discriminated union enters the kept surface. That is not hypothetical: it is
+    what ``BotResponse.desired_config`` (openclaw | native) and the MCP header
+    schemes (verbatim | bearer | basic) do today.
+
+    Flattening the property to ``{"type": "string"}`` and marking it required
+    makes the field a plain ``string`` and the generated assignment legal. Both
+    halves are needed — dropping ``const``/``enum`` alone leaves it optional and
+    therefore still a ``*string``.
+
+    *** A DISCRIMINATOR THE SPEC ALREADY MARKS REQUIRED IS LEFT ALONE. *** There
+    the generated field is a value, not a pointer, and ``v.RuntimeKind =
+    "managed_remote"`` is an untyped constant assigned to a named string type —
+    legal Go. Those cases never broke, so rewriting them would only churn the
+    generated names that existing resources already compile against
+    (``client.ManagedRemoteMcpServerCreateRuntimeKind`` and friends). This pass
+    repairs what is broken and touches nothing else.
+
+    Nothing is lost by it. The discriminator is the one property whose value the
+    union wrapper itself decides: ``Discriminator()`` reads it off the raw JSON
+    to choose a branch, and ``From``/``Merge`` write it. A Go-side enum could
+    only ever hold the single value its own branch already implies, and marking
+    it required matches what the server unconditionally emits. Callers that want
+    the branch use ``ValueByDiscriminator()``, not this field.
+
+    Applied to members reached through ``oneOf``/``anyOf``/``allOf`` **and**
+    through ``discriminator.mapping``, because the mapping may name a schema the
+    branch list does not (and in this spec, does).
+    """
+    schemas = spec.get("components", {}).get("schemas", {})
+    targets: set[tuple[str, str]] = set()
+
+    def walk(node: Any) -> None:
+        if isinstance(node, dict):
+            disc = node.get("discriminator")
+            if isinstance(disc, dict) and isinstance(disc.get("propertyName"), str):
+                prop = disc["propertyName"]
+                refs: set[str] = set()
+                for key in ("oneOf", "anyOf", "allOf"):
+                    branches = node.get(key)
+                    if isinstance(branches, list):
+                        collect_refs(branches, refs)
+                mapping = disc.get("mapping")
+                if isinstance(mapping, dict):
+                    refs.update(str(v) for v in mapping.values())
+                for ref in refs:
+                    name = _component_schema_name(ref)
+                    if name is not None:
+                        targets.add((name, prop))
+            for v in node.values():
+                walk(v)
+        elif isinstance(node, list):
+            for v in node:
+                walk(v)
+
+    walk(spec)
+
+    for name, prop in sorted(targets):
+        schema = schemas.get(name)
+        if not isinstance(schema, dict):
+            continue
+        props = schema.get("properties")
+        if not isinstance(props, dict) or not isinstance(props.get(prop), dict):
+            continue
+        required = schema.setdefault("required", [])
+        if not isinstance(required, list):
+            continue
+        if prop in required:
+            continue  # already a value field — generates and compiles fine
+        # Keep the human-facing annotations; drop const/enum/default, which are
+        # what produce the named enum type and the pointer field.
+        current = props[prop]
+        props[prop] = {
+            "type": "string",
+            **{k: v for k, v in current.items() if k in ("title", "description")},
+        }
+        required.append(prop)
+
+
 def normalize_spec(
     spec: dict[str, Any],
     keep_tags: set[str],
@@ -219,6 +331,7 @@ def normalize_spec(
     collapse_nullable(spec)
     fix_scalars(spec)
     prune(spec, keep_tags, exclude_paths, exclude_operations)
+    fix_discriminator_properties(spec)
     return spec
 
 

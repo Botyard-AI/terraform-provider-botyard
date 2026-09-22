@@ -513,14 +513,19 @@ func buildCreateJSON(ctx context.Context, plan McpServerResourceModel, ackHost t
 			Description:           strToPtr(plan.Description),
 			Transport:             transportPtr(plan.Transport),
 			RequestTimeoutSeconds: int64ToIntPtr(plan.RequestTimeoutSeconds),
-			Image:                 plan.Image.ValueString(),
-			Port:                  int(plan.Port.ValueInt64()),
-			Command:               listToStrSlicePtr(ctx, plan.Command, &diags),
-			Args:                  listToStrSlicePtr(ctx, plan.Args, &diags),
-			EnvPlaintext:          mapToStrMapPtr(ctx, plan.EnvPlaintext, &diags),
-			EnvSecretRefs:         mapToStrMapPtr(ctx, plan.EnvSecretRefs, &diags),
-			SecretFileMounts:      mapToStrMapPtr(ctx, plan.SecretFileMounts, &diags),
-			PodHostMode:           podHostModePtr(plan.PodHostMode),
+			// Nullable on the API as of the catalog-driven create path, so these
+			// are pointers now. The provider still requires both for this runtime
+			// kind — ValidateConfig rejects a missing image/port at plan time —
+			// so a nil here is unreachable from a valid config, and the pointer
+			// helpers only spare us sending a zero value if that ever changes.
+			Image:            strToPtr(plan.Image),
+			Port:             int64ToIntPtr(plan.Port),
+			Command:          listToStrSlicePtr(ctx, plan.Command, &diags),
+			Args:             listToStrSlicePtr(ctx, plan.Args, &diags),
+			EnvPlaintext:     mapToStrMapPtr(ctx, plan.EnvPlaintext, &diags),
+			EnvSecretRefs:    mapToStrMapPtr(ctx, plan.EnvSecretRefs, &diags),
+			SecretFileMounts: mapToStrMapPtr(ctx, plan.SecretFileMounts, &diags),
+			PodHostMode:      podHostModePtr(plan.PodHostMode),
 		}
 		out, err := json.Marshal(body)
 		if err != nil {

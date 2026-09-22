@@ -2,6 +2,9 @@ package provider
 
 import (
 	"encoding/json"
+	"fmt"
+
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
@@ -22,8 +25,13 @@ import (
 // an oversight):
 //   - `addons`: a list of typed addon objects carrying a free-form config map;
 //     needs careful list/dynamic modeling and its own round-trip validation.
-//   - `bot_type`: a discriminator whose only value is "openclaw"; exposing it
-//     invites misconfiguration for no benefit.
+//   - `bot_type`: the union discriminator. It is no longer true that "openclaw"
+//     is its only value — the API's BotConfig is now a discriminated union of
+//     OpenClawBotConfig and NativeBotConfig — but this resource still models
+//     only the OpenClaw shape, so there is nothing to choose between here.
+//     Declaring a native bot is its own task; until then a native config is
+//     refused loudly on read (see mapBotDesiredConfig) rather than silently
+//     mapped as if it were OpenClaw.
 //
 // Attribute semantics: the `config` container is Optional (NOT Computed) so
 // Terraform only manages config when the block is declared — a bot with
@@ -336,6 +344,55 @@ func buildSessionPatch(s *botSessionModel) (json.RawMessage, bool) {
 		return nil, false
 	}
 	return marshalObj(inner), true
+}
+
+// Values of the `bot_type` discriminator on the BotConfig union. The generated
+// client no longer exposes these as typed constants: the normalizer flattens a
+// union discriminator to a plain string so oapi-codegen's From/Merge helpers
+// compile (see scripts/openapi-normalize.py).
+const (
+	botTypeOpenClaw = "openclaw"
+	botTypeNative   = "native"
+)
+
+// mapBotDesiredConfig refreshes the modeled config from a BotResponse's
+// union-typed `desired_config`, which is a discriminated union of
+// OpenClawBotConfig and NativeBotConfig as of the native harness.
+//
+// A nil cfg (no `config` block declared) is a no-op and is checked FIRST, on
+// purpose: this resource can legitimately manage a native bot's name,
+// description and avatar without touching its config, and that must not become
+// an error just because the union gained a second member.
+//
+// When a config block IS declared and the bot is native, the practitioner is
+// managing a config shape this resource cannot express. Refusing here — rather
+// than mapping a native config through the OpenClaw mapper — keeps that a loud
+// failure instead of a silent no-op that plans a diff forever. Same reasoning
+// as botyard_skill refusing a non-`custom` provider in Read.
+func mapBotDesiredConfig(dc *client.BotResponse_DesiredConfig, cfg *botConfigModel, diags *diag.Diagnostics) {
+	if cfg == nil {
+		return
+	}
+	botType, err := dc.Discriminator()
+	if err != nil {
+		diags.AddError("Unreadable bot config",
+			"The API returned a desired_config without a readable `bot_type` discriminator: "+err.Error())
+		return
+	}
+	if botType != botTypeOpenClaw {
+		diags.AddError("Unsupported bot config type",
+			fmt.Sprintf("This bot's config is `bot_type = %q`, which the `config` block does not model "+
+				"(it models the OpenClaw shape only). Remove the `config` block to manage this bot's "+
+				"identity without its config.", botType))
+		return
+	}
+	oc, err := dc.AsOpenClawBotConfig()
+	if err != nil {
+		diags.AddError("Unreadable bot config",
+			"The API returned an OpenClaw desired_config that could not be decoded: "+err.Error())
+		return
+	}
+	mapBotConfig(&oc, cfg)
 }
 
 // mapBotConfig refreshes the modeled config leaves from the server's merged

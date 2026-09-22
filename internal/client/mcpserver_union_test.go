@@ -76,11 +76,14 @@ func TestCreateMcpServerTyped_ContainerImage(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	// image/port are nullable on the API (the catalog-driven create path), so
+	// the generated struct holds pointers.
+	image, port := "ghcr.io/x:1", 8080
 	create, _ := json.Marshal(ContainerImageMcpServerCreate{
 		RuntimeKind: ContainerImageMcpServerCreateRuntimeKind(McpRuntimeContainerImage),
 		Name:        "My MCP",
-		Image:       "ghcr.io/x:1",
-		Port:        8080,
+		Image:       &image,
+		Port:        &port,
 	})
 	detail, status, body, err := c.CreateMcpServer(context.Background(), "org-1", create)
 	if err != nil {
