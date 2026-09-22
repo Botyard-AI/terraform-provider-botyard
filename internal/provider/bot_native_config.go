@@ -93,7 +93,10 @@ func botNativeConfigSchemaAttribute() schema.SingleNestedAttribute {
 			"tool_search": schema.SingleNestedAttribute{
 				Optional: true,
 				MarkdownDescription: "Defer tool schemas out of the prompt behind a search surface — the same " +
-					"owner-facing setting OpenClaw bots carry.",
+					"owner-facing setting OpenClaw bots carry. Note that REMOVING this block does not reset " +
+					"the setting: the API's target field is non-nullable with a default, so a patch omitting " +
+					"it (or sending null) means \"no change\" and the last applied values persist. Set the " +
+					"fields explicitly to change them.",
 				Attributes: map[string]schema.Attribute{
 					"mode": schema.StringAttribute{
 						Optional: true,
