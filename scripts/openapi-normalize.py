@@ -282,8 +282,19 @@ def fix_discriminator_properties(spec: dict[str, Any]) -> None:
                 refs: set[str] = set()
                 for key in ("oneOf", "anyOf", "allOf"):
                     branches = node.get(key)
-                    if isinstance(branches, list):
-                        collect_refs(branches, refs)
+                    if not isinstance(branches, list):
+                        continue
+                    # Only a branch that IS a ``$ref`` is a union member. Do NOT
+                    # recurse (this used ``collect_refs``, which does): an inline
+                    # branch's nested ``$ref``s are its property/item types, not
+                    # members of this union. Dragging those in would retype a
+                    # shared schema's same-named property and mark it required —
+                    # corrupting a schema that has nothing to do with the union,
+                    # on whatever future re-sync first introduces an inline
+                    # branch. See test_inline_branch_nested_refs_untouched.
+                    for branch in branches:
+                        if isinstance(branch, dict) and isinstance(branch.get("$ref"), str):
+                            refs.add(branch["$ref"])
                 mapping = disc.get("mapping")
                 if isinstance(mapping, dict):
                     refs.update(str(v) for v in mapping.values())
