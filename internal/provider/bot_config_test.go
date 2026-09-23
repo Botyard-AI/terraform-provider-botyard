@@ -287,7 +287,7 @@ func TestBotResource_UpdateConfigRoundTrip(t *testing.T) {
 	r := &BotResource{data: &providerData{client: newBotClient(t, srv.URL, "byk_test"), orgID: orgID}}
 	cfg := &botConfigModel{ThinkingDefault: types.StringValue("high")}
 	diags := &diag.Diagnostics{}
-	got, ok := r.updateBotConfig(context.Background(), slug, cfg, diags)
+	got, ok := r.updateBotConfig(context.Background(), slug, BotResourceModel{Config: cfg}, diags)
 	if !ok {
 		t.Fatalf("updateBotConfig failed: %v", diags)
 	}
@@ -306,7 +306,7 @@ func TestBotResource_UpdateConfigRoundTrip(t *testing.T) {
 	}
 	// The merged response mapped back through the union-aware adapter.
 	mapDiags := &diag.Diagnostics{}
-	mapBotDesiredConfig(&got.DesiredConfig, cfg, mapDiags)
+	mapBotDesiredConfig(&got.DesiredConfig, cfg, nil, mapDiags)
 	if mapDiags.HasError() {
 		t.Fatalf("mapBotDesiredConfig: %v", mapDiags.Errors())
 	}
@@ -327,7 +327,8 @@ func TestBotResource_UpdateConfigUnexpectedStatus(t *testing.T) {
 
 	r := &BotResource{data: &providerData{client: newBotClient(t, srv.URL, "byk_test"), orgID: "org-1"}}
 	diags := &diag.Diagnostics{}
-	_, ok := r.updateBotConfig(context.Background(), "my-bot", &botConfigModel{ThinkingDefault: types.StringValue("nope")}, diags)
+	_, ok := r.updateBotConfig(context.Background(), "my-bot",
+		BotResourceModel{Config: &botConfigModel{ThinkingDefault: types.StringValue("nope")}}, diags)
 	if ok {
 		t.Error("expected ok=false on 422")
 	}
@@ -369,7 +370,7 @@ func TestBotResource_CreateWithConfigRoundTrip(t *testing.T) {
 		t.Errorf("create body config = %s", decodeObj(t, gotBodyRaw)["config"])
 	}
 	mapDiags := &diag.Diagnostics{}
-	mapBotDesiredConfig(&resp.JSON201.DesiredConfig, plan.Config, mapDiags)
+	mapBotDesiredConfig(&resp.JSON201.DesiredConfig, plan.Config, nil, mapDiags)
 	if mapDiags.HasError() {
 		t.Fatalf("mapBotDesiredConfig: %v", mapDiags.Errors())
 	}
@@ -400,7 +401,7 @@ func TestMapBotDesiredConfig_OpenClaw(t *testing.T) {
 	dc := unionDC(t, `{"bot_type":"openclaw","thinking_default":"high"}`)
 	cfg := &botConfigModel{}
 	diags := &diag.Diagnostics{}
-	mapBotDesiredConfig(dc, cfg, diags)
+	mapBotDesiredConfig(dc, cfg, nil, diags)
 	if diags.HasError() {
 		t.Fatalf("unexpected diags: %v", diags.Errors())
 	}
@@ -416,7 +417,7 @@ func TestMapBotDesiredConfig_NativeIsRefused(t *testing.T) {
 	dc := unionDC(t, `{"bot_type":"native","prompt_template":"default"}`)
 	cfg := &botConfigModel{}
 	diags := &diag.Diagnostics{}
-	mapBotDesiredConfig(dc, cfg, diags)
+	mapBotDesiredConfig(dc, cfg, nil, diags)
 	if !diags.HasError() {
 		t.Fatal("a native desired_config with a declared config block must error")
 	}
@@ -427,7 +428,7 @@ func TestMapBotDesiredConfig_NativeIsRefused(t *testing.T) {
 func TestMapBotDesiredConfig_NilCfgNoopEvenForNative(t *testing.T) {
 	dc := unionDC(t, `{"bot_type":"native","prompt_template":"default"}`)
 	diags := &diag.Diagnostics{}
-	mapBotDesiredConfig(dc, nil, diags)
+	mapBotDesiredConfig(dc, nil, nil, diags)
 	if diags.HasError() {
 		t.Fatalf("undeclared config must be a no-op, got: %v", diags.Errors())
 	}
