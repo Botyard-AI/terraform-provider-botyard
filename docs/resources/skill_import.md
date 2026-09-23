@@ -5,7 +5,7 @@ subcategory: ""
 description: |-
   Imports a skill into the organization's catalogue from a GitHub repository and keeps it on the ref you pin.
   Changing source — typically bumping the pinned ref from #v1 to #v2 — refreshes the skill in place: the skill keeps its id, so every bot assignment pointing at it survives. terraform plan never contacts GitHub; the plan compares your configuration against the provenance recorded by the last import or refresh. A branch ref therefore stays on the commit it last resolved to until the configuration changes. Pin a tag or commit for reproducibility.
-  Local edits. Editing an imported skill's content in Botyard detaches it from its source. On the next plan this resource shows an update, and by default the apply fails with an explanation rather than overwriting the edit. Either set force = true to discard the edit and re-attach the skill to source, or run terraform state rm to hand the skill over to whoever edited it.
+  Local edits. Editing an imported skill's content in Botyard detaches it from its source. On the next plan this resource shows an update, and by default the apply fails with an explanation rather than overwriting the edit. Either set force = true to discard the edit and re-attach the skill to source, or run terraform state rm to hand the skill over to whoever edited it. For the same reason, pointing the skill at a different repository, path, or skill name also needs force = true; bumping only the #ref does not.
   Private repositories need no credential here. The API key the provider uses must belong to an actor holding the skill:private_source.create permission, and the organization must have a GitHub integration connected; the server fetches with that integration.
   To author a skill's files directly in Terraform instead, use botyard_skill.
 ---
@@ -16,7 +16,7 @@ Imports a skill into the organization's catalogue from a GitHub repository and k
 
 Changing `source` — typically bumping the pinned ref from `#v1` to `#v2` — **refreshes the skill in place**: the skill keeps its `id`, so every bot assignment pointing at it survives. `terraform plan` never contacts GitHub; the plan compares your configuration against the provenance recorded by the last import or refresh. A branch ref therefore stays on the commit it last resolved to until the configuration changes. Pin a tag or commit for reproducibility.
 
-**Local edits.** Editing an imported skill's content in Botyard detaches it from its source. On the next plan this resource shows an update, and by default the apply **fails** with an explanation rather than overwriting the edit. Either set `force = true` to discard the edit and re-attach the skill to `source`, or run `terraform state rm` to hand the skill over to whoever edited it.
+**Local edits.** Editing an imported skill's content in Botyard detaches it from its source. On the next plan this resource shows an update, and by default the apply **fails** with an explanation rather than overwriting the edit. Either set `force = true` to discard the edit and re-attach the skill to `source`, or run `terraform state rm` to hand the skill over to whoever edited it. For the same reason, pointing the skill at a different repository, path, or skill name also needs `force = true`; bumping only the `#ref` does not.
 
 **Private repositories** need no credential here. The API key the provider uses must belong to an actor holding the `skill:private_source.create` permission, and the organization must have a GitHub integration connected; the server fetches with that integration.
 
@@ -51,9 +51,14 @@ resource "botyard_skill_import" "internal" {
   source = "acme/private-skills/oncall#2026.09"
 }
 
-# Someone edited this skill in Botyard, which detached it from its source.
-# Applies fail by default. Set `force = true` for one apply to discard the edit
-# and re-attach the skill, then remove it again.
+# `force = true` is needed for one apply in two cases, and should be removed
+# again afterwards:
+#   - someone edited the skill in Botyard, which detached it from its source;
+#     by default the apply fails rather than discard the edit;
+#   - `source` moves to a different repository, path or skill name (or drops
+#     its `#ref`). The API only re-points under force, which would also discard
+#     a concurrent edit, so Terraform asks you to opt in.
+# Changing only the `#ref` never needs it.
 resource "botyard_skill_import" "reattached" {
   source = "acme/agent-skills/triage#v3"
   force  = true
@@ -71,11 +76,15 @@ output "deploy_commit" {
 
 - `source` (String) Where to fetch the skill from (max 500 characters). Accepts a repository (`owner/repo`), a directory in one (`owner/repo/path/to/skill`), a named skill in one (`owner/repo@skill-name`), a github.com URL, or a skills.sh URL. Pin a branch, tag, or commit by appending `#ref` (for example `acme/skills/deploy#v1.2.0`).
 
-Changing only the `#ref` of the same coordinate refreshes the skill at the new ref. Changing the repository, path, or skill name re-points the skill at the new source, also in place — the skill keeps its `id` either way.
+Changing only the `#ref` of the same coordinate refreshes the skill at the new ref; this never needs `force`. Changing the repository, path, or skill name — or removing the `#ref` to follow the default branch — re-points the skill at the new source. A re-point needs `force = true` for that apply, because the API performs it only under force, which would also discard a concurrent edit made in Botyard. Either way the skill keeps its `id`.
 
 ### Optional
 
-- `force` (Boolean) Permit an apply to overwrite skill content that was edited in Botyard. An edit detaches a skill from its source; by default the next apply fails and names the edit instead of reverting it. With `force = true` the apply discards the edit and re-attaches the skill to `source`. This also lets you adopt a skill that was authored in Botyard (imported with `terraform import`) by attaching it to a source. Leaving this `true` means later edits are also overwritten without warning, so prefer setting it for one apply and removing it afterwards.
+- `force` (Boolean) Permit an apply to overwrite skill content that was edited in Botyard. An edit detaches a skill from its source; by default the next apply fails and names the edit instead of reverting it. With `force = true` the apply discards the edit and re-attaches the skill to `source`. This also lets you adopt a skill that was authored in Botyard (imported with `terraform import`) by attaching it to a source.
+
+`force = true` is also required to **re-point** the skill: to change its repository, path, or skill name, or to drop the `#ref` pin. Only a `#ref` change on the same source is safe without it.
+
+Leaving this `true` means later edits are also overwritten without warning, so set it for one apply and remove it afterwards. Toggling `force` on its own shows as an in-place update that makes no API call.
 - `name` (String) Catalogue name for the skill. Defaults to the name declared by the source. Set it to resolve a collision with a skill that already exists in the catalogue. The name is only applied at import time, so changing it **replaces** the skill (new `id`).
 
 ### Read-Only

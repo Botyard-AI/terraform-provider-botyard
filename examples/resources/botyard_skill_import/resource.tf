@@ -24,9 +24,14 @@ resource "botyard_skill_import" "internal" {
   source = "acme/private-skills/oncall#2026.09"
 }
 
-# Someone edited this skill in Botyard, which detached it from its source.
-# Applies fail by default. Set `force = true` for one apply to discard the edit
-# and re-attach the skill, then remove it again.
+# `force = true` is needed for one apply in two cases, and should be removed
+# again afterwards:
+#   - someone edited the skill in Botyard, which detached it from its source;
+#     by default the apply fails rather than discard the edit;
+#   - `source` moves to a different repository, path or skill name (or drops
+#     its `#ref`). The API only re-points under force, which would also discard
+#     a concurrent edit, so Terraform asks you to opt in.
+# Changing only the `#ref` never needs it.
 resource "botyard_skill_import" "reattached" {
   source = "acme/agent-skills/triage#v3"
   force  = true

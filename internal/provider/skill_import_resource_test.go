@@ -6,16 +6,19 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"regexp"
 	"strings"
 	"sync"
 	"testing"
+	"time"
 
 	fwresource "github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/knownvalue"
 	"github.com/hashicorp/terraform-plugin-testing/plancheck"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 	"github.com/hashicorp/terraform-plugin-testing/tfjsonpath"
@@ -63,25 +66,45 @@ func TestParseSkillImportSource(t *testing.T) {
 
 func TestSkillImportSourceFromProvenance(t *testing.T) {
 	for _, tc := range []struct {
-		name string
-		src  client.SkillSourceResponse
-		want string
+		name     string
+		src      client.SkillSourceResponse
+		want     string
+		wantHead string // what the server's grammar sees before '#'
 	}{
-		{"root default branch", client.SkillSourceResponse{Url: "https://github.com/acme/skills"}, "acme/skills"},
-		{"path and ref", client.SkillSourceResponse{Url: "https://github.com/acme/skills", Path: strPtr("deploy"), Ref: strPtr("v1")}, "acme/skills/deploy#v1"},
-		{"nested path, slash ref", client.SkillSourceResponse{Url: "https://github.com/acme/skills/", Path: strPtr("/a/b/"), Ref: strPtr("release/v2")}, "acme/skills/a/b#release/v2"},
-		{"delimiters escaped", client.SkillSourceResponse{Url: "https://github.com/acme/skills", Ref: strPtr("we@ird#ref")}, "acme/skills#we%40ird%23ref"},
+		{"root default branch", client.SkillSourceResponse{Url: "https://github.com/acme/skills"}, "acme/skills", "acme/skills"},
+		{"path and ref", client.SkillSourceResponse{Url: "https://github.com/acme/skills", Path: strPtr("deploy"), Ref: strPtr("v1")}, "acme/skills/deploy#v1", "acme/skills/deploy"},
+		{"nested path, slash ref", client.SkillSourceResponse{Url: "https://github.com/acme/skills/", Path: strPtr("/a/b/"), Ref: strPtr("release/v2")}, "acme/skills/a/b#release/v2", "acme/skills/a/b"},
+		{"delimiters in ref escaped", client.SkillSourceResponse{Url: "https://github.com/acme/skills", Ref: strPtr("we@ird#ref")}, "acme/skills#we%40ird%23ref", "acme/skills"},
+		// The server never unquotes the part before '#', so '@' and '%' in a
+		// path are literal and are written as they are.
+		{"at sign in path", client.SkillSourceResponse{Url: "https://github.com/acme/skills", Path: strPtr("team@x/deploy"), Ref: strPtr("v1")}, "acme/skills/team@x/deploy#v1", "acme/skills/team@x/deploy"},
+		{"percent in path", client.SkillSourceResponse{Url: "https://github.com/acme/skills", Path: strPtr("100%25/deploy")}, "acme/skills/100%25/deploy", "acme/skills/100%25/deploy"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			got := skillImportSourceFromProvenance(&tc.src)
-			if got != tc.want {
-				t.Fatalf("got %q, want %q", got, tc.want)
+			got, ok := skillImportSourceFromProvenance(&tc.src)
+			if !ok || got != tc.want {
+				t.Fatalf("got %q (ok=%v), want %q", got, ok, tc.want)
 			}
-			// The rebuilt reference must parse back to the recorded ref.
-			if tc.src.Ref != nil {
-				if p := parseSkillImportSource(got); p.ref == nil || *p.ref != *tc.src.Ref {
-					t.Errorf("round trip ref = %v, want %q", p.ref, *tc.src.Ref)
-				}
+			p := parseSkillImportSource(got)
+			if p.head != tc.wantHead || p.skill != "" {
+				t.Errorf("round trip head/skill = %q/%q, want %q with no skill", p.head, p.skill, tc.wantHead)
+			}
+			switch {
+			case tc.src.Ref == nil && p.ref != nil:
+				t.Errorf("round trip ref = %q, want none", *p.ref)
+			case tc.src.Ref != nil && (p.ref == nil || *p.ref != *tc.src.Ref):
+				t.Errorf("round trip ref = %v, want %q", p.ref, *tc.src.Ref)
+			}
+		})
+	}
+
+	// A path the grammar cannot express must not be rebuilt: "dir#notes"
+	// would otherwise become path "dir" at ref "notes".
+	for _, path := range []string{"dir#notes", "a/b#c", "has space", "tab\there"} {
+		t.Run("unrepresentable "+path, func(t *testing.T) {
+			src := client.SkillSourceResponse{Url: "https://github.com/acme/skills", Path: strPtr(path), Ref: strPtr("v1")}
+			if got, ok := skillImportSourceFromProvenance(&src); ok {
+				t.Fatalf("rebuilt %q for unrepresentable path %q", got, path)
 			}
 		})
 	}
@@ -137,18 +160,16 @@ func TestPlannedSkillImportRefresh(t *testing.T) {
 }
 
 func TestDecideSkillImportRefresh(t *testing.T) {
-	attached := func(ref *string) *client.SkillResponse {
-		return &client.SkillResponse{Source: &client.SkillSourceResponse{
-			Url: "https://github.com/acme/s", CommitSha: "abc", Ref: ref,
-		}}
-	}
-	detached := &client.SkillResponse{}
+	attached := func(ref *string) skillImportRecord { return skillImportRecord{attached: true, ref: ref} }
+	detached := skillImportRecord{}
 	sha := strPtr("abc")
+	adopted := importModel("", sha, nil)
+	adopted.Source = types.StringNull()
 
 	for _, tc := range []struct {
 		name        string
 		plan, state SkillImportResourceModel
-		current     *client.SkillResponse
+		recorded    skillImportRecord
 		force       bool
 		want        skillRefreshKind
 		wantRef     string
@@ -157,14 +178,26 @@ func TestDecideSkillImportRefresh(t *testing.T) {
 			attached(strPtr("v1")), false, skillRefreshRef, "v2"},
 		{"ref bump ignores force", importModel("acme/s#v2", nil, nil), importModel("acme/s#v1", sha, nil),
 			attached(strPtr("v1")), true, skillRefreshRef, "v2"},
-		{"repoint on new repo", importModel("acme/other#v1", nil, nil), importModel("acme/s#v1", sha, nil),
-			attached(strPtr("v1")), false, skillRefreshRepoint, ""},
-		{"repoint on skill selector", importModel("acme/s#v1@a", nil, nil), importModel("acme/s#v1@b", sha, nil),
-			attached(strPtr("v1")), false, skillRefreshRepoint, ""},
-		{"repoint to default branch", importModel("acme/s", nil, nil), importModel("acme/s#v1", sha, nil),
-			attached(strPtr("v1")), false, skillRefreshRepoint, ""},
+		{"new repo without force is blocked", importModel("acme/other#v1", nil, nil), importModel("acme/s#v1", sha, nil),
+			attached(strPtr("v1")), false, skillRefreshBlockedRepoint, ""},
+		{"new repo with force re-points", importModel("acme/other#v1", nil, nil), importModel("acme/s#v1", sha, nil),
+			attached(strPtr("v1")), true, skillRefreshRepoint, ""},
+		{"new path without force is blocked", importModel("acme/s/b#v1", nil, nil), importModel("acme/s/a#v1", sha, nil),
+			attached(strPtr("v1")), false, skillRefreshBlockedRepoint, ""},
+		{"skill selector without force is blocked", importModel("acme/s#v1@a", nil, nil), importModel("acme/s#v1@b", sha, nil),
+			attached(strPtr("v1")), false, skillRefreshBlockedRepoint, ""},
+		{"skill selector with force re-points", importModel("acme/s#v1@a", nil, nil), importModel("acme/s#v1@b", sha, nil),
+			attached(strPtr("v1")), true, skillRefreshRepoint, ""},
+		{"dropping the ref without force is blocked", importModel("acme/s", nil, nil), importModel("acme/s#v1", sha, nil),
+			attached(strPtr("v1")), false, skillRefreshBlockedRepoint, ""},
+		{"dropping the ref with force re-points", importModel("acme/s", nil, nil), importModel("acme/s#v1", sha, nil),
+			attached(strPtr("v1")), true, skillRefreshRepoint, ""},
+		{"out-of-band pin, config on default branch, no force", importModel("acme/s", nil, nil), importModel("acme/s", sha, nil),
+			attached(strPtr("v3")), false, skillRefreshBlockedRepoint, ""},
+		{"adopted with unrebuildable source, no force", importModel("acme/s#v1", nil, nil), adopted,
+			attached(strPtr("v1")), false, skillRefreshBlockedRepoint, ""},
 		{"detached without force is blocked", importModel("acme/s#v1", nil, nil), importModel("acme/s#v1", nil, nil),
-			detached, false, skillRefreshBlocked, ""},
+			detached, false, skillRefreshBlockedDetached, ""},
 		{"detached with force re-attaches", importModel("acme/s#v1", nil, nil), importModel("acme/s#v1", nil, nil),
 			detached, true, skillRefreshRepoint, ""},
 		{"already matches (e.g. force toggled)", importModel("acme/s#v1", nil, nil), importModel("acme/s#v1", sha, nil),
@@ -173,7 +206,7 @@ func TestDecideSkillImportRefresh(t *testing.T) {
 			attached(strPtr("v3")), false, skillRefreshRef, "v1"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			got := decideSkillImportRefresh(tc.plan, tc.state, tc.current, tc.force)
+			got := decideSkillImportRefresh(tc.plan, tc.state, tc.recorded, tc.force)
 			if got.kind != tc.want {
 				t.Fatalf("kind = %d, want %d", got.kind, tc.want)
 			}
@@ -186,6 +219,9 @@ func TestDecideSkillImportRefresh(t *testing.T) {
 					t.Errorf("ref = %v, want %q", got.body.Ref, tc.wantRef)
 				}
 			case skillRefreshRepoint:
+				if !tc.force {
+					t.Errorf("re-pointed without the user's force")
+				}
 				if got.body.Source == nil || *got.body.Source != tc.plan.Source.ValueString() {
 					t.Errorf("source = %v, want %q", got.body.Source, tc.plan.Source.ValueString())
 				}
@@ -194,6 +230,16 @@ func TestDecideSkillImportRefresh(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+func TestSkillImportRecordFromState(t *testing.T) {
+	if r := skillImportRecordFromState(importModel("acme/s#v1", nil, strPtr("v1"))); r.attached {
+		t.Errorf("null commit_sha must read as detached: %+v", r)
+	}
+	r := skillImportRecordFromState(importModel("acme/s#v1", strPtr("abc"), strPtr("v1")))
+	if !r.attached || r.ref == nil || *r.ref != "v1" {
+		t.Errorf("attached record = %+v", r)
 	}
 }
 
@@ -208,9 +254,17 @@ type fakeSkill struct {
 	URL, Path, Ref, Commit string
 }
 
+// fakeCall records one request. Refresh is the only body the tests inspect,
+// so it is decoded into the generated request type.
 type fakeCall struct {
 	Method, Path string
-	Body         map[string]any
+	Refresh      client.SkillRefreshRequest
+}
+
+// fakeAPIError is the API's error envelope, reduced to what the provider reads.
+type fakeAPIError struct {
+	Detail string `json:"detail"`
+	Code   string `json:"code,omitempty"`
 }
 
 // fakeSkillAPI implements the slice of the skills API the resource uses, with
@@ -250,109 +304,135 @@ func (f *fakeSkillAPI) attach(s *fakeSkill, source string) {
 	s.Summary = "summary at " + s.Ref
 }
 
-func (f *fakeSkillAPI) json(s *fakeSkill) map[string]any {
-	out := map[string]any{
-		"id": s.ID, "slug": s.Slug, "name": s.Name, "summary": s.Summary,
-		"scope": "org", "provider": "custom", "source": nil,
-		"created_at": "2026-09-23T10:00:00Z", "updated_at": "2026-09-23T10:00:00Z",
-		"files": []map[string]any{{
-			"id": "f-1", "filename": "SKILL.md", "content": s.Content, "content_hash": "h",
-			"sort_order": 0, "created_at": "2026-09-23T10:00:00Z", "updated_at": "2026-09-23T10:00:00Z",
+var fakeTime = time.Date(2026, 9, 23, 10, 0, 0, 0, time.UTC)
+
+func (f *fakeSkillAPI) response(s *fakeSkill) client.SkillResponse {
+	out := client.SkillResponse{
+		Id: s.ID, Slug: s.Slug, Name: s.Name, Summary: s.Summary,
+		Scope: client.SkillScopeOrg, Provider: client.SkillProviderCustom,
+		CreatedAt: fakeTime, UpdatedAt: fakeTime,
+		Files: []client.SkillFileResponse{{
+			Id: "f-1", Filename: "SKILL.md", Content: s.Content, ContentHash: "h",
+			CreatedAt: fakeTime, UpdatedAt: fakeTime,
 		}},
 	}
 	if s.URL != "" {
-		src := map[string]any{
-			"kind": "github", "url": s.URL, "commit_sha": s.Commit,
-			"imported_at": "2026-09-23T10:00:00Z", "ref": nil, "path": nil,
+		src := client.SkillSourceResponse{
+			Kind: client.SkillSourceKindGithub, Url: s.URL, CommitSha: s.Commit, ImportedAt: fakeTime,
 		}
 		if s.Ref != "" {
-			src["ref"] = s.Ref
+			src.Ref = strPtr(s.Ref)
 		}
 		if s.Path != "" {
-			src["path"] = s.Path
+			src.Path = strPtr(s.Path)
 		}
-		out["source"] = src
+		out.Source = &src
 	}
 	return out
+}
+
+func writeFakeJSON(w http.ResponseWriter, code int, payload []byte) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+	_, _ = w.Write(payload)
+}
+
+func writeFakeSkill(w http.ResponseWriter, code int, s client.SkillResponse) {
+	b, err := json.Marshal(s)
+	if err != nil {
+		writeFakeError(w, http.StatusInternalServerError, fakeAPIError{Detail: err.Error()})
+		return
+	}
+	writeFakeJSON(w, code, b)
+}
+
+func writeFakeError(w http.ResponseWriter, code int, e fakeAPIError) {
+	b, _ := json.Marshal(e)
+	writeFakeJSON(w, code, b)
 }
 
 func (f *fakeSkillAPI) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 
-	var body map[string]any
-	_ = json.NewDecoder(r.Body).Decode(&body)
-	f.calls = append(f.calls, fakeCall{Method: r.Method, Path: r.URL.Path, Body: body})
+	raw, _ := io.ReadAll(r.Body)
+	call := fakeCall{Method: r.Method, Path: r.URL.Path}
 
-	write := func(code int, v any) {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(code)
-		if v != nil {
-			_ = json.NewEncoder(w).Encode(v)
-		}
-	}
 	const prefix = "/v1/orgs/org-1/skills"
 	rest := strings.TrimPrefix(r.URL.Path, prefix)
 	switch {
 	case r.Method == http.MethodPost && rest == "/import":
-		f.nextID++
-		s := &fakeSkill{ID: fmt.Sprintf("sk-%d", f.nextID), Slug: "deploy", Name: "Deploy"}
-		if n, ok := body["name"].(string); ok {
-			s.Name, s.Slug = n, strings.ToLower(n)
-		}
-		f.attach(s, body["source"].(string))
-		f.skills[s.Slug] = s
-		write(http.StatusCreated, f.json(s))
-
-	case r.Method == http.MethodPost && strings.HasSuffix(rest, "/refresh"):
-		s, ok := f.skills[strings.TrimSuffix(strings.TrimPrefix(rest, "/"), "/refresh")]
-		if !ok {
-			write(http.StatusNotFound, map[string]any{"detail": "Skill not found"})
+		f.calls = append(f.calls, call)
+		var body client.SkillImportRequest
+		if err := json.Unmarshal(raw, &body); err != nil {
+			writeFakeError(w, http.StatusUnprocessableEntity, fakeAPIError{Detail: err.Error()})
 			return
 		}
-		force, _ := body["force"].(bool)
-		source, hasSource := body["source"].(string)
+		f.nextID++
+		s := &fakeSkill{ID: fmt.Sprintf("sk-%d", f.nextID), Slug: "deploy", Name: "Deploy"}
+		if body.Name != nil {
+			s.Name, s.Slug = *body.Name, strings.ToLower(*body.Name)
+		}
+		f.attach(s, body.Source)
+		f.skills[s.Slug] = s
+		writeFakeSkill(w, http.StatusCreated, f.response(s))
+
+	case r.Method == http.MethodPost && strings.HasSuffix(rest, "/refresh"):
+		var body client.SkillRefreshRequest
+		if err := json.Unmarshal(raw, &body); err != nil {
+			writeFakeError(w, http.StatusUnprocessableEntity, fakeAPIError{Detail: err.Error()})
+			return
+		}
+		call.Refresh = body
+		f.calls = append(f.calls, call)
+		s, ok := f.skills[strings.TrimSuffix(strings.TrimPrefix(rest, "/"), "/refresh")]
+		if !ok {
+			writeFakeError(w, http.StatusNotFound, fakeAPIError{Detail: "Skill not found"})
+			return
+		}
+		force := body.Force != nil && *body.Force
 		attached := s.URL != ""
 		switch {
-		case hasSource && !force:
-			write(http.StatusConflict, map[string]any{"detail": "pass force", "code": "skill_not_imported"})
-		case hasSource:
-			f.attach(s, source)
-			write(http.StatusOK, f.json(s))
+		case body.Source != nil && !force:
+			writeFakeError(w, http.StatusConflict, fakeAPIError{Detail: "pass force", Code: "skill_not_imported"})
+		case body.Source != nil:
+			f.attach(s, *body.Source)
+			writeFakeSkill(w, http.StatusOK, f.response(s))
 		case !attached && force:
-			write(http.StatusUnprocessableEntity, map[string]any{"detail": "force needs source"})
+			writeFakeError(w, http.StatusUnprocessableEntity, fakeAPIError{Detail: "force needs source"})
 		case !attached:
-			write(http.StatusConflict, map[string]any{"detail": "detached", "code": "skill_not_imported"})
+			writeFakeError(w, http.StatusConflict, fakeAPIError{Detail: "detached", Code: "skill_not_imported"})
 		default:
 			ref := s.Ref
-			if rv, ok := body["ref"].(string); ok {
-				ref = rv
+			if body.Ref != nil {
+				ref = *body.Ref
 			}
 			if commit := fakeCommit(s.URL, s.Path, ref); commit != s.Commit || force {
 				s.Ref, s.Commit = ref, commit
 				s.Content = "# content at " + commit[:8] + "\n"
 				s.Summary = "summary at " + ref
 			}
-			write(http.StatusOK, f.json(s))
+			writeFakeSkill(w, http.StatusOK, f.response(s))
 		}
 
 	case strings.HasPrefix(rest, "/") && !strings.Contains(rest[1:], "/"):
+		f.calls = append(f.calls, call)
 		s, ok := f.skills[rest[1:]]
 		if !ok {
-			write(http.StatusNotFound, map[string]any{"detail": "Skill not found"})
+			writeFakeError(w, http.StatusNotFound, fakeAPIError{Detail: "Skill not found"})
 			return
 		}
 		switch r.Method {
 		case http.MethodGet:
-			write(http.StatusOK, f.json(s))
+			writeFakeSkill(w, http.StatusOK, f.response(s))
 		case http.MethodDelete:
 			delete(f.skills, s.Slug)
-			write(http.StatusNoContent, nil)
+			w.WriteHeader(http.StatusNoContent)
 		default:
-			write(http.StatusMethodNotAllowed, nil)
+			w.WriteHeader(http.StatusMethodNotAllowed)
 		}
 	default:
-		write(http.StatusNotFound, map[string]any{"detail": "no route " + r.URL.Path})
+		writeFakeError(w, http.StatusNotFound, fakeAPIError{Detail: "no route " + r.URL.Path})
 	}
 }
 
@@ -366,13 +446,13 @@ func (f *fakeSkillAPI) detach(slug string) {
 }
 
 // refreshCalls returns the bodies of every /refresh call since the last reset.
-func (f *fakeSkillAPI) takeRefreshBodies() []map[string]any {
+func (f *fakeSkillAPI) takeRefreshBodies() []client.SkillRefreshRequest {
 	f.mu.Lock()
 	defer f.mu.Unlock()
-	var out []map[string]any
+	var out []client.SkillRefreshRequest
 	for _, c := range f.calls {
 		if c.Method == http.MethodPost && strings.HasSuffix(c.Path, "/refresh") {
-			out = append(out, c.Body)
+			out = append(out, c.Refresh)
 		}
 	}
 	f.calls = nil
@@ -419,11 +499,11 @@ func TestSkillImportResource_Lifecycle(t *testing.T) {
 		}
 		return nil
 	}
-	expectRefresh := func(want ...map[string]any) resource.TestCheckFunc {
+	expectRefresh := func(want ...client.SkillRefreshRequest) resource.TestCheckFunc {
 		return func(*terraform.State) error {
 			got := fake.takeRefreshBodies()
 			if len(got) != len(want) {
-				return fmt.Errorf("refresh calls = %v, want %v", got, want)
+				return fmt.Errorf("refresh calls = %+v, want %+v", got, want)
 			}
 			for i := range want {
 				g, _ := json.Marshal(got[i])
@@ -437,6 +517,11 @@ func TestSkillImportResource_Lifecycle(t *testing.T) {
 	}
 
 	v1, v2 := "acme/skills/deploy#v1", "acme/skills/deploy#v2"
+	other := "acme/other/deploy#v1"
+	forced := func(source string) client.SkillRefreshRequest {
+		force := true
+		return client.SkillRefreshRequest{Force: &force, Source: strPtr(source)}
+	}
 	resource.UnitTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		CheckDestroy: func(*terraform.State) error {
@@ -487,7 +572,7 @@ func TestSkillImportResource_Lifecycle(t *testing.T) {
 					resource.TestCheckResourceAttr(skillImportAddr, "ref", "v2"),
 					resource.TestCheckResourceAttr(skillImportAddr, "commit_sha",
 						fakeCommit("https://github.com/acme/skills", "deploy", "v2")),
-					expectRefresh(map[string]any{"ref": "v2", "source": nil}),
+					expectRefresh(client.SkillRefreshRequest{Ref: strPtr("v2")}),
 				),
 			},
 			{
@@ -513,24 +598,60 @@ func TestSkillImportResource_Lifecycle(t *testing.T) {
 					resource.TestCheckResourceAttr(skillImportAddr, "ref", "v2"),
 					resource.TestCheckResourceAttr(skillImportAddr, "commit_sha",
 						fakeCommit("https://github.com/acme/skills", "deploy", "v2")),
-					expectRefresh(map[string]any{"force": true, "ref": nil, "source": v2}),
+					expectRefresh(forced(v2)),
 				),
 			},
 			{
-				// 7. Re-point at a different repository, still in place.
-				Config: skillImportConfig(srv.URL, "acme/other/deploy#v1", ""),
+				// 7. Force off again: only the attribute changes, which is an
+				// in-place update that makes no API write.
+				Config: skillImportConfig(srv.URL, v2, ""),
+				ConfigPlanChecks: resource.ConfigPlanChecks{
+					PreApply: []plancheck.PlanCheck{
+						plancheck.ExpectResourceAction(skillImportAddr, plancheck.ResourceActionUpdate),
+						plancheck.ExpectKnownValue(skillImportAddr, tfjsonpath.New("commit_sha"),
+							knownvalue.StringExact(fakeCommit("https://github.com/acme/skills", "deploy", "v2"))),
+					},
+				},
+				Check: resource.ComposeAggregateTestCheckFunc(
+					sameID,
+					resource.TestCheckResourceAttr(skillImportAddr, "force", "false"),
+					expectRefresh(),
+				),
+			},
+			{
+				// 8. Re-pointing at a different repository without force is
+				// refused before any write: the API needs force for it, and
+				// force could overwrite a concurrent edit.
+				Config:      skillImportConfig(srv.URL, other, ""),
+				ExpectError: regexp.MustCompile(`(?s)Changing the skill's source needs force.*force = true`),
+			},
+			{
+				// 9. Nothing was sent; with force it re-points in place.
+				PreConfig: func() {
+					if got := fake.takeRefreshBodies(); len(got) != 0 {
+						t.Errorf("refused re-point still called /refresh: %+v", got)
+					}
+					if got := fake.skills["deploy"].URL; got != "https://github.com/acme/skills" {
+						t.Errorf("refused re-point changed the source: %q", got)
+					}
+				},
+				Config: skillImportConfig(srv.URL, other, "force = true"),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					sameID,
 					resource.TestCheckResourceAttr(skillImportAddr, "source_url", "https://github.com/acme/other"),
-					resource.TestCheckResourceAttr(skillImportAddr, "force", "false"),
-					expectRefresh(map[string]any{"force": true, "ref": nil, "source": "acme/other/deploy#v1"}),
+					resource.TestCheckResourceAttr(skillImportAddr, "force", "true"),
+					expectRefresh(forced(other)),
 				),
 			},
 			{
-				// 8. terraform import by slug fills every computed provenance
+				Config: skillImportConfig(srv.URL, other, ""),
+				Check:  expectRefresh(),
+			},
+			{
+				// 10. terraform import by slug fills every computed provenance
 				// attribute and rebuilds `source`.
 				ResourceName:                         skillImportAddr,
-				Config:                               skillImportConfig(srv.URL, "acme/other/deploy#v1", ""),
+				Config:                               skillImportConfig(srv.URL, other, ""),
 				ImportState:                          true,
 				ImportStateId:                        "deploy",
 				ImportStateVerify:                    true,

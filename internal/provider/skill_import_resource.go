@@ -140,7 +140,8 @@ func (r *SkillImportResource) Schema(_ context.Context, _ resource.SchemaRequest
 			"On the next plan this resource shows an update, and by default the apply **fails** with an " +
 			"explanation rather than overwriting the edit. Either set `force = true` to discard the edit and " +
 			"re-attach the skill to `source`, or run `terraform state rm` to hand the skill over to whoever " +
-			"edited it.\n\n" +
+			"edited it. For the same reason, pointing the skill at a different repository, path, or skill " +
+			"name also needs `force = true`; bumping only the `#ref` does not.\n\n" +
 			"**Private repositories** need no credential here. The API key the provider uses must belong to " +
 			"an actor holding the `skill:private_source.create` permission, and the organization must have a " +
 			"GitHub integration connected; the server fetches with that integration.\n\n" +
@@ -152,9 +153,11 @@ func (r *SkillImportResource) Schema(_ context.Context, _ resource.SchemaRequest
 					"(`owner/repo`), a directory in one (`owner/repo/path/to/skill`), a named skill in one " +
 					"(`owner/repo@skill-name`), a github.com URL, or a skills.sh URL. Pin a branch, tag, or " +
 					"commit by appending `#ref` (for example `acme/skills/deploy#v1.2.0`).\n\n" +
-					"Changing only the `#ref` of the same coordinate refreshes the skill at the new ref. " +
-					"Changing the repository, path, or skill name re-points the skill at the new source, also " +
-					"in place — the skill keeps its `id` either way.",
+					"Changing only the `#ref` of the same coordinate refreshes the skill at the new ref; this " +
+					"never needs `force`. Changing the repository, path, or skill name — or removing the `#ref` " +
+					"to follow the default branch — re-points the skill at the new source. A re-point needs " +
+					"`force = true` for that apply, because the API performs it only under force, which would " +
+					"also discard a concurrent edit made in Botyard. Either way the skill keeps its `id`.",
 			},
 			"name": schema.StringAttribute{
 				Optional: true,
@@ -177,9 +180,13 @@ func (r *SkillImportResource) Schema(_ context.Context, _ resource.SchemaRequest
 					"An edit detaches a skill from its source; by default the next apply fails and names the " +
 					"edit instead of reverting it. With `force = true` the apply discards the edit and " +
 					"re-attaches the skill to `source`. This also lets you adopt a skill that was authored in " +
-					"Botyard (imported with `terraform import`) by attaching it to a source. Leaving this " +
-					"`true` means later edits are also overwritten without warning, so prefer setting it for " +
-					"one apply and removing it afterwards.",
+					"Botyard (imported with `terraform import`) by attaching it to a source.\n\n" +
+					"`force = true` is also required to **re-point** the skill: to change its repository, path, " +
+					"or skill name, or to drop the `#ref` pin. Only a `#ref` change on the same source is safe " +
+					"without it.\n\n" +
+					"Leaving this `true` means later edits are also overwritten without warning, so set it for " +
+					"one apply and remove it afterwards. Toggling `force` on its own shows as an in-place update " +
+					"that makes no API call.",
 			},
 
 			"id": computedString("Unique skill identifier (UUID). Preserved across ref changes; use it " +
@@ -299,18 +306,25 @@ func (r *SkillImportResource) ModifyPlan(ctx context.Context, req resource.Modif
 		return
 	}
 
-	detached := state.CommitSHA.IsNull()
 	if !plannedSkillImportRefresh(plan, state) {
 		return
 	}
 	markSkillImportRefreshUnknown(ctx, resp)
 
-	if detached && !plan.Force.ValueBool() {
+	// Predict the apply from the provenance recorded in state. The apply
+	// decides again from a fresh GET; this only makes a refusal visible early.
+	action := decideSkillImportRefresh(plan, state, skillImportRecordFromState(state), plan.Force.ValueBool())
+	switch action.kind {
+	case skillRefreshBlockedDetached:
 		resp.Diagnostics.AddAttributeWarning(path.Root("source"), "Skill has local edits",
 			fmt.Sprintf("Skill %q is not attached to a source: it was edited in Botyard, or authored there. "+
 				"This apply will fail rather than overwrite it. Set `force = true` to discard the "+
 				"edits and re-attach it to %q, or run `terraform state rm` on this resource to leave "+
 				"the skill as edited.", state.Slug.ValueString(), plan.Source.ValueString()))
+	case skillRefreshBlockedRepoint:
+		resp.Diagnostics.AddAttributeWarning(path.Root("source"), "Changing the skill's source needs force",
+			skillImportRepointDetail(state.Slug.ValueString(), plan.Source.ValueString())+
+				"\n\nAs planned, this apply will fail.")
 	}
 }
 
@@ -398,7 +412,15 @@ func (r *SkillImportResource) Read(ctx context.Context, req resource.ReadRequest
 	// rebuild one from the recorded provenance so the first plan is clean
 	// when the configuration uses the same form.
 	if state.Source.IsNull() && skill.Source != nil {
-		state.Source = types.StringValue(skillImportSourceFromProvenance(skill.Source))
+		if rebuilt, ok := skillImportSourceFromProvenance(skill.Source); ok {
+			state.Source = types.StringValue(rebuilt)
+		} else {
+			resp.Diagnostics.AddWarning("Cannot express the skill's source",
+				fmt.Sprintf("Skill %q was imported from path %q, which contains a character the source "+
+					"grammar cannot express ('#' or whitespace). `source` is left unset, so the next apply "+
+					"re-points the skill at the configured source and needs `force = true`.",
+					skill.Slug, derefString(skill.Source.Path)))
+		}
 	}
 	if state.Force.IsNull() {
 		state.Force = types.BoolValue(false)
@@ -429,12 +451,16 @@ func (r *SkillImportResource) Update(ctx context.Context, req resource.UpdateReq
 		return
 	}
 
-	action := decideSkillImportRefresh(plan, state, current, plan.Force.ValueBool())
+	action := decideSkillImportRefresh(plan, state, skillImportRecordFromResponse(current), plan.Force.ValueBool())
 	switch action.kind {
 	case skillRefreshNone:
 		resp.Diagnostics.Append(mapSkillImport(current, &plan)...)
-	case skillRefreshBlocked:
+	case skillRefreshBlockedDetached:
 		resp.Diagnostics.Append(skillImportDetachedError(slug, plan.Source.ValueString()))
+		return
+	case skillRefreshBlockedRepoint:
+		resp.Diagnostics.AddAttributeError(path.Root("source"), "Changing the skill's source needs force",
+			skillImportRepointDetail(slug, plan.Source.ValueString()))
 		return
 	default:
 		refreshed, rdiags := r.refresh(ctx, slug, plan.Source.ValueString(), action.body)
@@ -522,6 +548,21 @@ func skillImportDetachedError(slug, source string) diag.Diagnostic {
 			"configuration. The skill then stays in the catalogue, unmanaged.", slug, source))
 }
 
+// skillImportRepointDetail explains why a re-point needs `force`. The API only
+// replaces a skill's recorded origin under force, and force also discards any
+// local edit, including one made after this provider last read the skill.
+// There is no compare-and-swap to rule that race out, so the user has to
+// accept it explicitly rather than the provider accepting it on their behalf.
+func skillImportRepointDetail(slug, source string) string {
+	return fmt.Sprintf("Pointing skill %q at %q changes its repository, path or skill name, or drops its "+
+		"`#ref` pin. The API calls that re-pointing, and allows it only with `force`. Force also discards any "+
+		"edit made to the skill in Botyard, including one made after Terraform last read it, so Terraform "+
+		"will not send it unless you ask.\n\n"+
+		"Set `force = true` on this resource for this apply, then remove it. The skill keeps its id and bot "+
+		"assignments. To only move to a different version of the same source, change just the `#ref`: that "+
+		"needs no force and never overwrites an edit.", slug, source)
+}
+
 type skillRefreshKind int
 
 const (
@@ -529,64 +570,95 @@ const (
 	skillRefreshNone skillRefreshKind = iota
 	// skillRefreshRef: same coordinate, new ref — POST {ref}.
 	skillRefreshRef
-	// skillRefreshRepoint: different coordinate — POST {source, force}.
+	// skillRefreshRepoint: different coordinate, force is on — POST {source, force}.
 	skillRefreshRepoint
-	// skillRefreshBlocked: detached and force is off — fail the apply.
-	skillRefreshBlocked
+	// skillRefreshBlockedDetached: detached and force is off — fail the apply.
+	skillRefreshBlockedDetached
+	// skillRefreshBlockedRepoint: a re-point and force is off — fail the apply.
+	skillRefreshBlockedRepoint
 )
+
+// skillImportRecord is the provenance a refresh decision is made against:
+// whether the skill is attached to a source, and the ref recorded for it.
+type skillImportRecord struct {
+	attached bool
+	ref      *string
+}
+
+func skillImportRecordFromResponse(s *client.SkillResponse) skillImportRecord {
+	if s.Source == nil {
+		return skillImportRecord{}
+	}
+	return skillImportRecord{attached: true, ref: s.Source.Ref}
+}
+
+func skillImportRecordFromState(m SkillImportResourceModel) skillImportRecord {
+	if m.CommitSHA.IsNull() || m.CommitSHA.IsUnknown() {
+		return skillImportRecord{}
+	}
+	return skillImportRecord{attached: true, ref: m.Ref.ValueStringPointer()}
+}
 
 type skillRefreshAction struct {
 	kind skillRefreshKind
 	body client.SkillRefreshRequest
 }
 
-// decideSkillImportRefresh picks the /refresh call an update needs. current is
-// the skill as fetched immediately before the write.
+// decideSkillImportRefresh picks the /refresh call an update needs. recorded is
+// the skill's provenance: from a GET immediately before the write at apply
+// time, or from state at plan time.
 //
 //   - Detached (no provenance): only force may overwrite it, by re-attaching to
 //     the configured source. Without force, the apply is blocked.
 //   - Same coordinate as last applied (repository/path/skill name unchanged):
 //     send only `{ref}`. The server re-resolves its recorded repository and
-//     path at the new ref, and no-ops if the commit is unchanged. `source` is
-//     never sent on this path, so no force is involved.
+//     path at the new ref, no-ops if the commit is unchanged, and answers 409
+//     if the skill was detached meanwhile. No force is sent, so no edit can be
+//     overwritten, even by a race.
 //   - Anything else — a new repository/path/skill, or a `#ref` removed to go
 //     back to the default branch (a null `ref` means "the recorded ref" to
-//     the API) — re-points with `{source, force: true}`. `force` is the API's
-//     required acknowledgement that the recorded origin is replaced; it
-//     overwrites no local edit because the skill was attached a moment ago.
-func decideSkillImportRefresh(plan, state SkillImportResourceModel, current *client.SkillResponse, force bool) skillRefreshAction {
+//     the API) — is a re-point, which the API only performs with force. Force
+//     would also overwrite an edit made after the GET, so it is sent only
+//     when the user set `force = true`; otherwise the apply is blocked.
+func decideSkillImportRefresh(plan, state SkillImportResourceModel, recorded skillImportRecord, force bool) skillRefreshAction {
 	desired := plan.Source.ValueString()
-	if current.Source == nil {
+	if !recorded.attached {
 		if !force {
-			return skillRefreshAction{kind: skillRefreshBlocked}
+			return skillRefreshAction{kind: skillRefreshBlockedDetached}
+		}
+		return repointAction(desired)
+	}
+	repoint := func() skillRefreshAction {
+		if !force {
+			return skillRefreshAction{kind: skillRefreshBlockedRepoint}
 		}
 		return repointAction(desired)
 	}
 
-	if state.Source.IsNull() {
-		// Adopted by import but the rebuilt source differed from config.
-		return repointAction(desired)
+	if state.Source.IsNull() || state.Source.IsUnknown() {
+		// Adopted by import, and the source could not be rebuilt.
+		return repoint()
 	}
 	next := parseSkillImportSource(desired)
 	prev := parseSkillImportSource(state.Source.ValueString())
 	if next.head != prev.head || next.skill != prev.skill {
-		return repointAction(desired)
+		return repoint()
 	}
 
-	recorded := current.Source.Ref
 	switch {
-	case next.ref != nil && (recorded == nil || *recorded != *next.ref):
+	case next.ref != nil && (recorded.ref == nil || *recorded.ref != *next.ref):
 		ref := *next.ref
 		return skillRefreshAction{kind: skillRefreshRef, body: client.SkillRefreshRequest{Ref: &ref}}
 	case next.ref == nil && prev.ref != nil:
-		return repointAction(desired)
-	case next.ref == nil && recorded != nil && !strings.Contains(strings.ToLower(next.head), "://"):
+		return repoint()
+	case next.ref == nil && recorded.ref != nil && !strings.Contains(strings.ToLower(next.head), "://"):
 		// Pinned out of band; config wants the default branch.
-		return repointAction(desired)
+		return repoint()
 	}
 	return skillRefreshAction{kind: skillRefreshNone}
 }
 
+// repointAction is only reached when the user set `force = true`.
 func repointAction(source string) skillRefreshAction {
 	s := source
 	force := true
@@ -632,7 +704,13 @@ func unquoteSkillRef(s string) string {
 // skillImportSourceFromProvenance rebuilds a source reference from recorded
 // provenance: `owner/repo[/path][#ref]`. The path form is used (not
 // `@skill-name`) because the path is what the server pins to.
-func skillImportSourceFromProvenance(src *client.SkillSourceResponse) string {
+//
+// The server never percent-decodes the part before '#' (source.py only
+// unquotes the fragment), so a path is written as it is: '@' and '%' in a
+// path segment round-trip literally. A path containing '#' or whitespace
+// cannot be expressed at all — '#' would start the fragment, whitespace is
+// rejected — so ok is false and the caller must not guess.
+func skillImportSourceFromProvenance(src *client.SkillSourceResponse) (source string, ok bool) {
 	repo := strings.TrimSuffix(src.Url, "/")
 	repo = strings.TrimSuffix(repo, ".git")
 	if u, err := url.Parse(repo); err == nil && u.Host != "" {
@@ -640,12 +718,25 @@ func skillImportSourceFromProvenance(src *client.SkillSourceResponse) string {
 	}
 	out := repo
 	if src.Path != nil && strings.Trim(*src.Path, "/") != "" {
-		out += "/" + strings.Trim(*src.Path, "/")
+		p := strings.Trim(*src.Path, "/")
+		if strings.ContainsRune(p, '#') || strings.IndexFunc(p, func(r rune) bool {
+			return unicode.IsSpace(r) || unicode.IsControl(r)
+		}) >= 0 {
+			return "", false
+		}
+		out += "/" + p
 	}
 	if src.Ref != nil && *src.Ref != "" {
 		out += "#" + escapeSkillRef(*src.Ref)
 	}
-	return out
+	return out, true
+}
+
+func derefString(s *string) string {
+	if s == nil {
+		return ""
+	}
+	return *s
 }
 
 // escapeSkillRef escapes only the characters the fragment grammar treats as
