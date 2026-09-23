@@ -20,8 +20,17 @@ import (
 // create POST) as an optional nested `config` block on botyard_bot.
 //
 // Scope: the patchable OpenClawConfigPatch surface, modeled incrementally — the
-// high-value scalars plus the model/identity/heartbeat/compaction/session
-// objects. Deliberately DEFERRED (documented so the omission is intentional, not
+// high-value scalars plus the identity/heartbeat/compaction/session objects.
+//
+// There is deliberately NO `model` block. The API dropped `model` from
+// OpenClawConfigPatch and made `ModelConfig.primary` a read-only projection of
+// the authoritative model `chain`, which is written through the bot's LLM
+// credential links (manage those with botyard_bot_credential_assignment). The
+// old `config.model.primary` block was inert against that API and was removed
+// in the release after v0.4.0; stored state that still carries it is dropped on
+// upgrade (see TestBotState_LegacyModelBlockIsDroppedOnUpgrade).
+//
+// Deliberately DEFERRED (documented so the omission is intentional, not
 // an oversight):
 //   - `addons`: a list of typed addon objects carrying a free-form config map;
 //     needs careful list/dynamic modeling and its own round-trip validation.
@@ -50,29 +59,10 @@ type botConfigModel struct {
 	SystemPromptMode types.String        `tfsdk:"system_prompt_mode"`
 	ThinkingDefault  types.String        `tfsdk:"thinking_default"`
 	ReasoningDefault types.String        `tfsdk:"reasoning_default"`
-	Model            *botModelModel      `tfsdk:"model"`
 	Identity         *botIdentityModel   `tfsdk:"identity"`
 	Heartbeat        *botHeartbeatModel  `tfsdk:"heartbeat"`
 	Compaction       *botCompactionModel `tfsdk:"compaction"`
 	Session          *botSessionModel    `tfsdk:"session"`
-}
-
-// botModelModel mirrors the old ModelConfigPatch (just `primary`).
-//
-// DEPRECATED / INERT. The Botyard API removed `model` from
-// OpenClawConfigPatch and made `ModelConfig.primary` a read-only projection
-// of the authoritative `chain`. Nothing this block sends is applied, and
-// nothing can be read back. It is left in place here rather than removed
-// because removing it is a breaking schema change for practitioners and needs
-// its own task and design; this file only stops pretending it round-trips.
-type botModelModel struct {
-	Primary *botModelRefModel `tfsdk:"primary"`
-}
-
-// botModelRefModel mirrors ModelRef ({ provider, model }).
-type botModelRefModel struct {
-	Provider types.String `tfsdk:"provider"`
-	Model    types.String `tfsdk:"model"`
 }
 
 // botIdentityModel mirrors the patchable IdentityConfig fields.
@@ -152,25 +142,14 @@ func botConfigSchemaAttribute() schema.SingleNestedAttribute {
 		MarkdownDescription: "OpenClaw configuration overrides for the bot, applied via the config endpoint " +
 			"(embedded in the create request and sent to `PATCH /config` on update). Only the fields you " +
 			"set are applied over OpenClaw's defaults; omitted fields keep their server default. This block " +
-			"models the patchable config surface incrementally — `addons` and `bot_type` are not yet modeled.",
+			"models the patchable config surface incrementally — `addons` and `bot_type` are not yet modeled. " +
+			"The model a bot runs on is not set here: it is derived from the bot's LLM credential links, " +
+			"managed with `botyard_bot_credential_assignment` (`scope = \"llm\"`, ordered by `ordinal`, " +
+			"with an optional `default_model`).",
 		Attributes: map[string]schema.Attribute{
 			"system_prompt_mode": optCompStr("System prompt source: `botyard` (lean, default) or `openclaw`."),
 			"thinking_default":   optCompStr("Default thinking budget: one of `off`, `minimal`, `low`, `medium`, `high`, `xhigh`, `adaptive`."),
 			"reasoning_default":  optCompStr("Default reasoning mode: `off`, `on`, or `stream`."),
-			"model": schema.SingleNestedAttribute{
-				Optional:            true,
-				MarkdownDescription: "LLM model configuration.",
-				Attributes: map[string]schema.Attribute{
-					"primary": schema.SingleNestedAttribute{
-						Optional:            true,
-						MarkdownDescription: "Primary model reference.",
-						Attributes: map[string]schema.Attribute{
-							"provider": optCompStr("Provider key within `models.providers` (e.g. `botyard`). Defaults to `botyard` when omitted."),
-							"model":    reqStr("Model ID within the provider (e.g. `gpt-5.4`)."),
-						},
-					},
-				},
-			},
 			"identity": schema.SingleNestedAttribute{
 				Optional:            true,
 				MarkdownDescription: "Bot identity overrides.",
@@ -238,9 +217,6 @@ func buildBotConfigPatch(cfg *botConfigModel) json.RawMessage {
 	putStr(m, "system_prompt_mode", cfg.SystemPromptMode)
 	putStr(m, "thinking_default", cfg.ThinkingDefault)
 	putStr(m, "reasoning_default", cfg.ReasoningDefault)
-	if v, ok := buildModelPatch(cfg.Model); ok {
-		m["model"] = v
-	}
 	if v, ok := buildIdentityPatch(cfg.Identity); ok {
 		m["identity"] = v
 	}
@@ -254,19 +230,6 @@ func buildBotConfigPatch(cfg *botConfigModel) json.RawMessage {
 		m["session"] = v
 	}
 	return marshalObj(m)
-}
-
-func buildModelPatch(mm *botModelModel) (json.RawMessage, bool) {
-	if mm == nil || mm.Primary == nil {
-		return nil, false
-	}
-	prim := map[string]json.RawMessage{}
-	putStr(prim, "model", mm.Primary.Model)
-	putStr(prim, "provider", mm.Primary.Provider)
-	if len(prim) == 0 {
-		return nil, false
-	}
-	return marshalObj(map[string]json.RawMessage{"primary": marshalObj(prim)}), true
 }
 
 func buildIdentityPatch(id *botIdentityModel) (json.RawMessage, bool) {
@@ -440,15 +403,6 @@ func mapBotConfig(dc *client.OpenClawBotConfig, cfg *botConfigModel) {
 	cfg.ThinkingDefault = enumPtrToStr(dc.ThinkingDefault)
 	cfg.ReasoningDefault = enumPtrToStr(dc.ReasoningDefault)
 
-	// `config.model` is deliberately NOT refreshed. The API's ModelConfig no
-	// longer carries `primary` at all: routing is derived from the
-	// authoritative `chain`, and `model` was dropped from OpenClawConfigPatch
-	// entirely, so there is neither a value to read back nor a field to write.
-	// The `model` block on this resource is therefore inert against the
-	// current API and is scheduled for removal/migration under its own task —
-	// see the note on `botModelModel`. Refreshing it here from a field that no
-	// longer exists is not possible; leaving the practitioner's configured
-	// value untouched matches how every other undeclared nested block behaves.
 	if cfg.Identity != nil {
 		cfg.Identity.Emoji = strPtrToStr(dc.Identity.Emoji)
 		cfg.Identity.Theme = strPtrToStr(dc.Identity.Theme)

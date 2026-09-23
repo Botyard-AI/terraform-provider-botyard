@@ -24,6 +24,10 @@ resource "botyard_bot" "support" {
 # A bot with OpenClaw config overrides. `config` is a nested attribute, so it
 # uses object syntax (`config = { ... }`). Only the fields you set are applied
 # over OpenClaw's defaults; omitted fields keep their server default.
+#
+# The model a bot runs on is not part of `config`: it is derived from the bot's
+# LLM credential links. Set it with `botyard_bot_credential_assignment`
+# (`scope = "llm"`, ordered by `ordinal`, with an optional `default_model`).
 resource "botyard_bot" "researcher" {
   name        = "Research Assistant"
   description = "Runs deep research tasks."
@@ -32,13 +36,6 @@ resource "botyard_bot" "researcher" {
     system_prompt_mode = "botyard"
     thinking_default   = "high"
     reasoning_default  = "stream"
-
-    model = {
-      primary = {
-        provider = "botyard"
-        model    = "gpt-5.4"
-      }
-    }
 
     identity = {
       emoji = "🔬"
@@ -149,7 +146,7 @@ output "triage_host_policy" {
 ### Optional
 
 - `avatar_url` (String) Avatar image URL (a DiceBear data URI or a custom URL). Optional — the API stores no avatar when omitted. Removing it from the config clears the stored value (sends JSON null).
-- `config` (Attributes) OpenClaw configuration overrides for the bot, applied via the config endpoint (embedded in the create request and sent to `PATCH /config` on update). Only the fields you set are applied over OpenClaw's defaults; omitted fields keep their server default. This block models the patchable config surface incrementally — `addons` and `bot_type` are not yet modeled. (see [below for nested schema](#nestedatt--config))
+- `config` (Attributes) OpenClaw configuration overrides for the bot, applied via the config endpoint (embedded in the create request and sent to `PATCH /config` on update). Only the fields you set are applied over OpenClaw's defaults; omitted fields keep their server default. This block models the patchable config surface incrementally — `addons` and `bot_type` are not yet modeled. The model a bot runs on is not set here: it is derived from the bot's LLM credential links, managed with `botyard_bot_credential_assignment` (`scope = "llm"`, ordered by `ordinal`, with an optional `default_model`). (see [below for nested schema](#nestedatt--config))
 - `description` (String) Short human-facing description / role for the bot (max 500 chars). Display metadata only — not injected into the bot's system prompt. Omit to leave unset.
 - `harness` (String) Which agent software this bot runs: `openclaw` (default), `botyard_native`, or `claude_code`. Immutable — changing it forces replacement. Declare `config` for `openclaw` and `native_config` for `botyard_native`. The permitted pairs with `hosting_type` are `(hosted, openclaw)`, `(hosted, botyard_native)` and `(self_hosted, claude_code)`.
 - `hosting_type` (String) Who runs this bot's runtime: `hosted` (default) or `self_hosted`. Immutable — changing it forces replacement. Must form a permitted pair with `harness`; the API enforces the allowlist behind `GET /orgs/{org_id}/bots/hosting-options`.
@@ -181,7 +178,6 @@ Optional:
 - `compaction` (Attributes) Context-compaction safeguards. (see [below for nested schema](#nestedatt--config--compaction))
 - `heartbeat` (Attributes) Heartbeat scheduling and behavior. (see [below for nested schema](#nestedatt--config--heartbeat))
 - `identity` (Attributes) Bot identity overrides. (see [below for nested schema](#nestedatt--config--identity))
-- `model` (Attributes) LLM model configuration. (see [below for nested schema](#nestedatt--config--model))
 - `reasoning_default` (String) Default reasoning mode: `off`, `on`, or `stream`.
 - `session` (Attributes) Session-reliability settings. (see [below for nested schema](#nestedatt--config--session))
 - `system_prompt_mode` (String) System prompt source: `botyard` (lean, default) or `openclaw`.
@@ -232,26 +228,6 @@ Optional:
 
 - `emoji` (String) Bot identity emoji.
 - `theme` (String) Bot identity theme.
-
-
-<a id="nestedatt--config--model"></a>
-### Nested Schema for `config.model`
-
-Optional:
-
-- `primary` (Attributes) Primary model reference. (see [below for nested schema](#nestedatt--config--model--primary))
-
-<a id="nestedatt--config--model--primary"></a>
-### Nested Schema for `config.model.primary`
-
-Required:
-
-- `model` (String) Model ID within the provider (e.g. `gpt-5.4`).
-
-Optional:
-
-- `provider` (String) Provider key within `models.providers` (e.g. `botyard`). Defaults to `botyard` when omitted.
-
 
 
 <a id="nestedatt--config--session"></a>

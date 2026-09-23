@@ -59,26 +59,6 @@ func TestBuildBotConfigPatch_ScalarsSparse(t *testing.T) {
 	}
 }
 
-// TestBuildBotConfigPatch_ModelNestsPrimary proves the model block wraps its
-// fields under `primary` and omits the unset provider.
-func TestBuildBotConfigPatch_ModelNestsPrimary(t *testing.T) {
-	cfg := &botConfigModel{
-		Model: &botModelModel{Primary: &botModelRefModel{
-			Model:    types.StringValue("gpt-5.4"),
-			Provider: types.StringNull(),
-		}},
-	}
-	m := decodeObj(t, buildBotConfigPatch(cfg))
-	model := decodeSub(t, m["model"])
-	primary := decodeSub(t, model["primary"])
-	if jsonStr(t, primary["model"]) != "gpt-5.4" {
-		t.Errorf("model = %s", primary["model"])
-	}
-	if _, ok := primary["provider"]; ok {
-		t.Error("unset provider must be omitted")
-	}
-}
-
 // TestBuildBotConfigPatch_NestedTypes proves int/bool/string leaves serialize
 // with the right JSON types and that active_hours nests inside heartbeat.
 func TestBuildBotConfigPatch_NestedTypes(t *testing.T) {
@@ -140,10 +120,9 @@ func TestBuildBotConfigPatch_NestedTypes(t *testing.T) {
 }
 
 // TestBuildBotConfigPatch_EmptyNestedOmitted proves an all-unset nested block
-// (or a model block with no primary) is omitted entirely, not emitted as `{}`.
+// is omitted entirely, not emitted as `{}`.
 func TestBuildBotConfigPatch_EmptyNestedOmitted(t *testing.T) {
 	cfg := &botConfigModel{
-		Model:      &botModelModel{Primary: nil},
 		Heartbeat:  &botHeartbeatModel{}, // all null
 		Compaction: &botCompactionModel{},
 		Session:    &botSessionModel{},
@@ -194,9 +173,6 @@ func TestMapBotConfig_RefreshesScalarsAndDeclaredNested(t *testing.T) {
 	if !cfg.ReasoningDefault.IsNull() {
 		t.Errorf("reasoning_default should be null (server nil), got %q", cfg.ReasoningDefault.ValueString())
 	}
-	// `config.model` is intentionally absent: the API's ModelConfig no longer
-	// carries `primary` (it is derived from `chain`), so there is nothing for
-	// mapBotConfig to refresh. See the note on botModelModel.
 	if cfg.Identity.Emoji.ValueString() != "🤖" || cfg.Identity.Theme.ValueString() != "dark" {
 		t.Errorf("identity = %+v", cfg.Identity)
 	}
@@ -217,9 +193,6 @@ func TestMapBotConfig_UndeclaredNestedNotPopulated(t *testing.T) {
 	}
 	cfg := &botConfigModel{} // nothing declared
 	mapBotConfig(dc, cfg)
-	if cfg.Model != nil {
-		t.Error("undeclared model must stay nil")
-	}
 	if cfg.Identity != nil {
 		t.Error("undeclared identity must stay nil")
 	}

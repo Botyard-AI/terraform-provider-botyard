@@ -28,7 +28,10 @@ below is retained for verification and disaster recovery only.
 Releases are produced by the **Release** workflow
 (`.github/workflows/release.yml`), triggered manually.
 
-1. Ensure `main` is at the commit you want to release and CI is green.
+1. Ensure `main` is at the commit you want to release and CI is green. If
+   `CHANGELOG.md` has an **Unreleased** section, retitle it to the version you are
+   about to cut in the same change. A section that lists breaking changes needs at
+   least a `minor` bump.
 2. GitHub → **Actions → Release → Run workflow**, on `main`:
    - Pick a **bump** — `patch` / `minor` / `major`. The next `vX.Y.Z` is derived
      from the latest tag. With `v0.1.0` current: `patch → v0.1.1`,
@@ -46,6 +49,9 @@ Releases are produced by the **Release** workflow
      release with `terraform-registry-manifest.json` attached.
 4. The repo's `release` webhook notifies the Registry, which ingests the new
    version (see [Verify a release ingested](#verify-a-release-ingested)).
+5. Edit the published GitHub release and paste that version's `CHANGELOG.md`
+   section into the body. GoReleaser's changelog is disabled, so the release
+   has no notes otherwise.
 
 ### Re-run safety
 
