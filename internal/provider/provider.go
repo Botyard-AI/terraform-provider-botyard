@@ -176,6 +176,7 @@ func (p *BotyardProvider) Resources(_ context.Context) []func() resource.Resourc
 		NewBotToolAssignmentResource,
 		NewMcpServerResource,
 		NewSkillResource,
+		NewSkillImportResource,
 		NewVaultSecretResource,
 	}
 }
