@@ -18,10 +18,16 @@ resource "botyard_mcp_server" "search" {
 }
 
 # A managed-remote MCP server: Botyard proxies to a vendor-hosted endpoint.
+#
+# Servers are created `restricted` (only members can see and use them; see
+# botyard_mcp_server_member). `access = "open"` lets everyone in the
+# organization use it instead. Changing access requires the provider's API key
+# to be an owner of the server — which it is, for servers it created.
 resource "botyard_mcp_server" "vendor" {
   runtime_kind = "managed_remote"
   name         = "Vendor MCP"
   endpoint_url = "https://mcp.vendor.example.com"
+  access       = "open"
 }
 
 # A managed-remote MCP server behind a bearer token.

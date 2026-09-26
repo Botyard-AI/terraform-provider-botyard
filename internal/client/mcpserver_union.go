@@ -109,3 +109,21 @@ func (c *ClientWithResponses) GetMcpServerTyped(
 	detail, err = DecodeMcpServerDetail(resp.Body)
 	return detail, resp.StatusCode(), resp.Body, err
 }
+
+// SetMcpServerAccess PUTs the server's org-level access mode and decodes the
+// updated server on 200. The response is the same runtime_kind-discriminated
+// detail union as create/get, which the generated parser leaves opaque.
+func (c *ClientWithResponses) SetMcpServerAccess(
+	ctx context.Context, orgID, mcpServerID string, access McpServerAccess,
+) (detail *McpServerDetail, status int, respBody []byte, err error) {
+	resp, err := c.SetMcpServerAccessV1OrgsOrgIdMcpServersMcpServerIdAccessPutWithResponse(
+		ctx, orgID, mcpServerID, McpServerAccessUpdate{Access: access})
+	if err != nil {
+		return nil, 0, nil, err
+	}
+	if resp.StatusCode() != http.StatusOK {
+		return nil, resp.StatusCode(), resp.Body, nil
+	}
+	detail, err = DecodeMcpServerDetail(resp.Body)
+	return detail, resp.StatusCode(), resp.Body, err
+}

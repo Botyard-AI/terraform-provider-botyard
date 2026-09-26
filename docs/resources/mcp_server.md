@@ -33,10 +33,16 @@ resource "botyard_mcp_server" "search" {
 }
 
 # A managed-remote MCP server: Botyard proxies to a vendor-hosted endpoint.
+#
+# Servers are created `restricted` (only members can see and use them; see
+# botyard_mcp_server_member). `access = "open"` lets everyone in the
+# organization use it instead. Changing access requires the provider's API key
+# to be an owner of the server — which it is, for servers it created.
 resource "botyard_mcp_server" "vendor" {
   runtime_kind = "managed_remote"
   name         = "Vendor MCP"
   endpoint_url = "https://mcp.vendor.example.com"
+  access       = "open"
 }
 
 # A managed-remote MCP server behind a bearer token.
@@ -78,6 +84,7 @@ resource "botyard_mcp_server" "posthog" {
 
 ### Optional
 
+- `access` (String) Who reaches this server within the organization: `restricted` (only its members — see `botyard_mcp_server_member`) or `open`. **`open` is wider than it sounds:** it admits every principal in the organization holding `mcp_server.read` — every member *and viewer*, every bot, and every API key. When omitted, Terraform adopts whatever the server has (new servers start `restricted`) and never plans a change. Setting it requires the provider's API key to be an owner of the server (the creator is) or to hold org-wide `mcp_server.manage`. On create the server briefly exists as `restricted` before it is opened.
 - `acknowledged_credential_host` (String) Host you accept will receive this server's Runtime Vault secrets — it must equal the host of `endpoint_url`. The API requires it when a submission would start sending `secret_headers` to a host you nominated: on create, and on an update that re-points `endpoint_url` at a **different host**. Changing only the path on the same host needs nothing. Accepting a destination is recorded as an audit event.
 
 This is a **write-only** argument: it is sent with the request and never stored in Terraform state or plan, which is what it should be — it is a one-shot acceptance, not configuration, and the API does not return it on read. Requires Terraform 1.11 or later. Because it never enters state it also never produces a diff of its own: set it in the same apply that creates the server or moves the endpoint, and leave it in place afterwards (harmless) or remove it (also harmless — removing it is not a change).
