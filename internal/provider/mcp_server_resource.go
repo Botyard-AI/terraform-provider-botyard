@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -15,6 +16,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/mapplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	"github.com/Botyard-AI/terraform-provider-botyard/internal/client"
@@ -58,6 +60,9 @@ type McpServerResourceModel struct {
 	// Write-only: present in config, never in plan or state. Read it from
 	// req.Config, never from req.Plan / req.State.
 	AcknowledgedCredentialHost types.String `tfsdk:"acknowledged_credential_host"`
+	// Org-level reachability, set through its own PUT /access route rather
+	// than the PATCH body (epic #2672 D10).
+	Access types.String `tfsdk:"access"`
 	// computed
 	DesiredState     types.String `tfsdk:"desired_state"`
 	ObservedState    types.String `tfsdk:"observed_state"`
@@ -238,6 +243,20 @@ func (r *McpServerResource) Schema(_ context.Context, _ resource.SchemaRequest, 
 					"apply that creates the server or moves the endpoint, and leave it in place afterwards " +
 					"(harmless) or remove it (also harmless — removing it is not a change).",
 			},
+			"access": schema.StringAttribute{
+				Optional: true,
+				Computed: true,
+				MarkdownDescription: "Who reaches this server within the organization: `restricted` (only its " +
+					"members — see `botyard_mcp_server_member`) or `open`. **`open` is wider than it sounds:** it " +
+					"admits every principal in the organization holding `mcp_server.read` — every member *and " +
+					"viewer*, every bot, and every API key. When omitted, Terraform adopts whatever the server " +
+					"has (new servers start `restricted`) and never plans a change. Setting it requires the " +
+					"provider's API key to be an owner of the server (the creator is) or to hold org-wide " +
+					"`mcp_server.manage`. On create the server briefly exists as `restricted` before it is opened.",
+				Validators: []validator.String{stringvalidator.OneOf(
+					string(client.McpServerAccessOpen), string(client.McpServerAccessRestricted))},
+				PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
+			},
 			"desired_state":     schema.StringAttribute{Computed: true, MarkdownDescription: "Control-plane desired state."},
 			"observed_state":    schema.StringAttribute{Computed: true, MarkdownDescription: "Observed lifecycle state."},
 			"tool_count":        schema.Int64Attribute{Computed: true, MarkdownDescription: "Number of tools the server advertises."},
@@ -389,8 +408,55 @@ func (r *McpServerResource) Create(ctx context.Context, req resource.CreateReque
 			fmt.Sprintf("Create returned HTTP %d: %s", status, describeAPIError(raw)))
 		return
 	}
+	desiredAccess := plan.Access
 	mapDetail(ctx, detail, &plan, &resp.Diagnostics)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	// The create body has no access field: every server starts restricted. Open
+	// it (or otherwise converge) through PUT /access only when the practitioner
+	// asked for a value the server does not already have.
+	if accessNeedsPut(desiredAccess, plan.Access) {
+		// Persist the created server first, so a refused access change leaves it
+		// tracked (tainted) rather than orphaned outside state.
+		resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
+		r.setAccess(ctx, &plan, desiredAccess.ValueString(), &resp.Diagnostics)
+		if resp.Diagnostics.HasError() {
+			return
+		}
+	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
+}
+
+// accessNeedsPut reports whether a configured access mode differs from the
+// server's. An unknown/null desired value means "not configured": adopt the
+// server's.
+func accessNeedsPut(desired, current types.String) bool {
+	if desired.IsNull() || desired.IsUnknown() {
+		return false
+	}
+	return !desired.Equal(current)
+}
+
+// setAccess PUTs the access mode and maps the returned server into m.
+func (r *McpServerResource) setAccess(ctx context.Context, m *McpServerResourceModel, access string, diags *diag.Diagnostics) {
+	detail, status, raw, err := r.data.client.SetMcpServerAccess(ctx, r.data.orgID, m.ID.ValueString(),
+		client.McpServerAccess(access))
+	if err != nil {
+		diags.AddError("Error setting MCP server access", err.Error())
+		return
+	}
+	if detail == nil {
+		msg := fmt.Sprintf("PUT /access returned HTTP %d: %s", status, describeAPIError(raw))
+		if status == 403 {
+			msg = fmt.Sprintf("The provider's API key may not change the access mode of MCP server %q: only an "+
+				"owner of the server, or a principal holding org-wide mcp_server.manage, may.\n\nAPI: %s",
+				m.ID.ValueString(), describeAPIError(raw))
+		}
+		diags.AddAttributeError(path.Root("access"), "Error setting MCP server access", msg)
+		return
+	}
+	mapDetail(ctx, detail, m, diags)
 }
 
 func (r *McpServerResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
@@ -432,24 +498,65 @@ func (r *McpServerResource) Update(ctx context.Context, req resource.UpdateReque
 		return
 	}
 
-	body, diags := buildUpdateJSON(ctx, plan, cfg, state.RuntimeKind.ValueString())
-	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
+	desiredAccess := plan.Access
+	changeAccess := accessNeedsPut(desiredAccess, state.Access)
 
-	detail, status, raw, err := r.data.client.UpdateMcpServer(ctx, r.data.orgID, state.ID.ValueString(), body)
-	if err != nil {
-		resp.Diagnostics.AddError("Error updating MCP server", err.Error())
-		return
+	// PATCH is gated on org-wide mcp_server.update, while PUT /access takes the
+	// narrower instance-owner gate. When access is the only thing that moved,
+	// skip the PATCH so an owner that is not an org owner can still apply it.
+	if !changeAccess || !onlyAccessChanged(plan, state) {
+		body, diags := buildUpdateJSON(ctx, plan, cfg, state.RuntimeKind.ValueString())
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
+
+		detail, status, raw, err := r.data.client.UpdateMcpServer(ctx, r.data.orgID, state.ID.ValueString(), body)
+		if err != nil {
+			resp.Diagnostics.AddError("Error updating MCP server", err.Error())
+			return
+		}
+		if detail == nil {
+			resp.Diagnostics.AddError("Unexpected response updating MCP server",
+				fmt.Sprintf("Update returned HTTP %d: %s", status, describeAPIError(raw)))
+			return
+		}
+		mapDetail(ctx, detail, &plan, &resp.Diagnostics)
+		if resp.Diagnostics.HasError() {
+			return
+		}
+	} else {
+		plan.ID = state.ID
 	}
-	if detail == nil {
-		resp.Diagnostics.AddError("Unexpected response updating MCP server",
-			fmt.Sprintf("Update returned HTTP %d: %s", status, describeAPIError(raw)))
-		return
+	if changeAccess {
+		r.setAccess(ctx, &plan, desiredAccess.ValueString(), &resp.Diagnostics)
+		if resp.Diagnostics.HasError() {
+			return
+		}
 	}
-	mapDetail(ctx, detail, &plan, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
+}
+
+// onlyAccessChanged reports whether every PATCH-able argument in the plan
+// equals the prior state, i.e. the only configurable change is `access`.
+// Conservative: an unknown plan value counts as a change.
+func onlyAccessChanged(plan, state McpServerResourceModel) bool {
+	return plan.Name.Equal(state.Name) &&
+		plan.Slug.Equal(state.Slug) &&
+		plan.Description.Equal(state.Description) &&
+		plan.Transport.Equal(state.Transport) &&
+		plan.RequestTimeoutSeconds.Equal(state.RequestTimeoutSeconds) &&
+		plan.Image.Equal(state.Image) &&
+		plan.Port.Equal(state.Port) &&
+		plan.Command.Equal(state.Command) &&
+		plan.Args.Equal(state.Args) &&
+		plan.EnvPlaintext.Equal(state.EnvPlaintext) &&
+		plan.EnvSecretRefs.Equal(state.EnvSecretRefs) &&
+		plan.SecretFileMounts.Equal(state.SecretFileMounts) &&
+		plan.PodHostMode.Equal(state.PodHostMode) &&
+		plan.EndpointURL.Equal(state.EndpointURL) &&
+		plan.StaticHeaders.Equal(state.StaticHeaders) &&
+		plan.SecretHeaders.Equal(state.SecretHeaders)
 }
 
 func (r *McpServerResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
@@ -626,6 +733,7 @@ func mapDetail(ctx context.Context, d *client.McpServerDetail, m *McpServerResou
 		m.ConfigGeneration = types.Int64Value(int64(c.ConfigGeneration))
 		m.CreatedAt = types.StringValue(c.CreatedAt.Format(time.RFC3339))
 		m.UpdatedAt = types.StringValue(c.UpdatedAt.Format(time.RFC3339))
+		m.Access = accessFromDetail(c.Access, m.Access)
 		return
 	}
 	if d.Managed != nil {
@@ -660,9 +768,24 @@ func mapDetail(ctx context.Context, d *client.McpServerDetail, m *McpServerResou
 		m.ConfigGeneration = types.Int64Value(int64(c.ConfigGeneration))
 		m.CreatedAt = types.StringValue(c.CreatedAt.Format(time.RFC3339))
 		m.UpdatedAt = types.StringValue(c.UpdatedAt.Format(time.RFC3339))
+		m.Access = accessFromDetail(c.Access, m.Access)
 		return
 	}
 	diags.AddError("Empty MCP server detail", "The API returned a server with no recognized runtime_kind variant.")
+}
+
+// accessFromDetail maps the detail's access mode. `access` is optional on the
+// detail schema; if a response ever omits it, keep the value already known
+// rather than writing null over it (which would be a phantom diff), and only
+// fall back to null when nothing is known.
+func accessFromDetail(p *client.McpServerAccess, prior types.String) types.String {
+	if p != nil {
+		return types.StringValue(string(*p))
+	}
+	if prior.IsUnknown() {
+		return types.StringNull()
+	}
+	return prior
 }
 
 // --- small conversion helpers ---

@@ -84,3 +84,14 @@ func (c *ClientWithResponses) UnassignBotCredential(ctx context.Context, orgID, 
 	return deleteStatus(c.UnassignCredentialV1OrgsOrgIdBotsBotSlugCredentialsCredentialIdDelete(
 		ctx, orgID, botSlug, credentialID))
 }
+
+// RemoveMcpServerMember takes one principal off an MCP server's member list,
+// returning the HTTP status and raw body without body parsing (see the package
+// note above). The principal is addressed by both axes because actor_id alone
+// does not say which population it is drawn from. 204 on success; 404 when the
+// principal is not a member (or the server is not visible), which a caller
+// treats as already-gone; 409 when it is the server's last owner.
+func (c *ClientWithResponses) RemoveMcpServerMember(ctx context.Context, orgID, mcpServerID string, actorType ActorType, actorID string) (int, []byte, error) {
+	return deleteStatus(c.RemoveMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersActorTypeActorIdDelete(
+		ctx, orgID, mcpServerID, actorType, actorID))
+}
