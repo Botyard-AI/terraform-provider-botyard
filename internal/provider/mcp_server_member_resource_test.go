@@ -110,15 +110,15 @@ func (a *mcpMemberAPI) serve(w http.ResponseWriter, r *http.Request) {
 	}
 	switch {
 	case len(parts) == 1 && r.Method == http.MethodGet:
-		a.json(w, http.StatusOK, a.detail(s))
+		writeFakeJSON(w, http.StatusOK, a.detail(s))
 	case len(parts) == 1 && r.Method == http.MethodPatch:
 		a.patches++
-		var body map[string]any
+		var body fakePatchBody
 		_ = json.NewDecoder(r.Body).Decode(&body)
-		if n, ok := body["name"].(string); ok {
-			s.Name = n
+		if body.Name != nil {
+			s.Name = *body.Name
 		}
-		a.json(w, http.StatusOK, a.detail(s))
+		writeFakeJSON(w, http.StatusOK, a.detail(s))
 	case len(parts) == 1 && r.Method == http.MethodDelete:
 		delete(a.servers, s.ID)
 		w.WriteHeader(http.StatusNoContent)
@@ -131,9 +131,9 @@ func (a *mcpMemberAPI) serve(w http.ResponseWriter, r *http.Request) {
 		var body client.McpServerAccessUpdate
 		_ = json.NewDecoder(r.Body).Decode(&body)
 		s.Access = string(body.Access)
-		a.json(w, http.StatusOK, a.detail(s))
+		writeFakeJSON(w, http.StatusOK, a.detail(s))
 	case len(parts) == 2 && parts[1] == "members" && r.Method == http.MethodGet:
-		a.json(w, http.StatusOK, a.memberList(s))
+		writeFakeJSON(w, http.StatusOK, a.memberList(s))
 	case len(parts) == 2 && parts[1] == "members" && r.Method == http.MethodPut:
 		a.putMember(w, r, s)
 	case len(parts) == 4 && parts[1] == "members" && r.Method == http.MethodDelete:
@@ -145,21 +145,21 @@ func (a *mcpMemberAPI) serve(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *mcpMemberAPI) create(w http.ResponseWriter, r *http.Request) {
-	var body map[string]any
+	var body fakeCreateBody
 	_ = json.NewDecoder(r.Body).Decode(&body)
-	if _, has := body["access"]; has {
-		a.t.Errorf("create body must not carry access (the API has no such field): %v", body)
+	if body.Access != nil {
+		a.t.Errorf("create body must not carry access (the API has no such field): %s", body.Access)
 	}
 	a.nextID++
 	s := &fakeMcpServer{
 		ID:       fmt.Sprintf("srv-%d", a.nextID),
-		Name:     fmt.Sprint(body["name"]),
-		Endpoint: fmt.Sprint(body["endpoint_url"]),
+		Name:     body.Name,
+		Endpoint: body.EndpointURL,
 		Access:   string(client.McpServerAccessRestricted),
 		Members:  []fakeMember{{ActorType: "api_key", ActorID: fakeSelfKeyID, Role: mcpMemberRoleOwner}},
 	}
 	a.servers[s.ID] = s
-	a.json(w, http.StatusCreated, a.detail(s))
+	writeFakeJSON(w, http.StatusCreated, a.detail(s))
 }
 
 func (a *mcpMemberAPI) putMember(w http.ResponseWriter, r *http.Request, s *fakeMcpServer) {
@@ -190,12 +190,12 @@ func (a *mcpMemberAPI) putMember(w http.ResponseWriter, r *http.Request, s *fake
 				return
 			}
 			m.Role = role
-			a.json(w, http.StatusOK, a.memberList(s))
+			writeFakeJSON(w, http.StatusOK, a.memberList(s))
 			return
 		}
 	}
 	s.Members = append(s.Members, fakeMember{ActorType: string(body.ActorType), ActorID: body.ActorId, Role: role})
-	a.json(w, http.StatusOK, a.memberList(s))
+	writeFakeJSON(w, http.StatusOK, a.memberList(s))
 }
 
 func (a *mcpMemberAPI) deleteMember(w http.ResponseWriter, s *fakeMcpServer, actorType, actorID string) {
@@ -228,31 +228,52 @@ func (a *mcpMemberAPI) owners(s *fakeMcpServer) int {
 	return n
 }
 
-func (a *mcpMemberAPI) memberList(s *fakeMcpServer) []map[string]any {
-	out := make([]map[string]any, 0, len(s.Members))
+func (a *mcpMemberAPI) memberList(s *fakeMcpServer) []client.McpServerMember {
+	out := make([]client.McpServerMember, 0, len(s.Members))
 	for _, m := range s.Members {
-		out = append(out, map[string]any{
-			"actor_type": m.ActorType, "actor_id": m.ActorID, "role": m.Role,
-			"name": nil, "avatar_url": nil, "created_at": fakeTime,
+		out = append(out, client.McpServerMember{
+			ActorType: client.ActorType(m.ActorType), ActorId: m.ActorID, Role: m.Role, CreatedAt: fakeTime,
 		})
 	}
 	return out
 }
 
-func (a *mcpMemberAPI) detail(s *fakeMcpServer) map[string]any {
-	return map[string]any{
-		"mcp_server_id": s.ID, "org_id": "org-1", "slug": strings.ToLower(strings.ReplaceAll(s.Name, " ", "-")),
-		"name": s.Name, "description": nil, "transport": "streamable_http",
-		"observed_state": "external", "desired_state": "running", "tool_count": 0,
-		"created_at": fakeTime, "updated_at": fakeTime, "config_generation": 1, "reconciled_generation": 1,
-		"runtime_kind": client.McpRuntimeManagedRemote, "endpoint_url": s.Endpoint,
-		"request_timeout_seconds": nil, "last_error": nil, "mcp_catalog_entry_id": nil,
-		"setup_catalog_name": nil, "setup_catalog_slug": nil, "setup_form_spec": nil,
-		"access": s.Access,
+func (a *mcpMemberAPI) detail(s *fakeMcpServer) client.ManagedRemoteMcpServerDetail {
+	access := client.McpServerAccess(s.Access)
+	return client.ManagedRemoteMcpServerDetail{
+		McpServerId: s.ID, OrgId: "org-1", Slug: strings.ToLower(strings.ReplaceAll(s.Name, " ", "-")),
+		Name: s.Name, Transport: client.McpServerTransportStreamableHttp,
+		ObservedState: client.McpServerState("external"), DesiredState: client.McpServerDesiredState("running"),
+		CreatedAt: fakeTime, UpdatedAt: fakeTime, ConfigGeneration: 1, ReconciledGeneration: 1,
+		RuntimeKind: client.ManagedRemoteMcpServerDetailRuntimeKindManagedRemote, EndpointUrl: s.Endpoint,
+		Access: &access,
 	}
 }
 
-func (a *mcpMemberAPI) json(w http.ResponseWriter, status int, v any) {
+// The request bodies the fake reads. Only the fields it acts on are decoded;
+// Access stays raw so "present at all" is detectable.
+type fakeCreateBody struct {
+	Name        string          `json:"name"`
+	EndpointURL string          `json:"endpoint_url"`
+	Access      json.RawMessage `json:"access"`
+}
+
+type fakePatchBody struct {
+	Name *string `json:"name"`
+}
+
+type fakeProblem struct {
+	Title  string `json:"title"`
+	Status int    `json:"status"`
+	Detail string `json:"detail"`
+}
+
+// fakeResponse is the closed set of bodies the fake returns.
+type fakeResponse interface {
+	client.ManagedRemoteMcpServerDetail | []client.McpServerMember
+}
+
+func writeFakeJSON[T fakeResponse](w http.ResponseWriter, status int, v T) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	_ = json.NewEncoder(w).Encode(v)
@@ -261,7 +282,7 @@ func (a *mcpMemberAPI) json(w http.ResponseWriter, status int, v any) {
 func (a *mcpMemberAPI) problem(w http.ResponseWriter, status int, detail string) {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(status)
-	_ = json.NewEncoder(w).Encode(map[string]any{"title": http.StatusText(status), "status": status, "detail": detail})
+	_ = json.NewEncoder(w).Encode(fakeProblem{Title: http.StatusText(status), Status: status, Detail: detail})
 }
 
 // --- test helpers operating on fake state (all take the lock) ---
