@@ -121,7 +121,8 @@ func (r *BotResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *
 			"Creating the resource persists the bot and triggers provisioner reconciliation best-effort. " +
 			"It manages the bot's core identity (name, description, avatar) and its OpenClaw `config` " +
 			"overrides, and exposes runtime placement and control-plane state as read-only attributes; " +
-			"the bot's skill/tool/credential assignments are managed separately.",
+			"the bot's skill/tool/credential assignments are managed separately.\n\n" +
+			"See [Getting started](https://docs.botyard.io/docs/getting-started) in the Botyard docs.",
 		Attributes: map[string]schema.Attribute{
 			"name": schema.StringAttribute{
 				Required: true,

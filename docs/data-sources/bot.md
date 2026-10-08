@@ -4,11 +4,14 @@ page_title: "botyard_bot Data Source - Botyard"
 subcategory: ""
 description: |-
   Reads a single Botyard bot by slug within the configured organization.
+  See Getting started https://docs.botyard.io/docs/getting-started in the Botyard docs.
 ---
 
 # botyard_bot (Data Source)
 
 Reads a single Botyard bot by slug within the configured organization.
+
+See [Getting started](https://docs.botyard.io/docs/getting-started) in the Botyard docs.
 
 ## Example Usage
 

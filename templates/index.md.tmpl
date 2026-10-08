@@ -1,0 +1,56 @@
+---
+page_title: "Botyard Provider"
+description: |-
+{{ .Description | plainmarkdown | trimspace | prefixlines "  " }}
+---
+
+# Botyard Provider
+
+[Botyard](https://botyard.io) is a platform for running shared, governed AI
+agents ("bots") that belong to the company rather than to one person's laptop.
+Bots run in managed runtimes, use organization-owned credentials and Runtime
+Vault secrets, and are equipped with skills, tools and MCP servers that an
+organization controls centrally. The platform documentation lives at
+[docs.botyard.io](https://docs.botyard.io).
+
+{{ .Description | trimspace }}
+
+See [Manage Botyard with Terraform](https://docs.botyard.io/docs/terraform) in
+the Botyard docs for a walkthrough. The provider source is at
+[github.com/Botyard-AI/terraform-provider-botyard](https://github.com/Botyard-AI/terraform-provider-botyard).
+
+## Supported resources
+
+The provider currently supports the following resources. Other Botyard
+features are not yet managed through Terraform; use the Botyard app or API for
+those.
+
+| Resource | Manages | Concept docs |
+| --- | --- | --- |
+| [`botyard_bot`](https://registry.terraform.io/providers/Botyard-AI/botyard/latest/docs/resources/bot) | A bot's identity and configuration overrides | [Getting started](https://docs.botyard.io/docs/getting-started) |
+| [`botyard_bot_credential_assignment`](https://registry.terraform.io/providers/Botyard-AI/botyard/latest/docs/resources/bot_credential_assignment) | Which organization credentials a bot uses, per scope | [Provider credentials](https://docs.botyard.io/docs/provider-credentials) |
+| [`botyard_bot_skill_assignment`](https://registry.terraform.io/providers/Botyard-AI/botyard/latest/docs/resources/bot_skill_assignment) | Which skills are assigned to a bot | — |
+| [`botyard_bot_tool_assignment`](https://registry.terraform.io/providers/Botyard-AI/botyard/latest/docs/resources/bot_tool_assignment) | Which tools are assigned to a bot | — |
+| [`botyard_skill`](https://registry.terraform.io/providers/Botyard-AI/botyard/latest/docs/resources/skill) | An organization skill and its files | — |
+| [`botyard_mcp_server`](https://registry.terraform.io/providers/Botyard-AI/botyard/latest/docs/resources/mcp_server) | An organization MCP server | [MCP setup templates](https://docs.botyard.io/docs/mcp-setup-templates) |
+| [`botyard_mcp_server_member`](https://registry.terraform.io/providers/Botyard-AI/botyard/latest/docs/resources/mcp_server_member) | One member of an MCP server's member list | [MCP setup templates](https://docs.botyard.io/docs/mcp-setup-templates) |
+| [`botyard_vault_secret`](https://registry.terraform.io/providers/Botyard-AI/botyard/latest/docs/resources/vault_secret) | A Runtime Vault secret and its access rules | [Runtime Vault](https://docs.botyard.io/docs/runtime-vault) |
+
+Data sources are available for looking up bots, bot templates, credentials, MCP
+servers, skills and tools; see the navigation for the list.
+
+## Example Usage
+
+{{ tffile "examples/provider/provider.tf" }}
+
+## Quickstart
+
+This configuration creates a bot, an organization skill, assigns the skill to
+the bot, and stores a Runtime Vault secret the bot can read. It runs end to end
+with `terraform init && terraform apply` once `BOTYARD_API_KEY` and
+`BOTYARD_ORG_ID` are set, and `terraform destroy` removes everything it
+created.
+
+{{ tffile "examples/quickstart/main.tf" }}
+
+{{ .SchemaMarkdown | trimspace }}

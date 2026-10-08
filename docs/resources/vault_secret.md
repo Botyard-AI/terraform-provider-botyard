@@ -5,6 +5,7 @@ subcategory: ""
 description: |-
   Manages an organization-scoped Botyard Runtime Vault secret (a secret policy: the encrypted value plus its access rules). The secret material is supplied through the write-only secret_value argument, which is never stored in Terraform state — only a one-way SHA-256 fingerprint (secret_value_hash) is kept so that changing the value triggers a rotation on the next apply.
   ~> Terraform 1.11 or later is required for the write-only secret_value argument.
+  See Runtime Vault https://docs.botyard.io/docs/runtime-vault in the Botyard docs.
 ---
 
 # botyard_vault_secret (Resource)
@@ -12,6 +13,8 @@ description: |-
 Manages an organization-scoped Botyard Runtime Vault secret (a secret *policy*: the encrypted value plus its access rules). The secret material is supplied through the write-only `secret_value` argument, which is never stored in Terraform state — only a one-way SHA-256 fingerprint (`secret_value_hash`) is kept so that changing the value triggers a rotation on the next apply.
 
 ~> **Terraform 1.11 or later is required** for the write-only `secret_value` argument.
+
+See [Runtime Vault](https://docs.botyard.io/docs/runtime-vault) in the Botyard docs.
 
 ## Example Usage
 

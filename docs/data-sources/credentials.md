@@ -4,11 +4,14 @@ page_title: "botyard_credentials Data Source - Botyard"
 subcategory: ""
 description: |-
   Lists the organization's credentials (non-secret metadata only), exposing each credential_id for use with botyard_bot_credential_assignment.
+  See Provider credentials https://docs.botyard.io/docs/provider-credentials in the Botyard docs.
 ---
 
 # botyard_credentials (Data Source)
 
 Lists the organization's credentials (non-secret metadata only), exposing each `credential_id` for use with `botyard_bot_credential_assignment`.
+
+See [Provider credentials](https://docs.botyard.io/docs/provider-credentials) in the Botyard docs.
 
 ## Example Usage
 

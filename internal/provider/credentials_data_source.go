@@ -103,7 +103,8 @@ func (d *CredentialsDataSource) Metadata(_ context.Context, req datasource.Metad
 func (d *CredentialsDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "Lists the organization's credentials (non-secret metadata only), exposing each " +
-			"`credential_id` for use with `botyard_bot_credential_assignment`.",
+			"`credential_id` for use with `botyard_bot_credential_assignment`.\n\n" +
+			"See [Provider credentials](https://docs.botyard.io/docs/provider-credentials) in the Botyard docs.",
 		Attributes: map[string]schema.Attribute{
 			"credentials": schema.ListNestedAttribute{
 				Computed:            true,
