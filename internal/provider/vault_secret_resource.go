@@ -84,7 +84,8 @@ func (r *VaultSecretResource) Schema(_ context.Context, _ resource.SchemaRequest
 			"encrypted value plus its access rules). The secret material is supplied through the write-only " +
 			"`secret_value` argument, which is never stored in Terraform state — only a one-way SHA-256 fingerprint " +
 			"(`secret_value_hash`) is kept so that changing the value triggers a rotation on the next apply.\n\n" +
-			"~> **Terraform 1.11 or later is required** for the write-only `secret_value` argument.",
+			"~> **Terraform 1.11 or later is required** for the write-only `secret_value` argument.\n\n" +
+			"See [Runtime Vault](https://docs.botyard.io/docs/runtime-vault) in the Botyard docs.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,

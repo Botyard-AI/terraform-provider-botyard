@@ -4,11 +4,14 @@ page_title: "botyard_bot Resource - Botyard"
 subcategory: ""
 description: |-
   Manages a Botyard bot's desired-state record within the configured organization. Creating the resource persists the bot and triggers provisioner reconciliation best-effort. It manages the bot's core identity (name, description, avatar) and its OpenClaw config overrides, and exposes runtime placement and control-plane state as read-only attributes; the bot's skill/tool/credential assignments are managed separately.
+  See Getting started https://docs.botyard.io/docs/getting-started in the Botyard docs.
 ---
 
 # botyard_bot (Resource)
 
 Manages a Botyard bot's desired-state record within the configured organization. Creating the resource persists the bot and triggers provisioner reconciliation best-effort. It manages the bot's core identity (name, description, avatar) and its OpenClaw `config` overrides, and exposes runtime placement and control-plane state as read-only attributes; the bot's skill/tool/credential assignments are managed separately.
+
+See [Getting started](https://docs.botyard.io/docs/getting-started) in the Botyard docs.
 
 ## Example Usage
 

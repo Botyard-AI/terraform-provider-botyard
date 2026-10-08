@@ -4,11 +4,14 @@ page_title: "botyard_mcp_servers Data Source - Botyard"
 subcategory: ""
 description: |-
   Lists the organization's MCP servers (both container-image and managed-remote runtimes).
+  See MCP setup templates https://docs.botyard.io/docs/mcp-setup-templates in the Botyard docs.
 ---
 
 # botyard_mcp_servers (Data Source)
 
 Lists the organization's MCP servers (both container-image and managed-remote runtimes).
+
+See [MCP setup templates](https://docs.botyard.io/docs/mcp-setup-templates) in the Botyard docs.
 
 ## Example Usage
 

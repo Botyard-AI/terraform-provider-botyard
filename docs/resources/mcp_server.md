@@ -4,11 +4,14 @@ page_title: "botyard_mcp_server Resource - Botyard"
 subcategory: ""
 description: |-
   Manages an organization-scoped Botyard MCP server. Two runtime kinds are supported: container_image (Botyard runs the server as a pod) and managed_remote (Botyard proxies to a vendor-hosted endpoint). Set the fields for the chosen runtime_kind.
+  See MCP setup templates https://docs.botyard.io/docs/mcp-setup-templates in the Botyard docs.
 ---
 
 # botyard_mcp_server (Resource)
 
 Manages an organization-scoped Botyard MCP server. Two runtime kinds are supported: `container_image` (Botyard runs the server as a pod) and `managed_remote` (Botyard proxies to a vendor-hosted endpoint). Set the fields for the chosen `runtime_kind`.
+
+See [MCP setup templates](https://docs.botyard.io/docs/mcp-setup-templates) in the Botyard docs.
 
 ## Example Usage
 

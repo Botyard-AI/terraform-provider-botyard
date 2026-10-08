@@ -55,7 +55,8 @@ func (d *BotDataSource) Metadata(_ context.Context, req datasource.MetadataReque
 
 func (d *BotDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Reads a single Botyard bot by slug within the configured organization.",
+		MarkdownDescription: "Reads a single Botyard bot by slug within the configured organization.\n\n" +
+			"See [Getting started](https://docs.botyard.io/docs/getting-started) in the Botyard docs.",
 		Attributes: map[string]schema.Attribute{
 			"slug": schema.StringAttribute{
 				Required:            true,

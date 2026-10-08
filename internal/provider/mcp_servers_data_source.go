@@ -59,7 +59,8 @@ func (d *McpServersDataSource) Metadata(_ context.Context, req datasource.Metada
 
 func (d *McpServersDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Lists the organization's MCP servers (both container-image and managed-remote runtimes).",
+		MarkdownDescription: "Lists the organization's MCP servers (both container-image and managed-remote runtimes).\n\n" +
+			"See [MCP setup templates](https://docs.botyard.io/docs/mcp-setup-templates) in the Botyard docs.",
 		Attributes: map[string]schema.Attribute{
 			"mcp_servers": schema.ListNestedAttribute{
 				Computed:            true,

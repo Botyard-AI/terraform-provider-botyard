@@ -7,6 +7,7 @@ description: |-
   Non-authoritative. Each resource manages exactly one membership and ignores every other row on the list, so the server creator's automatic owner row, the member row Botyard adds for a bot when it is assigned one of the server's tools, and members added in the app never show up as drift. Declare one resource per principal.
   Existing rows are adopted. Creating this resource for a principal that is already a member (for example a bot that became a member through botyard_bot_tool_assignment) takes that row over and sets its role; it is not an error. Destroying the resource removes the row, whoever created it.
   Last owner. Botyard refuses to remove or demote a server's last owner. Give another principal role = "owner" first, or terraform state rm this resource to leave the row outside Terraform. Be careful declaring the provider's own API key here: it is the server's creator and so its owner, and role = "member" would demote it — which fails if it is the only owner, and otherwise leaves the key unable to edit the member list (or, on a restricted server without org-wide authority, to see the server at all).
+  See MCP setup templates https://docs.botyard.io/docs/mcp-setup-templates in the Botyard docs.
 ---
 
 # botyard_mcp_server_member (Resource)
@@ -18,6 +19,8 @@ Puts one principal (a user, bot or API key) on a Botyard MCP server's member lis
 **Existing rows are adopted.** Creating this resource for a principal that is already a member (for example a bot that became a member through `botyard_bot_tool_assignment`) takes that row over and sets its `role`; it is not an error. Destroying the resource removes the row, whoever created it.
 
 **Last owner.** Botyard refuses to remove or demote a server's last `owner`. Give another principal `role = "owner"` first, or `terraform state rm` this resource to leave the row outside Terraform. Be careful declaring the provider's own API key here: it is the server's creator and so its owner, and `role = "member"` would demote it — which fails if it is the only owner, and otherwise leaves the key unable to edit the member list (or, on a `restricted` server without org-wide authority, to see the server at all).
+
+See [MCP setup templates](https://docs.botyard.io/docs/mcp-setup-templates) in the Botyard docs.
 
 ## Example Usage
 

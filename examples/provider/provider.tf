@@ -2,7 +2,7 @@ terraform {
   required_providers {
     botyard = {
       source  = "Botyard-AI/botyard"
-      version = "~> 0.1"
+      version = "~> 0.4"
     }
   }
 }

@@ -87,7 +87,8 @@ func (r *McpServerResource) Schema(_ context.Context, _ resource.SchemaRequest, 
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "Manages an organization-scoped Botyard MCP server. Two runtime kinds are supported: " +
 			"`container_image` (Botyard runs the server as a pod) and `managed_remote` (Botyard proxies to a " +
-			"vendor-hosted endpoint). Set the fields for the chosen `runtime_kind`.",
+			"vendor-hosted endpoint). Set the fields for the chosen `runtime_kind`.\n\n" +
+			"See [MCP setup templates](https://docs.botyard.io/docs/mcp-setup-templates) in the Botyard docs.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,

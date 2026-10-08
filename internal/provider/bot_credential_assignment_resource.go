@@ -118,7 +118,8 @@ func (r *BotCredentialAssignmentResource) Schema(_ context.Context, _ resource.S
 			"Because ownership is per-scope, import IDs carry the scopes to manage: `<bot_slug>` imports every " +
 			"scope the bot currently has assignments in, and `<bot_slug>:<scope>[,<scope>...]` imports only the " +
 			"listed scopes (each listed scope must currently have at least one assignment — an empty scope " +
-			"cannot be owned).",
+			"cannot be owned).\n\n" +
+			"See [Provider credentials](https://docs.botyard.io/docs/provider-credentials) in the Botyard docs.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,

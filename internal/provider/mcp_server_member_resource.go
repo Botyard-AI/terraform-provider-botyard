@@ -94,7 +94,8 @@ func (r *McpServerMemberResource) Schema(_ context.Context, _ resource.SchemaReq
 			"Be careful declaring the provider's own API key here: it is the server's creator and so its owner, " +
 			"and `role = \"member\"` would demote it — which fails if it is the only owner, and otherwise leaves " +
 			"the key unable to edit the member list (or, on a `restricted` server without org-wide authority, " +
-			"to see the server at all).",
+			"to see the server at all).\n\n" +
+			"See [MCP setup templates](https://docs.botyard.io/docs/mcp-setup-templates) in the Botyard docs.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
