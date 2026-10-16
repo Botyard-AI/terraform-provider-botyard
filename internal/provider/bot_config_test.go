@@ -256,15 +256,18 @@ func TestBuildBotCreateBody_EmbedsConfig(t *testing.T) {
 }
 
 // cannedBotWithConfigJSON is a live bot whose desired_config carries a modeled
-// field, exercising the config PATCH response round-trip.
+// field, exercising the config PATCH response round-trip. It is shaped as
+// Botyard serves it since PlatDev #3898: the harness names the config shape and
+// the config carries no `bot_type`.
 const cannedBotWithConfigJSON = `{
   "id": "b-123", "slug": "my-bot", "org_id": "org-1", "name": "My Bot",
   "namespace": "bot-my-bot", "runtime_class": "kata_qemu",
   "storage_class": "cluster_default", "runtime_privilege_mode": "privileged",
   "onboarding_state": "none", "health_status": "healthy",
   "desired_state": "running", "config_generation": 8,
+  "hosting_type": "hosted", "harness": "openclaw",
   "created_at": "2026-07-20T10:00:00Z", "updated_at": "2026-07-20T12:00:00Z",
-  "desired_config": { "bot_type": "openclaw", "thinking_default": "high", "system_prompt_mode": "openclaw" }
+  "desired_config": { "thinking_default": "high", "system_prompt_mode": "openclaw" }
 }`
 
 // TestBotResource_UpdateConfigRoundTrip proves updateBotConfig targets the
@@ -306,7 +309,7 @@ func TestBotResource_UpdateConfigRoundTrip(t *testing.T) {
 	}
 	// The merged response mapped back through the union-aware adapter.
 	mapDiags := &diag.Diagnostics{}
-	mapBotDesiredConfig(&got.DesiredConfig, cfg, nil, mapDiags)
+	mapBotDesiredConfig(got.Harness, &got.DesiredConfig, cfg, nil, mapDiags)
 	if mapDiags.HasError() {
 		t.Fatalf("mapBotDesiredConfig: %v", mapDiags.Errors())
 	}
@@ -370,7 +373,7 @@ func TestBotResource_CreateWithConfigRoundTrip(t *testing.T) {
 		t.Errorf("create body config = %s", decodeObj(t, gotBodyRaw)["config"])
 	}
 	mapDiags := &diag.Diagnostics{}
-	mapBotDesiredConfig(&resp.JSON201.DesiredConfig, plan.Config, nil, mapDiags)
+	mapBotDesiredConfig(resp.JSON201.Harness, &resp.JSON201.DesiredConfig, plan.Config, nil, mapDiags)
 	if mapDiags.HasError() {
 		t.Fatalf("mapBotDesiredConfig: %v", mapDiags.Errors())
 	}
@@ -381,10 +384,11 @@ func TestBotResource_CreateWithConfigRoundTrip(t *testing.T) {
 
 // --- mapBotDesiredConfig: the union-typed read path -------------------------
 //
-// `desired_config` became a discriminated union (OpenClawBotConfig |
-// NativeBotConfig) when the native harness landed. These prove the adapter
-// routes on `bot_type` and, critically, refuses a native config loudly instead
-// of mapping it through the OpenClaw mapper as an empty no-op.
+// `desired_config` is OpenClawBotConfig or NativeBotConfig depending on the
+// bot's harness. These prove the adapter routes on `harness` — against configs
+// with the legacy `bot_type` key (APIs before PlatDev #3898) and without it
+// (after) — and, critically, refuses a mismatched block loudly instead of
+// mapping it through the wrong mapper as an empty no-op.
 
 // unionDC decodes a raw desired_config JSON object into the generated union
 // wrapper, the same way the client does on a real response.
@@ -401,12 +405,59 @@ func TestMapBotDesiredConfig_OpenClaw(t *testing.T) {
 	dc := unionDC(t, `{"bot_type":"openclaw","thinking_default":"high"}`)
 	cfg := &botConfigModel{}
 	diags := &diag.Diagnostics{}
-	mapBotDesiredConfig(dc, cfg, nil, diags)
+	mapBotDesiredConfig(client.BotHarnessOpenclaw, dc, cfg, nil, diags)
 	if diags.HasError() {
 		t.Fatalf("unexpected diags: %v", diags.Errors())
 	}
 	if cfg.ThinkingDefault.ValueString() != "high" {
 		t.Errorf("thinking_default = %q", cfg.ThinkingDefault.ValueString())
+	}
+}
+
+// Botyard stopped sending `bot_type` (PlatDev #3898): the harness alone routes.
+func TestMapBotDesiredConfig_RoutesOnHarnessWithoutBotType(t *testing.T) {
+	oc := unionDC(t, `{"thinking_default":"high"}`)
+	cfg := &botConfigModel{}
+	diags := &diag.Diagnostics{}
+	mapBotDesiredConfig(client.BotHarnessOpenclaw, oc, cfg, nil, diags)
+	if diags.HasError() || cfg.ThinkingDefault.ValueString() != "high" {
+		t.Fatalf("openclaw without bot_type: diags=%v thinking_default=%q",
+			diags.Errors(), cfg.ThinkingDefault.ValueString())
+	}
+
+	nc := unionDC(t, `{"model":{"model":"gpt-5.4"},"prompt_template":"hello"}`)
+	native := &botNativeConfigModel{}
+	diags = &diag.Diagnostics{}
+	mapBotDesiredConfig(client.BotHarnessBotyardNative, nc, nil, native, diags)
+	if diags.HasError() || native.PromptTemplate.ValueString() != "hello" {
+		t.Fatalf("native without bot_type: diags=%v prompt_template=%q",
+			diags.Errors(), native.PromptTemplate.ValueString())
+	}
+}
+
+// A self-hosted Claude Code bot has no platform config, and newer APIs send no
+// `desired_config` for it at all. Declaring a block is an error; not declaring
+// one is the ordinary identity-only case.
+func TestMapBotDesiredConfig_ClaudeCodeHasNoConfig(t *testing.T) {
+	var bot client.BotResponse
+	if err := json.Unmarshal([]byte(`{"harness":"claude_code","hosting_type":"self_hosted"}`), &bot); err != nil {
+		t.Fatalf("a response without desired_config must decode: %v", err)
+	}
+	diags := &diag.Diagnostics{}
+	mapBotDesiredConfig(bot.Harness, &bot.DesiredConfig, nil, nil, diags)
+	if diags.HasError() {
+		t.Fatalf("undeclared config must be a no-op, got: %v", diags.Errors())
+	}
+	for name, declare := range map[string]func() (*botConfigModel, *botNativeConfigModel){
+		"config":        func() (*botConfigModel, *botNativeConfigModel) { return &botConfigModel{}, nil },
+		"native_config": func() (*botConfigModel, *botNativeConfigModel) { return nil, &botNativeConfigModel{} },
+	} {
+		cfg, native := declare()
+		diags := &diag.Diagnostics{}
+		mapBotDesiredConfig(bot.Harness, &bot.DesiredConfig, cfg, native, diags)
+		if !diags.HasError() {
+			t.Errorf("a declared %s block on a Claude Code bot must error", name)
+		}
 	}
 }
 
@@ -417,7 +468,7 @@ func TestMapBotDesiredConfig_NativeIsRefused(t *testing.T) {
 	dc := unionDC(t, `{"bot_type":"native","prompt_template":"default"}`)
 	cfg := &botConfigModel{}
 	diags := &diag.Diagnostics{}
-	mapBotDesiredConfig(dc, cfg, nil, diags)
+	mapBotDesiredConfig(client.BotHarnessBotyardNative, dc, cfg, nil, diags)
 	if !diags.HasError() {
 		t.Fatal("a native desired_config with a declared config block must error")
 	}
@@ -428,7 +479,7 @@ func TestMapBotDesiredConfig_NativeIsRefused(t *testing.T) {
 func TestMapBotDesiredConfig_NilCfgNoopEvenForNative(t *testing.T) {
 	dc := unionDC(t, `{"bot_type":"native","prompt_template":"default"}`)
 	diags := &diag.Diagnostics{}
-	mapBotDesiredConfig(dc, nil, nil, diags)
+	mapBotDesiredConfig(client.BotHarnessBotyardNative, dc, nil, nil, diags)
 	if diags.HasError() {
 		t.Fatalf("undeclared config must be a no-op, got: %v", diags.Errors())
 	}

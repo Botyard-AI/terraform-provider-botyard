@@ -148,6 +148,11 @@ func botNativeConfigSchemaAttribute() schema.SingleNestedAttribute {
 // HTTP 201, config silently dropped, no error anywhere. Sending `bot_type` is
 // what makes the OpenClaw branch fail to validate and the native branch win.
 //
+// That is true of Botyard APIs before PlatDev #3897. From #3897 the bot's
+// runtime profile picks the shape and the key is ignored, and from #3898 it is
+// removed from the contract but still accepted and dropped on input. It stays
+// here so this provider works against every one of those API versions.
+//
 // A nil block yields `{}`, matching the OpenClaw path: merge nothing over the
 // platform's defaults. Note `{}` alone selects OpenClaw, which is correct for a
 // bot that declared no native config.

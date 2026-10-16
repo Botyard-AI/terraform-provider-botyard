@@ -172,7 +172,7 @@ func TestMapBotDesiredConfig_NativeRoutesToNativeBlock(t *testing.T) {
 	dc := unionDC(t, `{"bot_type":"native","model":{"model":"gpt-5.4"},"prompt_template":"hello"}`)
 	native := &botNativeConfigModel{}
 	diags := &diag.Diagnostics{}
-	mapBotDesiredConfig(dc, nil, native, diags)
+	mapBotDesiredConfig(client.BotHarnessBotyardNative, dc, nil, native, diags)
 	if diags.HasError() {
 		t.Fatalf("unexpected diags: %v", diags.Errors())
 	}
@@ -186,7 +186,7 @@ func TestMapBotDesiredConfig_NativeRoutesToNativeBlock(t *testing.T) {
 func TestMapBotDesiredConfig_OpenClawWithNativeBlockIsRefused(t *testing.T) {
 	dc := unionDC(t, `{"bot_type":"openclaw","thinking_default":"high"}`)
 	diags := &diag.Diagnostics{}
-	mapBotDesiredConfig(dc, nil, &botNativeConfigModel{}, diags)
+	mapBotDesiredConfig(client.BotHarnessOpenclaw, dc, nil, &botNativeConfigModel{}, diags)
 	if !diags.HasError() {
 		t.Fatal("an openclaw desired_config with a native_config block must error")
 	}
