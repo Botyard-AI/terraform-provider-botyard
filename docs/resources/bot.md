@@ -94,12 +94,8 @@ resource "botyard_bot" "triage" {
   hosting_type = "hosted"
   harness      = "botyard_native"
 
+  # A native bot's instructions (its soul) live in its bot files, not here.
   native_config = {
-    prompt_template = <<-EOT
-      You triage inbound bug reports.
-      Classify each one, then ask for whatever detail is missing.
-    EOT
-
     tool_search = {
       mode                   = "auto"
       auto_threshold_percent = 40
@@ -271,8 +267,8 @@ Optional:
 
 Optional:
 
-- `prompt_ref` (String) Optional managed-prompt ref naming the template source. Pins the template to a directory-versioned prompt instead of the inline `prompt_template`. Removing it from the configuration clears the stored ref (sends JSON null).
-- `prompt_template` (String) Bot instructions template, rendered into the stable prefix of the system prompt. The platform supplies a default when omitted.
+- `prompt_ref` (String, Deprecated) **Deprecated; setting it is an error.** Removed by the Botyard API; the native bot's soul is its bot files. The API refuses this field (HTTP 422), so the provider never sends it and always reads it back as null. Remove it from your configuration; it will be deleted from the schema in v0.6.0.
+- `prompt_template` (String, Deprecated) **Deprecated; setting it is an error.** Removed by the Botyard API; the native bot's soul is its bot files. The API refuses this field (HTTP 422), so the provider never sends it and always reads it back as null. Remove it from your configuration; it will be deleted from the schema in v0.6.0.
 - `tool_search` (Attributes) Defer tool schemas out of the prompt behind a search surface — the same owner-facing setting OpenClaw bots carry. Note that REMOVING this block does not reset the setting: the API's target field is non-nullable with a default, so a patch omitting it (or sending null) means "no change" and the last applied values persist. Set the fields explicitly to change them. (see [below for nested schema](#nestedatt--native_config--tool_search))
 
 Read-Only:

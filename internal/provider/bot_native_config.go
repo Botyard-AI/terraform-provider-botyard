@@ -47,16 +47,28 @@ import (
 
 // botNativeConfigModel maps the `native_config` block.
 type botNativeConfigModel struct {
+	// Removed by the API (PlatDev #3684), kept in the schema only so existing
+	// configurations and state still decode. Deprecated, refused at plan time
+	// when set (BotResource.ValidateConfig), never sent, and always read back
+	// as null. NativeConfigPatch is extra="forbid" (botyard PR 4045), so
+	// sending either key, even as null, makes every native write a 422.
+	PromptTemplate types.String `tfsdk:"prompt_template"`
+	PromptRef      types.String `tfsdk:"prompt_ref"`
+
 	// Practitioner-owned.
-	PromptTemplate types.String        `tfsdk:"prompt_template"`
-	PromptRef      types.String        `tfsdk:"prompt_ref"`
-	ToolSearch     *botToolSearchModel `tfsdk:"tool_search"`
+	ToolSearch *botToolSearchModel `tfsdk:"tool_search"`
 
 	// Platform-owned, read-only (see the block comment above).
 	ModelProvider  types.String `tfsdk:"model_provider"`
 	ModelName      types.String `tfsdk:"model_name"`
 	HostPolicyJSON types.String `tfsdk:"host_policy_json"`
 }
+
+// removedNativePromptDetail is the practitioner-facing explanation shared by
+// the deprecation notice and the plan-time error.
+const removedNativePromptDetail = "Removed by the Botyard API; the native bot's soul is its bot files. " +
+	"The API refuses this field (HTTP 422), so the provider never sends it and always reads it back as " +
+	"null. Remove it from your configuration; it will be deleted from the schema in v0.6.0."
 
 // botToolSearchModel mirrors ToolSearchConfigPatch.
 type botToolSearchModel struct {
@@ -77,18 +89,20 @@ func botNativeConfigSchemaAttribute() schema.SingleNestedAttribute {
 			"`harness = \"botyard_native\"`, and conflicts with `config`, which models the OpenClaw shape. " +
 			"Only the fields you set are applied over the platform's defaults.",
 		Attributes: map[string]schema.Attribute{
+			// Computed stays so that state written by v0.5.0 and earlier, which
+			// may carry a server value here, plans as a no-op rather than as an
+			// update to null.
 			"prompt_template": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				MarkdownDescription: "Bot instructions template, rendered into the stable prefix of the system prompt. " +
-					"The platform supplies a default when omitted.",
-				PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
+				Optional:            true,
+				Computed:            true,
+				DeprecationMessage:  removedNativePromptDetail,
+				MarkdownDescription: "**Deprecated; setting it is an error.** " + removedNativePromptDetail,
+				PlanModifiers:       []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
 			},
 			"prompt_ref": schema.StringAttribute{
-				Optional: true,
-				MarkdownDescription: "Optional managed-prompt ref naming the template source. Pins the template to a " +
-					"directory-versioned prompt instead of the inline `prompt_template`. Removing it from the " +
-					"configuration clears the stored ref (sends JSON null).",
+				Optional:            true,
+				DeprecationMessage:  removedNativePromptDetail,
+				MarkdownDescription: "**Deprecated; setting it is an error.** " + removedNativePromptDetail,
 			},
 			"tool_search": schema.SingleNestedAttribute{
 				Optional: true,
@@ -163,14 +177,11 @@ func buildNativeConfigPatch(cfg *botNativeConfigModel) json.RawMessage {
 	m := map[string]json.RawMessage{
 		"bot_type": json.RawMessage(`"` + botTypeNative + `"`),
 	}
-	// prompt_template is Optional+Computed, so it never plans to null —
-	// omitting an absent value is correct, and emitting null would be WRONG:
-	// NativeBotConfig.prompt_template is a non-nullable `str` (minLength 1) and
-	// NativeConfigPatch has no validator discarding a null for it.
-	putStr(m, "prompt_template", cfg.PromptTemplate)
-	// prompt_ref is Optional-only and nullable on the target, so a removal must
-	// be sent as an explicit null or the server keeps the old ref forever.
-	putStrOrNull(m, "prompt_ref", cfg.PromptRef)
+	// prompt_template and prompt_ref are NEVER emitted, whatever the plan
+	// holds. The API removed both and NativeConfigPatch is extra="forbid", so
+	// either key, even as null, is a 422. A plan can still carry a value
+	// without the practitioner setting one: Optional+Computed keeps prior
+	// state, and state written by v0.5.0 can hold the server's old template.
 	if v, ok := buildToolSearchPatch(cfg.ToolSearch); ok {
 		m["tool_search"] = v
 	}
@@ -199,8 +210,12 @@ func mapNativeBotConfig(nc *client.NativeBotConfig, cfg *botNativeConfigModel) {
 	if cfg == nil {
 		return
 	}
-	cfg.PromptTemplate = types.StringValue(nc.PromptTemplate)
-	cfg.PromptRef = strPtrToStr(nc.PromptRef)
+	// Removed fields read back as null regardless of the response. A
+	// post-PR-4045 API omits them, which would otherwise decode as "" for the
+	// non-pointer PromptTemplate, and an older API's value must not leak into
+	// state for an attribute the provider will never send.
+	cfg.PromptTemplate = types.StringNull()
+	cfg.PromptRef = types.StringNull()
 
 	// Read-only projections. Always set, so they are never unknown in state.
 	// `provider` is optional on the wire (it defaults to "botyard" server-side),

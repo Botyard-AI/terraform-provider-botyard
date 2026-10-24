@@ -425,13 +425,13 @@ func TestMapBotDesiredConfig_RoutesOnHarnessWithoutBotType(t *testing.T) {
 			diags.Errors(), cfg.ThinkingDefault.ValueString())
 	}
 
-	nc := unionDC(t, `{"model":{"model":"gpt-5.4"},"prompt_template":"hello"}`)
+	nc := unionDC(t, `{"model":{"model":"gpt-5.4"}}`)
 	native := &botNativeConfigModel{}
 	diags = &diag.Diagnostics{}
 	mapBotDesiredConfig(client.BotHarnessBotyardNative, nc, nil, native, diags)
-	if diags.HasError() || native.PromptTemplate.ValueString() != "hello" {
-		t.Fatalf("native without bot_type: diags=%v prompt_template=%q",
-			diags.Errors(), native.PromptTemplate.ValueString())
+	if diags.HasError() || native.ModelName.ValueString() != "gpt-5.4" {
+		t.Fatalf("native without bot_type: diags=%v model_name=%q",
+			diags.Errors(), native.ModelName.ValueString())
 	}
 }
 
