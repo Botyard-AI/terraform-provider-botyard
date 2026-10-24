@@ -45,12 +45,20 @@ import (
 // Surfacing both read-only is the useful middle: you can see what the platform
 // decided (and reference it in outputs) without being able to break it.
 
+// nativePromptDeprecation is shown by Terraform wherever a configuration still
+// sets one of the removed native prompt fields.
+const nativePromptDeprecation = "Native bot instructions now live only in the bot's soul file; the Botyard API " +
+	"removed prompt_template and prompt_ref, so this attribute has no effect. Remove it from your configuration."
+
 // botNativeConfigModel maps the `native_config` block.
 type botNativeConfigModel struct {
+	// No longer sent (see nativePromptDeprecation). Kept in the schema so
+	// configurations that still set them parse and plan cleanly.
+	PromptTemplate types.String `tfsdk:"prompt_template"`
+	PromptRef      types.String `tfsdk:"prompt_ref"`
+
 	// Practitioner-owned.
-	PromptTemplate types.String        `tfsdk:"prompt_template"`
-	PromptRef      types.String        `tfsdk:"prompt_ref"`
-	ToolSearch     *botToolSearchModel `tfsdk:"tool_search"`
+	ToolSearch *botToolSearchModel `tfsdk:"tool_search"`
 
 	// Platform-owned, read-only (see the block comment above).
 	ModelProvider  types.String `tfsdk:"model_provider"`
@@ -78,17 +86,19 @@ func botNativeConfigSchemaAttribute() schema.SingleNestedAttribute {
 			"Only the fields you set are applied over the platform's defaults.",
 		Attributes: map[string]schema.Attribute{
 			"prompt_template": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				MarkdownDescription: "Bot instructions template, rendered into the stable prefix of the system prompt. " +
-					"The platform supplies a default when omitted.",
+				Optional:           true,
+				Computed:           true,
+				DeprecationMessage: nativePromptDeprecation,
+				MarkdownDescription: "**Deprecated, no effect.** A native bot's instructions now live only in its soul " +
+					"file, and the API no longer accepts this field. The provider never sends it; a configured value " +
+					"is kept in state so existing configurations plan cleanly. Remove it from your configuration.",
 				PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
 			},
 			"prompt_ref": schema.StringAttribute{
-				Optional: true,
-				MarkdownDescription: "Optional managed-prompt ref naming the template source. Pins the template to a " +
-					"directory-versioned prompt instead of the inline `prompt_template`. Removing it from the " +
-					"configuration clears the stored ref (sends JSON null).",
+				Optional:           true,
+				DeprecationMessage: nativePromptDeprecation,
+				MarkdownDescription: "**Deprecated, no effect.** Removed from the API together with `prompt_template`; " +
+					"the provider never sends it. Remove it from your configuration.",
 			},
 			"tool_search": schema.SingleNestedAttribute{
 				Optional: true,
@@ -158,14 +168,10 @@ func buildNativeConfigPatch(cfg *botNativeConfigModel) json.RawMessage {
 	m := map[string]json.RawMessage{
 		"bot_type": json.RawMessage(`"` + botTypeNative + `"`),
 	}
-	// prompt_template is Optional+Computed, so it never plans to null —
-	// omitting an absent value is correct, and emitting null would be WRONG:
-	// NativeBotConfig.prompt_template is a non-nullable `str` (minLength 1) and
-	// NativeConfigPatch has no validator discarding a null for it.
-	putStr(m, "prompt_template", cfg.PromptTemplate)
-	// prompt_ref is Optional-only and nullable on the target, so a removal must
-	// be sent as an explicit null or the server keeps the old ref forever.
-	putStrOrNull(m, "prompt_ref", cfg.PromptRef)
+	// prompt_template and prompt_ref are deprecated and NEVER emitted: the API
+	// removed them (the native soul file is the only copy of a bot's
+	// instructions), and NativeConfigPatch forbids unknown keys, so sending
+	// either one turns every config write into a 422.
 	if v, ok := buildToolSearchPatch(cfg.ToolSearch); ok {
 		m["tool_search"] = v
 	}
@@ -194,8 +200,16 @@ func mapNativeBotConfig(nc *client.NativeBotConfig, cfg *botNativeConfigModel) {
 	if cfg == nil {
 		return
 	}
-	cfg.PromptTemplate = types.StringValue(nc.PromptTemplate)
-	cfg.PromptRef = strPtrToStr(nc.PromptRef)
+	// The deprecated prompt fields have no server-side value to refresh from.
+	// Keep what the configuration holds so existing configs plan cleanly, and
+	// resolve an unknown (Computed, never set) prompt_template to null so it
+	// is known after apply.
+	if cfg.PromptTemplate.IsUnknown() {
+		cfg.PromptTemplate = types.StringNull()
+	}
+	if cfg.PromptRef.IsUnknown() {
+		cfg.PromptRef = types.StringNull()
+	}
 
 	// Read-only projections. Always set, so they are never unknown in state.
 	// `provider` is optional on the wire (it defaults to "botyard" server-side),

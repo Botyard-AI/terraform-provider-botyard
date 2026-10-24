@@ -47,7 +47,7 @@ func (c *ClientWithResponses) DeleteSecretPolicy(ctx context.Context, orgID, pol
 // bug). The API refuses to delete non-custom skills, so a 400 here means the
 // skill is platform-provided rather than Terraform-managed.
 func (c *ClientWithResponses) DeleteSkill(ctx context.Context, orgID, skillSlug string) (int, []byte, error) {
-	return deleteStatus(c.DeleteSkillV1OrgsOrgIdSkillsSkillSlugDelete(ctx, orgID, skillSlug))
+	return deleteStatus(c.DeleteSkillV1OrgsOrgIdSkillsSkillSlugDelete(ctx, orgID, skillSlug, nil))
 }
 
 // UnassignBotSkills removes the given skill assignments from a bot in one batch

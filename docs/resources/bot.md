@@ -94,12 +94,8 @@ resource "botyard_bot" "triage" {
   hosting_type = "hosted"
   harness      = "botyard_native"
 
+  # A native bot's instructions live in its soul file, not in this block.
   native_config = {
-    prompt_template = <<-EOT
-      You triage inbound bug reports.
-      Classify each one, then ask for whatever detail is missing.
-    EOT
-
     tool_search = {
       mode                   = "auto"
       auto_threshold_percent = 40
@@ -271,8 +267,8 @@ Optional:
 
 Optional:
 
-- `prompt_ref` (String) Optional managed-prompt ref naming the template source. Pins the template to a directory-versioned prompt instead of the inline `prompt_template`. Removing it from the configuration clears the stored ref (sends JSON null).
-- `prompt_template` (String) Bot instructions template, rendered into the stable prefix of the system prompt. The platform supplies a default when omitted.
+- `prompt_ref` (String, Deprecated) **Deprecated, no effect.** Removed from the API together with `prompt_template`; the provider never sends it. Remove it from your configuration.
+- `prompt_template` (String, Deprecated) **Deprecated, no effect.** A native bot's instructions now live only in its soul file, and the API no longer accepts this field. The provider never sends it; a configured value is kept in state so existing configurations plan cleanly. Remove it from your configuration.
 - `tool_search` (Attributes) Defer tool schemas out of the prompt behind a search surface — the same owner-facing setting OpenClaw bots carry. Note that REMOVING this block does not reset the setting: the API's target field is non-nullable with a default, so a patch omitting it (or sending null) means "no change" and the last applied values persist. Set the fields explicitly to change them. (see [below for nested schema](#nestedatt--native_config--tool_search))
 
 Read-Only:

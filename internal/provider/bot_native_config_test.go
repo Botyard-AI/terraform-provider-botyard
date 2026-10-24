@@ -36,9 +36,6 @@ func TestBuildNativeConfigPatch_AlwaysEmitsDiscriminator(t *testing.T) {
 		t.Fatalf("bot_type = %s, want \"native\" — without it the API silently "+
 			"reads this as an empty OpenClaw patch and drops the config", got["bot_type"])
 	}
-	if string(got["prompt_template"]) != `"You are a helpful bot."` {
-		t.Errorf("prompt_template = %s", got["prompt_template"])
-	}
 }
 
 // Platform-owned fields must never be sent, however they got into state.
@@ -109,12 +106,6 @@ func TestMapNativeBotConfig(t *testing.T) {
 	cfg := &botNativeConfigModel{ToolSearch: &botToolSearchModel{}}
 	mapNativeBotConfig(nc, cfg)
 
-	if cfg.PromptTemplate.ValueString() != "You are Anvil." {
-		t.Errorf("prompt_template = %q", cfg.PromptTemplate.ValueString())
-	}
-	if cfg.PromptRef.ValueString() != "prompts/anvil@3" {
-		t.Errorf("prompt_ref = %q", cfg.PromptRef.ValueString())
-	}
 	if cfg.ModelProvider.ValueString() != "botyard" || cfg.ModelName.ValueString() != "gpt-5.4" {
 		t.Errorf("model = %q/%q", cfg.ModelProvider.ValueString(), cfg.ModelName.ValueString())
 	}
@@ -176,8 +167,8 @@ func TestMapBotDesiredConfig_NativeRoutesToNativeBlock(t *testing.T) {
 	if diags.HasError() {
 		t.Fatalf("unexpected diags: %v", diags.Errors())
 	}
-	if native.PromptTemplate.ValueString() != "hello" {
-		t.Errorf("prompt_template = %q", native.PromptTemplate.ValueString())
+	if native.ModelName.ValueString() != "gpt-5.4" {
+		t.Errorf("model_name = %q", native.ModelName.ValueString())
 	}
 }
 
@@ -320,98 +311,54 @@ func TestValidateConfig(t *testing.T) {
 	}
 }
 
-// --- clearing a removed prompt_ref (Rivet, PR #24 round 1) -----------------
+// --- deprecated prompt fields ------------------------------------------------
 
-// REGRESSION: `prompt_ref` is Optional WITHOUT Computed, so removing it from
-// the config plans as an explicit null rather than resolving to the prior state
-// value. A sparse patch that merely OMITS the key means "no change" to the API
-// (core's patch_model applies only what is in model_fields_set), so the old ref
-// survives the apply, the refresh restores it over the planned null, and the
-// practitioner gets a diff that can never converge — set, remove, and the
-// resource is permanently out of sync with no way to clear the field.
-func TestBuildNativeConfigPatch_RemovedPromptRefIsExplicitlyCleared(t *testing.T) {
-	raw := buildNativeConfigPatch(&botNativeConfigModel{
-		PromptTemplate: types.StringValue("x"),
-		PromptRef:      types.StringNull(), // removed from the config
-	})
-	var got map[string]json.RawMessage
-	if err := json.Unmarshal(raw, &got); err != nil {
-		t.Fatalf("decode patch: %v", err)
+// REGRESSION: the API removed prompt_template and prompt_ref from native config
+// (monorepo #4045: the soul file is the only copy of a native bot's
+// instructions), and NativeConfigPatch forbids unknown keys. Emitting either
+// one, in any state, turns every native config write into a 422 — and
+// prompt_template is Optional+Computed, so it sat in every patch.
+func TestBuildNativeConfigPatch_NeverEmitsDeprecatedPromptFields(t *testing.T) {
+	cases := map[string]*botNativeConfigModel{
+		"set":     {PromptTemplate: types.StringValue("x"), PromptRef: types.StringValue("prompts/anvil@3")},
+		"null":    {PromptTemplate: types.StringNull(), PromptRef: types.StringNull()},
+		"unknown": {PromptTemplate: types.StringUnknown(), PromptRef: types.StringUnknown()},
 	}
-	v, present := got["prompt_ref"]
-	if !present {
-		t.Fatal("a removed prompt_ref must be sent as an explicit null, not omitted: " +
-			"omission means \"no change\", so the server keeps the old ref and the plan never converges")
-	}
-	if string(v) != "null" {
-		t.Fatalf("prompt_ref = %s, want null", v)
+	for name, cfg := range cases {
+		got := decodeSub(t, buildNativeConfigPatch(cfg))
+		for _, k := range []string{"prompt_template", "prompt_ref"} {
+			if v, present := got[k]; present {
+				t.Errorf("%s: patch must never carry removed key %q, got %s", name, k, v)
+			}
+		}
 	}
 }
 
-// The full set -> remove -> refresh lifecycle, which is where the bug actually
-// bites: state must end up null, matching the plan, rather than being restored
-// to the stale server value.
-func TestNativeConfigLifecycle_SetThenRemovePromptRefConverges(t *testing.T) {
-	// 1. Declared with a ref. The patch carries it.
-	declared := &botNativeConfigModel{
-		PromptTemplate: types.StringValue("x"),
+// The refresh has no server value to read, so it keeps what the configuration
+// holds: an existing config that still sets the fields plans with no diff.
+func TestMapNativeBotConfig_KeepsConfiguredDeprecatedPromptFields(t *testing.T) {
+	nc := nativeBotConfig(t, `{"bot_type":"native","model":{"model":"m"}}`)
+	cfg := &botNativeConfigModel{
+		PromptTemplate: types.StringValue("You are Anvil."),
 		PromptRef:      types.StringValue("prompts/anvil@3"),
 	}
-	set := decodeSub(t, buildNativeConfigPatch(declared))
-	if string(set["prompt_ref"]) != `"prompts/anvil@3"` {
-		t.Fatalf("prompt_ref = %s", set["prompt_ref"])
+	mapNativeBotConfig(nc, cfg)
+	if cfg.PromptTemplate.ValueString() != "You are Anvil." {
+		t.Errorf("prompt_template = %q, want the configured value kept", cfg.PromptTemplate.ValueString())
 	}
-
-	// 2. Practitioner removes it: the planned value is null.
-	removed := &botNativeConfigModel{
-		PromptTemplate: types.StringValue("x"),
-		PromptRef:      types.StringNull(),
-	}
-	cleared := decodeSub(t, buildNativeConfigPatch(removed))
-	if string(cleared["prompt_ref"]) != "null" {
-		t.Fatalf("clearing patch prompt_ref = %s, want null", cleared["prompt_ref"])
-	}
-
-	// 3. The API honours the null, so the refreshed config carries no ref, and
-	//    the mapped state is null — equal to the plan, hence convergence.
-	nc := nativeBotConfig(t, `{"bot_type":"native","model":{"model":"m"},"prompt_template":"x"}`)
-	mapNativeBotConfig(nc, removed)
-	if !removed.PromptRef.IsNull() {
-		t.Fatalf("post-refresh prompt_ref = %q, want null", removed.PromptRef.ValueString())
+	if cfg.PromptRef.ValueString() != "prompts/anvil@3" {
+		t.Errorf("prompt_ref = %q, want the configured value kept", cfg.PromptRef.ValueString())
 	}
 }
 
-// An UNKNOWN prompt_ref (e.g. interpolated from another resource that has not
-// been created yet) must be OMITTED, never nulled — "not resolved yet" is not
-// "clear it". Getting this wrong would silently wipe the field on any config
-// that computes the ref.
-func TestBuildNativeConfigPatch_UnknownPromptRefIsOmittedNotCleared(t *testing.T) {
-	raw := buildNativeConfigPatch(&botNativeConfigModel{
-		PromptTemplate: types.StringValue("x"),
-		PromptRef:      types.StringUnknown(),
-	})
-	var got map[string]json.RawMessage
-	if err := json.Unmarshal(raw, &got); err != nil {
-		t.Fatalf("decode patch: %v", err)
-	}
-	if v, present := got["prompt_ref"]; present {
-		t.Fatalf("unknown prompt_ref must be omitted, got %s", v)
-	}
-}
-
-// prompt_template must NEVER be nulled. It is Optional+Computed so it does not
-// plan to null, but the deeper reason is that NativeBotConfig.prompt_template
-// is a non-nullable `str` and NativeConfigPatch carries no validator discarding
-// a null for it (unlike OpenClaw's _treat_null_system_prompt_mode_as_unset).
-// An explicit null would be applied by patch_model onto a field that cannot
-// hold it, then dropped at persistence — one value live, another on reload.
-func TestBuildNativeConfigPatch_NullPromptTemplateIsOmittedNotNulled(t *testing.T) {
-	raw := buildNativeConfigPatch(&botNativeConfigModel{PromptTemplate: types.StringNull()})
-	var got map[string]json.RawMessage
-	if err := json.Unmarshal(raw, &got); err != nil {
-		t.Fatalf("decode patch: %v", err)
-	}
-	if v, present := got["prompt_template"]; present {
-		t.Fatalf("prompt_template must be omitted when null, never sent as null; got %s", v)
+// prompt_template is Computed, so a config that never set it plans it unknown.
+// Terraform rejects an unknown left in state after apply, so the refresh must
+// resolve it.
+func TestMapNativeBotConfig_ResolvesUnknownDeprecatedPromptFieldsToNull(t *testing.T) {
+	nc := nativeBotConfig(t, `{"bot_type":"native","model":{"model":"m"}}`)
+	cfg := &botNativeConfigModel{PromptTemplate: types.StringUnknown(), PromptRef: types.StringUnknown()}
+	mapNativeBotConfig(nc, cfg)
+	if !cfg.PromptTemplate.IsNull() || !cfg.PromptRef.IsNull() {
+		t.Errorf("prompt fields = %v / %v, want null", cfg.PromptTemplate, cfg.PromptRef)
 	}
 }

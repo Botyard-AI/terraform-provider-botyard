@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/oapi-codegen/runtime"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 const (
@@ -30,6 +31,11 @@ const (
 	ActorTypeSlackUser   ActorType = "slack_user"
 	ActorTypeTeamsUser   ActorType = "teams_user"
 	ActorTypeUser        ActorType = "user"
+)
+
+// Defines values for AgentContainerImageMcpServerCreateRuntimeKind.
+const (
+	AgentContainerImageMcpServerCreateRuntimeKindContainerImage AgentContainerImageMcpServerCreateRuntimeKind = "container_image"
 )
 
 // Defines values for AndBotFilterFieldKind.
@@ -51,11 +57,21 @@ const (
 	ApiProtocolOpenaiCompatible   ApiProtocol = "openai_compatible"
 )
 
+// Defines values for ApprovalActionKind.
+const (
+	ApprovalActionKindApproval ApprovalActionKind = "approval"
+)
+
 // Defines values for AuthMethod.
 const (
 	AuthMethodApiKey AuthMethod = "api_key"
 	AuthMethodNone   AuthMethod = "none"
 	AuthMethodOauth  AuthMethod = "oauth"
+)
+
+// Defines values for AwaitingConnectActionKind.
+const (
+	AwaitingConnectActionKindAwaitingConnect AwaitingConnectActionKind = "awaiting_connect"
 )
 
 // Defines values for BotAccess.
@@ -139,6 +155,16 @@ const (
 	BotTierStarter    BotTier = "starter"
 )
 
+// Defines values for ChooseServerActionKind.
+const (
+	ChooseServerActionKindChooseServer ChooseServerActionKind = "choose_server"
+)
+
+// Defines values for ChosenModelKind.
+const (
+	ChosenModelKindChosen ChosenModelKind = "chosen"
+)
+
 // Defines values for CommandsConfigOwnerDisplay.
 const (
 	CommandsConfigOwnerDisplayHash CommandsConfigOwnerDisplay = "hash"
@@ -147,10 +173,23 @@ const (
 
 // Defines values for ComposioConnectionState.
 const (
-	ComposioConnectionStateConnected ComposioConnectionState = "connected"
-	ComposioConnectionStateExpired   ComposioConnectionState = "expired"
-	ComposioConnectionStateFailed    ComposioConnectionState = "failed"
-	ComposioConnectionStatePending   ComposioConnectionState = "pending"
+	ComposioConnectionStateConnected   ComposioConnectionState = "connected"
+	ComposioConnectionStateExpired     ComposioConnectionState = "expired"
+	ComposioConnectionStateFailed      ComposioConnectionState = "failed"
+	ComposioConnectionStateNeedsReauth ComposioConnectionState = "needs_reauth"
+	ComposioConnectionStatePending     ComposioConnectionState = "pending"
+)
+
+// Defines values for ComposioVaultDisconnectReason.
+const (
+	ComposioVaultDisconnectReasonSourceDeleted ComposioVaultDisconnectReason = "source_deleted"
+)
+
+// Defines values for ComposioVaultSyncState.
+const (
+	ComposioVaultSyncStateDisconnected ComposioVaultSyncState = "disconnected"
+	ComposioVaultSyncStateFailed       ComposioVaultSyncState = "failed"
+	ComposioVaultSyncStatePending      ComposioVaultSyncState = "pending"
 )
 
 // Defines values for ConditionBotFilterFieldKind.
@@ -169,6 +208,16 @@ const (
 	ConfigFieldDiffKindScalar  ConfigFieldDiffKind = "scalar"
 )
 
+// Defines values for ConnectActionKind.
+const (
+	ConnectActionKindConnect ConnectActionKind = "connect"
+)
+
+// Defines values for ContainerImageMcpCatalogEntryDetailRuntimeKind.
+const (
+	ContainerImageMcpCatalogEntryDetailRuntimeKindContainerImage ContainerImageMcpCatalogEntryDetailRuntimeKind = "container_image"
+)
+
 // Defines values for ContainerImageMcpServerCreateRuntimeKind.
 const (
 	ContainerImageMcpServerCreateRuntimeKindContainerImage ContainerImageMcpServerCreateRuntimeKind = "container_image"
@@ -184,23 +233,16 @@ const (
 	ContainerImageMcpServerSummaryRuntimeKindContainerImage ContainerImageMcpServerSummaryRuntimeKind = "container_image"
 )
 
-// Defines values for ContextPruningConfigMode.
-const (
-	ContextPruningConfigModeCacheTtl ContextPruningConfigMode = "cache-ttl"
-	ContextPruningConfigModeOff      ContextPruningConfigMode = "off"
-)
-
-// Defines values for CredentialBackedModelConfigInput.
-const (
-	CredentialBackedModelConfigInputImage CredentialBackedModelConfigInput = "image"
-	CredentialBackedModelConfigInputText  CredentialBackedModelConfigInput = "text"
-)
-
 // Defines values for CredentialBackedModelConfigTextVerbosity.
 const (
 	CredentialBackedModelConfigTextVerbosityHigh   CredentialBackedModelConfigTextVerbosity = "high"
 	CredentialBackedModelConfigTextVerbosityLow    CredentialBackedModelConfigTextVerbosity = "low"
 	CredentialBackedModelConfigTextVerbosityMedium CredentialBackedModelConfigTextVerbosity = "medium"
+)
+
+// Defines values for CredentialFormActionKind.
+const (
+	CredentialFormActionKindCredentialForm CredentialFormActionKind = "credential_form"
 )
 
 // Defines values for CredentialProvider.
@@ -215,11 +257,13 @@ const (
 	CredentialProviderCustom          CredentialProvider = "custom"
 	CredentialProviderDinero          CredentialProvider = "dinero"
 	CredentialProviderEconomic        CredentialProvider = "economic"
+	CredentialProviderGarmin          CredentialProvider = "garmin"
 	CredentialProviderGithub          CredentialProvider = "github"
 	CredentialProviderGithubApp       CredentialProvider = "github_app"
 	CredentialProviderGoogleAiStudio  CredentialProvider = "google_ai_studio"
 	CredentialProviderOpenai          CredentialProvider = "openai"
 	CredentialProviderOpenrouter      CredentialProvider = "openrouter"
+	CredentialProviderRedditAds       CredentialProvider = "reddit_ads"
 	CredentialProviderShopify         CredentialProvider = "shopify"
 	CredentialProviderSnowflake       CredentialProvider = "snowflake"
 	CredentialProviderTavily          CredentialProvider = "tavily"
@@ -269,6 +313,16 @@ const (
 	DomainSkill          Domain = "skill"
 	DomainTool           Domain = "tool"
 	DomainWorkforce      Domain = "workforce"
+)
+
+// Defines values for DoneActionKind.
+const (
+	DoneActionKindDone DoneActionKind = "done"
+)
+
+// Defines values for FailedActionKind.
+const (
+	FailedActionKindFailed FailedActionKind = "failed"
 )
 
 // Defines values for FilterOp.
@@ -337,6 +391,17 @@ const (
 	HeartbeatConfigPatchEveryN6h   HeartbeatConfigPatchEvery = "6h"
 )
 
+// Defines values for InputModality.
+const (
+	InputModalityImage InputModality = "image"
+	InputModalityText  InputModality = "text"
+)
+
+// Defines values for ManagedRemoteMcpCatalogEntryDetailRuntimeKind.
+const (
+	ManagedRemoteMcpCatalogEntryDetailRuntimeKindManagedRemote ManagedRemoteMcpCatalogEntryDetailRuntimeKind = "managed_remote"
+)
+
 // Defines values for ManagedRemoteMcpServerCreateRuntimeKind.
 const (
 	ManagedRemoteMcpServerCreateRuntimeKindManagedRemote ManagedRemoteMcpServerCreateRuntimeKind = "managed_remote"
@@ -399,6 +464,7 @@ const (
 	McpCatalogFormFieldKindIntegration     McpCatalogFormFieldKind = "integration"
 	McpCatalogFormFieldKindNumber          McpCatalogFormFieldKind = "number"
 	McpCatalogFormFieldKindPassword        McpCatalogFormFieldKind = "password"
+	McpCatalogFormFieldKindRecordList      McpCatalogFormFieldKind = "record_list"
 	McpCatalogFormFieldKindSecretRef       McpCatalogFormFieldKind = "secret_ref"
 	McpCatalogFormFieldKindSelect          McpCatalogFormFieldKind = "select"
 	McpCatalogFormFieldKindText            McpCatalogFormFieldKind = "text"
@@ -416,11 +482,12 @@ const (
 
 // Defines values for McpCatalogFormFieldTargetType.
 const (
-	McpCatalogFormFieldTargetTypeArg      McpCatalogFormFieldTargetType = "arg"
-	McpCatalogFormFieldTargetTypeEnv      McpCatalogFormFieldTargetType = "env"
-	McpCatalogFormFieldTargetTypeFile     McpCatalogFormFieldTargetType = "file"
-	McpCatalogFormFieldTargetTypeHeader   McpCatalogFormFieldTargetType = "header"
-	McpCatalogFormFieldTargetTypeTopLevel McpCatalogFormFieldTargetType = "top_level"
+	McpCatalogFormFieldTargetTypeArg              McpCatalogFormFieldTargetType = "arg"
+	McpCatalogFormFieldTargetTypeEnv              McpCatalogFormFieldTargetType = "env"
+	McpCatalogFormFieldTargetTypeFile             McpCatalogFormFieldTargetType = "file"
+	McpCatalogFormFieldTargetTypeHeader           McpCatalogFormFieldTargetType = "header"
+	McpCatalogFormFieldTargetTypeTopLevel         McpCatalogFormFieldTargetType = "top_level"
+	McpCatalogFormFieldTargetTypeVendorCredential McpCatalogFormFieldTargetType = "vendor_credential"
 )
 
 // Defines values for McpCatalogFormInputMode.
@@ -460,6 +527,37 @@ const (
 	McpCatalogProvisioningImplicationsTriggerActionCreateMcpServer McpCatalogProvisioningImplicationsTriggerAction = "create_mcp_server"
 )
 
+// Defines values for McpCatalogRecordColumnDisplay.
+const (
+	McpCatalogRecordColumnDisplayCheckbox  McpCatalogRecordColumnDisplay = "checkbox"
+	McpCatalogRecordColumnDisplayDropdown  McpCatalogRecordColumnDisplay = "dropdown"
+	McpCatalogRecordColumnDisplayRadio     McpCatalogRecordColumnDisplay = "radio"
+	McpCatalogRecordColumnDisplaySegmented McpCatalogRecordColumnDisplay = "segmented"
+	McpCatalogRecordColumnDisplaySwitch    McpCatalogRecordColumnDisplay = "switch"
+)
+
+// Defines values for McpCatalogRecordColumnKind.
+const (
+	McpCatalogRecordColumnKindBoolean         McpCatalogRecordColumnKind = "boolean"
+	McpCatalogRecordColumnKindNumber          McpCatalogRecordColumnKind = "number"
+	McpCatalogRecordColumnKindSecretRef       McpCatalogRecordColumnKind = "secret_ref"
+	McpCatalogRecordColumnKindSelect          McpCatalogRecordColumnKind = "select"
+	McpCatalogRecordColumnKindText            McpCatalogRecordColumnKind = "text"
+	McpCatalogRecordColumnKindTextOrSecretRef McpCatalogRecordColumnKind = "text_or_secret_ref"
+)
+
+// Defines values for McpCatalogRecordColumnWidth.
+const (
+	McpCatalogRecordColumnWidthNarrow McpCatalogRecordColumnWidth = "narrow"
+	McpCatalogRecordColumnWidthWide   McpCatalogRecordColumnWidth = "wide"
+)
+
+// Defines values for McpCatalogRecordListCompileShape.
+const (
+	McpCatalogRecordListCompileShapeArray  McpCatalogRecordListCompileShape = "array"
+	McpCatalogRecordListCompileShapeObject McpCatalogRecordListCompileShape = "object"
+)
+
 // Defines values for McpCatalogVendorAuthMode.
 const (
 	McpCatalogVendorAuthModeApiKey          McpCatalogVendorAuthMode = "api_key"
@@ -469,6 +567,13 @@ const (
 	McpCatalogVendorAuthModeOauth2Managed   McpCatalogVendorAuthMode = "oauth2_managed"
 	McpCatalogVendorAuthModeOauth2Unmanaged McpCatalogVendorAuthMode = "oauth2_unmanaged"
 	McpCatalogVendorAuthModeOther           McpCatalogVendorAuthMode = "other"
+)
+
+// Defines values for McpConnectVariant.
+const (
+	McpConnectVariantConfirm McpConnectVariant = "confirm"
+	McpConnectVariantConnect McpConnectVariant = "connect"
+	McpConnectVariantForm    McpConnectVariant = "form"
 )
 
 // Defines values for McpConsentShape.
@@ -513,12 +618,6 @@ const (
 	McpServerDesiredStateStopped McpServerDesiredState = "stopped"
 )
 
-// Defines values for McpServerRuntimeKind.
-const (
-	McpServerRuntimeKindContainerImage McpServerRuntimeKind = "container_image"
-	McpServerRuntimeKindManagedRemote  McpServerRuntimeKind = "managed_remote"
-)
-
 // Defines values for McpServerSetupSource.
 const (
 	McpServerSetupSourceBotyardBuiltin McpServerSetupSource = "botyard_builtin"
@@ -553,15 +652,36 @@ const (
 	MeteredResourceStorage       MeteredResource = "storage"
 )
 
-// Defines values for ModelConfigInput.
-const (
-	ModelConfigInputImage ModelConfigInput = "image"
-	ModelConfigInputText  ModelConfigInput = "text"
-)
-
 // Defines values for NativeConfigPatchBotType.
 const (
 	NativeConfigPatchBotTypeNative NativeConfigPatchBotType = "native"
+)
+
+// Defines values for NativeLane.
+const (
+	NativeLaneAnthropicApi      NativeLane = "anthropic_api"
+	NativeLaneCloudHyperscaler  NativeLane = "cloud_hyperscaler"
+	NativeLaneCodexSubscription NativeLane = "codex_subscription"
+	NativeLaneLocal             NativeLane = "local"
+	NativeLaneOpenaiApi         NativeLane = "openai_api"
+	NativeLaneOpenrouter        NativeLane = "openrouter"
+)
+
+// Defines values for NativeLaneRefusal.
+const (
+	NativeLaneRefusalCloudHyperscalerDeferred NativeLaneRefusal = "cloud_hyperscaler_deferred"
+	NativeLaneRefusalProtocolNotNative        NativeLaneRefusal = "protocol_not_native"
+	NativeLaneRefusalProviderNotNative        NativeLaneRefusal = "provider_not_native"
+)
+
+// Defines values for NativeLaneRefusedProblemErrorCode.
+const (
+	NativeLaneRefusedProblemErrorCodeNativeLaneRefused NativeLaneRefusedProblemErrorCode = "native_lane_refused"
+)
+
+// Defines values for NoRecommendedModelKind.
+const (
+	NoRecommendedModelKindNotRecommended NoRecommendedModelKind = "not_recommended"
 )
 
 // Defines values for ObservedState.
@@ -664,6 +784,80 @@ const (
 	OrMcpCatalogFilterFieldKindOr OrMcpCatalogFilterFieldKind = "or"
 )
 
+// Defines values for PackBotCustomAvatarKind.
+const (
+	PackBotCustomAvatarKindCustom PackBotCustomAvatarKind = "custom"
+)
+
+// Defines values for PackBotPackAvatarKind.
+const (
+	PackBotPackAvatarKindPack PackBotPackAvatarKind = "pack"
+)
+
+// Defines values for PackLeavePendingChoiceChoice.
+const (
+	PackLeavePendingChoiceChoiceLeavePending PackLeavePendingChoiceChoice = "leave_pending"
+)
+
+// Defines values for PackSettingCustomChoiceChoice.
+const (
+	PackSettingCustomChoiceChoiceCustom PackSettingCustomChoiceChoice = "custom"
+)
+
+// Defines values for PackSettingKeepChoiceChoice.
+const (
+	PackSettingKeepChoiceChoiceKeep PackSettingKeepChoiceChoice = "keep"
+)
+
+// Defines values for PackSettingPackChoiceChoice.
+const (
+	PackSettingPackChoiceChoicePack PackSettingPackChoiceChoice = "pack"
+)
+
+// Defines values for PackSettingPath.
+const (
+	PackSettingPathReasoningDefault PackSettingPath = "reasoning_default"
+	PackSettingPathThinkingDefault  PackSettingPath = "thinking_default"
+	PackSettingPathToolImages       PackSettingPath = "tool_images"
+	PackSettingPathToolSearch       PackSettingPath = "tool_search"
+)
+
+// Defines values for PackSetupFailure.
+const (
+	PackSetupFailureBindRefused         PackSetupFailure = "bind_refused"
+	PackSetupFailureConnectLapsed       PackSetupFailure = "connect_lapsed"
+	PackSetupFailureInstallerLostAccess PackSetupFailure = "installer_lost_access"
+	PackSetupFailureInvalidSetup        PackSetupFailure = "invalid_setup"
+	PackSetupFailureNameTaken           PackSetupFailure = "name_taken"
+	PackSetupFailureNotConfigured       PackSetupFailure = "not_configured"
+	PackSetupFailureSecretLinkForbidden PackSetupFailure = "secret_link_forbidden"
+	PackSetupFailureVendorError         PackSetupFailure = "vendor_error"
+)
+
+// Defines values for PackSetupState.
+const (
+	PackSetupStateConnecting      PackSetupState = "connecting"
+	PackSetupStateDone            PackSetupState = "done"
+	PackSetupStateFailed          PackSetupState = "failed"
+	PackSetupStateNeedsApproval   PackSetupState = "needs_approval"
+	PackSetupStateNeedsInput      PackSetupState = "needs_input"
+	PackSetupStateReady           PackSetupState = "ready"
+	PackSetupStateUnavailable     PackSetupState = "unavailable"
+	PackSetupStateWaitingForTools PackSetupState = "waiting_for_tools"
+)
+
+// Defines values for PackSupportLevel.
+const (
+	PackSupportLevelFull    PackSupportLevel = "full"
+	PackSupportLevelNone    PackSupportLevel = "none"
+	PackSupportLevelPartial PackSupportLevel = "partial"
+)
+
+// Defines values for PackUseServerChoiceChoice.
+const (
+	PackUseServerChoiceChoiceUseServer PackUseServerChoiceChoice = "use_server"
+)
+
 // Defines values for PermissionAction.
 const (
 	PermissionActionCreate PermissionAction = "create"
@@ -688,6 +882,75 @@ const (
 	PermissionSourceRoleBundle     PermissionSource = "role_bundle"
 	PermissionSourceRoleDelta      PermissionSource = "role_delta"
 	PermissionSourceSelfGrant      PermissionSource = "self_grant"
+)
+
+// Defines values for PlannedAction.
+const (
+	PlannedActionAdd         PlannedAction = "add"
+	PlannedActionAdopt       PlannedAction = "adopt"
+	PlannedActionPending     PlannedAction = "pending"
+	PlannedActionUnsupported PlannedAction = "unsupported"
+)
+
+// Defines values for PlannedAvatarItemKind.
+const (
+	PlannedAvatarItemKindAvatar PlannedAvatarItemKind = "avatar"
+)
+
+// Defines values for PlannedInstallStatus.
+const (
+	PlannedInstallStatusInstall   PlannedInstallStatus = "install"
+	PlannedInstallStatusUnchanged PlannedInstallStatus = "unchanged"
+)
+
+// Defines values for PlannedMcpConnectionKind.
+const (
+	PlannedMcpConnectionKindMcpCatalogEntry PlannedMcpConnectionKind = "mcp_catalog_entry"
+)
+
+// Defines values for PlannedMcpServerItemKind.
+const (
+	PlannedMcpServerItemKindMcpServer PlannedMcpServerItemKind = "mcp_server"
+)
+
+// Defines values for PlannedSecretLinkItemKind.
+const (
+	PlannedSecretLinkItemKindSecretLink PlannedSecretLinkItemKind = "secret_link"
+)
+
+// Defines values for PlannedSettingItemKind.
+const (
+	PlannedSettingItemKindSetting PlannedSettingItemKind = "setting"
+)
+
+// Defines values for PlannedSkillItemKind.
+const (
+	PlannedSkillItemKindSkill PlannedSkillItemKind = "skill"
+)
+
+// Defines values for PlannedSoulItemKind.
+const (
+	PlannedSoulItemKindSoul PlannedSoulItemKind = "soul"
+)
+
+// Defines values for PlannedToolItemKind.
+const (
+	PlannedToolItemKindTool PlannedToolItemKind = "tool"
+)
+
+// Defines values for PlannedVaultConnectionKind.
+const (
+	PlannedVaultConnectionKindVaultSecret PlannedVaultConnectionKind = "vault_secret"
+)
+
+// Defines values for RecommendedModelAppliedKind.
+const (
+	RecommendedModelAppliedKindRecommended RecommendedModelAppliedKind = "recommended"
+)
+
+// Defines values for RecommendedModelUnavailableKind.
+const (
+	RecommendedModelUnavailableKindNoCredential RecommendedModelUnavailableKind = "no_credential"
 )
 
 // Defines values for RequirementStatus.
@@ -742,6 +1005,7 @@ const (
 	ResourceIssue                Resource = "issue"
 	ResourceMaintenancePolicy    Resource = "maintenance_policy"
 	ResourceMcpCatalog           Resource = "mcp_catalog"
+	ResourceMcpImage             Resource = "mcp_image"
 	ResourceMcpServer            Resource = "mcp_server"
 	ResourceMcpServerLogs        Resource = "mcp_server_logs"
 	ResourceMember               Resource = "member"
@@ -749,11 +1013,15 @@ const (
 	ResourceMessage              Resource = "message"
 	ResourceMetering             Resource = "metering"
 	ResourceMigration            Resource = "migration"
+	ResourceModelCatalogue       Resource = "model_catalogue"
 	ResourceNotification         Resource = "notification"
 	ResourceObservability        Resource = "observability"
 	ResourceOrg                  Resource = "org"
+	ResourcePack                 Resource = "pack"
 	ResourcePermission           Resource = "permission"
 	ResourcePlan                 Resource = "plan"
+	ResourcePlatformPack         Resource = "platform_pack"
+	ResourcePlatformSkill        Resource = "platform_skill"
 	ResourcePrivateSource        Resource = "private_source"
 	ResourceProcessWatch         Resource = "process_watch"
 	ResourceProfile              Resource = "profile"
@@ -767,6 +1035,7 @@ const (
 	ResourceRootCommand          Resource = "root_command"
 	ResourceRuntime              Resource = "runtime"
 	ResourceSchedule             Resource = "schedule"
+	ResourceScheduleCommand      Resource = "schedule_command"
 	ResourceSecret               Resource = "secret"
 	ResourceSecretLease          Resource = "secret_lease"
 	ResourceSecretPolicy         Resource = "secret_policy"
@@ -790,10 +1059,33 @@ const (
 	ResourceWorkflowRun          Resource = "workflow_run"
 )
 
+// Defines values for RunActionKind.
+const (
+	RunActionKindRun RunActionKind = "run"
+)
+
 // Defines values for RuntimeVaultSensitivity.
 const (
 	RuntimeVaultSensitivityPlain  RuntimeVaultSensitivity = "plain"
 	RuntimeVaultSensitivitySecret RuntimeVaultSensitivity = "secret"
+)
+
+// Defines values for SecretActionKind.
+const (
+	SecretActionKindSecret SecretActionKind = "secret"
+)
+
+// Defines values for SessionVisibility.
+const (
+	SessionVisibilityAgent SessionVisibility = "agent"
+	SessionVisibilityAll   SessionVisibility = "all"
+	SessionVisibilitySelf  SessionVisibility = "self"
+	SessionVisibilityTree  SessionVisibility = "tree"
+)
+
+// Defines values for SetupFormActionKind.
+const (
+	SetupFormActionKindSetupForm SetupFormActionKind = "setup_form"
 )
 
 // Defines values for SkillProvider.
@@ -824,6 +1116,12 @@ const (
 	SkillSourceKindGithub SkillSourceKind = "github"
 )
 
+// Defines values for SuspensionReason.
+const (
+	SuspensionReasonInactivity SuspensionReason = "inactivity"
+	SuspensionReasonManual     SuspensionReason = "manual"
+)
+
 // Defines values for SyncStatus.
 const (
 	SyncStatusFailed  SyncStatus = "failed"
@@ -838,6 +1136,22 @@ const (
 	TemplateIconNewspaper TemplateIcon = "newspaper"
 	TemplateIconSettings  TemplateIcon = "settings"
 	TemplateIconUser      TemplateIcon = "user"
+)
+
+// Defines values for ToolImageConfigDefaultDetail.
+const (
+	ToolImageConfigDefaultDetailAuto     ToolImageConfigDefaultDetail = "auto"
+	ToolImageConfigDefaultDetailHigh     ToolImageConfigDefaultDetail = "high"
+	ToolImageConfigDefaultDetailLow      ToolImageConfigDefaultDetail = "low"
+	ToolImageConfigDefaultDetailOriginal ToolImageConfigDefaultDetail = "original"
+)
+
+// Defines values for ToolImageConfigPatchDefaultDetail.
+const (
+	ToolImageConfigPatchDefaultDetailAuto     ToolImageConfigPatchDefaultDetail = "auto"
+	ToolImageConfigPatchDefaultDetailHigh     ToolImageConfigPatchDefaultDetail = "high"
+	ToolImageConfigPatchDefaultDetailLow      ToolImageConfigPatchDefaultDetail = "low"
+	ToolImageConfigPatchDefaultDetailOriginal ToolImageConfigPatchDefaultDetail = "original"
 )
 
 // Defines values for ToolResourceKind.
@@ -889,6 +1203,26 @@ const (
 	ToolsConfigExecSecurityFull      ToolsConfigExecSecurity = "full"
 )
 
+// Defines values for UnavailableActionKind.
+const (
+	UnavailableActionKindUnavailable UnavailableActionKind = "unavailable"
+)
+
+// Defines values for UnsupportedSettingItemKind.
+const (
+	UnsupportedSettingItemKindSetting UnsupportedSettingItemKind = "setting"
+)
+
+// Defines values for UnsupportedSoulItemKind.
+const (
+	UnsupportedSoulItemKindSoul UnsupportedSoulItemKind = "soul"
+)
+
+// Defines values for UnsupportedToolItemKind.
+const (
+	UnsupportedToolItemKindTool UnsupportedToolItemKind = "tool"
+)
+
 // Defines values for UsageError.
 const (
 	UsageErrorMalformed     UsageError = "malformed"
@@ -896,6 +1230,11 @@ const (
 	UsageErrorScopeMissing  UsageError = "scope_missing"
 	UsageErrorTokenExpired  UsageError = "token_expired"
 	UsageErrorUpstreamError UsageError = "upstream_error"
+)
+
+// Defines values for WaitForToolsActionKind.
+const (
+	WaitForToolsActionKindWaitForTools WaitForToolsActionKind = "wait_for_tools"
 )
 
 // ActiveHoursConfig Active hours window for heartbeat scheduling.
@@ -949,6 +1288,91 @@ type AddonInput struct {
 	Id      string                  `json:"id"`
 }
 
+// AgentContainerImageMcpServerCreate A container-image MCP server create, as an agent describes one.
+//
+// Identical in meaning to :class:`ContainerImageMcpServerCreate`; the only
+// differences are the ones the redactor forces (entry lists rather than
+// caller-keyed maps). Use :meth:`to_service_body` and
+// :meth:`from_service_body` to move between the two — never convert by hand.
+type AgentContainerImageMcpServerCreate struct {
+	// Args Argv-style arguments appended to command/entrypoint
+	Args *[]string `json:"args"`
+
+	// CatalogFormAnswers Answers to the linked template's setup form. This is the way to install a template: answer the fields get_mcp_catalog_entry lists and the platform compiles them onto the env vars, mounts or headers the template declares — including the parts of the template you cannot see and must not restate. Requires mcp_catalog_entry_id. An unknown field id, a mode the field does not allow, or a missing required answer is refused by name.
+	CatalogFormAnswers *[]CatalogFormAnswer `json:"catalog_form_answers,omitempty"`
+
+	// Command Argv-style entrypoint override (null = use image default)
+	Command *[]string `json:"command"`
+
+	// CredentialSidecarImage Per-server credential sidecar image override. Omit/null to inherit the provisioner's configured default.
+	CredentialSidecarImage *string `json:"credential_sidecar_image"`
+
+	// Description Optional free-form description shown alongside the server in the UI
+	Description *string `json:"description"`
+
+	// EnvPlaintext Non-sensitive environment variables, [{"name": ..., "value": ...}]. Never put a secret value here.
+	EnvPlaintext *[]EnvVar `json:"env_plaintext,omitempty"`
+
+	// EnvSecretRefs Vault-backed env vars, [{"name": "GITHUB_TOKEN", "secret_key_path": "mcp.github.token"}]. The path is a pointer resolved at runtime, never the secret value.
+	EnvSecretRefs *[]EnvSecretRef `json:"env_secret_refs,omitempty"`
+
+	// Image Container image reference (e.g. ``ghcr.io/foo/mcp:1.0``). Required on a free-form create; omit it when ``mcp_catalog_entry_id`` is set and let the template supply it.
+	Image *string `json:"image"`
+
+	// IntegrationCredentialIds Integration connections this server is linked to. Unlike every other field here this does not become container configuration: the pod is authorized to fetch short-lived access tokens for these connections and is injected with nothing. The list is the desired state.
+	IntegrationCredentialIds *[]string `json:"integration_credential_ids,omitempty"`
+
+	// McpCatalogEntryId Catalog entry used to prefill this create payload, if any
+	McpCatalogEntryId *string `json:"mcp_catalog_entry_id"`
+
+	// Name Human-readable label for the MCP server (unique per org)
+	Name string `json:"name"`
+
+	// PodHostMode How Botyard sets the HTTP ``Host`` when connecting to an in-cluster MCP pod.
+	//
+	// This is a fixed property of the server's HTTP framework, declared as
+	// configuration (like ``port``) rather than discovered at runtime:
+	//
+	// * ``natural`` — send the pod's in-cluster Service FQDN as ``Host`` (httpx's
+	//   default). Correct for the MCP Python SDK / uvx, Node/npx, and every
+	//   first-party ``ghcr.io/botyard-ai/*`` wrapper image. The default.
+	// * ``pod_localhost`` — send ``Host: localhost:<port>``. Required by servers
+	//   that enforce DNS-rebinding host allowlists (``mark3labs/mcp-go``, e.g.
+	//   ``grafana/mcp-grafana``), which reject the Service FQDN with
+	//   ``403 forbidden: host not allowed``. Sending it to a server that does not
+	//   want it (Python SDK) instead breaks the handshake with ``Session
+	//   terminated`` (the server's ``307`` echoes the forged Host back to the
+	//   client's own localhost).
+	//
+	// Only meaningful for ``runtime_kind=container_image``; ignored for
+	// ``managed_remote`` (the vendor host is always preserved).
+	PodHostMode *McpPodHostMode `json:"pod_host_mode,omitempty"`
+
+	// Port Container port the streamable-http transport listens on. Required on a free-form create; omit it when ``mcp_catalog_entry_id`` is set and let the template supply it.
+	Port *int `json:"port"`
+
+	// RequestTimeoutSeconds Override (seconds) for the gateway's request timeout when proxying tool calls to this MCP. Omit/null to inherit the gateway default.
+	RequestTimeoutSeconds *int `json:"request_timeout_seconds"`
+
+	// Resources Pod compute as MeteredResource line-items, e.g. {"resources": [{"resource_type": "memory_limit", "quantity": "2Gi"}, {"resource_type": "storage", "quantity": "10Gi"}]}. Only the resources being set; the rest keep the platform default shape (100m/500m CPU, 128Mi/512Mi memory, 1Gi scratch). storage sizes the writable scratch volume. Billed like bot resources and capped by the plan's per-MCP-server maximums. Omit for the default shape.
+	Resources *ResourceQuantities `json:"resources"`
+
+	// RuntimeKind Runtime kind tag — always ``container_image`` for this variant
+	RuntimeKind AgentContainerImageMcpServerCreateRuntimeKind `json:"runtime_kind"`
+
+	// SecretFileMounts Runtime Vault secrets mounted read-only into the container, [{"container_path": "/etc/certs/client.pem", "secret_key_path": ...}]. Pointers, not secret values.
+	SecretFileMounts *[]SecretFileMount `json:"secret_file_mounts,omitempty"`
+
+	// Slug URL-safe identifier — server-generated from ``name`` when omitted. Must match ``^[a-z0-9][a-z0-9-]{0,63}$`` if provided.
+	Slug *string `json:"slug"`
+
+	// Transport Wire transport a deployed MCP server exposes to the gateway.
+	Transport *McpServerTransport `json:"transport,omitempty"`
+}
+
+// AgentContainerImageMcpServerCreateRuntimeKind Runtime kind tag — always “container_image“ for this variant
+type AgentContainerImageMcpServerCreateRuntimeKind string
+
 // AllowedAgentModelConfig A model reference that agents are allowed to select.
 type AllowedAgentModelConfig struct {
 	Alias *string `json:"alias"`
@@ -985,8 +1409,35 @@ type AndMcpCatalogFilterFieldKind string
 // ApiProtocol Wire protocol for communicating with a provider.
 type ApiProtocol string
 
+// ApprovalAction The capacity gate wants a human to approve exactly this create; then re-run.
+type ApprovalAction struct {
+	Detail string             `json:"detail"`
+	Kind   ApprovalActionKind `json:"kind"`
+
+	// Request A container-image MCP server create, as an agent describes one.
+	//
+	// Identical in meaning to :class:`ContainerImageMcpServerCreate`; the only
+	// differences are the ones the redactor forces (entry lists rather than
+	// caller-keyed maps). Use :meth:`to_service_body` and
+	// :meth:`from_service_body` to move between the two — never convert by hand.
+	Request AgentContainerImageMcpServerCreate `json:"request"`
+}
+
+// ApprovalActionKind defines model for ApprovalAction.Kind.
+type ApprovalActionKind string
+
 // AuthMethod Authentication method for provider credentials.
 type AuthMethod string
+
+// AwaitingConnectAction An authorisation is out (its link went to whoever ran the setup).
+type AwaitingConnectAction struct {
+	ComposioConnectionId string                    `json:"composio_connection_id"`
+	ExpiresAt            time.Time                 `json:"expires_at"`
+	Kind                 AwaitingConnectActionKind `json:"kind"`
+}
+
+// AwaitingConnectActionKind defines model for AwaitingConnectAction.Kind.
+type AwaitingConnectActionKind string
 
 // BasicHeaderScheme “Basic base64(username:password)“ — RFC 7617.
 //
@@ -1075,6 +1526,9 @@ type BotCreate struct {
 	// Config Initial bot config (applied on top of defaults)
 	Config BotCreate_Config `json:"config"`
 
+	// Credentials Credential assignments to apply atomically with creation — the same body, validation, and bot-owner gate as `PUT /orgs/{org_id}/bots/{bot_slug}/credentials`. Model routing is derived from these links before the bot is first provisioned, so it boots on the chosen model instead of being reconfigured (and restarted) moments later. Any invalid assignment fails the whole create. Only credentials that already exist can be linked; a bot-private credential needs the bot first and is still assigned after creation.
+	Credentials *BotCredentialAssign `json:"credentials"`
+
 	// Description Short human-facing description / role for the bot (e.g. 'Platform developer'). Display metadata only — not injected into the bot's system prompt.
 	Description *string `json:"description"`
 
@@ -1096,7 +1550,8 @@ type BotCreate struct {
 	// stored config blob* rather than naming the agent software. See
 	// ``Bot.harness`` for the full note.
 	//
-	// Immutable once set — see ``Bot.harness``.
+	// Immutable once set, with one controlled exception: the audited, one-way
+	// OpenClaw → native harness switch (PlatDev #3823). See ``Bot.harness``.
 	Harness *BotHarness `json:"harness,omitempty"`
 
 	// HostingType Who runs the bot's runtime.
@@ -1121,6 +1576,9 @@ type BotCreate struct {
 
 	// Tier Bot subscription tier.
 	Tier *BotTier `json:"tier,omitempty"`
+
+	// ToolDomainSettings Per-tool-domain settings to apply atomically with creation, keyed by domain (e.g. `sessions`) — the same validation and `bot:tool_domain_settings.update` permission as `PUT /orgs/{org_id}/bots/{bot_slug}/tool-domain-settings/{domain}`. Each value's `tool` discriminator must match its key.
+	ToolDomainSettings *map[string]SessionsToolSettings `json:"tool_domain_settings,omitempty"`
 
 	// ToolIds Tools to assign at creation (the wizard's final selection).
 	ToolIds *[]string `json:"tool_ids,omitempty"`
@@ -1171,9 +1629,9 @@ type BotCredentialAssignmentResponse struct {
 	KeyPrefix    *string      `json:"key_prefix"`
 	Label        string       `json:"label"`
 
-	// Model Per-link model preference (only for api_protocol=claude_code_cli credentials). Accepted values are whatever the active Claude CLI backend supports — see ``CLAUDE_CODE_CLI_SUPPORTED_MODELS`` in ``botyard_core.openclaw.config``.
-	Model   *string `json:"model"`
-	Ordinal int     `json:"ordinal"`
+	// NativeLane How native owned mode treats this credential: the lane it serves it on, or why it refuses it (a native bot's chain must be all served). A fact about the credential, so it is set on every bot; the app shows it on native bots. Null unless the assignment is an LLM credential with an API protocol.
+	NativeLane *BotCredentialAssignmentResponse_NativeLane `json:"native_lane"`
+	Ordinal    int                                         `json:"ordinal"`
 
 	// Provider Known provider vendors.
 	Provider CredentialProvider `json:"provider"`
@@ -1183,8 +1641,28 @@ type BotCredentialAssignmentResponse struct {
 	Slug  string          `json:"slug"`
 }
 
+// BotCredentialAssignmentResponse_NativeLane How native owned mode treats this credential: the lane it serves it on, or why it refuses it (a native bot's chain must be all served). A fact about the credential, so it is set on every bot; the app shows it on native bots. Null unless the assignment is an LLM credential with an API protocol.
+type BotCredentialAssignmentResponse_NativeLane struct {
+	union json.RawMessage
+}
+
 // BotFilterField Fields filterable via the bot search endpoint.
 type BotFilterField string
+
+// BotFromPack One created bot, the pack install it was created with, and the model it starts on.
+type BotFromPack struct {
+	// Bot Bot desired/observed state response.
+	Bot     BotResponse   `json:"bot"`
+	Install InstalledPack `json:"install"`
+
+	// Model The model the bot starts on: the pack's recommended model when an org credential runs it, otherwise the default model, with the reason.
+	Model BotFromPack_Model `json:"model"`
+}
+
+// BotFromPack_Model The model the bot starts on: the pack's recommended model when an org credential runs it, otherwise the default model, with the reason.
+type BotFromPack_Model struct {
+	union json.RawMessage
+}
 
 // BotHarness Which agent software the bot runs.
 //
@@ -1198,7 +1676,8 @@ type BotFilterField string
 // stored config blob* rather than naming the agent software. See
 // “Bot.harness“ for the full note.
 //
-// Immutable once set — see “Bot.harness“.
+// Immutable once set, with one controlled exception: the audited, one-way
+// OpenClaw → native harness switch (PlatDev #3823). See “Bot.harness“.
 type BotHarness string
 
 // BotHealthStatus Bot health monitoring status.
@@ -1249,6 +1728,22 @@ type BotListItem struct {
 	//
 	// Set by the API; the reconciler drives ``observed_state`` toward this value.
 	DesiredState DesiredState `json:"desired_state"`
+
+	// Harness Which agent software the bot runs.
+	//
+	// Deliberately named *harness*, not *runtime*: ``runtime`` already carries
+	// five unrelated meanings in this codebase (``Bot.runtime_class``, the bot
+	// runtime image, ``ComponentName.RUNTIME``, Runtime Vault, and the
+	// ``bot_runtime`` audit domain), and *harness* is the vocabulary the native
+	// runtime design already uses.
+	//
+	// Distinct from :class:`BotType`, which discriminates the *shape of the
+	// stored config blob* rather than naming the agent software. See
+	// ``Bot.harness`` for the full note.
+	//
+	// Immutable once set, with one controlled exception: the audited, one-way
+	// OpenClaw → native harness switch (PlatDev #3823). See ``Bot.harness``.
+	Harness BotHarness `json:"harness"`
 
 	// HealthStatus Bot health monitoring status.
 	HealthStatus BotHealthStatus `json:"health_status"`
@@ -1316,8 +1811,19 @@ type BotResponse struct {
 	Access BotAccess `json:"access"`
 
 	// AutoRetryPending True when the bot is FAILED but the reconciler still has a retry scheduled for it (`retry_after` is in the future). Setup is not over: UIs should keep showing progress rather than a terminal 'setup failed' screen, which is what made a first-run bot look broken during a transient config-push error it recovered from a minute later. Goes false once the scheduled retry window has passed without the bot leaving FAILED.
-	AutoRetryPending *bool   `json:"auto_retry_pending,omitempty"`
-	AvatarUrl        *string `json:"avatar_url"`
+	AutoRetryPending *bool `json:"auto_retry_pending,omitempty"`
+
+	// AutoSuspendEffective The authoritative effective inactivity policy after applying the current plan. This remains true on plans that enforce auto-suspend even when the stored auto_suspend_enabled preference is false.
+	AutoSuspendEffective *bool `json:"auto_suspend_effective,omitempty"`
+
+	// AutoSuspendEnabled The owner's stored inactivity-suspension preference. Plans without the auto_suspend_opt_out feature enforce auto-suspend even when this is false.
+	AutoSuspendEnabled bool `json:"auto_suspend_enabled"`
+
+	// AutoSuspendOptOutAvailable Whether the current plan explicitly permits this bot's owner to disable automatic inactivity suspension.
+	AutoSuspendOptOutAvailable *bool `json:"auto_suspend_opt_out_available,omitempty"`
+
+	// AvatarUrl Avatar image: a data URI, an https:// URL, or, for a bot that took its pack's avatar, an API-relative path (`/v1/pack-avatars/{hex}`). Resolve a path against the API base URL, not the page's origin.
+	AvatarUrl *string `json:"avatar_url"`
 
 	// CanManage Whether the calling actor may manage owner-gated bot settings. Advisory for UI affordances; mutation endpoints remain authoritative.
 	CanManage *bool `json:"can_manage,omitempty"`
@@ -1352,7 +1858,8 @@ type BotResponse struct {
 	// stored config blob* rather than naming the agent software. See
 	// ``Bot.harness`` for the full note.
 	//
-	// Immutable once set — see ``Bot.harness``.
+	// Immutable once set, with one controlled exception: the audited, one-way
+	// OpenClaw → native harness switch (PlatDev #3823). See ``Bot.harness``.
 	Harness BotHarness `json:"harness"`
 
 	// HealthStatus Bot health monitoring status.
@@ -1374,7 +1881,10 @@ type BotResponse struct {
 
 	// LastHealthCheckAt Timestamp of the last health check
 	LastHealthCheckAt *time.Time `json:"last_health_check_at"`
-	LastReconciledAt  *time.Time `json:"last_reconciled_at"`
+
+	// LastHumanActivityAt Most recent accepted user, Slack, or Teams message. Schedules, bot output, developer wakes, and health traffic do not update this timestamp.
+	LastHumanActivityAt time.Time  `json:"last_human_activity_at"`
+	LastReconciledAt    *time.Time `json:"last_reconciled_at"`
 
 	// LlmChain The bot's provider chain as it will be, and as it currently is.
 	//
@@ -1440,6 +1950,9 @@ type BotResponse struct {
 	// classes currently in active use are enumerated — extend as needed.
 	StorageClass BotStorageClass `json:"storage_class"`
 
+	// SuspensionReason Why the bot is suspended. Inactivity suspension auto-wakes from the next human message; manual suspension never does.
+	SuspensionReason *SuspensionReason `json:"suspension_reason"`
+
 	// Tier Bot subscription tier.
 	Tier      BotTier   `json:"tier"`
 	UpdatedAt time.Time `json:"updated_at"`
@@ -1452,8 +1965,10 @@ type BotResponse_DesiredConfig struct {
 
 // BotRestartResponse Response for a user-triggered bot container restart.
 type BotRestartResponse struct {
-	Message string `json:"message"`
-	Ok      *bool  `json:"ok,omitempty"`
+	// AppliedPendingUpdate True when the bot had a maintenance restart pending and this restart applied that queued update now instead of only recycling the pod.
+	AppliedPendingUpdate *bool  `json:"applied_pending_update,omitempty"`
+	Message              string `json:"message"`
+	Ok                   *bool  `json:"ok,omitempty"`
 }
 
 // BotRuntimeClass Container runtime class for a bot pod.
@@ -1501,6 +2016,12 @@ type BotSkillAssignmentResponse struct {
 	// Name Skill display name
 	Name string `json:"name"`
 
+	// PinnedVersionId The skill version this bot is pinned to. Null means the bot follows the latest version.
+	PinnedVersionId *string `json:"pinned_version_id"`
+
+	// PinnedVersionNo Version number of the pinned version; null when unpinned.
+	PinnedVersionNo *int `json:"pinned_version_no"`
+
 	// Provider Who provided/authored the skill.
 	Provider SkillProvider `json:"provider"`
 
@@ -1527,6 +2048,21 @@ type BotSkillDeploy struct {
 type BotSkillIds struct {
 	// SkillIds Skill IDs to unassign
 	SkillIds []string `json:"skill_ids"`
+}
+
+// BotSkillPin One pin change for a skill assigned to the bot.
+type BotSkillPin struct {
+	// SkillId Assigned skill to pin or unpin.
+	SkillId string `json:"skill_id"`
+
+	// VersionId Version to pin, from POST /skills/versions/search. Null unpins, so the bot follows the latest version again. A version of an org's own skill can always be pinned. For a platform skill, only a published version or the current latest one can be pinned.
+	VersionId *string `json:"version_id"`
+}
+
+// BotSkillPinsUpdate Request to pin or unpin skills assigned to a bot (batch, all-or-nothing).
+type BotSkillPinsUpdate struct {
+	// Pins Pin changes; each skill at most once.
+	Pins []BotSkillPin `json:"pins"`
 }
 
 // BotStorageClass Storage class for the bot's workspace PVC.
@@ -1612,7 +2148,7 @@ type BotToolAssignmentResponse struct {
 	// Each member names a *different* enforcement point, which is the bar a new
 	// member has to clear. The value appears in every
 	// :meth:`ToolCatalog.build_slug` result, so it is a durable public contract:
-	// ``mcp:botyard:send_email``, ``openclaw::exec``, ``native::host_read``.
+	// ``mcp:botyard:send_email``, ``openclaw::exec``, ``native::file_read``.
 	//
 	// * ``mcp`` — the platform serves the tool over MCP. Enforcement is in the
 	//   gateway, which is also why these rows are reachable from every harness.
@@ -1630,7 +2166,7 @@ type BotToolAssignmentResponse struct {
 	// same **shape** — a builtin, enforced by configuring the agent that owns it —
 	// but they are different agents, and :data:`~botyard_core.hosting.
 	// _HARNESS_TOOL_RUNTIMES` is keyed on this value. Reusing ``openclaw`` would
-	// advertise ``host_read`` to OpenClaw bots, where the name means nothing.
+	// advertise ``file_read`` to OpenClaw bots, where the name means nothing.
 	Runtime ToolRuntime `json:"runtime"`
 
 	// RuntimeToolName Internal runtime tool name
@@ -1654,6 +2190,9 @@ type BotToolAssignmentResponse struct {
 
 	// SyncedAt When this assignment was last confirmed applied to the running bot
 	SyncedAt *time.Time `json:"synced_at"`
+
+	// Title Human-readable title advertised by the MCP server, if any. Display it in preference to ``name`` when present; never use it as an identifier.
+	Title *string `json:"title"`
 
 	// ToolId Tool catalog ID
 	ToolId string `json:"tool_id"`
@@ -1679,6 +2218,9 @@ type BotToolRetrySyncRequest struct {
 //
 // For config changes, use PATCH /{bot_slug}/config instead.
 type BotUpdate struct {
+	// AutoSuspendEnabled Whether this bot should suspend after 14 days without a human or external-channel message. Disabling requires the plan's auto_suspend_opt_out feature; plans without it enforce auto-suspend regardless of a previously stored preference.
+	AutoSuspendEnabled *bool `json:"auto_suspend_enabled,omitempty"`
+
 	// AvatarUrl Avatar image URL — an image data URI (DiceBear SVG, or an uploaded WebP/PNG/JPEG) or an https:// URL. Max 16384 characters. Send null to clear; omit to leave unchanged.
 	AvatarUrl *string `json:"avatar_url"`
 
@@ -1693,6 +2235,21 @@ type BotUpdate struct {
 
 	// Tier Bot tier
 	Tier *BotTier `json:"tier"`
+}
+
+// BotsFromPacks The created bots, in request order, then where each pack connection's setup stands.
+type BotsFromPacks struct {
+	// Bots One per request, in request order.
+	Bots []BotFromPack `json:"bots"`
+
+	// Setups Every connection of the installs, exactly as `POST …/packs/installs` reports them. Recorded after the bots committed: if this step failed the bots still stand, `setups` is empty, and `POST …/packs/setups/resume` reports them.
+	Setups []PackConnectionSetupResult `json:"setups"`
+}
+
+// BotsFromPacksBody Bots to create, each from one pack version (bot catalogue P2.9).
+type BotsFromPacksBody struct {
+	// Bots One per new bot. Several may use the same pack version; no two may end up with the same name.
+	Bots []PackBotRequest `json:"bots"`
 }
 
 // BrowserConfig OpenClaw browser plugin configuration.
@@ -1728,6 +2285,82 @@ type BrowserConfig struct {
 	// NoSandbox Add ``--no-sandbox`` to Chromium's launch args. Required for non-root container deployments where Chromium's setuid + namespace sandboxes can't initialise. Default ``True`` because every Botyard bot pod runs non-root.
 	NoSandbox *bool `json:"no_sandbox,omitempty"`
 }
+
+// CatalogFormAnswer One answer to a field on a catalog template's setup form.
+//
+// A list rather than a “{field_id: value}“ map for the reason this whole
+// module exists: a template is free to name a field “personal_access_token“,
+// and in key position the redactor would mask it. “field_id“ is ordinary
+// data and survives the transcript intact.
+type CatalogFormAnswer struct {
+	// FieldId Form field id from the template's form_spec, e.g. 'org'. Read them off get_mcp_catalog_entry; an id the template does not declare is refused by name.
+	FieldId string `json:"field_id"`
+
+	// Items record_list fields only: the rows, in order (order is meaningful). Leave mode/value at their defaults. An empty list means no rows.
+	Items *[]CatalogFormRecordRow `json:"items"`
+
+	// Mode How a *stored* form value should be interpreted.
+	//
+	// A strict superset of :class:`McpCatalogFormInputMode`, and deliberately so.
+	// ``integration`` is not an input mode: it marks the value of an integration
+	// field, which is the id of the connection this server is linked to, and
+	// nothing is injected into the pod for it. No form ever offers it as a choice.
+	//
+	// The two sets were previously four hand-copied ``Literal`` blocks with no
+	// assertion of their relationship — adding a member to one and not the others
+	// would have drifted silently (PlatDev #2518).
+	Mode *McpCatalogFormValueMode `json:"mode,omitempty"`
+
+	// Value The answer. For 'secret_ref' this is a pointer such as mcp.azure-devops.personal_access_token, never the secret itself.
+	Value *string `json:"value,omitempty"`
+}
+
+// CatalogFormRecordCell One cell of a record_list row: a column id and its value.
+//
+// A list entry, not a “{column_id: value}“ map, for the same reason as
+// :class:`CatalogFormAnswer` — a template may name a column “token“.
+type CatalogFormRecordCell struct {
+	// ColumnId Column id from the record_list field's columns, e.g. 'url'
+	ColumnId string `json:"column_id"`
+
+	// Mode How a *stored* form value should be interpreted.
+	//
+	// A strict superset of :class:`McpCatalogFormInputMode`, and deliberately so.
+	// ``integration`` is not an input mode: it marks the value of an integration
+	// field, which is the id of the connection this server is linked to, and
+	// nothing is injected into the pod for it. No form ever offers it as a choice.
+	//
+	// The two sets were previously four hand-copied ``Literal`` blocks with no
+	// assertion of their relationship — adding a member to one and not the others
+	// would have drifted silently (PlatDev #2518).
+	Mode *McpCatalogFormValueMode `json:"mode,omitempty"`
+
+	// Value The cell's value; empty omits it
+	Value *string `json:"value,omitempty"`
+}
+
+// CatalogFormRecordRow One row of a record_list answer.
+type CatalogFormRecordRow struct {
+	// Cells The row's cells; a column left out is empty (or its default)
+	Cells *[]CatalogFormRecordCell `json:"cells,omitempty"`
+}
+
+// ChooseServerAction Several of the org's servers fit: choose one (“complete_setups“).
+type ChooseServerAction struct {
+	Kind         ChooseServerActionKind `json:"kind"`
+	McpServerIds []string               `json:"mcp_server_ids"`
+}
+
+// ChooseServerActionKind defines model for ChooseServerAction.Kind.
+type ChooseServerActionKind string
+
+// ChosenModel The request's “credentials“ chose the bot's LLM; the pack's recommendation is unused.
+type ChosenModel struct {
+	Kind ChosenModelKind `json:"kind"`
+}
+
+// ChosenModelKind defines model for ChosenModel.Kind.
+type ChosenModelKind string
 
 // ClaudeCodeProviderEntry Claude Code CLI backend configuration for an openclaw bot.
 //
@@ -1928,11 +2561,19 @@ type ComposioConnectionDetail struct {
 	// Named ``...State`` rather than ``...Status`` on purpose: the vendor's own
 	// status vocabulary is
 	// :class:`~botyard_core.services.composio.client.ComposioConnectionStatus`,
-	// and the two are read side by side in the poll path. These four are Botyard's own
-	// reading of an install attempt, and the mapping between them is a decision
+	// and the two are read side by side in the poll path. These are Botyard's own
+	// reading of a connection, and the mapping between them is a decision
 	// this service makes rather than a rename — notably ``UNKNOWN`` on the vendor
 	// side maps to no terminal state here at all, only to "keep waiting until
 	// ``deadline_at``".
+	//
+	// **Two axes, not one.** :attr:`is_terminal` asks whether the *install attempt*
+	// is over; :attr:`is_installed` asks whether a tile exists. They were the same
+	// question while ``connected`` was the only successful outcome, and
+	// :attr:`NEEDS_REAUTH` is what separates them: the attempt finished, the tile
+	// exists, and the connection is nonetheless not working. Read the one the call
+	// site actually means — the install poll wants :attr:`is_terminal`, the CHECK
+	// constraint and anything reasoning about the tile want :attr:`is_installed`.
 	Status ComposioConnectionState `json:"status"`
 
 	// ToolkitSlug Composio toolkit being authorised
@@ -2002,11 +2643,19 @@ type ComposioConnectionStartRequest struct {
 // Named “...State“ rather than “...Status“ on purpose: the vendor's own
 // status vocabulary is
 // :class:`~botyard_core.services.composio.client.ComposioConnectionStatus`,
-// and the two are read side by side in the poll path. These four are Botyard's own
-// reading of an install attempt, and the mapping between them is a decision
+// and the two are read side by side in the poll path. These are Botyard's own
+// reading of a connection, and the mapping between them is a decision
 // this service makes rather than a rename — notably “UNKNOWN“ on the vendor
 // side maps to no terminal state here at all, only to "keep waiting until
 // “deadline_at“".
+//
+// **Two axes, not one.** :attr:`is_terminal` asks whether the *install attempt*
+// is over; :attr:`is_installed` asks whether a tile exists. They were the same
+// question while “connected“ was the only successful outcome, and
+// :attr:`NEEDS_REAUTH` is what separates them: the attempt finished, the tile
+// exists, and the connection is nonetheless not working. Read the one the call
+// site actually means — the install poll wants :attr:`is_terminal`, the CHECK
+// constraint and anything reasoning about the tile want :attr:`is_installed`.
 type ComposioConnectionState string
 
 // ComposioCredentialFieldSpec One input a credential form must render, as the vendor describes it.
@@ -2025,7 +2674,7 @@ type ComposioCredentialFieldSpec struct {
 	// DisplayName Label to show the customer
 	DisplayName string `json:"display_name"`
 
-	// IsSecret Whether to mask this input. The vendor's own answer, spot-checked across the catalogue and correct every time. It governs **masking only**: every collected value is stored as a secret regardless, so that a vendor flipping this flag can never silently downgrade a live credential.
+	// IsSecret Whether to mask this input: the vendor's own flag, OR'd with a password-name check. The vendor's flag alone is not reliable. It was right for every API_KEY toolkit checked, but four BASIC toolkits mark their required ``password`` as not secret. It governs **masking only**: every collected value is stored as a secret regardless, so a vendor flipping this flag can never silently downgrade a live credential.
 	IsSecret *bool `json:"is_secret,omitempty"`
 
 	// Name Wire key to submit this value under. Frequently a meaningless slot — ``builder_io`` calls its public key ``generic_api_key`` and its private key ``generic_id`` — so never infer sensitivity from it. Use ``is_secret``.
@@ -2072,8 +2721,14 @@ type ComposioCredentialInstallRequest struct {
 	// McpCatalogEntryId Catalog entry for the Composio tile being installed
 	McpCatalogEntryId string `json:"mcp_catalog_entry_id"`
 
+	// McpConnectRequestId The in-chat connect ask this install answers, if it came from a card (platform-development #3014). Binding it is what lets a reopened card show the tile as installed, and what tells the requesting bot its tile landed. Omit it for an install started from the MCP wizard, which has no ask behind it. Must name an ask in your own organization for the same catalogue entry; anything else is refused with 404 before any vendor object or vault entry exists.
+	McpConnectRequestId *string `json:"mcp_connect_request_id"`
+
 	// Values Vendor field name to value, as named by ``ComposioCredentialForm.fields``. Blank optional values are dropped rather than forwarded; an empty string is a value as far as the vendor is concerned.
 	Values map[string]string `json:"values"`
+
+	// VaultEntryRefs Vendor field name to the ``entry_id`` of an existing Runtime Vault entry whose value should be used for that field, instead of typing it into ``values``. A field may appear in ``values`` or here, never both. Only entries the org itself owns resolve: a platform-managed credential, an entry of another organization, an expired entry or an unknown id are all refused with the same 422, so the answer never says which. Requires a signed-in person who may manage the org's vault policies (403 otherwise, including for bots and API keys). The value is **copied** at submit time: rotating the source entry later does not update the integration. Any field may be referenced, secret or not, because the vendor's ``is_secret`` flag is not trusted to decide how a value is handled.
+	VaultEntryRefs *map[string]openapi_types.UUID `json:"vault_entry_refs,omitempty"`
 }
 
 // ComposioCredentialState What an installed tile's credential section renders.
@@ -2103,6 +2758,12 @@ type ComposioCredentialState struct {
 
 	// ToolkitSlug Composio toolkit the fields belong to; NULL when this is not a Composio tile
 	ToolkitSlug *string `json:"toolkit_slug"`
+
+	// VaultDisconnectReason Why the tile was disconnected, when ``vault_sync_state`` is ``disconnected``; NULL otherwise. ``source_deleted``: a linked vault secret was deleted — the fields still carrying its ``source_vault_entry_id`` are the ones to re-point.
+	VaultDisconnectReason *ComposioVaultDisconnectReason `json:"vault_disconnect_reason"`
+
+	// VaultSyncState Out-of-sync marker for a tile whose fields are linked to Runtime Vault secrets. NULL when the tile matches the vault (or links nothing).
+	VaultSyncState *ComposioVaultSyncState `json:"vault_sync_state"`
 }
 
 // ComposioCredentialStateField One input on an *installed* tile's credential form.
@@ -2114,11 +2775,21 @@ type ComposioCredentialState struct {
 // vendor spec read the same way — an edit form that rendered a *stored* copy
 // of the spec would drift from the vendor exactly as an install form would.
 //
-// “is_set“ is the only thing ever said about a stored value. Not its length,
-// not a masked prefix, not its age: a suffix or a length is a real reduction
-// of the search space for the value, and no part of this screen needs one to
-// do its job. The input beside it is always empty, and leaving it empty means
-// "leave this one alone".
+// For a credential, “is_set“ is the only thing ever said about a stored
+// value. Not its length, not a masked prefix, not its age: a suffix or a
+// length is a real reduction of the search space for the value, and no part
+// of this screen needs one to do its job. The input beside it is empty, and
+// leaving it empty means "leave this one alone".
+//
+// **The exception is a field that is plainly not a credential** (#3044), such
+// as a workspace URL, a region or a subdomain. Its stored value comes back in
+// “value“ so the form can show it prefilled and editable. The rule is in
+// :func:`botyard_core.services.composio.credential_display.may_display_stored_value`.
+// It needs the vendor's live flag, Botyard's catalogue snapshot and a broad
+// credential-name check to all agree. A field that is linked to a Runtime
+// Vault entry never carries a “value“: that value belongs to the vault and
+// is shown under the vault's own permissions. “value“ only ever reaches a
+// caller who may already replace this tile's credentials.
 type ComposioCredentialStateField struct {
 	// Default The vendor's suggested value, to prefill the input with
 	Default *string `json:"default"`
@@ -2129,10 +2800,10 @@ type ComposioCredentialStateField struct {
 	// DisplayName Label to show the customer
 	DisplayName string `json:"display_name"`
 
-	// IsSecret Whether to mask this input. The vendor's own answer, spot-checked across the catalogue and correct every time. It governs **masking only**: every collected value is stored as a secret regardless, so that a vendor flipping this flag can never silently downgrade a live credential.
+	// IsSecret Whether to mask this input: the vendor's own flag, OR'd with a password-name check. The vendor's flag alone is not reliable. It was right for every API_KEY toolkit checked, but four BASIC toolkits mark their required ``password`` as not secret. It governs **masking only**: every collected value is stored as a secret regardless, so a vendor flipping this flag can never silently downgrade a live credential.
 	IsSecret *bool `json:"is_secret,omitempty"`
 
-	// IsSet Whether Botyard holds a stored value for this field. Render it as a 'set' indicator next to an **empty** input — never as a value, a mask, or a length. False on a field the customer has never filled in, and false for every field of a tile installed before Botyard kept its own copy.
+	// IsSet Whether Botyard holds a stored value for this field. When ``value`` is null, render it as a 'set' indicator next to an **empty** input — never as a mask or a length. False on a field the customer has never filled in, and false for every field of a tile installed before Botyard kept its own copy.
 	IsSet *bool `json:"is_set,omitempty"`
 
 	// Name Wire key to submit this value under. Frequently a meaningless slot — ``builder_io`` calls its public key ``generic_api_key`` and its private key ``generic_id`` — so never infer sensitivity from it. Use ``is_secret``.
@@ -2140,6 +2811,12 @@ type ComposioCredentialStateField struct {
 
 	// Required Whether the install is refused without it. About *presence*, not about being the credential — several toolkits require only a host or subdomain and make the key itself optional.
 	Required *bool `json:"required,omitempty"`
+
+	// SourceVaultEntryId The Runtime Vault entry this field's stored value is linked to, when it was supplied as a vault reference rather than typed. The tile holds a linked copy: a change to that entry is pushed to the integration in the background (see ``vault_sync_state`` for a push that is pending, failed, or whose entry was deleted). NULL for a typed value.
+	SourceVaultEntryId *string `json:"source_vault_entry_id"`
+
+	// Value The stored value, **only** for a field that is plainly not a credential (a URL, a region, a subdomain): the vendor does not mark it secret, Botyard's catalogue snapshot does not either, and neither its name nor its label looks like a password, token, secret or key. Prefill the input with it; submitting it unchanged is the same as leaving the field alone. NULL for every secret field, for every field linked to a Runtime Vault entry (``source_vault_entry_id``), and for anything not stored. Only returned to callers who may replace this tile's credentials.
+	Value *string `json:"value"`
 }
 
 // ComposioCredentialUpdateRequest A submitted credential *edit*.
@@ -2162,7 +2839,18 @@ type ComposioCredentialStateField struct {
 type ComposioCredentialUpdateRequest struct {
 	// Values Vendor field name to new value, as named by ``ComposioCredentialState.fields``. Send only the fields being changed: an omitted or blank field keeps its stored value. A submission with nothing non-blank in it is refused rather than treated as a no-op rotation, because rebuilding the connection is not free — it replaces the vendor account the tile's live session is pinned to.
 	Values map[string]string `json:"values"`
+
+	// VaultEntryRefs Vendor field name to the ``entry_id`` of an existing Runtime Vault entry to use as that field's new value. Same rules as on install: a field may appear in ``values`` or here but not both, only org-owned entries resolve (anything else is the same 422), a signed-in person with vault-policy management is required, and the value is copied, not linked. A referenced field counts as changed.
+	VaultEntryRefs *map[string]openapi_types.UUID `json:"vault_entry_refs,omitempty"`
 }
+
+// ComposioVaultDisconnectReason Why a vault-linked tile was disconnected (#3016).
+type ComposioVaultDisconnectReason string
+
+// ComposioVaultSyncState Why a vault-linked tile may not match its Runtime Vault secrets right now (#3016).
+//
+// Absent (“null“) means in sync: every linked field holds the vault's current value.
+type ComposioVaultSyncState string
 
 // ConditionBotFilterField defines model for Condition_BotFilterField_.
 type ConditionBotFilterField struct {
@@ -2244,13 +2932,143 @@ type ConfigFieldDiff_OldValue struct {
 	union json.RawMessage
 }
 
+// ConnectAction Send the user to authorise at the vendor. Only the run that issued it returns it.
+type ConnectAction struct {
+	ComposioConnectionId string            `json:"composio_connection_id"`
+	ExpiresAt            time.Time         `json:"expires_at"`
+	Kind                 ConnectActionKind `json:"kind"`
+
+	// RedirectUrl The vendor consent link. Never stored: for its life it is the authorisation. Re-run the setup for a new one.
+	RedirectUrl string `json:"redirect_url"`
+}
+
+// ConnectActionKind defines model for ConnectAction.Kind.
+type ConnectActionKind string
+
+// ContainerImageMcpCatalogEntryDetail The app's creation contract for a container-image (or npx) template.
+type ContainerImageMcpCatalogEntryDetail struct {
+	// Billing Billing facts for explicitly creating from a catalogue entry.
+	Billing McpCatalogBillingImplications `json:"billing"`
+
+	// ConfigurationFields Fields the install asks for: the template's form fields, or for a tile installed with the vendor's own credentials, the vendor's fields as snapshotted at import (target type vendor_credential; secret_ref-only fields are credentials, plaintext-only ones are not). Empty for such a tile when the snapshot was not captured
+	ConfigurationFields *[]McpCatalogFormField `json:"configuration_fields,omitempty"`
+
+	// ConsentNote Tile-specific disclosure that must be shown to the human approving this install, when the tile carries one. Not a description: it is what the approver is agreeing to, not what the tile does. An addendum to consent_shape for the four canned shapes, never a replacement for one; when consent_shape is 'custom' this text is the body of the disclosure headed by consent_title, and is always present
+	ConsentNote *string `json:"consent_note"`
+
+	// ConsentShape What a customer is actually agreeing to when they authorise a tile.
+	//
+	// For the four *canned* members the member selects the disclosure and the
+	// *copy* belongs to the frontend. That split is most of the point of the type:
+	// an operator picking a member cannot mistype a claim about the customer's
+	// data, and an operator who has never seen this file is not silently asked to
+	// compose one.
+	//
+	// Before this existed the App shipped one hardcoded paragraph above every
+	// Authorise button, asserting all three of *connects as you*, *shared
+	// org-wide*, and *carries your private surface*. That is true of Slack and
+	// false of Google Ads, where the account being linked belongs to the company,
+	// not to the person clicking. A disclosure that overstates is not harmless: it
+	// trains people to skip the next one.
+	//
+	// ``SHARED_ACCOUNT`` and ``NONE`` both drop the personal-surface claim, and
+	// they are not the same. ``SHARED_ACCOUNT`` still has an authorisation step
+	// and still shares one credential across every bot in the org — the customer
+	// needs to know that — whereas ``NONE`` is a tile with nothing to disclose at
+	// all. Collapsing them would put a tile with real org-wide reach behind
+	// silence.
+	//
+	// :attr:`NONE` is deliberately explicit rather than modelled as an absent
+	// value. The column is NOT NULL precisely so that "no warning" is something an
+	// operator chose and can be seen to have chosen, instead of the state a row
+	// falls into when nobody got round to classifying it.
+	//
+	// **Why :attr:`CUSTOM` exists, and why it is not the exception that eats the
+	// rule.** A closed enum is correct when the platform owns the claim. The rule
+	// it was borrowed from guards a statement about *Botyard's own* data handling
+	// ("your prompts are never used for training"), which an operator must not be
+	// able to forge or soften. This disclosure is a different sentence: it
+	// describes what a *third-party* OAuth tile hands over, which is precisely the
+	// thing the operator knows and the platform does not. There is no platform
+	// claim to impersonate here — the operator is the accountable author of the
+	// true statement, and four canned members can only ever approximate it. The
+	// "admin" in question is Botyard staff in Admin -> MCP catalogue; the threat
+	// model is an honest typo, not a hostile tenant.
+	//
+	// The cost is real and was accepted deliberately rather than argued away: a
+	// *stale* custom disclosure is worse than a generic-but-true one, because
+	// specificity reads as authority. The mitigations are an audit trail that
+	// keeps both sides of every edit (see
+	// :class:`~botyard_core.audit_events.AdminMcpCatalogEntryUpdatedContent`) and
+	// deliberate selection, not prohibition.
+	//
+	// ``CUSTOM`` is the one member whose *note* is load-bearing: it replaces the
+	// platform paragraph rather than sitting beneath it, so a ``CUSTOM`` row with
+	// no note is a shape naming a text that does not exist — an empty warning box
+	// at the Authorise click. That state is refused by the API and by
+	// ``ck_mcp_catalog_custom_shape_requires_consent_note``, and unlike
+	// ``operator_consent_note_required`` the requirement is intrinsic to the
+	// member rather than a separate flag an operator sets.
+	ConsentShape *McpConsentShape `json:"consent_shape,omitempty"`
+
+	// ConsentTitle Headline of an operator-authored disclosure, present only when consent_shape is 'custom'. Read it together with consent_note: the two are one disclosure, and quoting the body to the approving human without the headline drops the part they would have read first
+	ConsentTitle           *string                            `json:"consent_title"`
+	CreateGuidance         string                             `json:"create_guidance"`
+	CredentialRequirements *[]McpCatalogCredentialRequirement `json:"credential_requirements,omitempty"`
+	Description            *string                            `json:"description"`
+	FormSpecVersion        *int                               `json:"form_spec_version"`
+
+	// Image Container image this template pins. Locked unless ``configuration_fields`` exposes a top-level ``image`` target, so a configured create must pass exactly this value.
+	Image             string `json:"image"`
+	McpCatalogEntryId string `json:"mcp_catalog_entry_id"`
+	Name              string `json:"name"`
+
+	// PackagingKind How a catalog tile is packaged, which is not how its rows run.
+	//
+	// Open-ended: a package-manager backed tile is a new label here and needs no
+	// change to :class:`McpServerRuntimeKind`, because it still installs as one of
+	// the runtimes that already exist. ``npx`` is the standing example — an npx
+	// tile is deployed as a ``container_image`` row running the shared npx runner.
+	//
+	// Shares the ``mcp_server_runtime_kind`` Postgres type with
+	// :class:`McpServerRuntimeKind`; the labels are a superset, so the two map
+	// onto the same type without a migration.
+	PackagingKind McpCatalogPackagingKind `json:"packaging_kind"`
+
+	// Port Container port this template pins. Locked unless ``configuration_fields`` exposes a top-level ``port`` target, so a configured create must pass exactly this value.
+	Port int `json:"port"`
+
+	// Provisioning Externally visible effects of the explicit creation action.
+	Provisioning McpCatalogProvisioningImplications `json:"provisioning"`
+
+	// RequiresConnect True when this tile is installed by *authorising* it, not by filling in a form. The create path refuses it: the server row is created only once a human has returned from the vendor's consent screen connected. Such a tile reads as zero-config — no configuration_fields, no credential_requirements — so without this flag the contract is indistinguishable from a one-call install that it is not.
+	RequiresConnect *bool `json:"requires_connect,omitempty"`
+
+	// RequiresCredentials True when this tile is installed by a human entering the vendor's credentials into a Botyard form. The create path refuses it. When the vendor's field spec was captured at import, configuration_fields lists the fields (target type vendor_credential; secret_ref-only fields are credentials, plaintext-only ones are not) for display — the install still validates against the vendor's live spec. When it was not captured, configuration_fields is empty. An agent must not attempt to collect a credential itself; chat is not an acceptable channel for one.
+	RequiresCredentials *bool `json:"requires_credentials,omitempty"`
+
+	// RuntimeKind The runtime_kind to pass to create_mcp_server for this template. A packaging kind such as npx is translated for you here, so this value is always accepted by the create tool.
+	RuntimeKind ContainerImageMcpCatalogEntryDetailRuntimeKind `json:"runtime_kind"`
+	Slug        string                                         `json:"slug"`
+
+	// Source Who owns a reusable MCP catalog entry.
+	Source            McpCatalogEntrySource `json:"source"`
+	TemplateUpdatedAt time.Time             `json:"template_updated_at"`
+
+	// Transport Wire transport a deployed MCP server exposes to the gateway.
+	Transport McpServerTransport `json:"transport"`
+}
+
+// ContainerImageMcpCatalogEntryDetailRuntimeKind The runtime_kind to pass to create_mcp_server for this template. A packaging kind such as npx is translated for you here, so this value is always accepted by the create tool.
+type ContainerImageMcpCatalogEntryDetailRuntimeKind string
+
 // ContainerImageMcpServerCreate Register a new MCP server that Botyard will run as a K8s pod.
 type ContainerImageMcpServerCreate struct {
 	// Args Argv-style arguments appended to command/entrypoint
 	Args *[]string `json:"args"`
 
 	// CatalogFormAnswers Answers to the linked template's setup form, keyed by form field id. The platform projects each answer onto the target the template declares for that field, so a caller never has to compile the form into env vars, mounts or headers itself — and never has to restate a value the template owns. Requires ``mcp_catalog_entry_id``; an unknown field id, a mode the field does not allow, or a missing required answer is refused by name. Answers are projected after template inheritance, so an answer always beats the template's baked default. Answering a field and also writing its target directly is refused rather than silently resolved one way or the other.
-	CatalogFormAnswers *map[string]McpCatalogFormFieldValue `json:"catalog_form_answers,omitempty"`
+	CatalogFormAnswers *map[string]McpCatalogFormFieldValueInput `json:"catalog_form_answers,omitempty"`
 
 	// Command Argv-style entrypoint override (null = use image default)
 	Command *[]string `json:"command"`
@@ -2305,6 +3123,9 @@ type ContainerImageMcpServerCreate struct {
 	// RequestTimeoutSeconds Override (seconds) for the gateway's request timeout when proxying tool calls to this MCP. Omit/null to inherit the gateway default. Applies to both runtime kinds.
 	RequestTimeoutSeconds *int `json:"request_timeout_seconds"`
 
+	// Resources Compute for the server's pod as a list of MeteredResource line-items (only the resources being set; the rest keep the platform default shape). storage sizes the writable scratch volume. Omit to run the platform default shape. Billed like bot resources: anything above the plan's included MCP server resources needs a payment method, and the plan's per-MCP-server maximums apply.
+	Resources *ResourceQuantities `json:"resources"`
+
 	// RuntimeKind Runtime kind tag — always ``container_image`` for this variant
 	RuntimeKind ContainerImageMcpServerCreateRuntimeKind `json:"runtime_kind"`
 
@@ -2343,6 +3164,12 @@ type ContainerImageMcpServerDetail struct {
 
 	// Command Argv-style entrypoint override (null = image default)
 	Command *[]string `json:"command"`
+
+	// ComposioConnectionId The Composio authorisation behind this server, for tiles installed through the connect-first flow; null for every other server. It is what a reconnect is started against.
+	ComposioConnectionId *string `json:"composio_connection_id"`
+
+	// ComposioConnectionState Health of that authorisation, which is **not** the same question as ``observed_state``. A tile whose customer revoked Botyard in their own Google or Slack settings is still ``running`` — the server is up, its endpoint is right, its assignments are intact — and every tool call on it fails. ``needs_reauth`` is that case and is the one worth surfacing: show the tile as degraded and offer the reconnect, rather than reporting a platform fault for something only the customer can fix. Null for a server that is not a Composio tile; ``connected`` when the authorisation is known good.
+	ComposioConnectionState *ComposioConnectionState `json:"composio_connection_state"`
 
 	// ConfigGeneration Monotonic config generation counter bumped on every provisioning-relevant update
 	ConfigGeneration int `json:"config_generation"`
@@ -2425,6 +3252,26 @@ type ContainerImageMcpServerDetail struct {
 	// RequestTimeoutSeconds Per-server gateway request-timeout override (seconds); null inherits the gateway default.
 	RequestTimeoutSeconds *int `json:"request_timeout_seconds"`
 
+	// Resources A set of resource line-items as K8s quantities, keyed by metered resource.
+	//
+	// Used in two roles, distinguished only by completeness:
+	//
+	// * **Plan defaults** (``Plan.resource_defaults[consumer]``) — a complete base
+	//   bundle: every billable ceiling (``cpu_limit`` / ``memory_limit`` /
+	//   ``storage``) set; requests optional (burstable-derived when omitted). There
+	//   is no global fallback — a consumer that can't resolve a complete bundle is
+	//   an invariant break (see ``ResourceDefaultsUnavailableError``).
+	// * **API ``resources``** (create / update) — a *sparse patch*: only the
+	//   line-items the caller is changing ("send what you want to update"). Custom
+	//   values are gated to the enterprise plan at the route. On the read path the
+	//   block carries the bot's full effective resources.
+	//
+	// At most one line-item per resource type.
+	Resources ResourceQuantities `json:"resources"`
+
+	// ResourcesCustomized True once someone set resources on this server; false while it runs the platform default shape.
+	ResourcesCustomized *bool `json:"resources_customized,omitempty"`
+
 	// RuntimeKind Runtime kind tag — always ``container_image`` for this variant
 	RuntimeKind ContainerImageMcpServerDetailRuntimeKind `json:"runtime_kind"`
 
@@ -2444,7 +3291,7 @@ type ContainerImageMcpServerDetail struct {
 	SetupFormSpecVersion *int `json:"setup_form_spec_version"`
 
 	// SetupFormValues Form-shaped setup values derived from the current server config
-	SetupFormValues *map[string]McpCatalogFormFieldValue `json:"setup_form_values,omitempty"`
+	SetupFormValues *map[string]McpCatalogFormFieldValueOutput `json:"setup_form_values,omitempty"`
 
 	// SetupLogoHref Same-origin URL to render this server's setup logo from, or null when no artwork is cached. Prefer this over setup_logo_url for display: the logo is painted through a CSS mask, which is a CORS-restricted resource, so a third-party URL that sends no Access-Control-Allow-Origin header paints nothing at all
 	SetupLogoHref *string `json:"setup_logo_href"`
@@ -2482,6 +3329,12 @@ type ContainerImageMcpServerDetailRuntimeKind string
 
 // ContainerImageMcpServerSummary Summary projection of a container-image MCP server row.
 type ContainerImageMcpServerSummary struct {
+	// ComposioConnectionId The Composio authorisation behind this server, for tiles installed through the connect-first flow; null for every other server. It is what a reconnect is started against.
+	ComposioConnectionId *string `json:"composio_connection_id"`
+
+	// ComposioConnectionState Health of that authorisation, which is **not** the same question as ``observed_state``. A tile whose customer revoked Botyard in their own Google or Slack settings is still ``running`` — the server is up, its endpoint is right, its assignments are intact — and every tool call on it fails. ``needs_reauth`` is that case and is the one worth surfacing: show the tile as degraded and offer the reconnect, rather than reporting a platform fault for something only the customer can fix. Null for a server that is not a Composio tile; ``connected`` when the authorisation is known good.
+	ComposioConnectionState *ComposioConnectionState `json:"composio_connection_state"`
+
 	// CreatedAt When the server was registered
 	CreatedAt time.Time `json:"created_at"`
 
@@ -2581,7 +3434,8 @@ type ContainerImageMcpServerSummaryRuntimeKind string
 // fill the window. Sessions were observed overflowing at ~258k compaction
 // tokens with only 47-72 messages.
 //
-// Unlike :class:`ContextPruningConfig` this does not depend on prompt-cache
+// Unlike OpenClaw's cache-TTL context pruning (which Botyard switches off;
+// see the v2026.6.1 serializer) this does not depend on prompt-cache
 // eligibility — “resolveAgentContextLimits“ takes no provider or auth input,
 // and the persistence write path is ungated (it even falls back to 16000
 // rather than "unbounded" when the context window is unknown). So on the
@@ -2610,73 +3464,27 @@ type ContextLimitsConfig struct {
 	ToolResultMaxChars *int `json:"tool_result_max_chars"`
 }
 
-// ContextPruningConfig Cache-TTL pruning of *old tool results* out of the in-memory context.
-//
-// Complements compaction rather than duplicating it. Compaction summarises
-// *conversation* messages and explicitly refuses to run when there are none
-// ("[compaction] skipping — no real conversation messages"), which is why a
-// second overflow inside one turn is unrecoverable: after the first compaction
-// rotates the transcript, the window refills with tool output that compaction
-// will not touch. Pruning is the only mechanism that reclaims that space —
-// it soft-trims oversized old tool results (head+tail with a “...“ marker)
-// and hard-clears the rest to a placeholder, in memory only; the on-disk
-// transcript is never rewritten.
-//
-// **Known limitation — this does not reach every bot.** OpenClaw registers the
-// pruning extension only in the embedded (“pi“) agent runner, and only when
-// “isCacheTtlEligibleProvider“ holds: provider “anthropic“ /
-// “anthropic-vertex“, an Anthropic model on Bedrock, “modelApi ==
-// anthropic-messages“, or Gemini 2.5/3 on “google-generative-ai“. A bot
-// whose primary is an OpenAI-family model routed through the Botyard proxy is
-// *not* eligible and gets nothing from this block — for those bots
-// :class:`ContextLimitsConfig` is the whole fix. Emitting it anyway is
-// deliberate: it is inert where ineligible, and where eligible it turns
-// pruning on for providers nothing auto-configures (Gemini).
-//
-// **“ttl“ is deliberately not set here.** It is a prompt-cache *coherence*
-// knob, not a responsiveness one: pruning rewrites the prompt prefix, so the
-// TTL exists to hold pruning back until the provider's prompt cache has
-// lapsed anyway, at which point the re-cache is free. OpenClaw's Anthropic
-// auto-config is a matched set — “ttl: 1h“ alongside a 1h heartbeat that
-// deliberately keeps an extended cache warm — and overriding the TTL alone
-// would prune into that warm cache and bust it, precisely when it is most
-// expensive (pruning only engages once the context is >=30% full). Since this
-// block is inert on the OpenAI-family bots that were actually overflowing,
-// any TTL we pinned would apply *only* to bots that were not failing. Leave it
-// to OpenClaw unless there is a measured cache-cost/context-pressure tradeoff
-// to act on.
-type ContextPruningConfig struct {
-	// KeepLastAssistants Number of trailing assistant turns kept unpruned. None omits the key so OpenClaw uses its built-in (3).
-	KeepLastAssistants *int `json:"keep_last_assistants"`
-
-	// MinPrunableToolChars Minimum total chars across prunable tool results before the hard-clear pass runs (soft-trim is not gated by it). The gate is summed over **post-soft-trim** sizes, so a result saturated at ``tool_result_max_chars`` has already been cut to ~3.1k chars (``softTrim`` head 1500 + tail 1500 + notice) by the time it counts: OpenClaw's built-in 50000 needs ~16 such results, and this 32000 needs ~10. A modest loosening, not the two-result trigger it looks like — the knob that actually decides how hard pruning bites is ``softTrim.maxChars``, which Botyard does not currently override. None omits the key.
-	MinPrunableToolChars *int `json:"min_prunable_tool_chars"`
-
-	// Mode ``cache-ttl`` prunes old tool results once the prompt cache TTL has elapsed; ``off`` disables pruning. None omits the key, which lets OpenClaw's Anthropic auto-default (``cache-ttl`` + 1h TTL) apply.
-	Mode *ContextPruningConfigMode `json:"mode"`
-
-	// Ttl How long after the last prompt-cache touch before pruning may run. Defaults to None (key omitted) so OpenClaw's own value applies — its built-in is 5m and ``applyAnthropicConfigDefaults`` installs 1h for Anthropic auth, paired with a 1h heartbeat that keeps an extended cache warm. Lowering it prunes into a still-warm cache and busts it; see the class docstring before overriding.
-	Ttl *string `json:"ttl"`
-}
-
-// ContextPruningConfigMode “cache-ttl“ prunes old tool results once the prompt cache TTL has elapsed; “off“ disables pruning. None omits the key, which lets OpenClaw's Anthropic auto-default (“cache-ttl“ + 1h TTL) apply.
-type ContextPruningConfigMode string
-
 // CpuMetrics defines model for CpuMetrics.
 type CpuMetrics struct {
-	// LimitCores CPU quota expressed as cores, or null when unlimited/unavailable
+	// LimitCores Quota expressed in cores, from `cpu.max`. Absent when the host imposes no
+	// quota. Same rule as `MemoryMetrics.limit_bytes`: absent is not zero.
 	LimitCores *float32 `json:"limit_cores"`
 
-	// PercentOfLimit Current CPU consumption as percentage of the CPU limit
+	// PercentOfLimit `usage_cores` as a percentage of `limit_cores`. Absent whenever either
+	// input is absent or the quota is not positive.
 	PercentOfLimit *float32 `json:"percent_of_limit"`
 
-	// SampleWindowMs Milliseconds between the current and previous CPU samples
+	// SampleWindowMs Wall-clock span the rate above was measured over. Present exactly when
+	// `usage_cores` is present, so a consumer can judge how fresh the rate is
+	// instead of assuming a cadence.
 	SampleWindowMs *int `json:"sample_window_ms"`
 
-	// UsageCores Current CPU consumption in cores, derived from consecutive samples
+	// UsageCores Cores consumed over `sample_window_ms`. Absent on the first snapshot of a
+	// connection, and absent whenever the window is not positive.
 	UsageCores *float32 `json:"usage_cores"`
 
-	// UsageUsec Cumulative CPU usage in microseconds
+	// UsageUsec Cumulative CPU time from `cpu.stat`. Monotonic within one boot; it is the
+	// raw counter, not a rate.
 	UsageUsec *int `json:"usage_usec"`
 }
 
@@ -2686,11 +3494,12 @@ type CredentialBackedModelConfig struct {
 	ContextWindow             *int                                      `json:"context_window,omitempty"`
 	Headers                   *map[string]string                        `json:"headers,omitempty"`
 	Id                        string                                    `json:"id"`
-	Input                     *[]CredentialBackedModelConfigInput       `json:"input,omitempty"`
+	Input                     *[]InputModality                          `json:"input,omitempty"`
 	MaxActiveTranscriptBytes  *int                                      `json:"max_active_transcript_bytes"`
 	MaxTokens                 *int                                      `json:"max_tokens,omitempty"`
 	MidTurnPrecheck           *bool                                     `json:"mid_turn_precheck"`
 	Reasoning                 *bool                                     `json:"reasoning,omitempty"`
+	ReasoningEfforts          *[]string                                 `json:"reasoning_efforts"`
 	ReserveTokens             *int                                      `json:"reserve_tokens"`
 	ReserveTokensFloor        *int                                      `json:"reserve_tokens_floor"`
 	ResponsesCompactThreshold *int                                      `json:"responses_compact_threshold"`
@@ -2699,9 +3508,6 @@ type CredentialBackedModelConfig struct {
 	TextVerbosity             *CredentialBackedModelConfigTextVerbosity `json:"text_verbosity"`
 	TruncateAfterCompaction   *bool                                     `json:"truncate_after_compaction"`
 }
-
-// CredentialBackedModelConfigInput defines model for CredentialBackedModelConfig.Input.
-type CredentialBackedModelConfigInput string
 
 // CredentialBackedModelConfigTextVerbosity defines model for CredentialBackedModelConfig.TextVerbosity.
 type CredentialBackedModelConfigTextVerbosity string
@@ -2717,6 +3523,15 @@ type CredentialBotLinksResponse struct {
 	// BotIds Bot IDs explicitly assigned to this credential
 	BotIds []string `json:"bot_ids"`
 }
+
+// CredentialFormAction Enter the vendor's credentials: read the fields with “get_credential_form“.
+type CredentialFormAction struct {
+	Kind              CredentialFormActionKind `json:"kind"`
+	McpCatalogEntryId string                   `json:"mcp_catalog_entry_id"`
+}
+
+// CredentialFormActionKind defines model for CredentialFormAction.Kind.
+type CredentialFormActionKind string
 
 // CredentialProvider Known provider vendors.
 type CredentialProvider string
@@ -2799,6 +3614,14 @@ type DesiredState string
 // Domain Top-level product area a permission belongs to (a permission axis).
 type Domain string
 
+// DoneAction Bound, with every pack tool the server has.
+type DoneAction struct {
+	Kind DoneActionKind `json:"kind"`
+}
+
+// DoneActionKind defines model for DoneAction.Kind.
+type DoneActionKind string
+
 // EffectivePermissionResponse One permission an actor holds, with the authority that produced it.
 type EffectivePermissionResponse struct {
 	CreatedAt          *time.Time `json:"created_at"`
@@ -2879,6 +3702,35 @@ type EffectivePermissionResponse struct {
 	// two surfaces stay reconcilable instead of forking into a third vocabulary.
 	Source PermissionSource `json:"source"`
 }
+
+// EnvSecretRef One environment variable populated from a Runtime Vault secret.
+type EnvSecretRef struct {
+	// Name Environment variable name, e.g. GITHUB_TOKEN
+	Name string `json:"name"`
+
+	// SecretKeyPath Dotted Runtime Vault key path resolved at runtime, e.g. mcp.github.token. A pointer, never the secret value itself.
+	SecretKeyPath string `json:"secret_key_path"`
+}
+
+// EnvVar One non-sensitive environment variable.
+type EnvVar struct {
+	// Name Environment variable name, e.g. LOG_LEVEL
+	Name string `json:"name"`
+
+	// Value Literal value. Never a secret — route secrets via env_secret_refs.
+	Value string `json:"value"`
+}
+
+// FailedAction A step failed; re-run to retry.
+type FailedAction struct {
+	// Code Why a setup failed. Stored in ``failure_code``.
+	Code   PackSetupFailure `json:"code"`
+	Detail string           `json:"detail"`
+	Kind   FailedActionKind `json:"kind"`
+}
+
+// FailedActionKind defines model for FailedAction.Kind.
+type FailedActionKind string
 
 // FilterNodeBotFilterField defines model for FilterNode_BotFilterField_.
 type FilterNodeBotFilterField struct {
@@ -2988,7 +3840,8 @@ type HostingPair struct {
 	// stored config blob* rather than naming the agent software. See
 	// ``Bot.harness`` for the full note.
 	//
-	// Immutable once set — see ``Bot.harness``.
+	// Immutable once set, with one controlled exception: the audited, one-way
+	// OpenClaw → native harness switch (PlatDev #3823). See ``Bot.harness``.
 	Harness BotHarness `json:"harness"`
 
 	// HostingType Who runs the bot's runtime.
@@ -3019,6 +3872,40 @@ type IdentityConfigPatch struct {
 	// Theme Bot identity theme
 	Theme *string `json:"theme"`
 }
+
+// InputModality A kind of input a model accepts: text or image.
+type InputModality string
+
+// InstalledPack defines model for InstalledPack.
+type InstalledPack struct {
+	BotPackInstallId string `json:"bot_pack_install_id"`
+
+	// Plan What installing one pack version on one bot will do.
+	Plan PlannedInstall `json:"plan"`
+}
+
+// JsonValueInput defines model for JsonValue-Input.
+type JsonValueInput struct {
+	union json.RawMessage
+}
+
+// JsonValueInput0 defines model for .
+type JsonValueInput0 = string
+
+// JsonValueInput1 defines model for .
+type JsonValueInput1 = int
+
+// JsonValueInput2 defines model for .
+type JsonValueInput2 = float32
+
+// JsonValueInput3 defines model for .
+type JsonValueInput3 = bool
+
+// JsonValueInput4 defines model for .
+type JsonValueInput4 = []JsonValueInput
+
+// JsonValueInput5 defines model for .
+type JsonValueInput5 map[string]*JsonValueInput
 
 // LlmChainEntry One credential link, in the bot's routing order — stored losslessly.
 //
@@ -3114,19 +4001,136 @@ type LlmChainState struct {
 	Reconciled *[]LlmChainEntryResponse `json:"reconciled"`
 }
 
+// ManagedRemoteMcpCatalogEntryDetail The app's creation contract for a managed-remote template.
+type ManagedRemoteMcpCatalogEntryDetail struct {
+	// Billing Billing facts for explicitly creating from a catalogue entry.
+	Billing McpCatalogBillingImplications `json:"billing"`
+
+	// ConfigurationFields Fields the install asks for: the template's form fields, or for a tile installed with the vendor's own credentials, the vendor's fields as snapshotted at import (target type vendor_credential; secret_ref-only fields are credentials, plaintext-only ones are not). Empty for such a tile when the snapshot was not captured
+	ConfigurationFields *[]McpCatalogFormField `json:"configuration_fields,omitempty"`
+
+	// ConsentNote Tile-specific disclosure that must be shown to the human approving this install, when the tile carries one. Not a description: it is what the approver is agreeing to, not what the tile does. An addendum to consent_shape for the four canned shapes, never a replacement for one; when consent_shape is 'custom' this text is the body of the disclosure headed by consent_title, and is always present
+	ConsentNote *string `json:"consent_note"`
+
+	// ConsentShape What a customer is actually agreeing to when they authorise a tile.
+	//
+	// For the four *canned* members the member selects the disclosure and the
+	// *copy* belongs to the frontend. That split is most of the point of the type:
+	// an operator picking a member cannot mistype a claim about the customer's
+	// data, and an operator who has never seen this file is not silently asked to
+	// compose one.
+	//
+	// Before this existed the App shipped one hardcoded paragraph above every
+	// Authorise button, asserting all three of *connects as you*, *shared
+	// org-wide*, and *carries your private surface*. That is true of Slack and
+	// false of Google Ads, where the account being linked belongs to the company,
+	// not to the person clicking. A disclosure that overstates is not harmless: it
+	// trains people to skip the next one.
+	//
+	// ``SHARED_ACCOUNT`` and ``NONE`` both drop the personal-surface claim, and
+	// they are not the same. ``SHARED_ACCOUNT`` still has an authorisation step
+	// and still shares one credential across every bot in the org — the customer
+	// needs to know that — whereas ``NONE`` is a tile with nothing to disclose at
+	// all. Collapsing them would put a tile with real org-wide reach behind
+	// silence.
+	//
+	// :attr:`NONE` is deliberately explicit rather than modelled as an absent
+	// value. The column is NOT NULL precisely so that "no warning" is something an
+	// operator chose and can be seen to have chosen, instead of the state a row
+	// falls into when nobody got round to classifying it.
+	//
+	// **Why :attr:`CUSTOM` exists, and why it is not the exception that eats the
+	// rule.** A closed enum is correct when the platform owns the claim. The rule
+	// it was borrowed from guards a statement about *Botyard's own* data handling
+	// ("your prompts are never used for training"), which an operator must not be
+	// able to forge or soften. This disclosure is a different sentence: it
+	// describes what a *third-party* OAuth tile hands over, which is precisely the
+	// thing the operator knows and the platform does not. There is no platform
+	// claim to impersonate here — the operator is the accountable author of the
+	// true statement, and four canned members can only ever approximate it. The
+	// "admin" in question is Botyard staff in Admin -> MCP catalogue; the threat
+	// model is an honest typo, not a hostile tenant.
+	//
+	// The cost is real and was accepted deliberately rather than argued away: a
+	// *stale* custom disclosure is worse than a generic-but-true one, because
+	// specificity reads as authority. The mitigations are an audit trail that
+	// keeps both sides of every edit (see
+	// :class:`~botyard_core.audit_events.AdminMcpCatalogEntryUpdatedContent`) and
+	// deliberate selection, not prohibition.
+	//
+	// ``CUSTOM`` is the one member whose *note* is load-bearing: it replaces the
+	// platform paragraph rather than sitting beneath it, so a ``CUSTOM`` row with
+	// no note is a shape naming a text that does not exist — an empty warning box
+	// at the Authorise click. That state is refused by the API and by
+	// ``ck_mcp_catalog_custom_shape_requires_consent_note``, and unlike
+	// ``operator_consent_note_required`` the requirement is intrinsic to the
+	// member rather than a separate flag an operator sets.
+	ConsentShape *McpConsentShape `json:"consent_shape,omitempty"`
+
+	// ConsentTitle Headline of an operator-authored disclosure, present only when consent_shape is 'custom'. Read it together with consent_note: the two are one disclosure, and quoting the body to the approving human without the headline drops the part they would have read first
+	ConsentTitle           *string                            `json:"consent_title"`
+	CreateGuidance         string                             `json:"create_guidance"`
+	CredentialRequirements *[]McpCatalogCredentialRequirement `json:"credential_requirements,omitempty"`
+	Description            *string                            `json:"description"`
+
+	// EndpointUrl Vendor endpoint this template pins, or null when the endpoint is minted per install. Locked unless ``configuration_fields`` exposes a top-level ``endpoint_url`` target.
+	EndpointUrl       *string `json:"endpoint_url"`
+	FormSpecVersion   *int    `json:"form_spec_version"`
+	McpCatalogEntryId string  `json:"mcp_catalog_entry_id"`
+	Name              string  `json:"name"`
+
+	// PackagingKind How a catalog tile is packaged, which is not how its rows run.
+	//
+	// Open-ended: a package-manager backed tile is a new label here and needs no
+	// change to :class:`McpServerRuntimeKind`, because it still installs as one of
+	// the runtimes that already exist. ``npx`` is the standing example — an npx
+	// tile is deployed as a ``container_image`` row running the shared npx runner.
+	//
+	// Shares the ``mcp_server_runtime_kind`` Postgres type with
+	// :class:`McpServerRuntimeKind`; the labels are a superset, so the two map
+	// onto the same type without a migration.
+	PackagingKind McpCatalogPackagingKind `json:"packaging_kind"`
+
+	// Provisioning Externally visible effects of the explicit creation action.
+	Provisioning McpCatalogProvisioningImplications `json:"provisioning"`
+
+	// RequiresConnect True when this tile is installed by *authorising* it, not by filling in a form. The create path refuses it: the server row is created only once a human has returned from the vendor's consent screen connected. Such a tile reads as zero-config — no configuration_fields, no credential_requirements — so without this flag the contract is indistinguishable from a one-call install that it is not.
+	RequiresConnect *bool `json:"requires_connect,omitempty"`
+
+	// RequiresCredentials True when this tile is installed by a human entering the vendor's credentials into a Botyard form. The create path refuses it. When the vendor's field spec was captured at import, configuration_fields lists the fields (target type vendor_credential; secret_ref-only fields are credentials, plaintext-only ones are not) for display — the install still validates against the vendor's live spec. When it was not captured, configuration_fields is empty. An agent must not attempt to collect a credential itself; chat is not an acceptable channel for one.
+	RequiresCredentials *bool `json:"requires_credentials,omitempty"`
+
+	// RuntimeKind The runtime_kind to pass to create_mcp_server for this template. A packaging kind such as npx is translated for you here, so this value is always accepted by the create tool.
+	RuntimeKind ManagedRemoteMcpCatalogEntryDetailRuntimeKind `json:"runtime_kind"`
+	Slug        string                                        `json:"slug"`
+
+	// Source Who owns a reusable MCP catalog entry.
+	Source            McpCatalogEntrySource `json:"source"`
+	TemplateUpdatedAt time.Time             `json:"template_updated_at"`
+
+	// Transport Wire transport a deployed MCP server exposes to the gateway.
+	Transport McpServerTransport `json:"transport"`
+}
+
+// ManagedRemoteMcpCatalogEntryDetailRuntimeKind The runtime_kind to pass to create_mcp_server for this template. A packaging kind such as npx is translated for you here, so this value is always accepted by the create tool.
+type ManagedRemoteMcpCatalogEntryDetailRuntimeKind string
+
 // ManagedRemoteMcpServerCreate Register a new MCP server that Botyard proxies to a vendor-hosted URL.
 type ManagedRemoteMcpServerCreate struct {
 	// AcknowledgedCredentialHost Destination the caller accepts will receive this server's Runtime Vault secrets. Required when ``secret_headers`` are set and the endpoint is not on the catalog template's own authority; must equal the authority of ``endpoint_url`` — its host, plus ``:port`` when the port is not the scheme default, so a default-port endpoint is named by host alone. Naming the destination rather than sending a bare flag is deliberate: it proves the caller knew *where* the secret was going, and a destination changed after the confirmation was shown no longer matches. Recorded to the audit trail.
 	AcknowledgedCredentialHost *string `json:"acknowledged_credential_host"`
 
 	// CatalogFormAnswers Answers to the linked template's setup form, keyed by form field id. The platform projects each answer onto the target the template declares for that field, so a caller never has to compile the form into env vars, mounts or headers itself — and never has to restate a value the template owns. Requires ``mcp_catalog_entry_id``; an unknown field id, a mode the field does not allow, or a missing required answer is refused by name. Answers are projected after template inheritance, so an answer always beats the template's baked default. Answering a field and also writing its target directly is refused rather than silently resolved one way or the other.
-	CatalogFormAnswers *map[string]McpCatalogFormFieldValue `json:"catalog_form_answers,omitempty"`
+	CatalogFormAnswers *map[string]McpCatalogFormFieldValueInput `json:"catalog_form_answers,omitempty"`
 
 	// Description Optional free-form description shown alongside the server in the UI
 	Description *string `json:"description"`
 
 	// EndpointUrl Vendor-hosted MCP URL (e.g. ``https://mcp.deepwiki.com/mcp``)
 	EndpointUrl string `json:"endpoint_url"`
+
+	// IntegrationCredentialIds Integration connections this server is linked to. Not request configuration: the gateway is authorized to fetch a short-lived access token for the connection and present it to the vendor. Only a server created from a catalog template that declares an ``integration`` field may be linked, because that field is what names the provider a token is vended for.
+	IntegrationCredentialIds *[]string `json:"integration_credential_ids,omitempty"`
 
 	// McpCatalogEntryId Catalog entry used to prefill this create payload, if any
 	McpCatalogEntryId *string `json:"mcp_catalog_entry_id"`
@@ -3180,6 +4184,12 @@ type ManagedRemoteMcpServerDetail struct {
 	// not "every bot in the org"; it is everyone. The ``restricted`` default
 	// exists so that is only ever true because somebody chose it.
 	Access *McpServerAccess `json:"access,omitempty"`
+
+	// ComposioConnectionId The Composio authorisation behind this server, for tiles installed through the connect-first flow; null for every other server. It is what a reconnect is started against.
+	ComposioConnectionId *string `json:"composio_connection_id"`
+
+	// ComposioConnectionState Health of that authorisation, which is **not** the same question as ``observed_state``. A tile whose customer revoked Botyard in their own Google or Slack settings is still ``running`` — the server is up, its endpoint is right, its assignments are intact — and every tool call on it fails. ``needs_reauth`` is that case and is the one worth surfacing: show the tile as degraded and offer the reconnect, rather than reporting a platform fault for something only the customer can fix. Null for a server that is not a Composio tile; ``connected`` when the authorisation is known good.
+	ComposioConnectionState *ComposioConnectionState `json:"composio_connection_state"`
 
 	// ConfigGeneration Monotonic config generation counter bumped on every provisioning-relevant update
 	ConfigGeneration int `json:"config_generation"`
@@ -3249,7 +4259,7 @@ type ManagedRemoteMcpServerDetail struct {
 	SetupFormSpecVersion *int `json:"setup_form_spec_version"`
 
 	// SetupFormValues Form-shaped setup values derived from the current server config
-	SetupFormValues *map[string]McpCatalogFormFieldValue `json:"setup_form_values,omitempty"`
+	SetupFormValues *map[string]McpCatalogFormFieldValueOutput `json:"setup_form_values,omitempty"`
 
 	// SetupLogoHref Same-origin URL to render this server's setup logo from, or null when no artwork is cached. Prefer this over setup_logo_url for display: the logo is painted through a CSS mask, which is a CORS-restricted resource, so a third-party URL that sends no Access-Control-Allow-Origin header paints nothing at all
 	SetupLogoHref *string `json:"setup_logo_href"`
@@ -3295,6 +4305,12 @@ type ManagedRemoteMcpServerDetail_SecretHeaderSchemes_AdditionalProperties struc
 
 // ManagedRemoteMcpServerSummary Summary projection of a managed-remote MCP server row.
 type ManagedRemoteMcpServerSummary struct {
+	// ComposioConnectionId The Composio authorisation behind this server, for tiles installed through the connect-first flow; null for every other server. It is what a reconnect is started against.
+	ComposioConnectionId *string `json:"composio_connection_id"`
+
+	// ComposioConnectionState Health of that authorisation, which is **not** the same question as ``observed_state``. A tile whose customer revoked Botyard in their own Google or Slack settings is still ``running`` — the server is up, its endpoint is right, its assignments are intact — and every tool call on it fails. ``needs_reauth`` is that case and is the one worth surfacing: show the tile as degraded and offer the reconnect, rather than reporting a platform fault for something only the customer can fix. Null for a server that is not a Composio tile; ``connected`` when the authorisation is known good.
+	ComposioConnectionState *ComposioConnectionState `json:"composio_connection_state"`
+
 	// CreatedAt When the server was registered
 	CreatedAt time.Time `json:"created_at"`
 
@@ -3403,132 +4419,6 @@ type McpCatalogCredentialRequirement struct {
 // McpCatalogCredentialRequirementKind Runtime Vault reference or linked provider connection
 type McpCatalogCredentialRequirementKind string
 
-// McpCatalogEntryDetail Side-effect-free, secret-free creation contract for one catalogue entry.
-type McpCatalogEntryDetail struct {
-	// Billing Billing facts for explicitly creating from a catalogue entry.
-	Billing             McpCatalogBillingImplications `json:"billing"`
-	ConfigurationFields *[]McpCatalogFormField        `json:"configuration_fields,omitempty"`
-
-	// ConsentNote Tile-specific disclosure that must be shown to the human approving this install, when the tile carries one. Not a description: it is what the approver is agreeing to, not what the tile does. An addendum to consent_shape for the four canned shapes, never a replacement for one; when consent_shape is 'custom' this text is the body of the disclosure headed by consent_title, and is always present
-	ConsentNote *string `json:"consent_note"`
-
-	// ConsentShape What a customer is actually agreeing to when they authorise a tile.
-	//
-	// For the four *canned* members the member selects the disclosure and the
-	// *copy* belongs to the frontend. That split is most of the point of the type:
-	// an operator picking a member cannot mistype a claim about the customer's
-	// data, and an operator who has never seen this file is not silently asked to
-	// compose one.
-	//
-	// Before this existed the App shipped one hardcoded paragraph above every
-	// Authorise button, asserting all three of *connects as you*, *shared
-	// org-wide*, and *carries your private surface*. That is true of Slack and
-	// false of Google Ads, where the account being linked belongs to the company,
-	// not to the person clicking. A disclosure that overstates is not harmless: it
-	// trains people to skip the next one.
-	//
-	// ``SHARED_ACCOUNT`` and ``NONE`` both drop the personal-surface claim, and
-	// they are not the same. ``SHARED_ACCOUNT`` still has an authorisation step
-	// and still shares one credential across every bot in the org — the customer
-	// needs to know that — whereas ``NONE`` is a tile with nothing to disclose at
-	// all. Collapsing them would put a tile with real org-wide reach behind
-	// silence.
-	//
-	// :attr:`NONE` is deliberately explicit rather than modelled as an absent
-	// value. The column is NOT NULL precisely so that "no warning" is something an
-	// operator chose and can be seen to have chosen, instead of the state a row
-	// falls into when nobody got round to classifying it.
-	//
-	// **Why :attr:`CUSTOM` exists, and why it is not the exception that eats the
-	// rule.** A closed enum is correct when the platform owns the claim. The rule
-	// it was borrowed from guards a statement about *Botyard's own* data handling
-	// ("your prompts are never used for training"), which an operator must not be
-	// able to forge or soften. This disclosure is a different sentence: it
-	// describes what a *third-party* OAuth tile hands over, which is precisely the
-	// thing the operator knows and the platform does not. There is no platform
-	// claim to impersonate here — the operator is the accountable author of the
-	// true statement, and four canned members can only ever approximate it. The
-	// "admin" in question is Botyard staff in Admin -> MCP catalogue; the threat
-	// model is an honest typo, not a hostile tenant.
-	//
-	// The cost is real and was accepted deliberately rather than argued away: a
-	// *stale* custom disclosure is worse than a generic-but-true one, because
-	// specificity reads as authority. The mitigations are an audit trail that
-	// keeps both sides of every edit (see
-	// :class:`~botyard_core.audit_events.AdminMcpCatalogEntryUpdatedContent`) and
-	// deliberate selection, not prohibition.
-	//
-	// ``CUSTOM`` is the one member whose *note* is load-bearing: it replaces the
-	// platform paragraph rather than sitting beneath it, so a ``CUSTOM`` row with
-	// no note is a shape naming a text that does not exist — an empty warning box
-	// at the Authorise click. That state is refused by the API and by
-	// ``ck_mcp_catalog_custom_shape_requires_consent_note``, and unlike
-	// ``operator_consent_note_required`` the requirement is intrinsic to the
-	// member rather than a separate flag an operator sets.
-	ConsentShape *McpConsentShape `json:"consent_shape,omitempty"`
-
-	// ConsentTitle Headline of an operator-authored disclosure, present only when consent_shape is 'custom'. Read it together with consent_note: the two are one disclosure, and quoting the body to the approving human without the headline drops the part they would have read first
-	ConsentTitle           *string                            `json:"consent_title"`
-	CreateGuidance         string                             `json:"create_guidance"`
-	CredentialRequirements *[]McpCatalogCredentialRequirement `json:"credential_requirements,omitempty"`
-	Description            *string                            `json:"description"`
-
-	// EndpointUrl Vendor endpoint this template pins (managed_remote entries only). Locked unless ``configuration_fields`` exposes a top-level ``endpoint_url`` target.
-	EndpointUrl     *string `json:"endpoint_url"`
-	FormSpecVersion *int    `json:"form_spec_version"`
-
-	// Image Container image this template pins (container_image entries only). Locked unless ``configuration_fields`` exposes a top-level ``image`` target, so a configured create must pass exactly this value.
-	Image             *string `json:"image"`
-	McpCatalogEntryId string  `json:"mcp_catalog_entry_id"`
-	Name              string  `json:"name"`
-
-	// PackagingKind How a catalog tile is packaged, which is not how its rows run.
-	//
-	// Open-ended: a package-manager backed tile is a new label here and needs no
-	// change to :class:`McpServerRuntimeKind`, because it still installs as one of
-	// the runtimes that already exist. ``npx`` is the standing example — an npx
-	// tile is deployed as a ``container_image`` row running the shared npx runner.
-	//
-	// Shares the ``mcp_server_runtime_kind`` Postgres type with
-	// :class:`McpServerRuntimeKind`; the labels are a superset, so the two map
-	// onto the same type without a migration.
-	PackagingKind McpCatalogPackagingKind `json:"packaging_kind"`
-
-	// Port Container port this template pins (container_image entries only). Locked unless ``configuration_fields`` exposes a top-level ``port`` target, so a configured create must pass exactly this value.
-	Port *int `json:"port"`
-
-	// Provisioning Externally visible effects of the explicit creation action.
-	Provisioning McpCatalogProvisioningImplications `json:"provisioning"`
-
-	// RequiresConnect True when this tile is installed by *authorising* it, not by filling in a form. The create path refuses it: the server row is created only once a human has returned from the vendor's consent screen connected. Such a tile reads as zero-config — no configuration_fields, no credential_requirements — so without this flag the contract is indistinguishable from a one-call install that it is not.
-	RequiresConnect *bool `json:"requires_connect,omitempty"`
-
-	// RequiresCredentials True when this tile is installed by a human entering the vendor's credentials into a Botyard form. The create path refuses it, and like a connect-first tile it reads as zero-config here — the fields are not in this contract because they come from the vendor and are read live when the form is rendered. An agent must not attempt to collect the credential itself; chat is not an acceptable channel for one.
-	RequiresCredentials *bool `json:"requires_credentials,omitempty"`
-
-	// RuntimeKind How an org-scoped MCP server row actually runs.
-	//
-	// Deliberately closed. Every member here is a shape a ``provider_mcp_servers``
-	// row can hold and a create body can name, and every create/update model pins
-	// one of them as a ``Literal`` discriminator. A value that cannot appear on a
-	// row does not belong in this enum: it used to carry ``npx``, which no row has
-	// ever held and no create model would accept, and advertising it to agents as
-	// a runtime kind produced calls the tool could only refuse (PlatDev #2475).
-	//
-	// How a *catalog tile* is packaged is a separate vocabulary —
-	// :class:`McpCatalogPackagingKind` — related to this one by exactly one public
-	// translation, :func:`server_runtime_kind_for_packaging`.
-	RuntimeKind McpServerRuntimeKind `json:"runtime_kind"`
-	Slug        string               `json:"slug"`
-
-	// Source Who owns a reusable MCP catalog entry.
-	Source            McpCatalogEntrySource `json:"source"`
-	TemplateUpdatedAt time.Time             `json:"template_updated_at"`
-
-	// Transport Wire transport a deployed MCP server exposes to the gateway.
-	Transport McpServerTransport `json:"transport"`
-}
-
 // McpCatalogEntrySource Who owns a reusable MCP catalog entry.
 type McpCatalogEntrySource string
 
@@ -3537,11 +4427,23 @@ type McpCatalogFilterField string
 
 // McpCatalogFormField One field in a template-specific MCP catalog form.
 type McpCatalogFormField struct {
+	// Advanced Presentation hint: render this field inside a collapsed "Advanced settings" section of the setup form, for values that have a sensible default and should rarely be changed. The field stays editable and submits exactly like any other; agents see it unchanged. A required field may only be advanced when it has a default_value, and integration fields can never be advanced.
+	Advanced *bool `json:"advanced,omitempty"`
+
 	// AllowedModes Allowed input modes for text_or_secret_ref fields
 	AllowedModes *[]McpCatalogFormInputMode `json:"allowed_modes"`
 
+	// Columns record_list only: the ordered, typed columns of one row
+	Columns *[]McpCatalogRecordColumn `json:"columns"`
+
+	// Compile record_list only: how the rows compile to JSON in the field's env target, and how secret cells become generated vault-backed env vars
+	Compile *McpCatalogRecordListCompile `json:"compile"`
+
 	// CredentialProvider Provider whose connected credentials this field offers. Required for integration fields, rejected on every other kind.
 	CredentialProvider *CredentialProvider `json:"credential_provider"`
+
+	// DefaultItems record_list only: rows the form starts with, as column id to plaintext value. Secret-capable columns may not be defaulted.
+	DefaultItems *[]map[string]string `json:"default_items"`
 
 	// DefaultMode Initial input mode for text_or_secret_ref fields
 	DefaultMode *McpCatalogFormInputMode `json:"default_mode"`
@@ -3558,11 +4460,20 @@ type McpCatalogFormField struct {
 	// Id Stable field identifier unique within the form spec
 	Id string `json:"id"`
 
+	// ItemLabel record_list only: singular noun for one row, used in "Add <item>" and the empty state. Defaults to the field label.
+	ItemLabel *string `json:"item_label"`
+
 	// Kind Renderer and validation kind
 	Kind McpCatalogFormFieldKind `json:"kind"`
 
 	// Label Human-readable field label
 	Label string `json:"label"`
+
+	// MaxItems record_list only: most rows accepted (default 50)
+	MaxItems *int `json:"max_items"`
+
+	// MinItems record_list only: fewest rows accepted (default 0, or 1 when required)
+	MinItems *int `json:"min_items"`
 
 	// Options Allowed option values for select fields
 	Options *[]string `json:"options"`
@@ -3591,7 +4502,7 @@ type McpCatalogFormFieldTarget struct {
 	// Index Argument index for arg targets when the field replaces an argv slot
 	Index *int `json:"index"`
 
-	// Name Env var name for env targets, argument placeholder name for arg targets, or HTTP header name for header targets
+	// Name Env var name for env targets, argument placeholder name for arg targets, HTTP header name for header targets, or the vendor's field key for vendor_credential targets
 	Name *string `json:"name"`
 
 	// Path Absolute container file path for file targets. The field's secret reference compiles into secret_file_mounts[path] (mounted read-only) instead of an env var. Validated with the same rules as secret_file_mounts keys.
@@ -3603,7 +4514,7 @@ type McpCatalogFormFieldTarget struct {
 	// Scheme How a header target composes its outbound value from the operator's secret. Declared by the template author rather than chosen by the operator: it is a property of what the vendor accepts, not of the credential typed in. Null sends the value verbatim.
 	Scheme *McpCatalogFormFieldTarget_Scheme `json:"scheme"`
 
-	// Type Compiler target bucket
+	// Type Compiler target bucket. vendor_credential never appears in a template's form spec: it marks a field projected from a Composio tile's vendor credential snapshot, whose value goes to the vendor at connect time rather than into the server's configuration.
 	Type McpCatalogFormFieldTargetType `json:"type"`
 }
 
@@ -3615,11 +4526,35 @@ type McpCatalogFormFieldTarget_Scheme struct {
 	union json.RawMessage
 }
 
-// McpCatalogFormFieldTargetType Compiler target bucket
+// McpCatalogFormFieldTargetType Compiler target bucket. vendor_credential never appears in a template's form spec: it marks a field projected from a Composio tile's vendor credential snapshot, whose value goes to the vendor at connect time rather than into the server's configuration.
 type McpCatalogFormFieldTargetType string
 
-// McpCatalogFormFieldValue Current value for one dynamic MCP catalog form field.
-type McpCatalogFormFieldValue struct {
+// McpCatalogFormFieldValueInput Current value for one dynamic MCP catalog form field.
+type McpCatalogFormFieldValueInput struct {
+	// Items record_list fields only: the rows, in order, each a map of column id to that cell's value (mode plaintext or secret_ref). value stays empty. Never set on any other kind, and never nested inside a cell.
+	Items *[]map[string]McpCatalogFormFieldValueInput `json:"items"`
+
+	// Mode How a *stored* form value should be interpreted.
+	//
+	// A strict superset of :class:`McpCatalogFormInputMode`, and deliberately so.
+	// ``integration`` is not an input mode: it marks the value of an integration
+	// field, which is the id of the connection this server is linked to, and
+	// nothing is injected into the pod for it. No form ever offers it as a choice.
+	//
+	// The two sets were previously four hand-copied ``Literal`` blocks with no
+	// assertion of their relationship — adding a member to one and not the others
+	// would have drifted silently (PlatDev #2518).
+	Mode *McpCatalogFormValueMode `json:"mode,omitempty"`
+
+	// Value Plaintext value or secret reference path for the field; the linked connection's credential id for integration fields
+	Value *string `json:"value,omitempty"`
+}
+
+// McpCatalogFormFieldValueOutput Current value for one dynamic MCP catalog form field.
+type McpCatalogFormFieldValueOutput struct {
+	// Items record_list fields only: the rows, in order, each a map of column id to that cell's value (mode plaintext or secret_ref). value stays empty. Never set on any other kind, and never nested inside a cell.
+	Items *[]map[string]McpCatalogFormFieldValueOutput `json:"items"`
+
 	// Mode How a *stored* form value should be interpreted.
 	//
 	// A strict superset of :class:`McpCatalogFormInputMode`, and deliberately so.
@@ -3696,6 +4631,123 @@ type McpCatalogProvisioningImplications struct {
 // McpCatalogProvisioningImplicationsTriggerAction defines model for McpCatalogProvisioningImplications.TriggerAction.
 type McpCatalogProvisioningImplicationsTriggerAction string
 
+// McpCatalogRecordColumn One typed column of a “record_list“ field — a mini form field.
+//
+// Columns are deliberately a smaller vocabulary than fields: no
+// “integration“ (a connection is a server-level decision, not a row's),
+// no “password“ (“secret_ref“ is the vault-backed way to ask), no
+// “textarea“ (a table cell), and no nested “record_list“.
+type McpCatalogRecordColumn struct {
+	// Advanced Render this cell behind the row's own "More" disclosure rather than inline. A required advanced column needs a default_value.
+	Advanced *bool `json:"advanced,omitempty"`
+
+	// AllowedModes Allowed input modes for text_or_secret_ref columns
+	AllowedModes *[]McpCatalogFormInputMode `json:"allowed_modes"`
+
+	// DefaultMode Initial input mode for text_or_secret_ref columns
+	DefaultMode *McpCatalogFormInputMode `json:"default_mode"`
+
+	// DefaultValue Value a newly added row starts with. Never allowed on secret-capable columns: a template does not answer a credential question.
+	DefaultValue *string `json:"default_value"`
+
+	// Description Help text shown as the column header's tooltip
+	Description *string `json:"description"`
+
+	// Display Optional widget hint, with the same rules as a field's display: select columns accept dropdown/radio/segmented, boolean columns switch/checkbox.
+	Display *McpCatalogRecordColumnDisplay `json:"display"`
+
+	// Id Stable column identifier unique within the record_list field
+	Id string `json:"id"`
+
+	// Kind Cell renderer and validation kind
+	Kind McpCatalogRecordColumnKind `json:"kind"`
+
+	// Label Column header label
+	Label string `json:"label"`
+
+	// Options Allowed option values for select columns
+	Options *[]string `json:"options"`
+
+	// Pattern Python/JavaScript-compatible regular expression a plaintext cell must fully match (text and text_or_secret_ref columns only)
+	Pattern *string `json:"pattern"`
+
+	// PatternMessage Message shown when a cell does not match pattern
+	PatternMessage *string `json:"pattern_message"`
+
+	// Placeholder Cell placeholder
+	Placeholder *string `json:"placeholder"`
+
+	// Required Whether every row must fill this cell
+	Required *bool `json:"required,omitempty"`
+
+	// SuggestedSecretPath Suggested dotted secret key path for secret-ref-capable columns
+	SuggestedSecretPath *string `json:"suggested_secret_path"`
+
+	// Unique Whether this cell's value must differ across rows (text, select, number)
+	Unique *bool `json:"unique,omitempty"`
+
+	// Width Layout hint for the column's share of the row
+	Width *McpCatalogRecordColumnWidth `json:"width"`
+}
+
+// McpCatalogRecordColumnDisplay Optional widget hint, with the same rules as a field's display: select columns accept dropdown/radio/segmented, boolean columns switch/checkbox.
+type McpCatalogRecordColumnDisplay string
+
+// McpCatalogRecordColumnKind Cell renderer and validation kind
+type McpCatalogRecordColumnKind string
+
+// McpCatalogRecordColumnWidth Layout hint for the column's share of the row
+type McpCatalogRecordColumnWidth string
+
+// McpCatalogRecordListCompile How a “record_list“ answer compiles into the field's env target as JSON.
+//
+// The JSON lands in “env_plaintext[target.name]“. A secret cell never does:
+// it becomes its own generated “env_secret_refs“ entry named
+// “<secret_env_prefix>_<row>“, and the JSON carries only
+// “secret_placeholder % name“ (“${NAME}“ by default) for an env-expanding
+// consumer to resolve. Generated names are positional — reordering rows
+// renames them — so they are never an identity, only a slot.
+type McpCatalogRecordListCompile struct {
+	// KeyColumn Column whose (required, unique) cell keys each row; object shape only
+	KeyColumn *string `json:"key_column"`
+
+	// SecretEnvPrefix Prefix for generated secret env vars: <prefix>_<row>
+	SecretEnvPrefix *string `json:"secret_env_prefix"`
+
+	// SecretPlaceholder How a secret cell appears inside the JSON; %s is the generated env name
+	SecretPlaceholder *string `json:"secret_placeholder,omitempty"`
+
+	// Shape object: keyed by key_column; array: a list of row values
+	Shape McpCatalogRecordListCompileShape `json:"shape"`
+
+	// Value What each row becomes. Required for object shape; for array shape it defaults to an object of every column keyed by column id.
+	Value *McpCatalogRecordValue `json:"value"`
+}
+
+// McpCatalogRecordListCompileShape object: keyed by key_column; array: a list of row values
+type McpCatalogRecordListCompileShape string
+
+// McpCatalogRecordValue What one row becomes: a single cell, or an object of cells.
+type McpCatalogRecordValue struct {
+	// Column Emit this one (required) column's cell as the row's value
+	Column *string `json:"column"`
+
+	// Columns Emit an object built from these columns' cells
+	Columns *[]McpCatalogRecordValueColumn `json:"columns"`
+}
+
+// McpCatalogRecordValueColumn One column placed into a row's output object, at an optional dotted path.
+//
+// The field is “path“, not “key“: OpenClaw's transcript redactor masks any
+// property named “key“, which would corrupt the tile in the bot's own view.
+type McpCatalogRecordValueColumn struct {
+	// Column Column id whose cell is placed here
+	Column string `json:"column"`
+
+	// Path Dotted output path inside the row object, e.g. headers.Authorization. Defaults to the column id. An empty cell omits its key.
+	Path *string `json:"path"`
+}
+
 // McpCatalogSearchRequest Request body for “POST /v1/orgs/{org_id}/mcp-servers/catalog/search“.
 type McpCatalogSearchRequest struct {
 	// Pagination Query parameters for offset-based paginated endpoints.
@@ -3723,6 +4775,48 @@ type McpCatalogSearchRequest struct {
 // thousands. A row that lands here is seeded disabled.
 type McpCatalogVendorAuthMode string
 
+// McpConnectPrefillAnswer One answer the bot prefilled on a “FORM“ connect card.
+//
+// Exactly one of “value“ (“plaintext“) or “secret_ref“ (“secret_ref“)
+// is set. A plaintext answer is never a secret: the tool refuses plaintext for
+// any field that accepts a vault reference at all, and never takes a
+// “password“ field, so nothing stored here is credential material.
+type McpConnectPrefillAnswer struct {
+	// FieldId Form field this answers
+	FieldId string `json:"field_id"`
+
+	// Mode A mode an operator (or agent) can *answer* a form field in.
+	//
+	// Both members name a way of supplying a value: a literal, or a pointer to
+	// one in the Runtime Vault. What a field offers is its ``allowed_modes``; the
+	// one it starts on is its ``default_mode``.
+	Mode McpCatalogFormInputMode `json:"mode"`
+
+	// SecretRef The proposed vault secret; set only for mode secret_ref
+	SecretRef *McpConnectPrefillSecretRef `json:"secret_ref"`
+
+	// Value The plaintext answer; set only for mode plaintext
+	Value *string `json:"value"`
+}
+
+// McpConnectPrefillSecretRef A vault secret the bot proposed for a secret field, resolved server-side.
+//
+// The bot names it by key path; “request_mcp_connection“ resolves the path
+// through the bot's own lease predicate when the ask is recorded, so a bot can
+// only ever propose a secret it could lease itself, and the card never has to
+// resolve a path (platform-development #3014). Identity and label only — the
+// value never leaves the vault on this path.
+type McpConnectPrefillSecretRef struct {
+	// DisplayName The entry's display name, for the card's chip
+	DisplayName string `json:"display_name"`
+
+	// KeyPath Runtime Vault key path the bot named
+	KeyPath string `json:"key_path"`
+
+	// VaultEntryId The org-owned vault entry that key path resolved to. What the credential install takes in vault_entry_refs.
+	VaultEntryId string `json:"vault_entry_id"`
+}
+
 // McpConnectRequestState What became of one in-chat connect ask, as the card reads it on mount.
 //
 // Deliberately *not* a status of its own. The ask row stores no lifecycle —
@@ -3747,9 +4841,34 @@ type McpConnectRequestState struct {
 	// McpCatalogEntryId Catalogue tile the ask would authorise
 	McpCatalogEntryId string `json:"mcp_catalog_entry_id"`
 
+	// Prefill Answers the bot prefilled for a form card, in field order. Plaintext answers are never secrets; secret answers are vault references already resolved to the entry and checked against the bot's own lease access. Editable by the human before they submit.
+	Prefill *[]McpConnectPrefillAnswer `json:"prefill,omitempty"`
+
 	// RequestId The ask this state belongs to
 	RequestId string `json:"request_id"`
+
+	// Variant Which in-chat card a ``request_mcp_connection`` ask renders as.
+	//
+	// Derived by the server from the catalogue tile when the ask is recorded,
+	// never chosen by the bot (platform-development #3014):
+	//
+	// * ``CONNECT`` — a connect-first tile: the human authorises at the vendor.
+	// * ``FORM`` — a tile with fields to fill in: the vendor's credential form, or
+	//   a template's configuration form. Answers the bot prefilled ride along.
+	// * ``CONFIRM`` — a zero-configuration tile: the human only confirms.
+	Variant *McpConnectVariant `json:"variant,omitempty"`
 }
+
+// McpConnectVariant Which in-chat card a “request_mcp_connection“ ask renders as.
+//
+// Derived by the server from the catalogue tile when the ask is recorded,
+// never chosen by the bot (platform-development #3014):
+//
+//   - “CONNECT“ — a connect-first tile: the human authorises at the vendor.
+//   - “FORM“ — a tile with fields to fill in: the vendor's credential form, or
+//     a template's configuration form. Answers the bot prefilled ride along.
+//   - “CONFIRM“ — a zero-configuration tile: the human only confirms.
+type McpConnectVariant string
 
 // McpConsentShape What a customer is actually agreeing to when they authorise a tile.
 //
@@ -4002,7 +5121,7 @@ type McpServerCatalogEntry struct {
 	// Command Entrypoint override
 	Command *[]string `json:"command"`
 
-	// ConnectAuthMode How this tile is installed, or null when it needs neither flow. Branch on this only for *copy*, never to decide which flow applies: requires_connect and requires_credentials already answer that, and this field is null unless one of them is true. 'oauth2_managed' means the customer signs in to the vendor; 'api_key' means they enter credentials into a Botyard form that stores them — and note that despite the name, some toolkits in this mode ask for a username and password, so copy should say 'credentials' rather than 'API key'. A client that does not recognise the value should fall back to the neutral wording rather than assume a sign-in.
+	// ConnectAuthMode How this tile is installed, or null when it needs neither flow. Branch on this only for *copy*, never to decide which flow applies: requires_connect and requires_credentials already answer that, and this field is null unless one of them is true. 'oauth2_managed' means the customer signs in to the vendor; 'api_key', 'basic' and 'bearer_token' all mean they enter credentials into a Botyard form that stores them, and must be treated alike — despite the name, some 'api_key' toolkits ask for a username and password, so copy should say 'credentials' rather than 'API key'. A client that does not recognise the value should fall back to the neutral wording rather than assume a sign-in.
 	ConnectAuthMode *McpCatalogVendorAuthMode `json:"connect_auth_mode"`
 
 	// ConsentNote Tile-specific disclosure text to show at the authorisation step. Null for most tiles. For the four canned shapes this is an addendum to consent_shape and never a replacement for it; when consent_shape is 'custom' it is the BODY of the disclosure, beneath consent_title, and is always present
@@ -4227,20 +5346,6 @@ type McpServerMemberAdd struct {
 	Role *string `json:"role,omitempty"`
 }
 
-// McpServerRuntimeKind How an org-scoped MCP server row actually runs.
-//
-// Deliberately closed. Every member here is a shape a “provider_mcp_servers“
-// row can hold and a create body can name, and every create/update model pins
-// one of them as a “Literal“ discriminator. A value that cannot appear on a
-// row does not belong in this enum: it used to carry “npx“, which no row has
-// ever held and no create model would accept, and advertising it to agents as
-// a runtime kind produced calls the tool could only refuse (PlatDev #2475).
-//
-// How a *catalog tile* is packaged is a separate vocabulary —
-// :class:`McpCatalogPackagingKind` — related to this one by exactly one public
-// translation, :func:`server_runtime_kind_for_packaging`.
-type McpServerRuntimeKind string
-
 // McpServerSetupSource How an MCP server row was created in the setup flow.
 type McpServerSetupSource string
 
@@ -4271,6 +5376,9 @@ type McpServerUpdate struct {
 
 	// Args Argv-style arguments appended to command. Container-image rows only.
 	Args *[]string `json:"args"`
+
+	// CatalogFormAnswers Re-answer this server's ``record_list`` template fields, keyed by field id, as ``{items: [{column: {mode, value}}]}``. The server compiles each list onto the env target JSON and its positional vault-backed slots, replacing whatever the field wrote before; a ``secret_ref`` cell's value is a Runtime Vault key path. Other field kinds are edited through the env maps they compile to. Container-image rows created from a template only.
+	CatalogFormAnswers *map[string]McpCatalogFormFieldValueInput `json:"catalog_form_answers"`
 
 	// Command Argv-style entrypoint override. Container-image rows only.
 	Command *[]string `json:"command"`
@@ -4325,6 +5433,9 @@ type McpServerUpdate struct {
 	// RequestTimeoutSeconds Per-server gateway request-timeout override (seconds). Send an explicit null to clear it and inherit the gateway default. Applies to both runtime kinds.
 	RequestTimeoutSeconds *int `json:"request_timeout_seconds"`
 
+	// Resources Pod compute as a list of MeteredResource line-items (only the resources being changed; storage = scratch volume size). Send a block to set resources on top of the server's current shape; send null to reset to the platform default shape; omit to leave unchanged. Billed like bot resources and capped by the plan's per-MCP-server maximums. Changing it restarts the pod. Container-image rows only.
+	Resources *ResourceQuantities `json:"resources"`
+
 	// SecretFileMounts Absolute container file path → secret_key_path mounted as read-only files (full replacement). Container-image rows only.
 	SecretFileMounts *map[string]string `json:"secret_file_mounts"`
 
@@ -4356,42 +5467,48 @@ type McpToolSummary struct {
 
 	// Name Tool name as reported by the MCP server
 	Name string `json:"name"`
+
+	// Title Human-readable display title advertised by the MCP server (null if none)
+	Title *string `json:"title"`
 }
 
 // MemoryEventCounters defines model for MemoryEventCounters.
 type MemoryEventCounters struct {
-	// High memory.events high counter
-	High *int `json:"high"`
-
-	// Low memory.events low counter
-	Low *int `json:"low"`
-
-	// Max memory.events max counter
-	Max *int `json:"max"`
-
-	// Oom memory.events oom counter
-	Oom *int `json:"oom"`
-
-	// OomKill memory.events oom_kill counter
+	High    *int `json:"high"`
+	Low     *int `json:"low"`
+	Max     *int `json:"max"`
+	Oom     *int `json:"oom"`
 	OomKill *int `json:"oom_kill"`
 }
 
 // MemoryMetrics defines model for MemoryMetrics.
 type MemoryMetrics struct {
-	// CurrentBytes OOM-relevant memory working set in bytes: raw cgroup usage minus inactive_file.
-	CurrentBytes *int                 `json:"current_bytes"`
-	Events       *MemoryEventCounters `json:"events"`
+	// CurrentBytes OOM-relevant working set: cgroup usage minus reclaimable `inactive_file`.
+	// This matches cAdvisor/k9s working-set semantics and excludes reclaimable
+	// file-backed cache such as mmap'd bundle pages. It is the number a user is
+	// shown, because it is the number the OOM killer cares about.
+	CurrentBytes *int `json:"current_bytes"`
 
-	// InactiveFileBytes Reclaimable inactive_file bytes subtracted from raw_current_bytes when available.
+	// Events Absent when the host exports no `memory.events`.
+	Events *MemoryEventCounters `json:"events"`
+
+	// InactiveFileBytes Reclaimable bytes subtracted from `raw_current_bytes`. Absent when the
+	// kernel did not export it, in which case `current_bytes` equals the raw
+	// usage and is a conservative overestimate.
 	InactiveFileBytes *int `json:"inactive_file_bytes"`
 
-	// LimitBytes Memory limit, or null when unlimited/unavailable
+	// LimitBytes Enforced limit. Absent when the host imposes none (`memory.max` == "max",
+	// or no cgroup at all). ABSENT IS NOT UNLIMITED-AS-ZERO and must never be
+	// rendered as a limit of any size.
 	LimitBytes *int `json:"limit_bytes"`
 
-	// PercentOfLimit Working-set memory usage as percentage of limit
+	// PercentOfLimit `current_bytes` as a percentage of `limit_bytes`. Absent whenever either
+	// input is absent or the limit is not positive. A consumer must not compute
+	// its own fallback percentage from partial inputs.
 	PercentOfLimit *float32 `json:"percent_of_limit"`
 
-	// RawCurrentBytes Raw cgroup memory usage before subtracting reclaimable inactive_file.
+	// RawCurrentBytes Raw cgroup usage before subtracting `inactive_file`. Kept so the derived
+	// working set above is auditable rather than merely asserted.
 	RawCurrentBytes *int `json:"raw_current_bytes"`
 }
 
@@ -4445,15 +5562,12 @@ type ModelConfig struct {
 	// CliAllowlist Every model the single registered claude-cli backend accepts, from the credential preset. Stored input rather than derived output: it is a catalogue snapshot of the backend, not a projection of the chain, and without it OpenClaw's ``/model`` command rejects any CLI ref the bot is not currently routed to.
 	CliAllowlist  *map[string]AllowedAgentModelConfig `json:"cli_allowlist,omitempty"`
 	ContextWindow *int                                `json:"context_window,omitempty"`
-	Input         *[]ModelConfigInput                 `json:"input,omitempty"`
+	Input         *[]InputModality                    `json:"input,omitempty"`
 	MaxTokens     *int                                `json:"max_tokens,omitempty"`
 	ProviderName  *string                             `json:"provider_name,omitempty"`
 	ProxyBaseUrl  *string                             `json:"proxy_base_url,omitempty"`
 	Reasoning     *bool                               `json:"reasoning,omitempty"`
 }
-
-// ModelConfigInput defines model for ModelConfig.Input.
-type ModelConfigInput string
 
 // ModelRef A reference to a model within an OpenClaw provider.
 //
@@ -4485,11 +5599,13 @@ type NativeBotConfig struct {
 	// and model is the model ID within that provider (e.g. ``"gpt-5.4"``).
 	Model ModelRef `json:"model"`
 
-	// PromptRef Optional managed-prompt ref naming the template source (directory version pins content)
-	PromptRef *string `json:"prompt_ref"`
-
-	// PromptTemplate Bot instructions template rendered into the system prompt stable prefix
-	PromptTemplate string `json:"prompt_template"`
+	// ToolImages How a native bot treats images its MCP tools return.
+	//
+	// Every field is optional and ``None`` means "the platform default", so a
+	// bot that sets nothing behaves exactly as before this model existed, and
+	// clearing a field with an explicit ``null`` patch returns it to the
+	// default. Native bots only: OpenClaw bots have no equivalent setting.
+	ToolImages *ToolImageConfig `json:"tool_images,omitempty"`
 
 	// ToolSearch Tool Search: defer tool schemas out of the prompt behind a search surface.
 	//
@@ -4542,26 +5658,16 @@ type NativeBotConfig struct {
 	ToolSearch *ToolSearchConfig `json:"tool_search,omitempty"`
 }
 
-// NativeConfigConversion Explicit repair of an existing hosted-native agent's legacy config.
-type NativeConfigConversion struct {
-	// Config Platform-level native bot config — input to broker prompt rendering.
-	//
-	// Stored as JSONB in bots.desired_config when bot_type=native. The
-	// ``bot_type`` field is the discriminator for the BotConfig union.
-	//
-	// ``extra="ignore"`` mirrors OpenClawBotConfig: old data with removed
-	// fields still reads (schema evolution safety).
-	Config NativeBotConfig `json:"config"`
-
-	// ExpectedGeneration Config generation read before requesting conversion
-	ExpectedGeneration int `json:"expected_generation"`
-}
-
 // NativeConfigPatch Patchable fields for native bot configs.
 //
-// Minimal by design: model ref + prompt ref/template + host policy only.
+// Minimal by design: model ref + host policy + tool settings only.
 // Structure mirrors “NativeBotConfig“ so “patch_model()“ applies updates
 // recursively without manual field mapping.
+//
+// The instructions are not here: a native bot's soul is a “bot_files“
+// revision, edited through the file surfaces (PlatDev #3684). Unknown fields
+// are refused rather than ignored, so a client still sending the removed
+// instructions field gets a 422 instead of a silently dropped edit.
 type NativeConfigPatch struct {
 	BotType *NativeConfigPatchBotType `json:"bot_type,omitempty"`
 
@@ -4571,11 +5677,8 @@ type NativeConfigPatch struct {
 	// Model Model ref override
 	Model *ModelRef `json:"model"`
 
-	// PromptRef Managed-prompt ref naming the template source
-	PromptRef *string `json:"prompt_ref"`
-
-	// PromptTemplate Bot instructions template
-	PromptTemplate *string `json:"prompt_template"`
+	// ToolImages Tool-image overrides (see ToolImageConfigPatch). Null or omitted means no change.
+	ToolImages *ToolImageConfigPatch `json:"tool_images"`
 
 	// ToolSearch Tool Search overrides (see ToolSearchConfigPatch)
 	ToolSearch *ToolSearchConfigPatch `json:"tool_search"`
@@ -4583,6 +5686,70 @@ type NativeConfigPatch struct {
 
 // NativeConfigPatchBotType defines model for NativeConfigPatch.BotType.
 type NativeConfigPatchBotType string
+
+// NativeLane The six native lanes at cutover (#3734).
+type NativeLane string
+
+// NativeLaneRefusal Why native owned mode refuses a credential, decided at config time (#3734 §5, #3809).
+//
+// The one vocabulary for the config-time refusal: the API answers a native
+// bot's credential edit with it (“native_lane_refused“, 422) and L8c
+// exports it to the app. It is a fact about the credential's provider and
+// protocol only, never its model: every model of a served credential is
+// served, on the wire :func:`native_route_for` picks.
+//
+// The runtime refusal stays the backstop, as the proto
+// “OWNED_REFUSAL_REASON_UNSUPPORTED_PROTOCOL“: a credential that changes
+// under a bot after the edit (an org-level credential edit) still cannot
+// reach the provider.
+type NativeLaneRefusal string
+
+// NativeLaneRefusedProblem 422 “native_lane_refused“: the body a native bot's refused credential edit gets.
+//
+// Declared on every route that re-derives a native bot's chain
+// (:data:`NATIVE_LANE_REFUSED_RESPONSES`), so the generated client types
+// “refused_links“ and its :class:`~botyard_core.native.lanes.NativeLaneRefusal`
+// reasons instead of an untyped extension bag.
+type NativeLaneRefusedProblem struct {
+	// Detail Human-readable explanation specific to this occurrence. Safe to surface to end users — never contains debugging information.
+	Detail string `json:"detail"`
+
+	// ErrorCode Always ``native_lane_refused``; switch on it to narrow the 422
+	ErrorCode NativeLaneRefusedProblemErrorCode `json:"error_code"`
+
+	// Errors Field-level failures (present on 422 responses from validation)
+	Errors *[]ProblemErrorItem `json:"errors"`
+
+	// Instance Request path that produced the error
+	Instance string `json:"instance"`
+
+	// RefusedLinks Every usable LLM credential owned mode refuses, in chain order; the same shape the harness switch's lane_refused result carries
+	RefusedLinks []RefusedNativeLink `json:"refused_links"`
+
+	// Status HTTP status code for this occurrence
+	Status int `json:"status"`
+
+	// Title Short human summary of the problem type; stable across occurrences. Fallback for humans that don't recognise the type URI.
+	Title string `json:"title"`
+
+	// TraceId OpenTelemetry trace ID (32 hex chars) when tracing is active. Lets support pivot from a failure the caller reports straight to the Tempo trace.
+	TraceId *string `json:"trace_id"`
+
+	// Type URI identifier for the problem type; primary machine identifier. Clients should switch on this (or ``error_code``), not on ``title`` or ``detail``.
+	Type                 string                 `json:"type"`
+	AdditionalProperties map[string]interface{} `json:"-"`
+}
+
+// NativeLaneRefusedProblemErrorCode Always “native_lane_refused“; switch on it to narrow the 422
+type NativeLaneRefusedProblemErrorCode string
+
+// NoRecommendedModel The pack recommends no model; the bot keeps the default.
+type NoRecommendedModel struct {
+	Kind NoRecommendedModelKind `json:"kind"`
+}
+
+// NoRecommendedModelKind defines model for NoRecommendedModel.Kind.
+type NoRecommendedModelKind string
 
 // ObservedState Operator's view of where a bot is in the reconciler phase pipeline.
 //
@@ -4686,7 +5853,8 @@ type OpenClawBotConfig struct {
 	// fill the window. Sessions were observed overflowing at ~258k compaction
 	// tokens with only 47-72 messages.
 	//
-	// Unlike :class:`ContextPruningConfig` this does not depend on prompt-cache
+	// Unlike OpenClaw's cache-TTL context pruning (which Botyard switches off;
+	// see the v2026.6.1 serializer) this does not depend on prompt-cache
 	// eligibility — ``resolveAgentContextLimits`` takes no provider or auth input,
 	// and the persistence write path is ungated (it even falls back to 16000
 	// rather than "unbounded" when the context window is unknown). So on the
@@ -4702,43 +5870,6 @@ type OpenClawBotConfig struct {
 	//   ``compaction.mid_turn_precheck=True``. The write-time cap itself is
 	//   unconditional.
 	ContextLimits *ContextLimitsConfig `json:"context_limits,omitempty"`
-
-	// ContextPruning Cache-TTL pruning of *old tool results* out of the in-memory context.
-	//
-	// Complements compaction rather than duplicating it. Compaction summarises
-	// *conversation* messages and explicitly refuses to run when there are none
-	// ("[compaction] skipping — no real conversation messages"), which is why a
-	// second overflow inside one turn is unrecoverable: after the first compaction
-	// rotates the transcript, the window refills with tool output that compaction
-	// will not touch. Pruning is the only mechanism that reclaims that space —
-	// it soft-trims oversized old tool results (head+tail with a ``...`` marker)
-	// and hard-clears the rest to a placeholder, in memory only; the on-disk
-	// transcript is never rewritten.
-	//
-	// **Known limitation — this does not reach every bot.** OpenClaw registers the
-	// pruning extension only in the embedded (``pi``) agent runner, and only when
-	// ``isCacheTtlEligibleProvider`` holds: provider ``anthropic`` /
-	// ``anthropic-vertex``, an Anthropic model on Bedrock, ``modelApi ==
-	// anthropic-messages``, or Gemini 2.5/3 on ``google-generative-ai``. A bot
-	// whose primary is an OpenAI-family model routed through the Botyard proxy is
-	// *not* eligible and gets nothing from this block — for those bots
-	// :class:`ContextLimitsConfig` is the whole fix. Emitting it anyway is
-	// deliberate: it is inert where ineligible, and where eligible it turns
-	// pruning on for providers nothing auto-configures (Gemini).
-	//
-	// **``ttl`` is deliberately not set here.** It is a prompt-cache *coherence*
-	// knob, not a responsiveness one: pruning rewrites the prompt prefix, so the
-	// TTL exists to hold pruning back until the provider's prompt cache has
-	// lapsed anyway, at which point the re-cache is free. OpenClaw's Anthropic
-	// auto-config is a matched set — ``ttl: 1h`` alongside a 1h heartbeat that
-	// deliberately keeps an extended cache warm — and overriding the TTL alone
-	// would prune into that warm cache and bust it, precisely when it is most
-	// expensive (pruning only engages once the context is >=30% full). Since this
-	// block is inert on the OpenAI-family bots that were actually overflowing,
-	// any TTL we pinned would apply *only* to bots that were not failing. Leave it
-	// to OpenClaw unless there is a measured cache-cost/context-pressure tradeoff
-	// to act on.
-	ContextPruning *ContextPruningConfig `json:"context_pruning,omitempty"`
 
 	// Gateway Gateway configuration.
 	Gateway      *GatewayConfig   `json:"gateway,omitempty"`
@@ -4925,6 +6056,223 @@ type OrMcpCatalogFilterField_Filters_Item struct {
 // OrMcpCatalogFilterFieldKind defines model for OrMcpCatalogFilterField.Kind.
 type OrMcpCatalogFilterFieldKind string
 
+// PackBotCustomAvatar Start with this image instead of the pack's. It is the bot's own, not a pack item.
+type PackBotCustomAvatar struct {
+	// AvatarUrl Avatar image URL — an image data URI (DiceBear SVG, or an uploaded WebP/PNG/JPEG) or an https:// URL. Max 16384 characters.
+	AvatarUrl string                  `json:"avatar_url"`
+	Kind      PackBotCustomAvatarKind `json:"kind"`
+}
+
+// PackBotCustomAvatarKind defines model for PackBotCustomAvatar.Kind.
+type PackBotCustomAvatarKind string
+
+// PackBotPackAvatar Start with the pack's avatar.
+type PackBotPackAvatar struct {
+	Kind PackBotPackAvatarKind `json:"kind"`
+}
+
+// PackBotPackAvatarKind defines model for PackBotPackAvatar.Kind.
+type PackBotPackAvatarKind string
+
+// PackBotRequest One bot to create from one pack version.
+//
+// “settings“ and “connections“ are the install choices of “POST
+// …/packs/installs“ (P3.2), except that “keep“ is refused: a new bot has no
+// value of its own to keep.
+type PackBotRequest struct {
+	// Avatar 'pack' (the default) starts with the pack's avatar; 'custom' with your own.
+	Avatar *PackBotRequest_Avatar `json:"avatar,omitempty"`
+
+	// Connections Per mcp_catalog_entry connection: 'use_server' binds the named org server; 'leave_pending' binds nothing, now or by later setup, until bound explicitly. A connection left out binds as before: the one visible server from its entry. Vault connections take no choice.
+	Connections *[]PackBotRequest_Connections_Item `json:"connections,omitempty"`
+
+	// Credentials Credential links for the new bot, with the same shape, rules and bot-owner gate as `POST /bots`'s `credentials`, applied in the same transaction. When they set the LLM scope they replace the pack's recommended model, and `model` reports `chosen`.
+	Credentials *BotCredentialAssign `json:"credentials"`
+
+	// Description Short human-facing description / role for the bot (e.g. 'Platform developer'). Display metadata only — not injected into the bot's system prompt.
+	Description *string `json:"description"`
+
+	// Harness Which agent software the bot runs.
+	//
+	// Deliberately named *harness*, not *runtime*: ``runtime`` already carries
+	// five unrelated meanings in this codebase (``Bot.runtime_class``, the bot
+	// runtime image, ``ComponentName.RUNTIME``, Runtime Vault, and the
+	// ``bot_runtime`` audit domain), and *harness* is the vocabulary the native
+	// runtime design already uses.
+	//
+	// Distinct from :class:`BotType`, which discriminates the *shape of the
+	// stored config blob* rather than naming the agent software. See
+	// ``Bot.harness`` for the full note.
+	//
+	// Immutable once set, with one controlled exception: the audited, one-way
+	// OpenClaw → native harness switch (PlatDev #3823). See ``Bot.harness``.
+	Harness *BotHarness `json:"harness,omitempty"`
+
+	// HostingType Who runs the bot's runtime.
+	//
+	// Classical SaaS framing, with one caveat recorded so it does not drift:
+	// "self-hosted" classically means the customer runs the *whole product*;
+	// here they run only the **runtime**, while the control plane stays
+	// Botyard's. The term is correct at the *bot* level ("this bot is hosted by
+	// you") and must never be read as "self-hosted Botyard".
+	//
+	// Immutable once set — see ``Bot.hosting_type``.
+	HostingType *BotHostingType `json:"hosting_type,omitempty"`
+
+	// Name The bot's name. Defaults to the pack's name.
+	Name          *string `json:"name"`
+	PackVersionId string  `json:"pack_version_id"`
+
+	// Settings Per pack setting: 'pack' (the default for a setting left out), 'keep' the bot's value, or a 'custom' value. Each path at most once, and only paths the pack sets.
+	Settings *[]PackBotRequest_Settings_Item `json:"settings,omitempty"`
+}
+
+// PackBotRequest_Avatar 'pack' (the default) starts with the pack's avatar; 'custom' with your own.
+type PackBotRequest_Avatar struct {
+	union json.RawMessage
+}
+
+// PackBotRequest_Connections_Item defines model for PackBotRequest.connections.Item.
+type PackBotRequest_Connections_Item struct {
+	union json.RawMessage
+}
+
+// PackBotRequest_Settings_Item defines model for PackBotRequest.settings.Item.
+type PackBotRequest_Settings_Item struct {
+	union json.RawMessage
+}
+
+// PackConnectionSetupResult One connection of one install: where its setup is, and what it asks next.
+type PackConnectionSetupResult struct {
+	Action PackConnectionSetupResult_Action `json:"action"`
+
+	// BotPackConnectionSetupId The setup, or None for a connection the install bound by itself.
+	BotPackConnectionSetupId *string `json:"bot_pack_connection_setup_id"`
+	BotPackInstallId         string  `json:"bot_pack_install_id"`
+	PackVersionConnectionId  string  `json:"pack_version_connection_id"`
+
+	// State Where one connection's setup is. A native ``pack_setup_state`` enum (stores the member name).
+	State PackSetupState `json:"state"`
+}
+
+// PackConnectionSetupResult_Action defines model for PackConnectionSetupResult.Action.
+type PackConnectionSetupResult_Action struct {
+	union json.RawMessage
+}
+
+// PackLeavePendingChoice Bind nothing now, even when exactly one server would fit (J10 = C2).
+//
+// Kept on the install, so the setups recorded after it never auto-bind it either;
+// only an explicit bind does. An MCP catalogue entry connection only.
+type PackLeavePendingChoice struct {
+	Choice PackLeavePendingChoiceChoice `json:"choice"`
+
+	// PackVersionConnectionId A connection of the pack version being installed.
+	PackVersionConnectionId string `json:"pack_version_connection_id"`
+}
+
+// PackLeavePendingChoiceChoice defines model for PackLeavePendingChoice.Choice.
+type PackLeavePendingChoiceChoice string
+
+// PackSecretSpec A Runtime Vault secret a pack needs the installing org to supply (D30).
+//
+// A frozen subset of “VaultInputSecretSpec“. **There is no value field, and
+// there never will be:** the value is entered into the buyer's own vault by
+// the install wizard (P4). “extra="forbid"“ makes a value-shaped key a
+// validation error rather than something silently dropped or stored.
+type PackSecretSpec struct {
+	// Description What the secret is for.
+	Description *string `json:"description"`
+
+	// DisplayName Human-readable name, e.g. 'GitHub token'.
+	DisplayName string `json:"display_name"`
+
+	// KeyPath Runtime Vault key path the installing org's secret is stored at.
+	KeyPath string `json:"key_path"`
+
+	// MaxTtlSeconds Maximum lease TTL bots may request for the secret.
+	MaxTtlSeconds int `json:"max_ttl_seconds"`
+
+	// Sensitivity Sensitivity classification for a Runtime Vault entry.
+	Sensitivity *RuntimeVaultSensitivity `json:"sensitivity,omitempty"`
+}
+
+// PackSettingCustomChoice Write “value“ instead of the pack's; uninstall reverts it like the pack's.
+type PackSettingCustomChoice struct {
+	Choice PackSettingCustomChoiceChoice `json:"choice"`
+
+	// Path A top-level :class:`PackSettings` field. A test pins this to the model's fields.
+	Path  PackSettingPath `json:"path"`
+	Value *JsonValueInput `json:"value"`
+}
+
+// PackSettingCustomChoiceChoice defines model for PackSettingCustomChoice.Choice.
+type PackSettingCustomChoiceChoice string
+
+// PackSettingKeepChoice Leave the bot's own value. Nothing is written and no item is recorded.
+type PackSettingKeepChoice struct {
+	Choice PackSettingKeepChoiceChoice `json:"choice"`
+
+	// Path A top-level :class:`PackSettings` field. A test pins this to the model's fields.
+	Path PackSettingPath `json:"path"`
+}
+
+// PackSettingKeepChoiceChoice defines model for PackSettingKeepChoice.Choice.
+type PackSettingKeepChoiceChoice string
+
+// PackSettingPackChoice Apply the pack's value. The same as leaving the setting out.
+type PackSettingPackChoice struct {
+	Choice PackSettingPackChoiceChoice `json:"choice"`
+
+	// Path A top-level :class:`PackSettings` field. A test pins this to the model's fields.
+	Path PackSettingPath `json:"path"`
+}
+
+// PackSettingPackChoiceChoice defines model for PackSettingPackChoice.Choice.
+type PackSettingPackChoiceChoice string
+
+// PackSettingPath A top-level :class:`PackSettings` field. A test pins this to the model's fields.
+type PackSettingPath string
+
+// PackSetupFailure Why a setup failed. Stored in “failure_code“.
+type PackSetupFailure string
+
+// PackSetupState Where one connection's setup is. A native “pack_setup_state“ enum (stores the member name).
+type PackSetupState string
+
+// PackSupport A pack version's support on one profile.
+type PackSupport struct {
+	// Level How much of a pack version a profile can run.
+	Level PackSupportLevel `json:"level"`
+
+	// Unsupported Items skipped on this profile, in pack order: soul, tools, settings.
+	Unsupported []PackSupport_Unsupported_Item `json:"unsupported"`
+}
+
+// PackSupport_Unsupported_Item defines model for PackSupport.unsupported.Item.
+type PackSupport_Unsupported_Item struct {
+	union json.RawMessage
+}
+
+// PackSupportLevel How much of a pack version a profile can run.
+type PackSupportLevel string
+
+// PackUseServerChoice Bind this org MCP server, checked as “bind_connections“ checks a named one.
+//
+// An MCP catalogue entry connection only.
+type PackUseServerChoice struct {
+	Choice PackUseServerChoiceChoice `json:"choice"`
+
+	// McpServerId An org MCP server made from the connection's catalogue entry.
+	McpServerId string `json:"mcp_server_id"`
+
+	// PackVersionConnectionId A connection of the pack version being installed.
+	PackVersionConnectionId string `json:"pack_version_connection_id"`
+}
+
+// PackUseServerChoiceChoice defines model for PackUseServerChoice.Choice.
+type PackUseServerChoiceChoice string
+
 // PaginatedResponseBotListItem defines model for PaginatedResponse_BotListItem_.
 type PaginatedResponseBotListItem struct {
 	// HasMore Whether more items exist beyond this page
@@ -5077,6 +6425,180 @@ type PermissionScopeShape string
 // two surfaces stay reconcilable instead of forking into a third vocabulary.
 type PermissionSource string
 
+// PlannedAction What an install does with one item.
+type PlannedAction string
+
+// PlannedAvatarItem The pack's avatar, only when the request asks for it (D16).
+type PlannedAvatarItem struct {
+	// Action What an install does with one item.
+	Action PlannedAction         `json:"action"`
+	Kind   PlannedAvatarItemKind `json:"kind"`
+
+	// Reason Why, when it is not obvious.
+	Reason *string `json:"reason"`
+}
+
+// PlannedAvatarItemKind defines model for PlannedAvatarItem.Kind.
+type PlannedAvatarItemKind string
+
+// PlannedInstall What installing one pack version on one bot will do.
+type PlannedInstall struct {
+	BotId string `json:"bot_id"`
+
+	// BotPackInstallId The existing install, when unchanged.
+	BotPackInstallId *string                           `json:"bot_pack_install_id"`
+	Connections      []PlannedInstall_Connections_Item `json:"connections"`
+	Items            []PlannedInstall_Items_Item       `json:"items"`
+	PackId           string                            `json:"pack_id"`
+	PackVersionId    string                            `json:"pack_version_id"`
+
+	// RecommendedModel A suggestion only; installs never change the model (J10).
+	RecommendedModel *ModelRef            `json:"recommended_model"`
+	Status           PlannedInstallStatus `json:"status"`
+
+	// Support A pack version's support on one profile.
+	Support PackSupport `json:"support"`
+}
+
+// PlannedInstall_Connections_Item defines model for PlannedInstall.connections.Item.
+type PlannedInstall_Connections_Item struct {
+	union json.RawMessage
+}
+
+// PlannedInstall_Items_Item defines model for PlannedInstall.items.Item.
+type PlannedInstall_Items_Item struct {
+	union json.RawMessage
+}
+
+// PlannedInstallStatus defines model for PlannedInstallStatus.
+type PlannedInstallStatus string
+
+// PlannedMcpConnection An MCP catalogue entry connection and how this install resolves it.
+type PlannedMcpConnection struct {
+	// Action What an install does with one item.
+	Action PlannedAction            `json:"action"`
+	Kind   PlannedMcpConnectionKind `json:"kind"`
+
+	// McpServerIds Servers from this entry visible to the installer. Binds when exactly one.
+	McpServerIds []string `json:"mcp_server_ids"`
+
+	// MissingTools Tool names the pack enables that the bound server has not discovered.
+	MissingTools            []string `json:"missing_tools"`
+	PackVersionConnectionId string   `json:"pack_version_connection_id"`
+
+	// Reason Why it is pending, when it is.
+	Reason *string `json:"reason"`
+
+	// UnsupportedTools Tool names the bound server has that this bot's profile cannot serve.
+	UnsupportedTools []string `json:"unsupported_tools"`
+}
+
+// PlannedMcpConnectionKind defines model for PlannedMcpConnection.Kind.
+type PlannedMcpConnectionKind string
+
+// PlannedMcpServerItem An org MCP server an MCP connection binds to.
+type PlannedMcpServerItem struct {
+	// Action What an install does with one item.
+	Action                  PlannedAction            `json:"action"`
+	Kind                    PlannedMcpServerItemKind `json:"kind"`
+	PackVersionConnectionId string                   `json:"pack_version_connection_id"`
+
+	// Reason Why, when it is not obvious.
+	Reason *string `json:"reason"`
+}
+
+// PlannedMcpServerItemKind defines model for PlannedMcpServerItem.Kind.
+type PlannedMcpServerItemKind string
+
+// PlannedSecretLinkItem A link from the bot to the vault entry a vault connection binds to.
+type PlannedSecretLinkItem struct {
+	// Action What an install does with one item.
+	Action                  PlannedAction             `json:"action"`
+	Kind                    PlannedSecretLinkItemKind `json:"kind"`
+	PackVersionConnectionId string                    `json:"pack_version_connection_id"`
+
+	// Reason Why, when it is not obvious.
+	Reason *string `json:"reason"`
+}
+
+// PlannedSecretLinkItemKind defines model for PlannedSecretLinkItem.Kind.
+type PlannedSecretLinkItemKind string
+
+// PlannedSettingItem One setting leaf. A setting the request chose to “keep“ has none.
+type PlannedSettingItem struct {
+	// Action What an install does with one item.
+	Action PlannedAction          `json:"action"`
+	Kind   PlannedSettingItemKind `json:"kind"`
+
+	// Path The setting's dotted path, e.g. 'tool_search.mode'.
+	Path string `json:"path"`
+
+	// Reason Why, when it is not obvious.
+	Reason *string                          `json:"reason"`
+	Value  *BotyardCoreTypesJsonValueOutput `json:"value"`
+}
+
+// PlannedSettingItemKind defines model for PlannedSettingItem.Kind.
+type PlannedSettingItemKind string
+
+// PlannedSkillItem A pinned skill.
+type PlannedSkillItem struct {
+	// Action What an install does with one item.
+	Action PlannedAction        `json:"action"`
+	Kind   PlannedSkillItemKind `json:"kind"`
+
+	// Reason Why, when it is not obvious.
+	Reason  *string `json:"reason"`
+	SkillId string  `json:"skill_id"`
+}
+
+// PlannedSkillItemKind defines model for PlannedSkillItem.Kind.
+type PlannedSkillItemKind string
+
+// PlannedSoulItem The pack's soul.
+type PlannedSoulItem struct {
+	// Action What an install does with one item.
+	Action PlannedAction       `json:"action"`
+	Kind   PlannedSoulItemKind `json:"kind"`
+
+	// Reason Why, when it is not obvious.
+	Reason *string `json:"reason"`
+}
+
+// PlannedSoulItemKind defines model for PlannedSoulItem.Kind.
+type PlannedSoulItemKind string
+
+// PlannedToolItem A built-in tool.
+type PlannedToolItem struct {
+	// Action What an install does with one item.
+	Action PlannedAction       `json:"action"`
+	Kind   PlannedToolItemKind `json:"kind"`
+
+	// Reason Why, when it is not obvious.
+	Reason *string `json:"reason"`
+	ToolId string  `json:"tool_id"`
+}
+
+// PlannedToolItemKind defines model for PlannedToolItem.Kind.
+type PlannedToolItemKind string
+
+// PlannedVaultConnection A vault secret connection and how this install resolves it.
+type PlannedVaultConnection struct {
+	// Action What an install does with one item.
+	Action                  PlannedAction              `json:"action"`
+	Kind                    PlannedVaultConnectionKind `json:"kind"`
+	PackVersionConnectionId string                     `json:"pack_version_connection_id"`
+
+	// Reason Why it is pending, when it is.
+	Reason *string `json:"reason"`
+
+	// VaultEntryId The org's usable vault entry at the connection's key path. None when there is none yet, which leaves the connection pending.
+	VaultEntryId *string `json:"vault_entry_id"`
+}
+
+// PlannedVaultConnectionKind defines model for PlannedVaultConnection.Kind.
+type PlannedVaultConnectionKind string
+
 // ProblemDetails RFC 9457 Problem Details response body.
 //
 // Every Botyard error response is a “ProblemDetails“ serialized as
@@ -5127,6 +6649,89 @@ type ProblemErrorItem struct {
 	Type string `json:"type"`
 }
 
+// RecommendedModelApplied The bot starts on the pack's recommended model.
+type RecommendedModelApplied struct {
+	// CredentialId The org LLM credential linked to the bot to run it (position 0).
+	CredentialId string                      `json:"credential_id"`
+	Kind         RecommendedModelAppliedKind `json:"kind"`
+
+	// Model A reference to a model within an OpenClaw provider.
+	//
+	// Mirrors OpenClaw's ``ModelRef`` type (``{ provider, model }``).
+	// The provider field is the key in ``models.providers`` (e.g. ``"botyard"``),
+	// and model is the model ID within that provider (e.g. ``"gpt-5.4"``).
+	Model ModelRef `json:"model"`
+}
+
+// RecommendedModelAppliedKind defines model for RecommendedModelApplied.Kind.
+type RecommendedModelAppliedKind string
+
+// RecommendedModelUnavailable The pack recommends a model no org credential can run; the bot keeps the default.
+type RecommendedModelUnavailable struct {
+	Kind RecommendedModelUnavailableKind `json:"kind"`
+
+	// Reason Why it was not applied, for the person creating the bot.
+	Reason string `json:"reason"`
+
+	// RecommendedModel A reference to a model within an OpenClaw provider.
+	//
+	// Mirrors OpenClaw's ``ModelRef`` type (``{ provider, model }``).
+	// The provider field is the key in ``models.providers`` (e.g. ``"botyard"``),
+	// and model is the model ID within that provider (e.g. ``"gpt-5.4"``).
+	RecommendedModel ModelRef `json:"recommended_model"`
+}
+
+// RecommendedModelUnavailableKind defines model for RecommendedModelUnavailable.Kind.
+type RecommendedModelUnavailableKind string
+
+// RefusedNativeLane Native owned mode refuses this credential, whatever the model (PlatDev #3822).
+type RefusedNativeLane struct {
+	Outcome string `json:"outcome"`
+
+	// Reason Why native owned mode refuses a credential, decided at config time (#3734 §5, #3809).
+	//
+	// The one vocabulary for the config-time refusal: the API answers a native
+	// bot's credential edit with it (``native_lane_refused``, 422) and L8c
+	// exports it to the app. It is a fact about the credential's provider and
+	// protocol only, never its model: every model of a served credential is
+	// served, on the wire :func:`native_route_for` picks.
+	//
+	// The runtime refusal stays the backstop, as the proto
+	// ``OWNED_REFUSAL_REASON_UNSUPPORTED_PROTOCOL``: a credential that changes
+	// under a bot after the edit (an org-level credential edit) still cannot
+	// reach the provider.
+	Reason NativeLaneRefusal `json:"reason"`
+}
+
+// RefusedNativeLink One link of a native bot's chain that owned mode does not serve.
+type RefusedNativeLink struct {
+	// ApiProtocol Wire protocol for communicating with a provider.
+	ApiProtocol ApiProtocol `json:"api_protocol"`
+
+	// CredentialId The refused credential
+	CredentialId string `json:"credential_id"`
+
+	// Ordinal The link's position in the LLM chain
+	Ordinal int `json:"ordinal"`
+
+	// Provider Known provider vendors.
+	Provider CredentialProvider `json:"provider"`
+
+	// Reason Why native owned mode refuses a credential, decided at config time (#3734 §5, #3809).
+	//
+	// The one vocabulary for the config-time refusal: the API answers a native
+	// bot's credential edit with it (``native_lane_refused``, 422) and L8c
+	// exports it to the app. It is a fact about the credential's provider and
+	// protocol only, never its model: every model of a served credential is
+	// served, on the wire :func:`native_route_for` picks.
+	//
+	// The runtime refusal stays the backstop, as the proto
+	// ``OWNED_REFUSAL_REASON_UNSUPPORTED_PROTOCOL``: a credential that changes
+	// under a bot after the edit (an org-level credential edit) still cannot
+	// reach the provider.
+	Reason NativeLaneRefusal `json:"reason"`
+}
+
 // RequirementStatus How one tool requirement stands against what an actor holds.
 //
 // Five values rather than the obvious three, because two of the cases that
@@ -5169,11 +6774,11 @@ type RescueStage string
 // sub-resources (“bot:config“ targets a “bot“ object).
 type Resource string
 
-// ResourceMetricsResponse defines model for ResourceMetricsResponse.
-type ResourceMetricsResponse struct {
-	Cpu     CpuMetrics    `json:"cpu"`
-	Memory  MemoryMetrics `json:"memory"`
-	Storage Storage       `json:"storage"`
+// ResourceMetrics defines model for ResourceMetrics.
+type ResourceMetrics struct {
+	Cpu     *CpuMetrics     `json:"cpu"`
+	Memory  *MemoryMetrics  `json:"memory"`
+	Storage *StorageMetrics `json:"storage"`
 }
 
 // ResourceQuantities A set of resource line-items as K8s quantities, keyed by metered resource.
@@ -5210,6 +6815,14 @@ type ResourceQuantity struct {
 	ResourceType MeteredResource `json:"resource_type"`
 }
 
+// ResourceReport defines model for ResourceReport.
+type ResourceReport struct {
+	Metrics *ResourceMetrics `json:"metrics"`
+
+	// SampledAt When the runtime took the sample. Absent when it does not say.
+	SampledAt *time.Time `json:"sampled_at"`
+}
+
 // ResourceScopePayload An instance scope. “resource_id=null“ = every instance of the type.
 //
 // **Do not classify authority by inspecting this.** “resource_id=null“ reads
@@ -5231,8 +6844,32 @@ type ResourceScopePayload struct {
 	ResourceType Resource `json:"resource_type"`
 }
 
+// RunAction Nothing to ask: “run_setups“ creates the server or starts the authorisation.
+type RunAction struct {
+	Kind RunActionKind `json:"kind"`
+}
+
+// RunActionKind defines model for RunAction.Kind.
+type RunActionKind string
+
 // RuntimeVaultSensitivity Sensitivity classification for a Runtime Vault entry.
 type RuntimeVaultSensitivity string
+
+// SecretAction Store this secret in the org's Runtime Vault; the setup links it once it exists.
+type SecretAction struct {
+	Kind SecretActionKind `json:"kind"`
+
+	// SecretSpec A Runtime Vault secret a pack needs the installing org to supply (D30).
+	//
+	// A frozen subset of ``VaultInputSecretSpec``. **There is no value field, and
+	// there never will be:** the value is entered into the buyer's own vault by
+	// the install wizard (P4). ``extra="forbid"`` makes a value-shaped key a
+	// validation error rather than something silently dropped or stored.
+	SecretSpec PackSecretSpec `json:"secret_spec"`
+}
+
+// SecretActionKind defines model for SecretAction.Kind.
+type SecretActionKind string
 
 // SecretExecProviderConfig OpenClaw exec secret provider configuration for Botyard Runtime Vault leases.
 type SecretExecProviderConfig struct {
@@ -5245,6 +6882,15 @@ type SecretExecProviderConfig struct {
 	PassEnv           *[]string `json:"pass_env,omitempty"`
 	TimeoutMs         *int      `json:"timeout_ms,omitempty"`
 	TrustedDirs       *[]string `json:"trusted_dirs,omitempty"`
+}
+
+// SecretFileMount One Runtime Vault secret mounted read-only into the container.
+type SecretFileMount struct {
+	// ContainerPath Absolute path inside the container, e.g. /etc/certs/client.pem
+	ContainerPath string `json:"container_path"`
+
+	// SecretKeyPath Dotted Runtime Vault key path whose value becomes the file's contents
+	SecretKeyPath string `json:"secret_key_path"`
 }
 
 // SecretPolicyBotLinksRequest Request to replace the full set of bot links for a policy.
@@ -5368,6 +7014,13 @@ type SecretResolutionConfig struct {
 	MaxRefsPerProvider     *int `json:"max_refs_per_provider,omitempty"`
 }
 
+// ServedNativeLane Native owned mode serves this credential, on “lane“ (PlatDev #3822).
+type ServedNativeLane struct {
+	// Lane The six native lanes at cutover (#3734).
+	Lane    NativeLane `json:"lane"`
+	Outcome string     `json:"outcome"`
+}
+
 // SessionConfig Session-reliability settings serialized into the openclaw config.
 type SessionConfig struct {
 	// WriteLockMaxHoldMs Maximum milliseconds a held in-process session write-lock may persist before the watchdog force-releases it. OpenClaw's runtime default (~1020000) leaves a wedged session stuck ~17min; 300000 lets it self-heal in ~5min. Only emitted by v2026.6.1+ serializers.
@@ -5379,6 +7032,39 @@ type SessionConfigPatch struct {
 	// WriteLockMaxHoldMs Watchdog force-release threshold for the session lock (ms).
 	WriteLockMaxHoldMs *int `json:"write_lock_max_hold_ms"`
 }
+
+// SessionVisibility OpenClaw session visibility scope — controls which sessions can see each other.
+type SessionVisibility string
+
+// SessionsToolSettings Settings for the “sessions“ tool domain.
+//
+// Maps to OpenClaw “tools.sessions“ in the serialized config.
+// Requires OpenClaw v2026.3+ — older serializers reject this at
+// “validate_config_for_version“ time rather than silently dropping.
+//
+// Visibility defaults to “all“ — the platform default. Bots without
+// an explicit row in “bot_tool_domain_settings“ are also serialized
+// with “visibility="all"“ (see the v2026.3+ serializers), so the
+// default is consistent across "row exists with no override" and
+// "no row at all" paths.
+type SessionsToolSettings struct {
+	// Tool Discriminator literal.
+	Tool string `json:"tool"`
+
+	// Visibility OpenClaw session visibility scope — controls which sessions can see each other.
+	Visibility *SessionVisibility `json:"visibility,omitempty"`
+}
+
+// SetupFormAction Answer these fields of the entry's setup form (“complete_setups“).
+type SetupFormAction struct {
+	// Fields Form field ids still to answer; what the org already had is answered.
+	Fields            []string            `json:"fields"`
+	Kind              SetupFormActionKind `json:"kind"`
+	McpCatalogEntryId string              `json:"mcp_catalog_entry_id"`
+}
+
+// SetupFormActionKind defines model for SetupFormAction.Kind.
+type SetupFormActionKind string
 
 // SkillCreate Request to create a skill.
 type SkillCreate struct {
@@ -5629,6 +7315,81 @@ type SkillUpdate struct {
 	Summary *string     `json:"summary"`
 }
 
+// SkillVersionGroup One skill's page of versions, newest first.
+type SkillVersionGroup struct {
+	// HasMore Whether more versions follow at a larger offset.
+	HasMore bool `json:"has_more"`
+
+	// Items Versions on this page.
+	Items []SkillVersionResponse `json:"items"`
+
+	// SkillId Skill id; pass it as ``skill_id`` to pin.
+	SkillId string `json:"skill_id"`
+
+	// SkillSlug Skill slug.
+	SkillSlug string `json:"skill_slug"`
+
+	// Total Total versions recorded for the skill.
+	Total int `json:"total"`
+}
+
+// SkillVersionResponse One recorded version of a skill (append-only history).
+type SkillVersionResponse struct {
+	// CreatedAt When this version was recorded.
+	CreatedAt time.Time `json:"created_at"`
+
+	// FilesHash Composite hash of the version's file set.
+	FilesHash string `json:"files_hash"`
+
+	// Id Version id; pass it as ``version_id`` to pin.
+	Id string `json:"id"`
+
+	// IsHead Whether this is the skill's latest version.
+	IsHead bool `json:"is_head"`
+
+	// Name Skill name as of this version.
+	Name string `json:"name"`
+
+	// Pinnable Whether a bot may be pinned to this version.
+	Pinnable bool `json:"pinnable"`
+
+	// PublishedAt When this version was published for pinning; null if unpublished.
+	PublishedAt *time.Time `json:"published_at"`
+
+	// SourceCommitSha Upstream commit the content came from, for imported skills.
+	SourceCommitSha *string `json:"source_commit_sha"`
+
+	// Summary Skill summary as of this version.
+	Summary string `json:"summary"`
+
+	// VersionNo 1-based version number, per skill.
+	VersionNo int `json:"version_no"`
+}
+
+// SkillVersionSearch Request for “POST /skills/versions/search“: versions of several skills.
+type SkillVersionSearch struct {
+	// Limit Versions per skill. The server also caps the whole response at 500 versions, so the applied per-skill limit may be lower; it is echoed.
+	Limit *int `json:"limit,omitempty"`
+
+	// Offset Versions to skip in every skill. To page further into one skill, request that skill alone.
+	Offset *int `json:"offset,omitempty"`
+
+	// SkillSlugs Skills to list versions for; each at most once. All-or-nothing: an unknown or invisible slug fails the whole request with 404.
+	SkillSlugs []string `json:"skill_slugs"`
+}
+
+// SkillVersionSearchResponse Versions of several skills, one group per requested skill, in request order.
+type SkillVersionSearchResponse struct {
+	// Groups One group per requested skill.
+	Groups []SkillVersionGroup `json:"groups"`
+
+	// Limit Per-skill page size actually applied.
+	Limit int `json:"limit"`
+
+	// Offset Offset applied to every skill.
+	Offset int `json:"offset"`
+}
+
 // SkillsConfig Skills loading configuration.
 type SkillsConfig struct {
 	AllowBundled *[]string `json:"allow_bundled,omitempty"`
@@ -5636,10 +7397,17 @@ type SkillsConfig struct {
 	Workspace    *string   `json:"workspace,omitempty"`
 }
 
-// Storage defines model for Storage.
-type Storage struct {
-	Workspace WorkspaceStorageMetrics `json:"workspace"`
+// StorageMetrics defines model for StorageMetrics.
+type StorageMetrics struct {
+	Workspace *WorkspaceStorageMetrics `json:"workspace"`
 }
+
+// SuspensionReason Why a bot's desired state is suspended.
+//
+// Manual suspension is an owner's explicit availability decision and never
+// wakes from traffic. Inactivity suspension is platform policy and may be
+// reversed by the next human-authored message.
+type SuspensionReason string
 
 // SyncStatus Async config-apply status for a bot tool assignment.
 //
@@ -5653,6 +7421,45 @@ type SyncStatus string
 
 // TemplateIcon Lucide icon name for bot templates.
 type TemplateIcon string
+
+// ToolImageConfig How a native bot treats images its MCP tools return.
+//
+// Every field is optional and “None“ means "the platform default", so a
+// bot that sets nothing behaves exactly as before this model existed, and
+// clearing a field with an explicit “null“ patch returns it to the
+// default. Native bots only: OpenClaw bots have no equivalent setting.
+type ToolImageConfig struct {
+	// DefaultDetail Detail level for a tool image whose MCP server does not request one (auto, low, high or original). Unset leaves it to the provider's default.
+	DefaultDetail *ToolImageConfigDefaultDetail `json:"default_detail"`
+
+	// Enabled Show images returned by tools to the model. False replaces each image with a short text notice. Unset means enabled.
+	Enabled *bool `json:"enabled"`
+
+	// MaxDimensionPx Longest edge, in pixels, a tool image is downscaled to before the model sees it. At most 8000. Unset means the platform default (2000). Values above 2000 only take effect while a request holds 20 images or fewer; beyond that the provider limits every image to 2000 px and a larger one is replaced by a notice.
+	MaxDimensionPx *int `json:"max_dimension_px"`
+}
+
+// ToolImageConfigDefaultDetail Detail level for a tool image whose MCP server does not request one (auto, low, high or original). Unset leaves it to the provider's default.
+type ToolImageConfigDefaultDetail string
+
+// ToolImageConfigPatch Patchable tool-image fields (native bots only).
+//
+// The target fields are nullable and “None“ there means "platform
+// default", so an explicit “null“ here resets a field to the default and
+// an omitted field is left unchanged.
+type ToolImageConfigPatch struct {
+	// DefaultDetail Detail level for a tool image whose MCP server does not request one (auto, low, high or original). Unset leaves it to the provider's default.
+	DefaultDetail *ToolImageConfigPatchDefaultDetail `json:"default_detail"`
+
+	// Enabled Show images returned by tools to the model. False replaces each image with a short text notice. Unset means enabled.
+	Enabled *bool `json:"enabled"`
+
+	// MaxDimensionPx Longest edge, in pixels, a tool image is downscaled to before the model sees it. At most 8000. Unset means the platform default (2000). Values above 2000 only take effect while a request holds 20 images or fewer; beyond that the provider limits every image to 2000 px and a larger one is replaced by a notice.
+	MaxDimensionPx *int `json:"max_dimension_px"`
+}
+
+// ToolImageConfigPatchDefaultDetail Detail level for a tool image whose MCP server does not request one (auto, low, high or original). Unset leaves it to the provider's default.
+type ToolImageConfigPatchDefaultDetail string
 
 // ToolPermissionCheckRequest The tool set to resolve. **One call for N tools, never N calls.**
 //
@@ -5752,7 +7559,7 @@ type ToolResponse struct {
 	// Each member names a *different* enforcement point, which is the bar a new
 	// member has to clear. The value appears in every
 	// :meth:`ToolCatalog.build_slug` result, so it is a durable public contract:
-	// ``mcp:botyard:send_email``, ``openclaw::exec``, ``native::host_read``.
+	// ``mcp:botyard:send_email``, ``openclaw::exec``, ``native::file_read``.
 	//
 	// * ``mcp`` — the platform serves the tool over MCP. Enforcement is in the
 	//   gateway, which is also why these rows are reachable from every harness.
@@ -5770,7 +7577,7 @@ type ToolResponse struct {
 	// same **shape** — a builtin, enforced by configuring the agent that owns it —
 	// but they are different agents, and :data:`~botyard_core.hosting.
 	// _HARNESS_TOOL_RUNTIMES` is keyed on this value. Reusing ``openclaw`` would
-	// advertise ``host_read`` to OpenClaw bots, where the name means nothing.
+	// advertise ``file_read`` to OpenClaw bots, where the name means nothing.
 	Runtime ToolRuntime `json:"runtime"`
 
 	// RuntimeToolName Internal name used by the runtime — MCP function name or OpenClaw tool ID
@@ -5778,6 +7585,9 @@ type ToolResponse struct {
 
 	// Slug Globally unique composite identifier (runtime:mcp_server:runtime_tool_name)
 	Slug string `json:"slug"`
+
+	// Title Human-readable title advertised by the MCP server, if any. Display it in preference to ``name`` when present; never use it as an identifier.
+	Title *string `json:"title"`
 
 	// UpdatedAt Last update timestamp
 	UpdatedAt time.Time `json:"updated_at"`
@@ -5788,7 +7598,7 @@ type ToolResponse struct {
 // Each member names a *different* enforcement point, which is the bar a new
 // member has to clear. The value appears in every
 // :meth:`ToolCatalog.build_slug` result, so it is a durable public contract:
-// “mcp:botyard:send_email“, “openclaw::exec“, “native::host_read“.
+// “mcp:botyard:send_email“, “openclaw::exec“, “native::file_read“.
 //
 //   - “mcp“ — the platform serves the tool over MCP. Enforcement is in the
 //     gateway, which is also why these rows are reachable from every harness.
@@ -5806,7 +7616,7 @@ type ToolResponse struct {
 // same **shape** — a builtin, enforced by configuring the agent that owns it —
 // but they are different agents, and :data:`~botyard_core.hosting.
 // _HARNESS_TOOL_RUNTIMES` is keyed on this value. Reusing “openclaw“ would
-// advertise “host_read“ to OpenClaw bots, where the name means nothing.
+// advertise “file_read“ to OpenClaw bots, where the name means nothing.
 type ToolRuntime string
 
 // ToolSearchConfig Tool Search: defer tool schemas out of the prompt behind a search surface.
@@ -5943,6 +7753,54 @@ type ToolsConfigExecHost string
 // ToolsConfigExecSecurity defines model for ToolsConfig.ExecSecurity.
 type ToolsConfigExecSecurity string
 
+// UnavailableAction The connection cannot be set up; the rest of the pack is installed.
+type UnavailableAction struct {
+	Kind   UnavailableActionKind `json:"kind"`
+	Reason string                `json:"reason"`
+}
+
+// UnavailableActionKind defines model for UnavailableAction.Kind.
+type UnavailableActionKind string
+
+// UnsupportedSettingItem A setting the pack sets that this profile does not have.
+type UnsupportedSettingItem struct {
+	Kind UnsupportedSettingItemKind `json:"kind"`
+
+	// Reason Why this profile cannot run it, for display.
+	Reason string `json:"reason"`
+
+	// Setting The top-level setting name, e.g. 'tool_images'.
+	Setting string `json:"setting"`
+}
+
+// UnsupportedSettingItemKind defines model for UnsupportedSettingItem.Kind.
+type UnsupportedSettingItemKind string
+
+// UnsupportedSoulItem The pack's soul cannot reach this profile.
+type UnsupportedSoulItem struct {
+	Kind UnsupportedSoulItemKind `json:"kind"`
+
+	// Reason Why this profile cannot run it, for display.
+	Reason string `json:"reason"`
+}
+
+// UnsupportedSoulItemKind defines model for UnsupportedSoulItem.Kind.
+type UnsupportedSoulItemKind string
+
+// UnsupportedToolItem A pack tool this profile cannot serve.
+type UnsupportedToolItem struct {
+	Kind UnsupportedToolItemKind `json:"kind"`
+
+	// Reason Why this profile cannot run it, for display.
+	Reason string `json:"reason"`
+
+	// ToolId The tool's id.
+	ToolId string `json:"tool_id"`
+}
+
+// UnsupportedToolItemKind defines model for UnsupportedToolItem.Kind.
+type UnsupportedToolItemKind string
+
 // UsageError Machine-readable reason a usage snapshot carries no windows.
 //
 // Distinguishes recoverable, user-actionable states (re-link vs. wait vs.
@@ -5972,23 +7830,54 @@ type VerbatimHeaderScheme struct {
 	Scheme string `json:"scheme"`
 }
 
+// WaitForToolsAction Bound; these pack tools appear when the server reports them, with no further call.
+type WaitForToolsAction struct {
+	Kind         WaitForToolsActionKind `json:"kind"`
+	McpServerId  string                 `json:"mcp_server_id"`
+	MissingTools []string               `json:"missing_tools"`
+}
+
+// WaitForToolsActionKind defines model for WaitForToolsAction.Kind.
+type WaitForToolsActionKind string
+
 // WorkspaceStorageMetrics defines model for WorkspaceStorageMetrics.
 type WorkspaceStorageMetrics struct {
-	// AvailableBytes Bytes available to an unprivileged process, or null when unavailable
+	// AvailableBytes Bytes available to an unprivileged writer (`f_bavail`), which is what the
+	// bot can actually use. Deliberately distinct from `free_bytes`.
 	AvailableBytes *int `json:"available_bytes"`
 
-	// FreeBytes Total free bytes on the filesystem, or null when unavailable
+	// FreeBytes Bytes free including the root-reserved margin (`f_bfree`).
 	FreeBytes *int `json:"free_bytes"`
 
-	// Path Filesystem path sampled by statfs
-	Path string `json:"path"`
-
-	// TotalBytes Total filesystem capacity in bytes, or null when unavailable
-	TotalBytes *int `json:"total_bytes"`
-
-	// UsedBytes Used bytes, computed as total - free, or null when unavailable
-	UsedBytes *int `json:"used_bytes"`
+	// Path Absolute path that was measured. Always set, even when the counts are not,
+	// so a receiver can say WHICH path it could not measure.
+	Path       *string `json:"path,omitempty"`
+	TotalBytes *int    `json:"total_bytes"`
+	UsedBytes  *int    `json:"used_bytes"`
 }
+
+// BotyardCoreTypesJsonValueOutput defines model for botyard_core__types__JsonValue-Output.
+type BotyardCoreTypesJsonValueOutput struct {
+	union json.RawMessage
+}
+
+// BotyardCoreTypesJsonValueOutput0 defines model for .
+type BotyardCoreTypesJsonValueOutput0 = string
+
+// BotyardCoreTypesJsonValueOutput1 defines model for .
+type BotyardCoreTypesJsonValueOutput1 = int
+
+// BotyardCoreTypesJsonValueOutput2 defines model for .
+type BotyardCoreTypesJsonValueOutput2 = float32
+
+// BotyardCoreTypesJsonValueOutput3 defines model for .
+type BotyardCoreTypesJsonValueOutput3 = bool
+
+// BotyardCoreTypesJsonValueOutput4 defines model for .
+type BotyardCoreTypesJsonValueOutput4 = []BotyardCoreTypesJsonValueOutput
+
+// BotyardCoreTypesJsonValueOutput5 defines model for .
+type BotyardCoreTypesJsonValueOutput5 map[string]*BotyardCoreTypesJsonValueOutput
 
 // ListBotsV1OrgsOrgIdBotsGetParams defines parameters for ListBotsV1OrgsOrgIdBotsGet.
 type ListBotsV1OrgsOrgIdBotsGetParams struct {
@@ -6031,6 +7920,12 @@ type ListSkillsV1OrgsOrgIdSkillsGetParams struct {
 	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
 }
 
+// DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteParams defines parameters for DeleteSkillV1OrgsOrgIdSkillsSkillSlugDelete.
+type DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteParams struct {
+	// Force Delete anyway: also remove the skill from bots pinned to one of its versions. Without it, a pinned skill is refused with 409 skill_in_use.
+	Force *bool `form:"force,omitempty" json:"force,omitempty"`
+}
+
 // ListToolsV1OrgsOrgIdToolsGetParams defines parameters for ListToolsV1OrgsOrgIdToolsGet.
 type ListToolsV1OrgsOrgIdToolsGetParams struct {
 	// Runtime Filter by runtime
@@ -6064,6 +7959,9 @@ type ListServableToolsV1OrgsOrgIdToolsServableGetParams struct {
 // CreateBotV1OrgsOrgIdBotsPostJSONRequestBody defines body for CreateBotV1OrgsOrgIdBotsPost for application/json ContentType.
 type CreateBotV1OrgsOrgIdBotsPostJSONRequestBody = BotCreate
 
+// CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostJSONRequestBody defines body for CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPost for application/json ContentType.
+type CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostJSONRequestBody = BotsFromPacksBody
+
 // SearchBotsV1OrgsOrgIdBotsSearchPostJSONRequestBody defines body for SearchBotsV1OrgsOrgIdBotsSearchPost for application/json ContentType.
 type SearchBotsV1OrgsOrgIdBotsSearchPostJSONRequestBody = BotSearchRequest
 
@@ -6072,9 +7970,6 @@ type UpdateBotV1OrgsOrgIdBotsBotSlugPatchJSONRequestBody = BotUpdate
 
 // UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchJSONRequestBody defines body for UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatch for application/json ContentType.
 type UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchJSONRequestBody = BotConfigUpdate
-
-// ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostJSONRequestBody defines body for ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePost for application/json ContentType.
-type ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostJSONRequestBody = NativeConfigConversion
 
 // CopyBotV1OrgsOrgIdBotsBotSlugCopyPostJSONRequestBody defines body for CopyBotV1OrgsOrgIdBotsBotSlugCopyPost for application/json ContentType.
 type CopyBotV1OrgsOrgIdBotsBotSlugCopyPostJSONRequestBody = BotCopyRequest
@@ -6090,6 +7985,9 @@ type AssignSkillsV1OrgsOrgIdBotsBotSlugSkillsPutJSONRequestBody = BotSkillAssign
 
 // DeployBotSkillsV1OrgsOrgIdBotsBotSlugSkillsDeployPostJSONRequestBody defines body for DeployBotSkillsV1OrgsOrgIdBotsBotSlugSkillsDeployPost for application/json ContentType.
 type DeployBotSkillsV1OrgsOrgIdBotsBotSlugSkillsDeployPostJSONRequestBody = BotSkillDeploy
+
+// SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutJSONRequestBody defines body for SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPut for application/json ContentType.
+type SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutJSONRequestBody = BotSkillPinsUpdate
 
 // UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteJSONRequestBody defines body for UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDelete for application/json ContentType.
 type UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteJSONRequestBody = BotToolIds
@@ -6151,11 +8049,188 @@ type ImportSkillV1OrgsOrgIdSkillsImportPostJSONRequestBody = SkillImportRequest
 // PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostJSONRequestBody defines body for PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPost for application/json ContentType.
 type PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostJSONRequestBody = SkillImportRequest
 
+// SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostJSONRequestBody defines body for SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPost for application/json ContentType.
+type SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostJSONRequestBody = SkillVersionSearch
+
 // UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchJSONRequestBody defines body for UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatch for application/json ContentType.
 type UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchJSONRequestBody = SkillUpdate
 
 // RefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPostJSONRequestBody defines body for RefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPost for application/json ContentType.
 type RefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPostJSONRequestBody = SkillRefreshRequest
+
+// Getter for additional properties for NativeLaneRefusedProblem. Returns the specified
+// element and whether it was found
+func (a NativeLaneRefusedProblem) Get(fieldName string) (value interface{}, found bool) {
+	if a.AdditionalProperties != nil {
+		value, found = a.AdditionalProperties[fieldName]
+	}
+	return
+}
+
+// Setter for additional properties for NativeLaneRefusedProblem
+func (a *NativeLaneRefusedProblem) Set(fieldName string, value interface{}) {
+	if a.AdditionalProperties == nil {
+		a.AdditionalProperties = make(map[string]interface{})
+	}
+	a.AdditionalProperties[fieldName] = value
+}
+
+// Override default JSON handling for NativeLaneRefusedProblem to handle AdditionalProperties
+func (a *NativeLaneRefusedProblem) UnmarshalJSON(b []byte) error {
+	object := make(map[string]json.RawMessage)
+	err := json.Unmarshal(b, &object)
+	if err != nil {
+		return err
+	}
+
+	if raw, found := object["detail"]; found {
+		err = json.Unmarshal(raw, &a.Detail)
+		if err != nil {
+			return fmt.Errorf("error reading 'detail': %w", err)
+		}
+		delete(object, "detail")
+	}
+
+	if raw, found := object["error_code"]; found {
+		err = json.Unmarshal(raw, &a.ErrorCode)
+		if err != nil {
+			return fmt.Errorf("error reading 'error_code': %w", err)
+		}
+		delete(object, "error_code")
+	}
+
+	if raw, found := object["errors"]; found {
+		err = json.Unmarshal(raw, &a.Errors)
+		if err != nil {
+			return fmt.Errorf("error reading 'errors': %w", err)
+		}
+		delete(object, "errors")
+	}
+
+	if raw, found := object["instance"]; found {
+		err = json.Unmarshal(raw, &a.Instance)
+		if err != nil {
+			return fmt.Errorf("error reading 'instance': %w", err)
+		}
+		delete(object, "instance")
+	}
+
+	if raw, found := object["refused_links"]; found {
+		err = json.Unmarshal(raw, &a.RefusedLinks)
+		if err != nil {
+			return fmt.Errorf("error reading 'refused_links': %w", err)
+		}
+		delete(object, "refused_links")
+	}
+
+	if raw, found := object["status"]; found {
+		err = json.Unmarshal(raw, &a.Status)
+		if err != nil {
+			return fmt.Errorf("error reading 'status': %w", err)
+		}
+		delete(object, "status")
+	}
+
+	if raw, found := object["title"]; found {
+		err = json.Unmarshal(raw, &a.Title)
+		if err != nil {
+			return fmt.Errorf("error reading 'title': %w", err)
+		}
+		delete(object, "title")
+	}
+
+	if raw, found := object["trace_id"]; found {
+		err = json.Unmarshal(raw, &a.TraceId)
+		if err != nil {
+			return fmt.Errorf("error reading 'trace_id': %w", err)
+		}
+		delete(object, "trace_id")
+	}
+
+	if raw, found := object["type"]; found {
+		err = json.Unmarshal(raw, &a.Type)
+		if err != nil {
+			return fmt.Errorf("error reading 'type': %w", err)
+		}
+		delete(object, "type")
+	}
+
+	if len(object) != 0 {
+		a.AdditionalProperties = make(map[string]interface{})
+		for fieldName, fieldBuf := range object {
+			var fieldVal interface{}
+			err := json.Unmarshal(fieldBuf, &fieldVal)
+			if err != nil {
+				return fmt.Errorf("error unmarshaling field %s: %w", fieldName, err)
+			}
+			a.AdditionalProperties[fieldName] = fieldVal
+		}
+	}
+	return nil
+}
+
+// Override default JSON handling for NativeLaneRefusedProblem to handle AdditionalProperties
+func (a NativeLaneRefusedProblem) MarshalJSON() ([]byte, error) {
+	var err error
+	object := make(map[string]json.RawMessage)
+
+	object["detail"], err = json.Marshal(a.Detail)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'detail': %w", err)
+	}
+
+	object["error_code"], err = json.Marshal(a.ErrorCode)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'error_code': %w", err)
+	}
+
+	if a.Errors != nil {
+		object["errors"], err = json.Marshal(a.Errors)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'errors': %w", err)
+		}
+	}
+
+	object["instance"], err = json.Marshal(a.Instance)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'instance': %w", err)
+	}
+
+	object["refused_links"], err = json.Marshal(a.RefusedLinks)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'refused_links': %w", err)
+	}
+
+	object["status"], err = json.Marshal(a.Status)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'status': %w", err)
+	}
+
+	object["title"], err = json.Marshal(a.Title)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'title': %w", err)
+	}
+
+	if a.TraceId != nil {
+		object["trace_id"], err = json.Marshal(a.TraceId)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'trace_id': %w", err)
+		}
+	}
+
+	object["type"], err = json.Marshal(a.Type)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'type': %w", err)
+	}
+
+	for fieldName, field := range a.AdditionalProperties {
+		object[fieldName], err = json.Marshal(field)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling '%s': %w", fieldName, err)
+		}
+	}
+	return json.Marshal(object)
+}
 
 // Getter for additional properties for ProblemDetails. Returns the specified
 // element and whether it was found
@@ -6614,6 +8689,244 @@ func (t BotCreate_Config) MarshalJSON() ([]byte, error) {
 }
 
 func (t *BotCreate_Config) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsServedNativeLane returns the union data inside the BotCredentialAssignmentResponse_NativeLane as a ServedNativeLane
+func (t BotCredentialAssignmentResponse_NativeLane) AsServedNativeLane() (ServedNativeLane, error) {
+	var body ServedNativeLane
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromServedNativeLane overwrites any union data inside the BotCredentialAssignmentResponse_NativeLane as the provided ServedNativeLane
+func (t *BotCredentialAssignmentResponse_NativeLane) FromServedNativeLane(v ServedNativeLane) error {
+	v.Outcome = "served"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeServedNativeLane performs a merge with any union data inside the BotCredentialAssignmentResponse_NativeLane, using the provided ServedNativeLane
+func (t *BotCredentialAssignmentResponse_NativeLane) MergeServedNativeLane(v ServedNativeLane) error {
+	v.Outcome = "served"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsRefusedNativeLane returns the union data inside the BotCredentialAssignmentResponse_NativeLane as a RefusedNativeLane
+func (t BotCredentialAssignmentResponse_NativeLane) AsRefusedNativeLane() (RefusedNativeLane, error) {
+	var body RefusedNativeLane
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromRefusedNativeLane overwrites any union data inside the BotCredentialAssignmentResponse_NativeLane as the provided RefusedNativeLane
+func (t *BotCredentialAssignmentResponse_NativeLane) FromRefusedNativeLane(v RefusedNativeLane) error {
+	v.Outcome = "refused"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeRefusedNativeLane performs a merge with any union data inside the BotCredentialAssignmentResponse_NativeLane, using the provided RefusedNativeLane
+func (t *BotCredentialAssignmentResponse_NativeLane) MergeRefusedNativeLane(v RefusedNativeLane) error {
+	v.Outcome = "refused"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t BotCredentialAssignmentResponse_NativeLane) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"outcome"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t BotCredentialAssignmentResponse_NativeLane) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "refused":
+		return t.AsRefusedNativeLane()
+	case "served":
+		return t.AsServedNativeLane()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t BotCredentialAssignmentResponse_NativeLane) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *BotCredentialAssignmentResponse_NativeLane) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsRecommendedModelApplied returns the union data inside the BotFromPack_Model as a RecommendedModelApplied
+func (t BotFromPack_Model) AsRecommendedModelApplied() (RecommendedModelApplied, error) {
+	var body RecommendedModelApplied
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromRecommendedModelApplied overwrites any union data inside the BotFromPack_Model as the provided RecommendedModelApplied
+func (t *BotFromPack_Model) FromRecommendedModelApplied(v RecommendedModelApplied) error {
+	v.Kind = "recommended"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeRecommendedModelApplied performs a merge with any union data inside the BotFromPack_Model, using the provided RecommendedModelApplied
+func (t *BotFromPack_Model) MergeRecommendedModelApplied(v RecommendedModelApplied) error {
+	v.Kind = "recommended"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsRecommendedModelUnavailable returns the union data inside the BotFromPack_Model as a RecommendedModelUnavailable
+func (t BotFromPack_Model) AsRecommendedModelUnavailable() (RecommendedModelUnavailable, error) {
+	var body RecommendedModelUnavailable
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromRecommendedModelUnavailable overwrites any union data inside the BotFromPack_Model as the provided RecommendedModelUnavailable
+func (t *BotFromPack_Model) FromRecommendedModelUnavailable(v RecommendedModelUnavailable) error {
+	v.Kind = "no_credential"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeRecommendedModelUnavailable performs a merge with any union data inside the BotFromPack_Model, using the provided RecommendedModelUnavailable
+func (t *BotFromPack_Model) MergeRecommendedModelUnavailable(v RecommendedModelUnavailable) error {
+	v.Kind = "no_credential"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsNoRecommendedModel returns the union data inside the BotFromPack_Model as a NoRecommendedModel
+func (t BotFromPack_Model) AsNoRecommendedModel() (NoRecommendedModel, error) {
+	var body NoRecommendedModel
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromNoRecommendedModel overwrites any union data inside the BotFromPack_Model as the provided NoRecommendedModel
+func (t *BotFromPack_Model) FromNoRecommendedModel(v NoRecommendedModel) error {
+	v.Kind = "not_recommended"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeNoRecommendedModel performs a merge with any union data inside the BotFromPack_Model, using the provided NoRecommendedModel
+func (t *BotFromPack_Model) MergeNoRecommendedModel(v NoRecommendedModel) error {
+	v.Kind = "not_recommended"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsChosenModel returns the union data inside the BotFromPack_Model as a ChosenModel
+func (t BotFromPack_Model) AsChosenModel() (ChosenModel, error) {
+	var body ChosenModel
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromChosenModel overwrites any union data inside the BotFromPack_Model as the provided ChosenModel
+func (t *BotFromPack_Model) FromChosenModel(v ChosenModel) error {
+	v.Kind = "chosen"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeChosenModel performs a merge with any union data inside the BotFromPack_Model, using the provided ChosenModel
+func (t *BotFromPack_Model) MergeChosenModel(v ChosenModel) error {
+	v.Kind = "chosen"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t BotFromPack_Model) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"kind"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t BotFromPack_Model) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "chosen":
+		return t.AsChosenModel()
+	case "no_credential":
+		return t.AsRecommendedModelUnavailable()
+	case "not_recommended":
+		return t.AsNoRecommendedModel()
+	case "recommended":
+		return t.AsRecommendedModelApplied()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t BotFromPack_Model) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *BotFromPack_Model) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }
@@ -7169,6 +9482,172 @@ func (t FilterNodeMcpCatalogFilterField) MarshalJSON() ([]byte, error) {
 }
 
 func (t *FilterNodeMcpCatalogFilterField) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsJsonValueInput0 returns the union data inside the JsonValueInput as a JsonValueInput0
+func (t JsonValueInput) AsJsonValueInput0() (JsonValueInput0, error) {
+	var body JsonValueInput0
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromJsonValueInput0 overwrites any union data inside the JsonValueInput as the provided JsonValueInput0
+func (t *JsonValueInput) FromJsonValueInput0(v JsonValueInput0) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeJsonValueInput0 performs a merge with any union data inside the JsonValueInput, using the provided JsonValueInput0
+func (t *JsonValueInput) MergeJsonValueInput0(v JsonValueInput0) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsJsonValueInput1 returns the union data inside the JsonValueInput as a JsonValueInput1
+func (t JsonValueInput) AsJsonValueInput1() (JsonValueInput1, error) {
+	var body JsonValueInput1
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromJsonValueInput1 overwrites any union data inside the JsonValueInput as the provided JsonValueInput1
+func (t *JsonValueInput) FromJsonValueInput1(v JsonValueInput1) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeJsonValueInput1 performs a merge with any union data inside the JsonValueInput, using the provided JsonValueInput1
+func (t *JsonValueInput) MergeJsonValueInput1(v JsonValueInput1) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsJsonValueInput2 returns the union data inside the JsonValueInput as a JsonValueInput2
+func (t JsonValueInput) AsJsonValueInput2() (JsonValueInput2, error) {
+	var body JsonValueInput2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromJsonValueInput2 overwrites any union data inside the JsonValueInput as the provided JsonValueInput2
+func (t *JsonValueInput) FromJsonValueInput2(v JsonValueInput2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeJsonValueInput2 performs a merge with any union data inside the JsonValueInput, using the provided JsonValueInput2
+func (t *JsonValueInput) MergeJsonValueInput2(v JsonValueInput2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsJsonValueInput3 returns the union data inside the JsonValueInput as a JsonValueInput3
+func (t JsonValueInput) AsJsonValueInput3() (JsonValueInput3, error) {
+	var body JsonValueInput3
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromJsonValueInput3 overwrites any union data inside the JsonValueInput as the provided JsonValueInput3
+func (t *JsonValueInput) FromJsonValueInput3(v JsonValueInput3) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeJsonValueInput3 performs a merge with any union data inside the JsonValueInput, using the provided JsonValueInput3
+func (t *JsonValueInput) MergeJsonValueInput3(v JsonValueInput3) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsJsonValueInput4 returns the union data inside the JsonValueInput as a JsonValueInput4
+func (t JsonValueInput) AsJsonValueInput4() (JsonValueInput4, error) {
+	var body JsonValueInput4
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromJsonValueInput4 overwrites any union data inside the JsonValueInput as the provided JsonValueInput4
+func (t *JsonValueInput) FromJsonValueInput4(v JsonValueInput4) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeJsonValueInput4 performs a merge with any union data inside the JsonValueInput, using the provided JsonValueInput4
+func (t *JsonValueInput) MergeJsonValueInput4(v JsonValueInput4) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsJsonValueInput5 returns the union data inside the JsonValueInput as a JsonValueInput5
+func (t JsonValueInput) AsJsonValueInput5() (JsonValueInput5, error) {
+	var body JsonValueInput5
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromJsonValueInput5 overwrites any union data inside the JsonValueInput as the provided JsonValueInput5
+func (t *JsonValueInput) FromJsonValueInput5(v JsonValueInput5) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeJsonValueInput5 performs a merge with any union data inside the JsonValueInput, using the provided JsonValueInput5
+func (t *JsonValueInput) MergeJsonValueInput5(v JsonValueInput5) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t JsonValueInput) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *JsonValueInput) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }
@@ -7825,6 +10304,1139 @@ func (t *OrMcpCatalogFilterField_Filters_Item) UnmarshalJSON(b []byte) error {
 	return err
 }
 
+// AsPackBotPackAvatar returns the union data inside the PackBotRequest_Avatar as a PackBotPackAvatar
+func (t PackBotRequest_Avatar) AsPackBotPackAvatar() (PackBotPackAvatar, error) {
+	var body PackBotPackAvatar
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPackBotPackAvatar overwrites any union data inside the PackBotRequest_Avatar as the provided PackBotPackAvatar
+func (t *PackBotRequest_Avatar) FromPackBotPackAvatar(v PackBotPackAvatar) error {
+	v.Kind = "pack"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePackBotPackAvatar performs a merge with any union data inside the PackBotRequest_Avatar, using the provided PackBotPackAvatar
+func (t *PackBotRequest_Avatar) MergePackBotPackAvatar(v PackBotPackAvatar) error {
+	v.Kind = "pack"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPackBotCustomAvatar returns the union data inside the PackBotRequest_Avatar as a PackBotCustomAvatar
+func (t PackBotRequest_Avatar) AsPackBotCustomAvatar() (PackBotCustomAvatar, error) {
+	var body PackBotCustomAvatar
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPackBotCustomAvatar overwrites any union data inside the PackBotRequest_Avatar as the provided PackBotCustomAvatar
+func (t *PackBotRequest_Avatar) FromPackBotCustomAvatar(v PackBotCustomAvatar) error {
+	v.Kind = "custom"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePackBotCustomAvatar performs a merge with any union data inside the PackBotRequest_Avatar, using the provided PackBotCustomAvatar
+func (t *PackBotRequest_Avatar) MergePackBotCustomAvatar(v PackBotCustomAvatar) error {
+	v.Kind = "custom"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t PackBotRequest_Avatar) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"kind"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t PackBotRequest_Avatar) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "custom":
+		return t.AsPackBotCustomAvatar()
+	case "pack":
+		return t.AsPackBotPackAvatar()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t PackBotRequest_Avatar) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *PackBotRequest_Avatar) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsPackUseServerChoice returns the union data inside the PackBotRequest_Connections_Item as a PackUseServerChoice
+func (t PackBotRequest_Connections_Item) AsPackUseServerChoice() (PackUseServerChoice, error) {
+	var body PackUseServerChoice
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPackUseServerChoice overwrites any union data inside the PackBotRequest_Connections_Item as the provided PackUseServerChoice
+func (t *PackBotRequest_Connections_Item) FromPackUseServerChoice(v PackUseServerChoice) error {
+	v.Choice = "use_server"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePackUseServerChoice performs a merge with any union data inside the PackBotRequest_Connections_Item, using the provided PackUseServerChoice
+func (t *PackBotRequest_Connections_Item) MergePackUseServerChoice(v PackUseServerChoice) error {
+	v.Choice = "use_server"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPackLeavePendingChoice returns the union data inside the PackBotRequest_Connections_Item as a PackLeavePendingChoice
+func (t PackBotRequest_Connections_Item) AsPackLeavePendingChoice() (PackLeavePendingChoice, error) {
+	var body PackLeavePendingChoice
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPackLeavePendingChoice overwrites any union data inside the PackBotRequest_Connections_Item as the provided PackLeavePendingChoice
+func (t *PackBotRequest_Connections_Item) FromPackLeavePendingChoice(v PackLeavePendingChoice) error {
+	v.Choice = "leave_pending"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePackLeavePendingChoice performs a merge with any union data inside the PackBotRequest_Connections_Item, using the provided PackLeavePendingChoice
+func (t *PackBotRequest_Connections_Item) MergePackLeavePendingChoice(v PackLeavePendingChoice) error {
+	v.Choice = "leave_pending"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t PackBotRequest_Connections_Item) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"choice"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t PackBotRequest_Connections_Item) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "leave_pending":
+		return t.AsPackLeavePendingChoice()
+	case "use_server":
+		return t.AsPackUseServerChoice()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t PackBotRequest_Connections_Item) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *PackBotRequest_Connections_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsPackSettingPackChoice returns the union data inside the PackBotRequest_Settings_Item as a PackSettingPackChoice
+func (t PackBotRequest_Settings_Item) AsPackSettingPackChoice() (PackSettingPackChoice, error) {
+	var body PackSettingPackChoice
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPackSettingPackChoice overwrites any union data inside the PackBotRequest_Settings_Item as the provided PackSettingPackChoice
+func (t *PackBotRequest_Settings_Item) FromPackSettingPackChoice(v PackSettingPackChoice) error {
+	v.Choice = "pack"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePackSettingPackChoice performs a merge with any union data inside the PackBotRequest_Settings_Item, using the provided PackSettingPackChoice
+func (t *PackBotRequest_Settings_Item) MergePackSettingPackChoice(v PackSettingPackChoice) error {
+	v.Choice = "pack"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPackSettingKeepChoice returns the union data inside the PackBotRequest_Settings_Item as a PackSettingKeepChoice
+func (t PackBotRequest_Settings_Item) AsPackSettingKeepChoice() (PackSettingKeepChoice, error) {
+	var body PackSettingKeepChoice
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPackSettingKeepChoice overwrites any union data inside the PackBotRequest_Settings_Item as the provided PackSettingKeepChoice
+func (t *PackBotRequest_Settings_Item) FromPackSettingKeepChoice(v PackSettingKeepChoice) error {
+	v.Choice = "keep"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePackSettingKeepChoice performs a merge with any union data inside the PackBotRequest_Settings_Item, using the provided PackSettingKeepChoice
+func (t *PackBotRequest_Settings_Item) MergePackSettingKeepChoice(v PackSettingKeepChoice) error {
+	v.Choice = "keep"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPackSettingCustomChoice returns the union data inside the PackBotRequest_Settings_Item as a PackSettingCustomChoice
+func (t PackBotRequest_Settings_Item) AsPackSettingCustomChoice() (PackSettingCustomChoice, error) {
+	var body PackSettingCustomChoice
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPackSettingCustomChoice overwrites any union data inside the PackBotRequest_Settings_Item as the provided PackSettingCustomChoice
+func (t *PackBotRequest_Settings_Item) FromPackSettingCustomChoice(v PackSettingCustomChoice) error {
+	v.Choice = "custom"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePackSettingCustomChoice performs a merge with any union data inside the PackBotRequest_Settings_Item, using the provided PackSettingCustomChoice
+func (t *PackBotRequest_Settings_Item) MergePackSettingCustomChoice(v PackSettingCustomChoice) error {
+	v.Choice = "custom"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t PackBotRequest_Settings_Item) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"choice"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t PackBotRequest_Settings_Item) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "custom":
+		return t.AsPackSettingCustomChoice()
+	case "keep":
+		return t.AsPackSettingKeepChoice()
+	case "pack":
+		return t.AsPackSettingPackChoice()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t PackBotRequest_Settings_Item) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *PackBotRequest_Settings_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsSetupFormAction returns the union data inside the PackConnectionSetupResult_Action as a SetupFormAction
+func (t PackConnectionSetupResult_Action) AsSetupFormAction() (SetupFormAction, error) {
+	var body SetupFormAction
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSetupFormAction overwrites any union data inside the PackConnectionSetupResult_Action as the provided SetupFormAction
+func (t *PackConnectionSetupResult_Action) FromSetupFormAction(v SetupFormAction) error {
+	v.Kind = "setup_form"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSetupFormAction performs a merge with any union data inside the PackConnectionSetupResult_Action, using the provided SetupFormAction
+func (t *PackConnectionSetupResult_Action) MergeSetupFormAction(v SetupFormAction) error {
+	v.Kind = "setup_form"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsCredentialFormAction returns the union data inside the PackConnectionSetupResult_Action as a CredentialFormAction
+func (t PackConnectionSetupResult_Action) AsCredentialFormAction() (CredentialFormAction, error) {
+	var body CredentialFormAction
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromCredentialFormAction overwrites any union data inside the PackConnectionSetupResult_Action as the provided CredentialFormAction
+func (t *PackConnectionSetupResult_Action) FromCredentialFormAction(v CredentialFormAction) error {
+	v.Kind = "credential_form"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeCredentialFormAction performs a merge with any union data inside the PackConnectionSetupResult_Action, using the provided CredentialFormAction
+func (t *PackConnectionSetupResult_Action) MergeCredentialFormAction(v CredentialFormAction) error {
+	v.Kind = "credential_form"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSecretAction returns the union data inside the PackConnectionSetupResult_Action as a SecretAction
+func (t PackConnectionSetupResult_Action) AsSecretAction() (SecretAction, error) {
+	var body SecretAction
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSecretAction overwrites any union data inside the PackConnectionSetupResult_Action as the provided SecretAction
+func (t *PackConnectionSetupResult_Action) FromSecretAction(v SecretAction) error {
+	v.Kind = "secret"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSecretAction performs a merge with any union data inside the PackConnectionSetupResult_Action, using the provided SecretAction
+func (t *PackConnectionSetupResult_Action) MergeSecretAction(v SecretAction) error {
+	v.Kind = "secret"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsChooseServerAction returns the union data inside the PackConnectionSetupResult_Action as a ChooseServerAction
+func (t PackConnectionSetupResult_Action) AsChooseServerAction() (ChooseServerAction, error) {
+	var body ChooseServerAction
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromChooseServerAction overwrites any union data inside the PackConnectionSetupResult_Action as the provided ChooseServerAction
+func (t *PackConnectionSetupResult_Action) FromChooseServerAction(v ChooseServerAction) error {
+	v.Kind = "choose_server"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeChooseServerAction performs a merge with any union data inside the PackConnectionSetupResult_Action, using the provided ChooseServerAction
+func (t *PackConnectionSetupResult_Action) MergeChooseServerAction(v ChooseServerAction) error {
+	v.Kind = "choose_server"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsRunAction returns the union data inside the PackConnectionSetupResult_Action as a RunAction
+func (t PackConnectionSetupResult_Action) AsRunAction() (RunAction, error) {
+	var body RunAction
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromRunAction overwrites any union data inside the PackConnectionSetupResult_Action as the provided RunAction
+func (t *PackConnectionSetupResult_Action) FromRunAction(v RunAction) error {
+	v.Kind = "run"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeRunAction performs a merge with any union data inside the PackConnectionSetupResult_Action, using the provided RunAction
+func (t *PackConnectionSetupResult_Action) MergeRunAction(v RunAction) error {
+	v.Kind = "run"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsConnectAction returns the union data inside the PackConnectionSetupResult_Action as a ConnectAction
+func (t PackConnectionSetupResult_Action) AsConnectAction() (ConnectAction, error) {
+	var body ConnectAction
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromConnectAction overwrites any union data inside the PackConnectionSetupResult_Action as the provided ConnectAction
+func (t *PackConnectionSetupResult_Action) FromConnectAction(v ConnectAction) error {
+	v.Kind = "connect"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeConnectAction performs a merge with any union data inside the PackConnectionSetupResult_Action, using the provided ConnectAction
+func (t *PackConnectionSetupResult_Action) MergeConnectAction(v ConnectAction) error {
+	v.Kind = "connect"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsAwaitingConnectAction returns the union data inside the PackConnectionSetupResult_Action as a AwaitingConnectAction
+func (t PackConnectionSetupResult_Action) AsAwaitingConnectAction() (AwaitingConnectAction, error) {
+	var body AwaitingConnectAction
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAwaitingConnectAction overwrites any union data inside the PackConnectionSetupResult_Action as the provided AwaitingConnectAction
+func (t *PackConnectionSetupResult_Action) FromAwaitingConnectAction(v AwaitingConnectAction) error {
+	v.Kind = "awaiting_connect"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAwaitingConnectAction performs a merge with any union data inside the PackConnectionSetupResult_Action, using the provided AwaitingConnectAction
+func (t *PackConnectionSetupResult_Action) MergeAwaitingConnectAction(v AwaitingConnectAction) error {
+	v.Kind = "awaiting_connect"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsApprovalAction returns the union data inside the PackConnectionSetupResult_Action as a ApprovalAction
+func (t PackConnectionSetupResult_Action) AsApprovalAction() (ApprovalAction, error) {
+	var body ApprovalAction
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromApprovalAction overwrites any union data inside the PackConnectionSetupResult_Action as the provided ApprovalAction
+func (t *PackConnectionSetupResult_Action) FromApprovalAction(v ApprovalAction) error {
+	v.Kind = "approval"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeApprovalAction performs a merge with any union data inside the PackConnectionSetupResult_Action, using the provided ApprovalAction
+func (t *PackConnectionSetupResult_Action) MergeApprovalAction(v ApprovalAction) error {
+	v.Kind = "approval"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsWaitForToolsAction returns the union data inside the PackConnectionSetupResult_Action as a WaitForToolsAction
+func (t PackConnectionSetupResult_Action) AsWaitForToolsAction() (WaitForToolsAction, error) {
+	var body WaitForToolsAction
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromWaitForToolsAction overwrites any union data inside the PackConnectionSetupResult_Action as the provided WaitForToolsAction
+func (t *PackConnectionSetupResult_Action) FromWaitForToolsAction(v WaitForToolsAction) error {
+	v.Kind = "wait_for_tools"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeWaitForToolsAction performs a merge with any union data inside the PackConnectionSetupResult_Action, using the provided WaitForToolsAction
+func (t *PackConnectionSetupResult_Action) MergeWaitForToolsAction(v WaitForToolsAction) error {
+	v.Kind = "wait_for_tools"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsUnavailableAction returns the union data inside the PackConnectionSetupResult_Action as a UnavailableAction
+func (t PackConnectionSetupResult_Action) AsUnavailableAction() (UnavailableAction, error) {
+	var body UnavailableAction
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromUnavailableAction overwrites any union data inside the PackConnectionSetupResult_Action as the provided UnavailableAction
+func (t *PackConnectionSetupResult_Action) FromUnavailableAction(v UnavailableAction) error {
+	v.Kind = "unavailable"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeUnavailableAction performs a merge with any union data inside the PackConnectionSetupResult_Action, using the provided UnavailableAction
+func (t *PackConnectionSetupResult_Action) MergeUnavailableAction(v UnavailableAction) error {
+	v.Kind = "unavailable"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsFailedAction returns the union data inside the PackConnectionSetupResult_Action as a FailedAction
+func (t PackConnectionSetupResult_Action) AsFailedAction() (FailedAction, error) {
+	var body FailedAction
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromFailedAction overwrites any union data inside the PackConnectionSetupResult_Action as the provided FailedAction
+func (t *PackConnectionSetupResult_Action) FromFailedAction(v FailedAction) error {
+	v.Kind = "failed"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeFailedAction performs a merge with any union data inside the PackConnectionSetupResult_Action, using the provided FailedAction
+func (t *PackConnectionSetupResult_Action) MergeFailedAction(v FailedAction) error {
+	v.Kind = "failed"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsDoneAction returns the union data inside the PackConnectionSetupResult_Action as a DoneAction
+func (t PackConnectionSetupResult_Action) AsDoneAction() (DoneAction, error) {
+	var body DoneAction
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromDoneAction overwrites any union data inside the PackConnectionSetupResult_Action as the provided DoneAction
+func (t *PackConnectionSetupResult_Action) FromDoneAction(v DoneAction) error {
+	v.Kind = "done"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeDoneAction performs a merge with any union data inside the PackConnectionSetupResult_Action, using the provided DoneAction
+func (t *PackConnectionSetupResult_Action) MergeDoneAction(v DoneAction) error {
+	v.Kind = "done"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t PackConnectionSetupResult_Action) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"kind"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t PackConnectionSetupResult_Action) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "approval":
+		return t.AsApprovalAction()
+	case "awaiting_connect":
+		return t.AsAwaitingConnectAction()
+	case "choose_server":
+		return t.AsChooseServerAction()
+	case "connect":
+		return t.AsConnectAction()
+	case "credential_form":
+		return t.AsCredentialFormAction()
+	case "done":
+		return t.AsDoneAction()
+	case "failed":
+		return t.AsFailedAction()
+	case "run":
+		return t.AsRunAction()
+	case "secret":
+		return t.AsSecretAction()
+	case "setup_form":
+		return t.AsSetupFormAction()
+	case "unavailable":
+		return t.AsUnavailableAction()
+	case "wait_for_tools":
+		return t.AsWaitForToolsAction()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t PackConnectionSetupResult_Action) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *PackConnectionSetupResult_Action) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsUnsupportedSoulItem returns the union data inside the PackSupport_Unsupported_Item as a UnsupportedSoulItem
+func (t PackSupport_Unsupported_Item) AsUnsupportedSoulItem() (UnsupportedSoulItem, error) {
+	var body UnsupportedSoulItem
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromUnsupportedSoulItem overwrites any union data inside the PackSupport_Unsupported_Item as the provided UnsupportedSoulItem
+func (t *PackSupport_Unsupported_Item) FromUnsupportedSoulItem(v UnsupportedSoulItem) error {
+	v.Kind = "soul"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeUnsupportedSoulItem performs a merge with any union data inside the PackSupport_Unsupported_Item, using the provided UnsupportedSoulItem
+func (t *PackSupport_Unsupported_Item) MergeUnsupportedSoulItem(v UnsupportedSoulItem) error {
+	v.Kind = "soul"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsUnsupportedToolItem returns the union data inside the PackSupport_Unsupported_Item as a UnsupportedToolItem
+func (t PackSupport_Unsupported_Item) AsUnsupportedToolItem() (UnsupportedToolItem, error) {
+	var body UnsupportedToolItem
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromUnsupportedToolItem overwrites any union data inside the PackSupport_Unsupported_Item as the provided UnsupportedToolItem
+func (t *PackSupport_Unsupported_Item) FromUnsupportedToolItem(v UnsupportedToolItem) error {
+	v.Kind = "tool"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeUnsupportedToolItem performs a merge with any union data inside the PackSupport_Unsupported_Item, using the provided UnsupportedToolItem
+func (t *PackSupport_Unsupported_Item) MergeUnsupportedToolItem(v UnsupportedToolItem) error {
+	v.Kind = "tool"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsUnsupportedSettingItem returns the union data inside the PackSupport_Unsupported_Item as a UnsupportedSettingItem
+func (t PackSupport_Unsupported_Item) AsUnsupportedSettingItem() (UnsupportedSettingItem, error) {
+	var body UnsupportedSettingItem
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromUnsupportedSettingItem overwrites any union data inside the PackSupport_Unsupported_Item as the provided UnsupportedSettingItem
+func (t *PackSupport_Unsupported_Item) FromUnsupportedSettingItem(v UnsupportedSettingItem) error {
+	v.Kind = "setting"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeUnsupportedSettingItem performs a merge with any union data inside the PackSupport_Unsupported_Item, using the provided UnsupportedSettingItem
+func (t *PackSupport_Unsupported_Item) MergeUnsupportedSettingItem(v UnsupportedSettingItem) error {
+	v.Kind = "setting"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t PackSupport_Unsupported_Item) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"kind"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t PackSupport_Unsupported_Item) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "setting":
+		return t.AsUnsupportedSettingItem()
+	case "soul":
+		return t.AsUnsupportedSoulItem()
+	case "tool":
+		return t.AsUnsupportedToolItem()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t PackSupport_Unsupported_Item) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *PackSupport_Unsupported_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsPlannedMcpConnection returns the union data inside the PlannedInstall_Connections_Item as a PlannedMcpConnection
+func (t PlannedInstall_Connections_Item) AsPlannedMcpConnection() (PlannedMcpConnection, error) {
+	var body PlannedMcpConnection
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPlannedMcpConnection overwrites any union data inside the PlannedInstall_Connections_Item as the provided PlannedMcpConnection
+func (t *PlannedInstall_Connections_Item) FromPlannedMcpConnection(v PlannedMcpConnection) error {
+	v.Kind = "mcp_catalog_entry"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePlannedMcpConnection performs a merge with any union data inside the PlannedInstall_Connections_Item, using the provided PlannedMcpConnection
+func (t *PlannedInstall_Connections_Item) MergePlannedMcpConnection(v PlannedMcpConnection) error {
+	v.Kind = "mcp_catalog_entry"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPlannedVaultConnection returns the union data inside the PlannedInstall_Connections_Item as a PlannedVaultConnection
+func (t PlannedInstall_Connections_Item) AsPlannedVaultConnection() (PlannedVaultConnection, error) {
+	var body PlannedVaultConnection
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPlannedVaultConnection overwrites any union data inside the PlannedInstall_Connections_Item as the provided PlannedVaultConnection
+func (t *PlannedInstall_Connections_Item) FromPlannedVaultConnection(v PlannedVaultConnection) error {
+	v.Kind = "vault_secret"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePlannedVaultConnection performs a merge with any union data inside the PlannedInstall_Connections_Item, using the provided PlannedVaultConnection
+func (t *PlannedInstall_Connections_Item) MergePlannedVaultConnection(v PlannedVaultConnection) error {
+	v.Kind = "vault_secret"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t PlannedInstall_Connections_Item) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"kind"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t PlannedInstall_Connections_Item) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "mcp_catalog_entry":
+		return t.AsPlannedMcpConnection()
+	case "vault_secret":
+		return t.AsPlannedVaultConnection()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t PlannedInstall_Connections_Item) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *PlannedInstall_Connections_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsPlannedSoulItem returns the union data inside the PlannedInstall_Items_Item as a PlannedSoulItem
+func (t PlannedInstall_Items_Item) AsPlannedSoulItem() (PlannedSoulItem, error) {
+	var body PlannedSoulItem
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPlannedSoulItem overwrites any union data inside the PlannedInstall_Items_Item as the provided PlannedSoulItem
+func (t *PlannedInstall_Items_Item) FromPlannedSoulItem(v PlannedSoulItem) error {
+	v.Kind = "soul"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePlannedSoulItem performs a merge with any union data inside the PlannedInstall_Items_Item, using the provided PlannedSoulItem
+func (t *PlannedInstall_Items_Item) MergePlannedSoulItem(v PlannedSoulItem) error {
+	v.Kind = "soul"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPlannedSkillItem returns the union data inside the PlannedInstall_Items_Item as a PlannedSkillItem
+func (t PlannedInstall_Items_Item) AsPlannedSkillItem() (PlannedSkillItem, error) {
+	var body PlannedSkillItem
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPlannedSkillItem overwrites any union data inside the PlannedInstall_Items_Item as the provided PlannedSkillItem
+func (t *PlannedInstall_Items_Item) FromPlannedSkillItem(v PlannedSkillItem) error {
+	v.Kind = "skill"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePlannedSkillItem performs a merge with any union data inside the PlannedInstall_Items_Item, using the provided PlannedSkillItem
+func (t *PlannedInstall_Items_Item) MergePlannedSkillItem(v PlannedSkillItem) error {
+	v.Kind = "skill"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPlannedToolItem returns the union data inside the PlannedInstall_Items_Item as a PlannedToolItem
+func (t PlannedInstall_Items_Item) AsPlannedToolItem() (PlannedToolItem, error) {
+	var body PlannedToolItem
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPlannedToolItem overwrites any union data inside the PlannedInstall_Items_Item as the provided PlannedToolItem
+func (t *PlannedInstall_Items_Item) FromPlannedToolItem(v PlannedToolItem) error {
+	v.Kind = "tool"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePlannedToolItem performs a merge with any union data inside the PlannedInstall_Items_Item, using the provided PlannedToolItem
+func (t *PlannedInstall_Items_Item) MergePlannedToolItem(v PlannedToolItem) error {
+	v.Kind = "tool"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPlannedSettingItem returns the union data inside the PlannedInstall_Items_Item as a PlannedSettingItem
+func (t PlannedInstall_Items_Item) AsPlannedSettingItem() (PlannedSettingItem, error) {
+	var body PlannedSettingItem
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPlannedSettingItem overwrites any union data inside the PlannedInstall_Items_Item as the provided PlannedSettingItem
+func (t *PlannedInstall_Items_Item) FromPlannedSettingItem(v PlannedSettingItem) error {
+	v.Kind = "setting"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePlannedSettingItem performs a merge with any union data inside the PlannedInstall_Items_Item, using the provided PlannedSettingItem
+func (t *PlannedInstall_Items_Item) MergePlannedSettingItem(v PlannedSettingItem) error {
+	v.Kind = "setting"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPlannedAvatarItem returns the union data inside the PlannedInstall_Items_Item as a PlannedAvatarItem
+func (t PlannedInstall_Items_Item) AsPlannedAvatarItem() (PlannedAvatarItem, error) {
+	var body PlannedAvatarItem
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPlannedAvatarItem overwrites any union data inside the PlannedInstall_Items_Item as the provided PlannedAvatarItem
+func (t *PlannedInstall_Items_Item) FromPlannedAvatarItem(v PlannedAvatarItem) error {
+	v.Kind = "avatar"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePlannedAvatarItem performs a merge with any union data inside the PlannedInstall_Items_Item, using the provided PlannedAvatarItem
+func (t *PlannedInstall_Items_Item) MergePlannedAvatarItem(v PlannedAvatarItem) error {
+	v.Kind = "avatar"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPlannedMcpServerItem returns the union data inside the PlannedInstall_Items_Item as a PlannedMcpServerItem
+func (t PlannedInstall_Items_Item) AsPlannedMcpServerItem() (PlannedMcpServerItem, error) {
+	var body PlannedMcpServerItem
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPlannedMcpServerItem overwrites any union data inside the PlannedInstall_Items_Item as the provided PlannedMcpServerItem
+func (t *PlannedInstall_Items_Item) FromPlannedMcpServerItem(v PlannedMcpServerItem) error {
+	v.Kind = "mcp_server"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePlannedMcpServerItem performs a merge with any union data inside the PlannedInstall_Items_Item, using the provided PlannedMcpServerItem
+func (t *PlannedInstall_Items_Item) MergePlannedMcpServerItem(v PlannedMcpServerItem) error {
+	v.Kind = "mcp_server"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPlannedSecretLinkItem returns the union data inside the PlannedInstall_Items_Item as a PlannedSecretLinkItem
+func (t PlannedInstall_Items_Item) AsPlannedSecretLinkItem() (PlannedSecretLinkItem, error) {
+	var body PlannedSecretLinkItem
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPlannedSecretLinkItem overwrites any union data inside the PlannedInstall_Items_Item as the provided PlannedSecretLinkItem
+func (t *PlannedInstall_Items_Item) FromPlannedSecretLinkItem(v PlannedSecretLinkItem) error {
+	v.Kind = "secret_link"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePlannedSecretLinkItem performs a merge with any union data inside the PlannedInstall_Items_Item, using the provided PlannedSecretLinkItem
+func (t *PlannedInstall_Items_Item) MergePlannedSecretLinkItem(v PlannedSecretLinkItem) error {
+	v.Kind = "secret_link"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t PlannedInstall_Items_Item) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"kind"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t PlannedInstall_Items_Item) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "avatar":
+		return t.AsPlannedAvatarItem()
+	case "mcp_server":
+		return t.AsPlannedMcpServerItem()
+	case "secret_link":
+		return t.AsPlannedSecretLinkItem()
+	case "setting":
+		return t.AsPlannedSettingItem()
+	case "skill":
+		return t.AsPlannedSkillItem()
+	case "soul":
+		return t.AsPlannedSoulItem()
+	case "tool":
+		return t.AsPlannedToolItem()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t PlannedInstall_Items_Item) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *PlannedInstall_Items_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
 // AsToolsConfigElevatedAllowFrom0 returns the union data inside the ToolsConfig_ElevatedAllowFrom_Item as a ToolsConfigElevatedAllowFrom0
 func (t ToolsConfig_ElevatedAllowFrom_Item) AsToolsConfigElevatedAllowFrom0() (ToolsConfigElevatedAllowFrom0, error) {
 	var body ToolsConfigElevatedAllowFrom0
@@ -7883,6 +11495,172 @@ func (t ToolsConfig_ElevatedAllowFrom_Item) MarshalJSON() ([]byte, error) {
 }
 
 func (t *ToolsConfig_ElevatedAllowFrom_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsBotyardCoreTypesJsonValueOutput0 returns the union data inside the BotyardCoreTypesJsonValueOutput as a BotyardCoreTypesJsonValueOutput0
+func (t BotyardCoreTypesJsonValueOutput) AsBotyardCoreTypesJsonValueOutput0() (BotyardCoreTypesJsonValueOutput0, error) {
+	var body BotyardCoreTypesJsonValueOutput0
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBotyardCoreTypesJsonValueOutput0 overwrites any union data inside the BotyardCoreTypesJsonValueOutput as the provided BotyardCoreTypesJsonValueOutput0
+func (t *BotyardCoreTypesJsonValueOutput) FromBotyardCoreTypesJsonValueOutput0(v BotyardCoreTypesJsonValueOutput0) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeBotyardCoreTypesJsonValueOutput0 performs a merge with any union data inside the BotyardCoreTypesJsonValueOutput, using the provided BotyardCoreTypesJsonValueOutput0
+func (t *BotyardCoreTypesJsonValueOutput) MergeBotyardCoreTypesJsonValueOutput0(v BotyardCoreTypesJsonValueOutput0) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsBotyardCoreTypesJsonValueOutput1 returns the union data inside the BotyardCoreTypesJsonValueOutput as a BotyardCoreTypesJsonValueOutput1
+func (t BotyardCoreTypesJsonValueOutput) AsBotyardCoreTypesJsonValueOutput1() (BotyardCoreTypesJsonValueOutput1, error) {
+	var body BotyardCoreTypesJsonValueOutput1
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBotyardCoreTypesJsonValueOutput1 overwrites any union data inside the BotyardCoreTypesJsonValueOutput as the provided BotyardCoreTypesJsonValueOutput1
+func (t *BotyardCoreTypesJsonValueOutput) FromBotyardCoreTypesJsonValueOutput1(v BotyardCoreTypesJsonValueOutput1) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeBotyardCoreTypesJsonValueOutput1 performs a merge with any union data inside the BotyardCoreTypesJsonValueOutput, using the provided BotyardCoreTypesJsonValueOutput1
+func (t *BotyardCoreTypesJsonValueOutput) MergeBotyardCoreTypesJsonValueOutput1(v BotyardCoreTypesJsonValueOutput1) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsBotyardCoreTypesJsonValueOutput2 returns the union data inside the BotyardCoreTypesJsonValueOutput as a BotyardCoreTypesJsonValueOutput2
+func (t BotyardCoreTypesJsonValueOutput) AsBotyardCoreTypesJsonValueOutput2() (BotyardCoreTypesJsonValueOutput2, error) {
+	var body BotyardCoreTypesJsonValueOutput2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBotyardCoreTypesJsonValueOutput2 overwrites any union data inside the BotyardCoreTypesJsonValueOutput as the provided BotyardCoreTypesJsonValueOutput2
+func (t *BotyardCoreTypesJsonValueOutput) FromBotyardCoreTypesJsonValueOutput2(v BotyardCoreTypesJsonValueOutput2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeBotyardCoreTypesJsonValueOutput2 performs a merge with any union data inside the BotyardCoreTypesJsonValueOutput, using the provided BotyardCoreTypesJsonValueOutput2
+func (t *BotyardCoreTypesJsonValueOutput) MergeBotyardCoreTypesJsonValueOutput2(v BotyardCoreTypesJsonValueOutput2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsBotyardCoreTypesJsonValueOutput3 returns the union data inside the BotyardCoreTypesJsonValueOutput as a BotyardCoreTypesJsonValueOutput3
+func (t BotyardCoreTypesJsonValueOutput) AsBotyardCoreTypesJsonValueOutput3() (BotyardCoreTypesJsonValueOutput3, error) {
+	var body BotyardCoreTypesJsonValueOutput3
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBotyardCoreTypesJsonValueOutput3 overwrites any union data inside the BotyardCoreTypesJsonValueOutput as the provided BotyardCoreTypesJsonValueOutput3
+func (t *BotyardCoreTypesJsonValueOutput) FromBotyardCoreTypesJsonValueOutput3(v BotyardCoreTypesJsonValueOutput3) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeBotyardCoreTypesJsonValueOutput3 performs a merge with any union data inside the BotyardCoreTypesJsonValueOutput, using the provided BotyardCoreTypesJsonValueOutput3
+func (t *BotyardCoreTypesJsonValueOutput) MergeBotyardCoreTypesJsonValueOutput3(v BotyardCoreTypesJsonValueOutput3) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsBotyardCoreTypesJsonValueOutput4 returns the union data inside the BotyardCoreTypesJsonValueOutput as a BotyardCoreTypesJsonValueOutput4
+func (t BotyardCoreTypesJsonValueOutput) AsBotyardCoreTypesJsonValueOutput4() (BotyardCoreTypesJsonValueOutput4, error) {
+	var body BotyardCoreTypesJsonValueOutput4
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBotyardCoreTypesJsonValueOutput4 overwrites any union data inside the BotyardCoreTypesJsonValueOutput as the provided BotyardCoreTypesJsonValueOutput4
+func (t *BotyardCoreTypesJsonValueOutput) FromBotyardCoreTypesJsonValueOutput4(v BotyardCoreTypesJsonValueOutput4) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeBotyardCoreTypesJsonValueOutput4 performs a merge with any union data inside the BotyardCoreTypesJsonValueOutput, using the provided BotyardCoreTypesJsonValueOutput4
+func (t *BotyardCoreTypesJsonValueOutput) MergeBotyardCoreTypesJsonValueOutput4(v BotyardCoreTypesJsonValueOutput4) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsBotyardCoreTypesJsonValueOutput5 returns the union data inside the BotyardCoreTypesJsonValueOutput as a BotyardCoreTypesJsonValueOutput5
+func (t BotyardCoreTypesJsonValueOutput) AsBotyardCoreTypesJsonValueOutput5() (BotyardCoreTypesJsonValueOutput5, error) {
+	var body BotyardCoreTypesJsonValueOutput5
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBotyardCoreTypesJsonValueOutput5 overwrites any union data inside the BotyardCoreTypesJsonValueOutput as the provided BotyardCoreTypesJsonValueOutput5
+func (t *BotyardCoreTypesJsonValueOutput) FromBotyardCoreTypesJsonValueOutput5(v BotyardCoreTypesJsonValueOutput5) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeBotyardCoreTypesJsonValueOutput5 performs a merge with any union data inside the BotyardCoreTypesJsonValueOutput, using the provided BotyardCoreTypesJsonValueOutput5
+func (t *BotyardCoreTypesJsonValueOutput) MergeBotyardCoreTypesJsonValueOutput5(v BotyardCoreTypesJsonValueOutput5) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t BotyardCoreTypesJsonValueOutput) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *BotyardCoreTypesJsonValueOutput) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }
@@ -7971,6 +11749,11 @@ type ClientInterface interface {
 
 	CreateBotV1OrgsOrgIdBotsPost(ctx context.Context, orgId string, body CreateBotV1OrgsOrgIdBotsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostWithBody request with any body
+	CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPost(ctx context.Context, orgId string, body CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGet request
 	GetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGet(ctx context.Context, orgId string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -7997,11 +11780,6 @@ type ClientInterface interface {
 	UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatch(ctx context.Context, orgId string, botSlug string, body UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostWithBody request with any body
-	ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePost(ctx context.Context, orgId string, botSlug string, body ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CopyBotV1OrgsOrgIdBotsBotSlugCopyPostWithBody request with any body
 	CopyBotV1OrgsOrgIdBotsBotSlugCopyPostWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -8048,6 +11826,11 @@ type ClientInterface interface {
 	DeployBotSkillsV1OrgsOrgIdBotsBotSlugSkillsDeployPostWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	DeployBotSkillsV1OrgsOrgIdBotsBotSlugSkillsDeployPost(ctx context.Context, orgId string, botSlug string, body DeployBotSkillsV1OrgsOrgIdBotsBotSlugSkillsDeployPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutWithBody request with any body
+	SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPut(ctx context.Context, orgId string, botSlug string, body SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// UnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDelete request
 	UnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDelete(ctx context.Context, orgId string, botSlug string, skillSlug string, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -8134,6 +11917,9 @@ type ClientInterface interface {
 
 	// GetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdGet request
 	GetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdGet(ctx context.Context, orgId string, composioConnectionId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPost request
+	ReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPost(ctx context.Context, orgId string, composioConnectionId string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDelete request
 	DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDelete(ctx context.Context, orgId string, mcpServerId string, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -8224,8 +12010,13 @@ type ClientInterface interface {
 
 	PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPost(ctx context.Context, orgId string, body PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostWithBody request with any body
+	SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPost(ctx context.Context, orgId string, body SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// DeleteSkillV1OrgsOrgIdSkillsSkillSlugDelete request
-	DeleteSkillV1OrgsOrgIdSkillsSkillSlugDelete(ctx context.Context, orgId string, skillSlug string, reqEditors ...RequestEditorFn) (*http.Response, error)
+	DeleteSkillV1OrgsOrgIdSkillsSkillSlugDelete(ctx context.Context, orgId string, skillSlug string, params *DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetSkillV1OrgsOrgIdSkillsSkillSlugGet request
 	GetSkillV1OrgsOrgIdSkillsSkillSlugGet(ctx context.Context, orgId string, skillSlug string, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -8288,6 +12079,30 @@ func (c *Client) CreateBotV1OrgsOrgIdBotsPostWithBody(ctx context.Context, orgId
 
 func (c *Client) CreateBotV1OrgsOrgIdBotsPost(ctx context.Context, orgId string, body CreateBotV1OrgsOrgIdBotsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewCreateBotV1OrgsOrgIdBotsPostRequest(c.Server, orgId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostRequestWithBody(c.Server, orgId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPost(ctx context.Context, orgId string, body CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostRequest(c.Server, orgId, body)
 	if err != nil {
 		return nil, err
 	}
@@ -8408,30 +12223,6 @@ func (c *Client) UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchWithBody(ctx co
 
 func (c *Client) UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatch(ctx context.Context, orgId string, botSlug string, body UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchRequest(c.Server, orgId, botSlug, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostRequestWithBody(c.Server, orgId, botSlug, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePost(ctx context.Context, orgId string, botSlug string, body ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostRequest(c.Server, orgId, botSlug, body)
 	if err != nil {
 		return nil, err
 	}
@@ -8636,6 +12427,30 @@ func (c *Client) DeployBotSkillsV1OrgsOrgIdBotsBotSlugSkillsDeployPostWithBody(c
 
 func (c *Client) DeployBotSkillsV1OrgsOrgIdBotsBotSlugSkillsDeployPost(ctx context.Context, orgId string, botSlug string, body DeployBotSkillsV1OrgsOrgIdBotsBotSlugSkillsDeployPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewDeployBotSkillsV1OrgsOrgIdBotsBotSlugSkillsDeployPostRequest(c.Server, orgId, botSlug, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutRequestWithBody(c.Server, orgId, botSlug, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPut(ctx context.Context, orgId string, botSlug string, body SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutRequest(c.Server, orgId, botSlug, body)
 	if err != nil {
 		return nil, err
 	}
@@ -9020,6 +12835,18 @@ func (c *Client) CancelComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposi
 
 func (c *Client) GetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdGet(ctx context.Context, orgId string, composioConnectionId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdGetRequest(c.Server, orgId, composioConnectionId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPost(ctx context.Context, orgId string, composioConnectionId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPostRequest(c.Server, orgId, composioConnectionId)
 	if err != nil {
 		return nil, err
 	}
@@ -9426,8 +13253,32 @@ func (c *Client) PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPost(ctx contex
 	return c.Client.Do(req)
 }
 
-func (c *Client) DeleteSkillV1OrgsOrgIdSkillsSkillSlugDelete(ctx context.Context, orgId string, skillSlug string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewDeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteRequest(c.Server, orgId, skillSlug)
+func (c *Client) SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostRequestWithBody(c.Server, orgId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPost(ctx context.Context, orgId string, body SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostRequest(c.Server, orgId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteSkillV1OrgsOrgIdSkillsSkillSlugDelete(ctx context.Context, orgId string, skillSlug string, params *DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteRequest(c.Server, orgId, skillSlug, params)
 	if err != nil {
 		return nil, err
 	}
@@ -9684,6 +13535,53 @@ func NewCreateBotV1OrgsOrgIdBotsPostRequestWithBody(server string, orgId string,
 	}
 
 	operationPath := fmt.Sprintf("/v1/orgs/%s/bots", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewCreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostRequest calls the generic CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPost builder with application/json body
+func NewCreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostRequest(server string, orgId string, body CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostRequestWithBody(server, orgId, "application/json", bodyReader)
+}
+
+// NewCreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostRequestWithBody generates requests for CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPost with any type of body
+func NewCreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostRequestWithBody(server string, orgId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/bots/from-pack", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -10006,60 +13904,6 @@ func NewUpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchRequestWithBody(server s
 	}
 
 	req, err := http.NewRequest("PATCH", queryURL.String(), body)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Add("Content-Type", contentType)
-
-	return req, nil
-}
-
-// NewConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostRequest calls the generic ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePost builder with application/json body
-func NewConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostRequest(server string, orgId string, botSlug string, body ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-	bodyReader = bytes.NewReader(buf)
-	return NewConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostRequestWithBody(server, orgId, botSlug, "application/json", bodyReader)
-}
-
-// NewConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostRequestWithBody generates requests for ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePost with any type of body
-func NewConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostRequestWithBody(server string, orgId string, botSlug string, contentType string, body io.Reader) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
-	if err != nil {
-		return nil, err
-	}
-
-	var pathParam1 string
-
-	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "bot_slug", runtime.ParamLocationPath, botSlug)
-	if err != nil {
-		return nil, err
-	}
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/v1/orgs/%s/bots/%s/config/convert-native", pathParam0, pathParam1)
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("POST", queryURL.String(), body)
 	if err != nil {
 		return nil, err
 	}
@@ -10646,6 +14490,60 @@ func NewDeployBotSkillsV1OrgsOrgIdBotsBotSlugSkillsDeployPostRequestWithBody(ser
 	}
 
 	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewSetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutRequest calls the generic SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPut builder with application/json body
+func NewSetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutRequest(server string, orgId string, botSlug string, body SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewSetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutRequestWithBody(server, orgId, botSlug, "application/json", bodyReader)
+}
+
+// NewSetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutRequestWithBody generates requests for SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPut with any type of body
+func NewSetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutRequestWithBody(server string, orgId string, botSlug string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "bot_slug", runtime.ParamLocationPath, botSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/bots/%s/skills/pins", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
 	if err != nil {
 		return nil, err
 	}
@@ -11705,6 +15603,47 @@ func NewGetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionI
 	}
 
 	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPostRequest generates requests for ReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPost
+func NewReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPostRequest(server string, orgId string, composioConnectionId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "composio_connection_id", runtime.ParamLocationPath, composioConnectionId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/mcp-servers/connections/%s/reconnect", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -12795,8 +16734,55 @@ func NewPreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostRequestWithBody(serv
 	return req, nil
 }
 
+// NewSearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostRequest calls the generic SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPost builder with application/json body
+func NewSearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostRequest(server string, orgId string, body SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewSearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostRequestWithBody(server, orgId, "application/json", bodyReader)
+}
+
+// NewSearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostRequestWithBody generates requests for SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPost with any type of body
+func NewSearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostRequestWithBody(server string, orgId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/skills/versions/search", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewDeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteRequest generates requests for DeleteSkillV1OrgsOrgIdSkillsSkillSlugDelete
-func NewDeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteRequest(server string, orgId string, skillSlug string) (*http.Request, error) {
+func NewDeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteRequest(server string, orgId string, skillSlug string, params *DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteParams) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -12826,6 +16812,28 @@ func NewDeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteRequest(server string, orgId 
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Force != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "force", runtime.ParamLocationQuery, *params.Force); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
 	}
 
 	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
@@ -13280,6 +17288,11 @@ type ClientWithResponsesInterface interface {
 
 	CreateBotV1OrgsOrgIdBotsPostWithResponse(ctx context.Context, orgId string, body CreateBotV1OrgsOrgIdBotsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateBotV1OrgsOrgIdBotsPostResponse, error)
 
+	// CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostWithBodyWithResponse request with any body
+	CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostResponse, error)
+
+	CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostWithResponse(ctx context.Context, orgId string, body CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostResponse, error)
+
 	// GetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGetWithResponse request
 	GetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGetWithResponse(ctx context.Context, orgId string, reqEditors ...RequestEditorFn) (*GetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGetResponse, error)
 
@@ -13306,11 +17319,6 @@ type ClientWithResponsesInterface interface {
 	UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchResponse, error)
 
 	UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchWithResponse(ctx context.Context, orgId string, botSlug string, body UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchResponse, error)
-
-	// ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostWithBodyWithResponse request with any body
-	ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostResponse, error)
-
-	ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostWithResponse(ctx context.Context, orgId string, botSlug string, body ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostJSONRequestBody, reqEditors ...RequestEditorFn) (*ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostResponse, error)
 
 	// CopyBotV1OrgsOrgIdBotsBotSlugCopyPostWithBodyWithResponse request with any body
 	CopyBotV1OrgsOrgIdBotsBotSlugCopyPostWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CopyBotV1OrgsOrgIdBotsBotSlugCopyPostResponse, error)
@@ -13357,6 +17365,11 @@ type ClientWithResponsesInterface interface {
 	DeployBotSkillsV1OrgsOrgIdBotsBotSlugSkillsDeployPostWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*DeployBotSkillsV1OrgsOrgIdBotsBotSlugSkillsDeployPostResponse, error)
 
 	DeployBotSkillsV1OrgsOrgIdBotsBotSlugSkillsDeployPostWithResponse(ctx context.Context, orgId string, botSlug string, body DeployBotSkillsV1OrgsOrgIdBotsBotSlugSkillsDeployPostJSONRequestBody, reqEditors ...RequestEditorFn) (*DeployBotSkillsV1OrgsOrgIdBotsBotSlugSkillsDeployPostResponse, error)
+
+	// SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutWithBodyWithResponse request with any body
+	SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutResponse, error)
+
+	SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutWithResponse(ctx context.Context, orgId string, botSlug string, body SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutJSONRequestBody, reqEditors ...RequestEditorFn) (*SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutResponse, error)
 
 	// UnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDeleteWithResponse request
 	UnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDeleteWithResponse(ctx context.Context, orgId string, botSlug string, skillSlug string, reqEditors ...RequestEditorFn) (*UnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDeleteResponse, error)
@@ -13443,6 +17456,9 @@ type ClientWithResponsesInterface interface {
 
 	// GetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdGetWithResponse request
 	GetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdGetWithResponse(ctx context.Context, orgId string, composioConnectionId string, reqEditors ...RequestEditorFn) (*GetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdGetResponse, error)
+
+	// ReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPostWithResponse request
+	ReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPostWithResponse(ctx context.Context, orgId string, composioConnectionId string, reqEditors ...RequestEditorFn) (*ReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPostResponse, error)
 
 	// DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteWithResponse request
 	DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteWithResponse(ctx context.Context, orgId string, mcpServerId string, reqEditors ...RequestEditorFn) (*DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteResponse, error)
@@ -13533,8 +17549,13 @@ type ClientWithResponsesInterface interface {
 
 	PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostWithResponse(ctx context.Context, orgId string, body PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostJSONRequestBody, reqEditors ...RequestEditorFn) (*PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostResponse, error)
 
+	// SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostWithBodyWithResponse request with any body
+	SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostResponse, error)
+
+	SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostWithResponse(ctx context.Context, orgId string, body SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostJSONRequestBody, reqEditors ...RequestEditorFn) (*SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostResponse, error)
+
 	// DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteWithResponse request
-	DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteWithResponse(ctx context.Context, orgId string, skillSlug string, reqEditors ...RequestEditorFn) (*DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteResponse, error)
+	DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteWithResponse(ctx context.Context, orgId string, skillSlug string, params *DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteParams, reqEditors ...RequestEditorFn) (*DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteResponse, error)
 
 	// GetSkillV1OrgsOrgIdSkillsSkillSlugGetWithResponse request
 	GetSkillV1OrgsOrgIdSkillsSkillSlugGetWithResponse(ctx context.Context, orgId string, skillSlug string, reqEditors ...RequestEditorFn) (*GetSkillV1OrgsOrgIdSkillsSkillSlugGetResponse, error)
@@ -13606,9 +17627,13 @@ func (r ListBotsV1OrgsOrgIdBotsGetResponse) StatusCode() int {
 }
 
 type CreateBotV1OrgsOrgIdBotsPostResponse struct {
-	Body                          []byte
-	HTTPResponse                  *http.Response
-	JSON201                       *BotResponse
+	Body                      []byte
+	HTTPResponse              *http.Response
+	JSON201                   *BotResponse
+	JSON422                   *NativeLaneRefusedProblem
+	ApplicationproblemJSON422 *struct {
+		union json.RawMessage
+	}
 	ApplicationproblemJSONDefault *ProblemDetails
 }
 
@@ -13622,6 +17647,29 @@ func (r CreateBotV1OrgsOrgIdBotsPostResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r CreateBotV1OrgsOrgIdBotsPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON201                       *BotsFromPacks
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -13789,33 +17837,14 @@ func (r UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchResponse) StatusCode() i
 	return 0
 }
 
-type ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostResponse struct {
-	Body                          []byte
-	HTTPResponse                  *http.Response
-	JSON200                       *BotResponse
-	ApplicationproblemJSONDefault *ProblemDetails
-}
-
-// Status returns HTTPResponse.Status
-func (r ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
 type CopyBotV1OrgsOrgIdBotsBotSlugCopyPostResponse struct {
-	Body                          []byte
-	HTTPResponse                  *http.Response
-	JSON201                       *BotCopyResponse
+	Body                      []byte
+	HTTPResponse              *http.Response
+	JSON201                   *BotCopyResponse
+	JSON422                   *NativeLaneRefusedProblem
+	ApplicationproblemJSON422 *struct {
+		union json.RawMessage
+	}
 	ApplicationproblemJSONDefault *ProblemDetails
 }
 
@@ -13859,9 +17888,13 @@ func (r ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetResponse) StatusCo
 }
 
 type AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutResponse struct {
-	Body                          []byte
-	HTTPResponse                  *http.Response
-	JSON201                       *[]BotCredentialAssignmentResponse
+	Body                      []byte
+	HTTPResponse              *http.Response
+	JSON201                   *[]BotCredentialAssignmentResponse
+	JSON422                   *NativeLaneRefusedProblem
+	ApplicationproblemJSON422 *struct {
+		union json.RawMessage
+	}
 	ApplicationproblemJSONDefault *ProblemDetails
 }
 
@@ -13882,8 +17915,12 @@ func (r AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutResponse) StatusCod
 }
 
 type UnassignCredentialV1OrgsOrgIdBotsBotSlugCredentialsCredentialIdDeleteResponse struct {
-	Body                          []byte
-	HTTPResponse                  *http.Response
+	Body                      []byte
+	HTTPResponse              *http.Response
+	JSON422                   *NativeLaneRefusedProblem
+	ApplicationproblemJSON422 *struct {
+		union json.RawMessage
+	}
 	ApplicationproblemJSONDefault *ProblemDetails
 }
 
@@ -13929,7 +17966,7 @@ func (r FinishBotOnboardingRouteV1OrgsOrgIdBotsBotSlugFinishOnboardingPostRespon
 type GetBotResourcesV1OrgsOrgIdBotsBotSlugResourcesGetResponse struct {
 	Body                          []byte
 	HTTPResponse                  *http.Response
-	JSON200                       *ResourceMetricsResponse
+	JSON200                       *ResourceReport
 	ApplicationproblemJSONDefault *ProblemDetails
 }
 
@@ -14080,6 +18117,29 @@ func (r DeployBotSkillsV1OrgsOrgIdBotsBotSlugSkillsDeployPostResponse) Status() 
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r DeployBotSkillsV1OrgsOrgIdBotsBotSlugSkillsDeployPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *[]BotSkillAssignmentResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -14435,9 +18495,11 @@ func (r SearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostResponse) StatusCo
 }
 
 type GetMcpCatalogEntryV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdGetResponse struct {
-	Body                          []byte
-	HTTPResponse                  *http.Response
-	JSON200                       *McpCatalogEntryDetail
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		union json.RawMessage
+	}
 	ApplicationproblemJSONDefault *ProblemDetails
 }
 
@@ -14589,6 +18651,29 @@ func (r GetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionI
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r GetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPostResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON201                       *ComposioConnectionStart
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r ReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPostResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -15131,6 +19216,29 @@ func (r PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostResponse) StatusCode
 	return 0
 }
 
+type SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *SkillVersionSearchResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteResponse struct {
 	Body                          []byte
 	HTTPResponse                  *http.Response
@@ -15326,6 +19434,23 @@ func (c *ClientWithResponses) CreateBotV1OrgsOrgIdBotsPostWithResponse(ctx conte
 	return ParseCreateBotV1OrgsOrgIdBotsPostResponse(rsp)
 }
 
+// CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostWithBodyWithResponse request with arbitrary body returning *CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostResponse
+func (c *ClientWithResponses) CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostResponse, error) {
+	rsp, err := c.CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostWithBody(ctx, orgId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostWithResponse(ctx context.Context, orgId string, body CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostResponse, error) {
+	rsp, err := c.CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPost(ctx, orgId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostResponse(rsp)
+}
+
 // GetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGetWithResponse request returning *GetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGetResponse
 func (c *ClientWithResponses) GetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGetWithResponse(ctx context.Context, orgId string, reqEditors ...RequestEditorFn) (*GetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGetResponse, error) {
 	rsp, err := c.GetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGet(ctx, orgId, reqEditors...)
@@ -15411,23 +19536,6 @@ func (c *ClientWithResponses) UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchWi
 		return nil, err
 	}
 	return ParseUpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchResponse(rsp)
-}
-
-// ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostWithBodyWithResponse request with arbitrary body returning *ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostResponse
-func (c *ClientWithResponses) ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostResponse, error) {
-	rsp, err := c.ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostWithBody(ctx, orgId, botSlug, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostResponse(rsp)
-}
-
-func (c *ClientWithResponses) ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostWithResponse(ctx context.Context, orgId string, botSlug string, body ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostJSONRequestBody, reqEditors ...RequestEditorFn) (*ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostResponse, error) {
-	rsp, err := c.ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePost(ctx, orgId, botSlug, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostResponse(rsp)
 }
 
 // CopyBotV1OrgsOrgIdBotsBotSlugCopyPostWithBodyWithResponse request with arbitrary body returning *CopyBotV1OrgsOrgIdBotsBotSlugCopyPostResponse
@@ -15576,6 +19684,23 @@ func (c *ClientWithResponses) DeployBotSkillsV1OrgsOrgIdBotsBotSlugSkillsDeployP
 		return nil, err
 	}
 	return ParseDeployBotSkillsV1OrgsOrgIdBotsBotSlugSkillsDeployPostResponse(rsp)
+}
+
+// SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutWithBodyWithResponse request with arbitrary body returning *SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutResponse
+func (c *ClientWithResponses) SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutResponse, error) {
+	rsp, err := c.SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutWithBody(ctx, orgId, botSlug, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutResponse(rsp)
+}
+
+func (c *ClientWithResponses) SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutWithResponse(ctx context.Context, orgId string, botSlug string, body SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutJSONRequestBody, reqEditors ...RequestEditorFn) (*SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutResponse, error) {
+	rsp, err := c.SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPut(ctx, orgId, botSlug, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutResponse(rsp)
 }
 
 // UnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDeleteWithResponse request returning *UnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDeleteResponse
@@ -15854,6 +19979,15 @@ func (c *ClientWithResponses) GetComposioConnectionV1OrgsOrgIdMcpServersConnecti
 		return nil, err
 	}
 	return ParseGetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdGetResponse(rsp)
+}
+
+// ReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPostWithResponse request returning *ReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPostResponse
+func (c *ClientWithResponses) ReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPostWithResponse(ctx context.Context, orgId string, composioConnectionId string, reqEditors ...RequestEditorFn) (*ReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPostResponse, error) {
+	rsp, err := c.ReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPost(ctx, orgId, composioConnectionId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPostResponse(rsp)
 }
 
 // DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteWithResponse request returning *DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteResponse
@@ -16143,9 +20277,26 @@ func (c *ClientWithResponses) PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPo
 	return ParsePreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostResponse(rsp)
 }
 
+// SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostWithBodyWithResponse request with arbitrary body returning *SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostResponse
+func (c *ClientWithResponses) SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostResponse, error) {
+	rsp, err := c.SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostWithBody(ctx, orgId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostResponse(rsp)
+}
+
+func (c *ClientWithResponses) SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostWithResponse(ctx context.Context, orgId string, body SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostJSONRequestBody, reqEditors ...RequestEditorFn) (*SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostResponse, error) {
+	rsp, err := c.SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPost(ctx, orgId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostResponse(rsp)
+}
+
 // DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteWithResponse request returning *DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteResponse
-func (c *ClientWithResponses) DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteWithResponse(ctx context.Context, orgId string, skillSlug string, reqEditors ...RequestEditorFn) (*DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteResponse, error) {
-	rsp, err := c.DeleteSkillV1OrgsOrgIdSkillsSkillSlugDelete(ctx, orgId, skillSlug, reqEditors...)
+func (c *ClientWithResponses) DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteWithResponse(ctx context.Context, orgId string, skillSlug string, params *DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteParams, reqEditors ...RequestEditorFn) (*DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteResponse, error) {
+	rsp, err := c.DeleteSkillV1OrgsOrgIdSkillsSkillSlugDelete(ctx, orgId, skillSlug, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -16302,8 +20453,57 @@ func ParseCreateBotV1OrgsOrgIdBotsPostResponse(rsp *http.Response) (*CreateBotV1
 	}
 
 	switch {
+	case rsp.Header.Get("Content-Type") == "application/json" && rsp.StatusCode == 422:
+		var dest NativeLaneRefusedProblem
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	case rsp.Header.Get("Content-Type") == "application/problem+json" && rsp.StatusCode == 422:
+		var dest struct {
+			union json.RawMessage
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSON422 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
 		var dest BotResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostResponse parses an HTTP response from a CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostWithResponse call
+func ParseCreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostResponse(rsp *http.Response) (*CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest BotsFromPacks
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -16552,39 +20752,6 @@ func ParseUpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchResponse(rsp *http.Res
 	return response, nil
 }
 
-// ParseConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostResponse parses an HTTP response from a ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostWithResponse call
-func ParseConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostResponse(rsp *http.Response) (*ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest BotResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
-		var dest ProblemDetails
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.ApplicationproblemJSONDefault = &dest
-
-	}
-
-	return response, nil
-}
-
 // ParseCopyBotV1OrgsOrgIdBotsBotSlugCopyPostResponse parses an HTTP response from a CopyBotV1OrgsOrgIdBotsBotSlugCopyPostWithResponse call
 func ParseCopyBotV1OrgsOrgIdBotsBotSlugCopyPostResponse(rsp *http.Response) (*CopyBotV1OrgsOrgIdBotsBotSlugCopyPostResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -16599,6 +20766,22 @@ func ParseCopyBotV1OrgsOrgIdBotsBotSlugCopyPostResponse(rsp *http.Response) (*Co
 	}
 
 	switch {
+	case rsp.Header.Get("Content-Type") == "application/json" && rsp.StatusCode == 422:
+		var dest NativeLaneRefusedProblem
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	case rsp.Header.Get("Content-Type") == "application/problem+json" && rsp.StatusCode == 422:
+		var dest struct {
+			union json.RawMessage
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSON422 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
 		var dest BotCopyResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -16665,6 +20848,22 @@ func ParseAssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutResponse(rsp *htt
 	}
 
 	switch {
+	case rsp.Header.Get("Content-Type") == "application/json" && rsp.StatusCode == 422:
+		var dest NativeLaneRefusedProblem
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	case rsp.Header.Get("Content-Type") == "application/problem+json" && rsp.StatusCode == 422:
+		var dest struct {
+			union json.RawMessage
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSON422 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
 		var dest []BotCredentialAssignmentResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -16698,6 +20897,22 @@ func ParseUnassignCredentialV1OrgsOrgIdBotsBotSlugCredentialsCredentialIdDeleteR
 	}
 
 	switch {
+	case rsp.Header.Get("Content-Type") == "application/json" && rsp.StatusCode == 422:
+		var dest NativeLaneRefusedProblem
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	case rsp.Header.Get("Content-Type") == "application/problem+json" && rsp.StatusCode == 422:
+		var dest struct {
+			union json.RawMessage
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSON422 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest ProblemDetails
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -16758,7 +20973,7 @@ func ParseGetBotResourcesV1OrgsOrgIdBotsBotSlugResourcesGetResponse(rsp *http.Re
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest ResourceMetricsResponse
+		var dest ResourceReport
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -16943,6 +21158,39 @@ func ParseDeployBotSkillsV1OrgsOrgIdBotsBotSlugSkillsDeployPostResponse(rsp *htt
 	}
 
 	response := &DeployBotSkillsV1OrgsOrgIdBotsBotSlugSkillsDeployPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []BotSkillAssignmentResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseSetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutResponse parses an HTTP response from a SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutWithResponse call
+func ParseSetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutResponse(rsp *http.Response) (*SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -17465,7 +21713,9 @@ func ParseGetMcpCatalogEntryV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdGetResp
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest McpCatalogEntryDetail
+		var dest struct {
+			union json.RawMessage
+		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -17668,6 +21918,39 @@ func ParseGetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectio
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPostResponse parses an HTTP response from a ReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPostWithResponse call
+func ParseReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPostResponse(rsp *http.Response) (*ReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest ComposioConnectionStart
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest ProblemDetails
@@ -18412,6 +22695,39 @@ func ParsePreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostResponse(rsp *http
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest SkillImportPreviewResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseSearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostResponse parses an HTTP response from a SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostWithResponse call
+func ParseSearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostResponse(rsp *http.Response) (*SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SkillVersionSearchResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
