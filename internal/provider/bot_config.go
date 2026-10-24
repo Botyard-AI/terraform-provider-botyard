@@ -25,13 +25,10 @@ import (
 // an oversight):
 //   - `addons`: a list of typed addon objects carrying a free-form config map;
 //     needs careful list/dynamic modeling and its own round-trip validation.
-//   - `bot_type`: the union discriminator. It is no longer true that "openclaw"
-//     is its only value — the API's BotConfig is now a discriminated union of
-//     OpenClawBotConfig and NativeBotConfig — but this resource still models
-//     only the OpenClaw shape, so there is nothing to choose between here.
-//     Declaring a native bot is its own task; until then a native config is
-//     refused loudly on read (see mapBotDesiredConfig) rather than silently
-//     mapped as if it were OpenClaw.
+//   - `bot_type`: retired by Botyard (PlatDev #3898). The bot's `harness` decides
+//     its config shape; this block models the OpenClaw shape and
+//     `native_config` the native one, and a block declared against the wrong
+//     harness is refused loudly on read (see mapBotDesiredConfig).
 //
 // Attribute semantics: the `config` container is Optional (NOT Computed) so
 // Terraform only manages config when the block is declared — a bot with
@@ -346,32 +343,36 @@ func buildSessionPatch(s *botSessionModel) (json.RawMessage, bool) {
 	return marshalObj(inner), true
 }
 
-// Values of the `bot_type` discriminator on the BotConfig union. The generated
-// client no longer exposes these as typed constants: the normalizer flattens a
-// union discriminator to a plain string so oapi-codegen's From/Merge helpers
-// compile (see scripts/openapi-normalize.py).
+// The `bot_type` values the provider still SENDS on a native config patch (see
+// buildNativeConfigPatch), so an API that predates profile-driven configs
+// still selects the native shape. It is never read back: Botyard removed it
+// from every response (PlatDev #3898), and the bot's harness decides the shape.
 const (
-	botTypeOpenClaw = "openclaw"
-	botTypeNative   = "native"
+	botTypeNative = "native"
 )
 
 // mapBotDesiredConfig refreshes the modeled config from a BotResponse's
-// union-typed `desired_config`, a discriminated union of OpenClawBotConfig and
-// NativeBotConfig, routing on `bot_type` to whichever block the practitioner
-// declared.
+// `desired_config`, routing on the bot's `harness` to whichever block the
+// practitioner declared.
+//
+// It routes on `harness`, not on a `bot_type` key inside the config: Botyard
+// removed that key from every response (PlatDev #3898), and the harness has
+// always been on the response, so this works against an API from before and
+// after that change. A self-hosted Claude Code bot has no platform config at
+// all, and newer APIs send no `desired_config` for it.
 //
 // The no-block case is handled FIRST and is a no-op, on purpose: this resource
-// can legitimately manage a bot's name, description and avatar — of either
-// harness — without touching its config, and that must not become an error just
-// because the union has two members.
+// can legitimately manage a bot's name, description and avatar — of any
+// harness — without touching its config.
 //
-// A block declared against the WRONG variant is a loud failure rather than a
+// A block declared against the WRONG harness is a loud failure rather than a
 // silent no-op that would plan a diff forever. In practice ValidateConfig
 // catches that at plan time; this is the backstop for the case it cannot see —
 // a bot whose harness changed underneath Terraform, or an import of the wrong
 // shape. Same reasoning as botyard_skill refusing a non-`custom` provider in
 // Read.
 func mapBotDesiredConfig(
+	harness client.BotHarness,
 	dc *client.BotResponse_DesiredConfig,
 	cfg *botConfigModel,
 	native *botNativeConfigModel,
@@ -380,18 +381,12 @@ func mapBotDesiredConfig(
 	if cfg == nil && native == nil {
 		return
 	}
-	botType, err := dc.Discriminator()
-	if err != nil {
-		diags.AddError("Unreadable bot config",
-			"The API returned a desired_config without a readable `bot_type` discriminator: "+err.Error())
-		return
-	}
 
-	switch botType {
-	case botTypeOpenClaw:
+	switch harness {
+	case client.BotHarnessOpenclaw:
 		if cfg == nil {
 			diags.AddError("Bot config type does not match the declared block",
-				"This bot's config is `bot_type = \"openclaw\"`, but a `native_config` block is declared. "+
+				"This is an OpenClaw bot, but a `native_config` block is declared. "+
 					"Use the `config` block for an OpenClaw bot, or remove the block to manage this bot's "+
 					"identity without its config.")
 			return
@@ -403,10 +398,10 @@ func mapBotDesiredConfig(
 			return
 		}
 		mapBotConfig(&oc, cfg)
-	case botTypeNative:
+	case client.BotHarnessBotyardNative:
 		if native == nil {
 			diags.AddError("Bot config type does not match the declared block",
-				"This bot's config is `bot_type = \"native\"`, but a `config` block is declared, which models "+
+				"This is a Botyard-native bot, but a `config` block is declared, which models "+
 					"the OpenClaw shape only. Use the `native_config` block for a native bot, or remove the "+
 					"block to manage this bot's identity without its config.")
 			return
@@ -418,11 +413,15 @@ func mapBotDesiredConfig(
 			return
 		}
 		mapNativeBotConfig(&nc, native)
+	case client.BotHarnessClaudeCode:
+		diags.AddError("This bot has no config",
+			"A self-hosted Claude Code bot runs on its owner's machine and has no platform config. "+
+				"Remove the `config` / `native_config` block to manage this bot's identity.")
 	default:
-		diags.AddError("Unsupported bot config type",
-			fmt.Sprintf("This bot's config is `bot_type = %q`, which this provider version does not model. "+
+		diags.AddError("Unsupported bot harness",
+			fmt.Sprintf("This bot's harness is %q, which this provider version does not model. "+
 				"Remove the `config` / `native_config` block to manage this bot's identity without its "+
-				"config, or upgrade the provider.", botType))
+				"config, or upgrade the provider.", harness))
 	}
 }
 

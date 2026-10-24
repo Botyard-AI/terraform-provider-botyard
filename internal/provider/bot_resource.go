@@ -310,7 +310,7 @@ func (r *BotResource) Create(ctx context.Context, req resource.CreateRequest, re
 	mapBotResource(apiResp.JSON201, &plan)
 	// The create POST embeds the config, so the 201 already reflects the merged
 	// desired_config — refresh the declared config leaves from it.
-	mapBotDesiredConfig(&apiResp.JSON201.DesiredConfig, plan.Config, plan.NativeConfig, &resp.Diagnostics)
+	mapBotDesiredConfig(apiResp.JSON201.Harness, &apiResp.JSON201.DesiredConfig, plan.Config, plan.NativeConfig, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
@@ -337,7 +337,7 @@ func (r *BotResource) Read(ctx context.Context, req resource.ReadRequest, resp *
 			fmt.Sprintf("Read returned HTTP %d: %s", apiResp.StatusCode(), describeAPIError(apiResp.Body)))
 	case botReadOK:
 		mapBotResource(apiResp.JSON200, &state)
-		mapBotDesiredConfig(&apiResp.JSON200.DesiredConfig, state.Config, state.NativeConfig, &resp.Diagnostics)
+		mapBotDesiredConfig(apiResp.JSON200.Harness, &apiResp.JSON200.DesiredConfig, state.Config, state.NativeConfig, &resp.Diagnostics)
 		resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 	}
 }
@@ -381,7 +381,7 @@ func (r *BotResource) Update(ctx context.Context, req resource.UpdateRequest, re
 	}
 
 	mapBotResource(final, &plan)
-	mapBotDesiredConfig(&final.DesiredConfig, plan.Config, plan.NativeConfig, &resp.Diagnostics)
+	mapBotDesiredConfig(final.Harness, &final.DesiredConfig, plan.Config, plan.NativeConfig, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
