@@ -33,6 +33,16 @@ resource "botyard_mcp_server" "search" {
   env_secret_refs = {
     SEARCH_API_KEY = "search.api_key"
   }
+
+  # Pod compute. Omit the block to leave sizing to the platform default (or to
+  # whatever is set in the Botyard app). Quantities you leave out keep their
+  # current values. Every change restarts the pod, and compute is billed like
+  # bot compute, within your plan's per-MCP-server maximums.
+  resources = {
+    cpu_limit    = "2"
+    memory_limit = "2Gi"
+    storage      = "10Gi"
+  }
 }
 
 # A managed-remote MCP server: Botyard proxies to a vendor-hosted endpoint.
@@ -101,6 +111,11 @@ This is a **write-only** argument: it is sent with the request and never stored 
 - `pod_host_mode` (String) HTTP `Host` strategy for the in-cluster pod: `natural` (default) or `pod_localhost` (container_image only).
 - `port` (Number) Container port for the streamable-http transport. Required when `runtime_kind = container_image`.
 - `request_timeout_seconds` (Number) Per-server gateway request-timeout override (seconds). Null inherits the gateway default.
+- `resources` (Attributes) Pod compute for a `container_image` server, as Kubernetes quantities. Only valid when `runtime_kind = "container_image"`.
+
+When the block is **omitted**, Terraform does not manage compute: it never sends it, so a size set in the Botyard app is left alone. When the block is **declared**, each quantity you set is applied over the server's current shape, and the ones you leave out adopt the server's current values. Only quantities that changed are sent, because **every change restarts the server's pod**. **Removing the block** resets the server to the platform default shape (100m/500m CPU, 128Mi/512Mi memory, 1Gi scratch); removing a single quantity keeps its current value.
+
+Compute is billed like bot compute. The plan's per-MCP-server maximums apply, and sizing above the plan's included compute needs a payment method on the organization. Quantities are compared by value, so `2` and `2000m` are the same CPU and never produce a diff. (see [below for nested schema](#nestedatt--resources))
 - `secret_file_mounts` (Map of String) Absolute container path → secret_key_path mounts, read-only (container_image only).
 - `secret_headers` (Map of String) Header name → Runtime Vault key path, e.g. `{ Authorization = "mcp.posthog.authorization_header" }` (`managed_remote` only). The values are dotted **key paths, not secrets**: the secret itself is resolved from the org's Runtime Vault for each outbound request and is never returned by the API, never written to Terraform state, and never shown in a plan. Because the paths are only pointers they are deliberately not marked sensitive — they must stay readable for drift detection to work.
 
@@ -121,6 +136,17 @@ Setting this on a server whose endpoint host the operator chose also requires `a
 - `org_id` (String) Organization ID that owns the server.
 - `tool_count` (Number) Number of tools the server advertises.
 - `updated_at` (String) Last-update timestamp (RFC 3339).
+
+<a id="nestedatt--resources"></a>
+### Nested Schema for `resources`
+
+Optional:
+
+- `cpu_limit` (String) CPU ceiling for the pod, e.g. `500m` or `2`.
+- `cpu_request` (String) CPU reserved for the pod, e.g. `100m` or `0.5`. Must not exceed `cpu_limit`.
+- `memory_limit` (String) Memory ceiling for the pod, e.g. `512Mi` or `2Gi`. At least `128Mi`.
+- `memory_request` (String) Memory reserved for the pod, e.g. `128Mi`. Must not exceed `memory_limit`.
+- `storage` (String) Size of the writable scratch volume (`/tmp`, `/var/tmp`, `/home/mcp`), e.g. `1Gi` or `10Gi`. Cleared when the pod restarts.
 
 ## Import
 
