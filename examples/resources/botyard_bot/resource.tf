@@ -76,12 +76,8 @@ resource "botyard_bot" "triage" {
   hosting_type = "hosted"
   harness      = "botyard_native"
 
+  # A native bot's instructions (its soul) live in its bot files, not here.
   native_config = {
-    prompt_template = <<-EOT
-      You triage inbound bug reports.
-      Classify each one, then ask for whatever detail is missing.
-    EOT
-
     tool_search = {
       mode                   = "auto"
       auto_threshold_percent = 40
