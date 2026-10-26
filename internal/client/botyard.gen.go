@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/oapi-codegen/runtime"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 const (
@@ -32,6 +33,19 @@ const (
 	ActorTypeUser        ActorType = "user"
 )
 
+// Defines values for AgentContainerImageMcpServerCreateRuntimeKind.
+const (
+	AgentContainerImageMcpServerCreateRuntimeKindContainerImage AgentContainerImageMcpServerCreateRuntimeKind = "container_image"
+)
+
+// Defines values for AlreadyRemovedKind.
+const (
+	AlreadyRemovedKindMcpServer  AlreadyRemovedKind = "mcp_server"
+	AlreadyRemovedKindSecretLink AlreadyRemovedKind = "secret_link"
+	AlreadyRemovedKindSkill      AlreadyRemovedKind = "skill"
+	AlreadyRemovedKindTool       AlreadyRemovedKind = "tool"
+)
+
 // Defines values for AndBotFilterFieldKind.
 const (
 	AndBotFilterFieldKindAnd AndBotFilterFieldKind = "and"
@@ -40,6 +54,16 @@ const (
 // Defines values for AndMcpCatalogFilterFieldKind.
 const (
 	AndMcpCatalogFilterFieldKindAnd AndMcpCatalogFilterFieldKind = "and"
+)
+
+// Defines values for AndSkillFilterFieldKind.
+const (
+	AndSkillFilterFieldKindAnd AndSkillFilterFieldKind = "and"
+)
+
+// Defines values for AndWorkforceTaskFilterFieldKind.
+const (
+	AndWorkforceTaskFilterFieldKindAnd AndWorkforceTaskFilterFieldKind = "and"
 )
 
 // Defines values for ApiProtocol.
@@ -51,11 +75,33 @@ const (
 	ApiProtocolOpenaiCompatible   ApiProtocol = "openai_compatible"
 )
 
+// Defines values for ApprovalActionKind.
+const (
+	ApprovalActionKindApproval ApprovalActionKind = "approval"
+)
+
 // Defines values for AuthMethod.
 const (
 	AuthMethodApiKey AuthMethod = "api_key"
 	AuthMethodNone   AuthMethod = "none"
 	AuthMethodOauth  AuthMethod = "oauth"
+)
+
+// Defines values for AvatarRemovalAction.
+const (
+	AvatarRemovalActionKeptAdopted AvatarRemovalAction = "kept_adopted"
+	AvatarRemovalActionKeptEdited  AvatarRemovalAction = "kept_edited"
+	AvatarRemovalActionRestore     AvatarRemovalAction = "restore"
+)
+
+// Defines values for AvatarRemovalKind.
+const (
+	AvatarRemovalKindAvatar AvatarRemovalKind = "avatar"
+)
+
+// Defines values for AwaitingConnectActionKind.
+const (
+	AwaitingConnectActionKindAwaitingConnect AwaitingConnectActionKind = "awaiting_connect"
 )
 
 // Defines values for BotAccess.
@@ -111,6 +157,44 @@ const (
 	BotOnboardingStatePending  BotOnboardingState = "pending"
 )
 
+// Defines values for BotPackItemOrigin.
+const (
+	BotPackItemOriginAdded   BotPackItemOrigin = "added"
+	BotPackItemOriginAdopted BotPackItemOrigin = "adopted"
+)
+
+// Defines values for BotPackMcpServerProvenanceKind.
+const (
+	BotPackMcpServerProvenanceKindMcpServer BotPackMcpServerProvenanceKind = "mcp_server"
+)
+
+// Defines values for BotPackSecretLinkProvenanceKind.
+const (
+	BotPackSecretLinkProvenanceKindSecretLink BotPackSecretLinkProvenanceKind = "secret_link"
+)
+
+// Defines values for BotPackSettingProvenanceKind.
+const (
+	BotPackSettingProvenanceKindSetting BotPackSettingProvenanceKind = "setting"
+)
+
+// Defines values for BotPackSingletonProvenanceKind.
+const (
+	BotPackSingletonProvenanceKindAvatar BotPackSingletonProvenanceKind = "avatar"
+	BotPackSingletonProvenanceKindModel  BotPackSingletonProvenanceKind = "model"
+	BotPackSingletonProvenanceKindSoul   BotPackSingletonProvenanceKind = "soul"
+)
+
+// Defines values for BotPackSkillProvenanceKind.
+const (
+	BotPackSkillProvenanceKindSkill BotPackSkillProvenanceKind = "skill"
+)
+
+// Defines values for BotPackToolProvenanceKind.
+const (
+	BotPackToolProvenanceKindTool BotPackToolProvenanceKind = "tool"
+)
+
 // Defines values for BotRuntimeClass.
 const (
 	BotRuntimeClassClusterDefault  BotRuntimeClass = "cluster_default"
@@ -139,6 +223,53 @@ const (
 	BotTierStarter    BotTier = "starter"
 )
 
+// Defines values for BoundMcpConnectionKind.
+const (
+	BoundMcpConnectionKindMcpCatalogEntry BoundMcpConnectionKind = "mcp_catalog_entry"
+)
+
+// Defines values for BoundMcpInstallConnectionKind.
+const (
+	BoundMcpInstallConnectionKindBoundMcp BoundMcpInstallConnectionKind = "bound_mcp"
+)
+
+// Defines values for BoundMcpRestrictedInstallConnectionKind.
+const (
+	BoundMcpRestrictedInstallConnectionKindBoundMcpRestricted BoundMcpRestrictedInstallConnectionKind = "bound_mcp_restricted"
+)
+
+// Defines values for BoundVaultConnectionKind.
+const (
+	BoundVaultConnectionKindVaultSecret BoundVaultConnectionKind = "vault_secret"
+)
+
+// Defines values for BoundVaultInstallConnectionKind.
+const (
+	BoundVaultInstallConnectionKindBoundVault BoundVaultInstallConnectionKind = "bound_vault"
+)
+
+// Defines values for BuiltinToolRefRuntime.
+const (
+	BuiltinToolRefRuntimeNative   BuiltinToolRefRuntime = "native"
+	BuiltinToolRefRuntimeOpenclaw BuiltinToolRefRuntime = "openclaw"
+)
+
+// Defines values for CandidateOwnerKind.
+const (
+	CandidateOwnerKindAddedBy     CandidateOwnerKind = "added_by"
+	CandidateOwnerKindConnectedBy CandidateOwnerKind = "connected_by"
+)
+
+// Defines values for ChooseServerActionKind.
+const (
+	ChooseServerActionKindChooseServer ChooseServerActionKind = "choose_server"
+)
+
+// Defines values for ChosenModelKind.
+const (
+	ChosenModelKindChosen ChosenModelKind = "chosen"
+)
+
 // Defines values for CommandsConfigOwnerDisplay.
 const (
 	CommandsConfigOwnerDisplayHash CommandsConfigOwnerDisplay = "hash"
@@ -147,10 +278,23 @@ const (
 
 // Defines values for ComposioConnectionState.
 const (
-	ComposioConnectionStateConnected ComposioConnectionState = "connected"
-	ComposioConnectionStateExpired   ComposioConnectionState = "expired"
-	ComposioConnectionStateFailed    ComposioConnectionState = "failed"
-	ComposioConnectionStatePending   ComposioConnectionState = "pending"
+	ComposioConnectionStateConnected   ComposioConnectionState = "connected"
+	ComposioConnectionStateExpired     ComposioConnectionState = "expired"
+	ComposioConnectionStateFailed      ComposioConnectionState = "failed"
+	ComposioConnectionStateNeedsReauth ComposioConnectionState = "needs_reauth"
+	ComposioConnectionStatePending     ComposioConnectionState = "pending"
+)
+
+// Defines values for ComposioVaultDisconnectReason.
+const (
+	ComposioVaultDisconnectReasonSourceDeleted ComposioVaultDisconnectReason = "source_deleted"
+)
+
+// Defines values for ComposioVaultSyncState.
+const (
+	ComposioVaultSyncStateDisconnected ComposioVaultSyncState = "disconnected"
+	ComposioVaultSyncStateFailed       ComposioVaultSyncState = "failed"
+	ComposioVaultSyncStatePending      ComposioVaultSyncState = "pending"
 )
 
 // Defines values for ConditionBotFilterFieldKind.
@@ -163,10 +307,60 @@ const (
 	ConditionMcpCatalogFilterFieldKindCondition ConditionMcpCatalogFilterFieldKind = "condition"
 )
 
+// Defines values for ConditionSkillFilterFieldKind.
+const (
+	ConditionSkillFilterFieldKindCondition ConditionSkillFilterFieldKind = "condition"
+)
+
+// Defines values for ConditionWorkforceTaskFilterFieldKind.
+const (
+	ConditionWorkforceTaskFilterFieldKindCondition ConditionWorkforceTaskFilterFieldKind = "condition"
+)
+
 // Defines values for ConfigFieldDiffKind.
 const (
 	ConfigFieldDiffKindComplex ConfigFieldDiffKind = "complex"
 	ConfigFieldDiffKindScalar  ConfigFieldDiffKind = "scalar"
+)
+
+// Defines values for ConnectActionKind.
+const (
+	ConnectActionKindConnect ConnectActionKind = "connect"
+)
+
+// Defines values for ConnectionSetupCredentialFormKind.
+const (
+	ConnectionSetupCredentialFormKindCredentialForm ConnectionSetupCredentialFormKind = "credential_form"
+)
+
+// Defines values for ConnectionSetupFormKind.
+const (
+	ConnectionSetupFormKindSetupForm ConnectionSetupFormKind = "setup_form"
+)
+
+// Defines values for ConnectionSetupNoneKind.
+const (
+	ConnectionSetupNoneKindNone ConnectionSetupNoneKind = "none"
+)
+
+// Defines values for ConnectionSetupOAuthKind.
+const (
+	ConnectionSetupOAuthKindOauth ConnectionSetupOAuthKind = "oauth"
+)
+
+// Defines values for ConnectionSetupSecretKind.
+const (
+	ConnectionSetupSecretKindSecret ConnectionSetupSecretKind = "secret"
+)
+
+// Defines values for ConnectionSetupUnavailableKind.
+const (
+	ConnectionSetupUnavailableKindUnavailable ConnectionSetupUnavailableKind = "unavailable"
+)
+
+// Defines values for ContainerImageMcpCatalogEntryDetailRuntimeKind.
+const (
+	ContainerImageMcpCatalogEntryDetailRuntimeKindContainerImage ContainerImageMcpCatalogEntryDetailRuntimeKind = "container_image"
 )
 
 // Defines values for ContainerImageMcpServerCreateRuntimeKind.
@@ -184,16 +378,10 @@ const (
 	ContainerImageMcpServerSummaryRuntimeKindContainerImage ContainerImageMcpServerSummaryRuntimeKind = "container_image"
 )
 
-// Defines values for ContextPruningConfigMode.
+// Defines values for ConversationScope.
 const (
-	ContextPruningConfigModeCacheTtl ContextPruningConfigMode = "cache-ttl"
-	ContextPruningConfigModeOff      ContextPruningConfigMode = "off"
-)
-
-// Defines values for CredentialBackedModelConfigInput.
-const (
-	CredentialBackedModelConfigInputImage CredentialBackedModelConfigInput = "image"
-	CredentialBackedModelConfigInputText  CredentialBackedModelConfigInput = "text"
+	ConversationScopeOrg  ConversationScope = "org"
+	ConversationScopeUser ConversationScope = "user"
 )
 
 // Defines values for CredentialBackedModelConfigTextVerbosity.
@@ -201,6 +389,16 @@ const (
 	CredentialBackedModelConfigTextVerbosityHigh   CredentialBackedModelConfigTextVerbosity = "high"
 	CredentialBackedModelConfigTextVerbosityLow    CredentialBackedModelConfigTextVerbosity = "low"
 	CredentialBackedModelConfigTextVerbosityMedium CredentialBackedModelConfigTextVerbosity = "medium"
+)
+
+// Defines values for CredentialFormActionKind.
+const (
+	CredentialFormActionKindCredentialForm CredentialFormActionKind = "credential_form"
+)
+
+// Defines values for CredentialFormCompletionKind.
+const (
+	CredentialFormCompletionKindCredentialForm CredentialFormCompletionKind = "credential_form"
 )
 
 // Defines values for CredentialProvider.
@@ -215,11 +413,13 @@ const (
 	CredentialProviderCustom          CredentialProvider = "custom"
 	CredentialProviderDinero          CredentialProvider = "dinero"
 	CredentialProviderEconomic        CredentialProvider = "economic"
+	CredentialProviderGarmin          CredentialProvider = "garmin"
 	CredentialProviderGithub          CredentialProvider = "github"
 	CredentialProviderGithubApp       CredentialProvider = "github_app"
 	CredentialProviderGoogleAiStudio  CredentialProvider = "google_ai_studio"
 	CredentialProviderOpenai          CredentialProvider = "openai"
 	CredentialProviderOpenrouter      CredentialProvider = "openrouter"
+	CredentialProviderRedditAds       CredentialProvider = "reddit_ads"
 	CredentialProviderShopify         CredentialProvider = "shopify"
 	CredentialProviderSnowflake       CredentialProvider = "snowflake"
 	CredentialProviderTavily          CredentialProvider = "tavily"
@@ -269,6 +469,16 @@ const (
 	DomainSkill          Domain = "skill"
 	DomainTool           Domain = "tool"
 	DomainWorkforce      Domain = "workforce"
+)
+
+// Defines values for DoneActionKind.
+const (
+	DoneActionKindDone DoneActionKind = "done"
+)
+
+// Defines values for FailedActionKind.
+const (
+	FailedActionKindFailed FailedActionKind = "failed"
 )
 
 // Defines values for FilterOp.
@@ -337,6 +547,33 @@ const (
 	HeartbeatConfigPatchEveryN6h   HeartbeatConfigPatchEvery = "6h"
 )
 
+// Defines values for InputModality.
+const (
+	InputModalityImage InputModality = "image"
+	InputModalityText  InputModality = "text"
+)
+
+// Defines values for IntegrationLoginFailure.
+const (
+	IntegrationLoginFailureAccountConnectedByAnotherUser IntegrationLoginFailure = "account_connected_by_another_user"
+	IntegrationLoginFailureAccountMismatch               IntegrationLoginFailure = "account_mismatch"
+	IntegrationLoginFailureClientIdMismatch              IntegrationLoginFailure = "client_id_mismatch"
+	IntegrationLoginFailureExpired                       IntegrationLoginFailure = "expired"
+	IntegrationLoginFailureInvalidCredentials            IntegrationLoginFailure = "invalid_credentials"
+	IntegrationLoginFailureLimitExceeded                 IntegrationLoginFailure = "limit_exceeded"
+	IntegrationLoginFailureMfaRejected                   IntegrationLoginFailure = "mfa_rejected"
+	IntegrationLoginFailureNotPermitted                  IntegrationLoginFailure = "not_permitted"
+	IntegrationLoginFailureRateLimited                   IntegrationLoginFailure = "rate_limited"
+	IntegrationLoginFailureUnexpectedPage                IntegrationLoginFailure = "unexpected_page"
+	IntegrationLoginFailureWorkerSessionLost             IntegrationLoginFailure = "worker_session_lost"
+	IntegrationLoginFailureWorkerUnavailable             IntegrationLoginFailure = "worker_unavailable"
+)
+
+// Defines values for ManagedRemoteMcpCatalogEntryDetailRuntimeKind.
+const (
+	ManagedRemoteMcpCatalogEntryDetailRuntimeKindManagedRemote ManagedRemoteMcpCatalogEntryDetailRuntimeKind = "managed_remote"
+)
+
 // Defines values for ManagedRemoteMcpServerCreateRuntimeKind.
 const (
 	ManagedRemoteMcpServerCreateRuntimeKindManagedRemote ManagedRemoteMcpServerCreateRuntimeKind = "managed_remote"
@@ -399,6 +636,7 @@ const (
 	McpCatalogFormFieldKindIntegration     McpCatalogFormFieldKind = "integration"
 	McpCatalogFormFieldKindNumber          McpCatalogFormFieldKind = "number"
 	McpCatalogFormFieldKindPassword        McpCatalogFormFieldKind = "password"
+	McpCatalogFormFieldKindRecordList      McpCatalogFormFieldKind = "record_list"
 	McpCatalogFormFieldKindSecretRef       McpCatalogFormFieldKind = "secret_ref"
 	McpCatalogFormFieldKindSelect          McpCatalogFormFieldKind = "select"
 	McpCatalogFormFieldKindText            McpCatalogFormFieldKind = "text"
@@ -416,11 +654,12 @@ const (
 
 // Defines values for McpCatalogFormFieldTargetType.
 const (
-	McpCatalogFormFieldTargetTypeArg      McpCatalogFormFieldTargetType = "arg"
-	McpCatalogFormFieldTargetTypeEnv      McpCatalogFormFieldTargetType = "env"
-	McpCatalogFormFieldTargetTypeFile     McpCatalogFormFieldTargetType = "file"
-	McpCatalogFormFieldTargetTypeHeader   McpCatalogFormFieldTargetType = "header"
-	McpCatalogFormFieldTargetTypeTopLevel McpCatalogFormFieldTargetType = "top_level"
+	McpCatalogFormFieldTargetTypeArg              McpCatalogFormFieldTargetType = "arg"
+	McpCatalogFormFieldTargetTypeEnv              McpCatalogFormFieldTargetType = "env"
+	McpCatalogFormFieldTargetTypeFile             McpCatalogFormFieldTargetType = "file"
+	McpCatalogFormFieldTargetTypeHeader           McpCatalogFormFieldTargetType = "header"
+	McpCatalogFormFieldTargetTypeTopLevel         McpCatalogFormFieldTargetType = "top_level"
+	McpCatalogFormFieldTargetTypeVendorCredential McpCatalogFormFieldTargetType = "vendor_credential"
 )
 
 // Defines values for McpCatalogFormInputMode.
@@ -460,6 +699,37 @@ const (
 	McpCatalogProvisioningImplicationsTriggerActionCreateMcpServer McpCatalogProvisioningImplicationsTriggerAction = "create_mcp_server"
 )
 
+// Defines values for McpCatalogRecordColumnDisplay.
+const (
+	McpCatalogRecordColumnDisplayCheckbox  McpCatalogRecordColumnDisplay = "checkbox"
+	McpCatalogRecordColumnDisplayDropdown  McpCatalogRecordColumnDisplay = "dropdown"
+	McpCatalogRecordColumnDisplayRadio     McpCatalogRecordColumnDisplay = "radio"
+	McpCatalogRecordColumnDisplaySegmented McpCatalogRecordColumnDisplay = "segmented"
+	McpCatalogRecordColumnDisplaySwitch    McpCatalogRecordColumnDisplay = "switch"
+)
+
+// Defines values for McpCatalogRecordColumnKind.
+const (
+	McpCatalogRecordColumnKindBoolean         McpCatalogRecordColumnKind = "boolean"
+	McpCatalogRecordColumnKindNumber          McpCatalogRecordColumnKind = "number"
+	McpCatalogRecordColumnKindSecretRef       McpCatalogRecordColumnKind = "secret_ref"
+	McpCatalogRecordColumnKindSelect          McpCatalogRecordColumnKind = "select"
+	McpCatalogRecordColumnKindText            McpCatalogRecordColumnKind = "text"
+	McpCatalogRecordColumnKindTextOrSecretRef McpCatalogRecordColumnKind = "text_or_secret_ref"
+)
+
+// Defines values for McpCatalogRecordColumnWidth.
+const (
+	McpCatalogRecordColumnWidthNarrow McpCatalogRecordColumnWidth = "narrow"
+	McpCatalogRecordColumnWidthWide   McpCatalogRecordColumnWidth = "wide"
+)
+
+// Defines values for McpCatalogRecordListCompileShape.
+const (
+	McpCatalogRecordListCompileShapeArray  McpCatalogRecordListCompileShape = "array"
+	McpCatalogRecordListCompileShapeObject McpCatalogRecordListCompileShape = "object"
+)
+
 // Defines values for McpCatalogVendorAuthMode.
 const (
 	McpCatalogVendorAuthModeApiKey          McpCatalogVendorAuthMode = "api_key"
@@ -469,6 +739,13 @@ const (
 	McpCatalogVendorAuthModeOauth2Managed   McpCatalogVendorAuthMode = "oauth2_managed"
 	McpCatalogVendorAuthModeOauth2Unmanaged McpCatalogVendorAuthMode = "oauth2_unmanaged"
 	McpCatalogVendorAuthModeOther           McpCatalogVendorAuthMode = "other"
+)
+
+// Defines values for McpConnectVariant.
+const (
+	McpConnectVariantConfirm McpConnectVariant = "confirm"
+	McpConnectVariantConnect McpConnectVariant = "connect"
+	McpConnectVariantForm    McpConnectVariant = "form"
 )
 
 // Defines values for McpConsentShape.
@@ -513,10 +790,21 @@ const (
 	McpServerDesiredStateStopped McpServerDesiredState = "stopped"
 )
 
-// Defines values for McpServerRuntimeKind.
+// Defines values for McpServerHealth.
 const (
-	McpServerRuntimeKindContainerImage McpServerRuntimeKind = "container_image"
-	McpServerRuntimeKindManagedRemote  McpServerRuntimeKind = "managed_remote"
+	McpServerHealthFailing        McpServerHealth = "failing"
+	McpServerHealthNeedsReconnect McpServerHealth = "needs_reconnect"
+	McpServerHealthOk             McpServerHealth = "ok"
+)
+
+// Defines values for McpServerRemovalAction.
+const (
+	McpServerRemovalActionKept McpServerRemovalAction = "kept"
+)
+
+// Defines values for McpServerRemovalKind.
+const (
+	McpServerRemovalKindMcpServer McpServerRemovalKind = "mcp_server"
 )
 
 // Defines values for McpServerSetupSource.
@@ -543,6 +831,11 @@ const (
 	McpServerTransportStreamableHttp McpServerTransport = "streamable_http"
 )
 
+// Defines values for McpToolRefRuntime.
+const (
+	McpToolRefRuntimeMcp McpToolRefRuntime = "mcp"
+)
+
 // Defines values for MeteredResource.
 const (
 	MeteredResourceCpuLimit      MeteredResource = "cpu_limit"
@@ -553,15 +846,57 @@ const (
 	MeteredResourceStorage       MeteredResource = "storage"
 )
 
-// Defines values for ModelConfigInput.
+// Defines values for ModelRemovalAction.
 const (
-	ModelConfigInputImage ModelConfigInput = "image"
-	ModelConfigInputText  ModelConfigInput = "text"
+	ModelRemovalActionKept        ModelRemovalAction = "kept"
+	ModelRemovalActionKeptAdopted ModelRemovalAction = "kept_adopted"
+)
+
+// Defines values for ModelRemovalKind.
+const (
+	ModelRemovalKindModel ModelRemovalKind = "model"
+)
+
+// Defines values for NamedPackMcpConnectionKind.
+const (
+	NamedPackMcpConnectionKindMcpCatalogEntry NamedPackMcpConnectionKind = "mcp_catalog_entry"
+)
+
+// Defines values for NamedPackVaultConnectionKind.
+const (
+	NamedPackVaultConnectionKindVaultSecret NamedPackVaultConnectionKind = "vault_secret"
 )
 
 // Defines values for NativeConfigPatchBotType.
 const (
 	NativeConfigPatchBotTypeNative NativeConfigPatchBotType = "native"
+)
+
+// Defines values for NativeLane.
+const (
+	NativeLaneAnthropicApi      NativeLane = "anthropic_api"
+	NativeLaneCloudHyperscaler  NativeLane = "cloud_hyperscaler"
+	NativeLaneCodexSubscription NativeLane = "codex_subscription"
+	NativeLaneLocal             NativeLane = "local"
+	NativeLaneOpenaiApi         NativeLane = "openai_api"
+	NativeLaneOpenrouter        NativeLane = "openrouter"
+)
+
+// Defines values for NativeLaneRefusal.
+const (
+	NativeLaneRefusalCloudHyperscalerDeferred NativeLaneRefusal = "cloud_hyperscaler_deferred"
+	NativeLaneRefusalProtocolNotNative        NativeLaneRefusal = "protocol_not_native"
+	NativeLaneRefusalProviderNotNative        NativeLaneRefusal = "provider_not_native"
+)
+
+// Defines values for NativeLaneRefusedProblemErrorCode.
+const (
+	NativeLaneRefusedProblemErrorCodeNativeLaneRefused NativeLaneRefusedProblemErrorCode = "native_lane_refused"
+)
+
+// Defines values for NoRecommendedModelKind.
+const (
+	NoRecommendedModelKindNotRecommended NoRecommendedModelKind = "not_recommended"
 )
 
 // Defines values for ObservedState.
@@ -664,6 +999,157 @@ const (
 	OrMcpCatalogFilterFieldKindOr OrMcpCatalogFilterFieldKind = "or"
 )
 
+// Defines values for OrSkillFilterFieldKind.
+const (
+	OrSkillFilterFieldKindOr OrSkillFilterFieldKind = "or"
+)
+
+// Defines values for OrWorkforceTaskFilterFieldKind.
+const (
+	OrWorkforceTaskFilterFieldKindOr OrWorkforceTaskFilterFieldKind = "or"
+)
+
+// Defines values for PackAvatarChoice.
+const (
+	PackAvatarChoiceKeep PackAvatarChoice = "keep"
+	PackAvatarChoicePack PackAvatarChoice = "pack"
+)
+
+// Defines values for PackBindStatus.
+const (
+	PackBindStatusBound     PackBindStatus = "bound"
+	PackBindStatusUnchanged PackBindStatus = "unchanged"
+)
+
+// Defines values for PackBotCustomAvatarKind.
+const (
+	PackBotCustomAvatarKindCustom PackBotCustomAvatarKind = "custom"
+)
+
+// Defines values for PackBotPackAvatarKind.
+const (
+	PackBotPackAvatarKindPack PackBotPackAvatarKind = "pack"
+)
+
+// Defines values for PackLeavePendingChoiceChoice.
+const (
+	PackLeavePendingChoiceChoiceLeavePending PackLeavePendingChoiceChoice = "leave_pending"
+)
+
+// Defines values for PackMcpConnectionPreviewKind.
+const (
+	PackMcpConnectionPreviewKindMcpCatalogEntry PackMcpConnectionPreviewKind = "mcp_catalog_entry"
+)
+
+// Defines values for PackSettingCustomChoiceChoice.
+const (
+	PackSettingCustomChoiceChoiceCustom PackSettingCustomChoiceChoice = "custom"
+)
+
+// Defines values for PackSettingKeepChoiceChoice.
+const (
+	PackSettingKeepChoiceChoiceKeep PackSettingKeepChoiceChoice = "keep"
+)
+
+// Defines values for PackSettingPackChoiceChoice.
+const (
+	PackSettingPackChoiceChoicePack PackSettingPackChoiceChoice = "pack"
+)
+
+// Defines values for PackSettingPath.
+const (
+	PackSettingPathReasoningDefault PackSettingPath = "reasoning_default"
+	PackSettingPathThinkingDefault  PackSettingPath = "thinking_default"
+	PackSettingPathToolImages       PackSettingPath = "tool_images"
+	PackSettingPathToolSearch       PackSettingPath = "tool_search"
+)
+
+// Defines values for PackSettingsReasoningDefault.
+const (
+	PackSettingsReasoningDefaultOff    PackSettingsReasoningDefault = "off"
+	PackSettingsReasoningDefaultOn     PackSettingsReasoningDefault = "on"
+	PackSettingsReasoningDefaultStream PackSettingsReasoningDefault = "stream"
+)
+
+// Defines values for PackSettingsThinkingDefault.
+const (
+	PackSettingsThinkingDefaultAdaptive PackSettingsThinkingDefault = "adaptive"
+	PackSettingsThinkingDefaultHigh     PackSettingsThinkingDefault = "high"
+	PackSettingsThinkingDefaultLow      PackSettingsThinkingDefault = "low"
+	PackSettingsThinkingDefaultMedium   PackSettingsThinkingDefault = "medium"
+	PackSettingsThinkingDefaultMinimal  PackSettingsThinkingDefault = "minimal"
+	PackSettingsThinkingDefaultOff      PackSettingsThinkingDefault = "off"
+	PackSettingsThinkingDefaultXhigh    PackSettingsThinkingDefault = "xhigh"
+)
+
+// Defines values for PackSetupFailure.
+const (
+	PackSetupFailureBindRefused         PackSetupFailure = "bind_refused"
+	PackSetupFailureConnectLapsed       PackSetupFailure = "connect_lapsed"
+	PackSetupFailureInstallerLostAccess PackSetupFailure = "installer_lost_access"
+	PackSetupFailureInvalidSetup        PackSetupFailure = "invalid_setup"
+	PackSetupFailureNameTaken           PackSetupFailure = "name_taken"
+	PackSetupFailureNotConfigured       PackSetupFailure = "not_configured"
+	PackSetupFailureSecretLinkForbidden PackSetupFailure = "secret_link_forbidden"
+	PackSetupFailureVendorError         PackSetupFailure = "vendor_error"
+)
+
+// Defines values for PackSetupState.
+const (
+	PackSetupStateConnecting      PackSetupState = "connecting"
+	PackSetupStateDone            PackSetupState = "done"
+	PackSetupStateFailed          PackSetupState = "failed"
+	PackSetupStateNeedsApproval   PackSetupState = "needs_approval"
+	PackSetupStateNeedsInput      PackSetupState = "needs_input"
+	PackSetupStateReady           PackSetupState = "ready"
+	PackSetupStateUnavailable     PackSetupState = "unavailable"
+	PackSetupStateWaitingForTools PackSetupState = "waiting_for_tools"
+)
+
+// Defines values for PackSupportLevel.
+const (
+	PackSupportLevelFull    PackSupportLevel = "full"
+	PackSupportLevelNone    PackSupportLevel = "none"
+	PackSupportLevelPartial PackSupportLevel = "partial"
+)
+
+// Defines values for PackToolImageSettingsDefaultDetail.
+const (
+	PackToolImageSettingsDefaultDetailAuto     PackToolImageSettingsDefaultDetail = "auto"
+	PackToolImageSettingsDefaultDetailHigh     PackToolImageSettingsDefaultDetail = "high"
+	PackToolImageSettingsDefaultDetailLow      PackToolImageSettingsDefaultDetail = "low"
+	PackToolImageSettingsDefaultDetailOriginal PackToolImageSettingsDefaultDetail = "original"
+)
+
+// Defines values for PackToolSearchSettingsMode.
+const (
+	PackToolSearchSettingsModeAlways PackToolSearchSettingsMode = "always"
+	PackToolSearchSettingsModeAuto   PackToolSearchSettingsMode = "auto"
+	PackToolSearchSettingsModeOff    PackToolSearchSettingsMode = "off"
+)
+
+// Defines values for PackUseServerChoiceChoice.
+const (
+	PackUseServerChoiceChoiceUseServer PackUseServerChoiceChoice = "use_server"
+)
+
+// Defines values for PackVaultConnectionPreviewKind.
+const (
+	PackVaultConnectionPreviewKindVaultSecret PackVaultConnectionPreviewKind = "vault_secret"
+)
+
+// Defines values for PackVisibility.
+const (
+	PackVisibilityCurated    PackVisibility = "curated"
+	PackVisibilityOrgPrivate PackVisibility = "org_private"
+	PackVisibilityPublic     PackVisibility = "public"
+)
+
+// Defines values for PendingInstallConnectionKind.
+const (
+	PendingInstallConnectionKindPending PendingInstallConnectionKind = "pending"
+)
+
 // Defines values for PermissionAction.
 const (
 	PermissionActionCreate PermissionAction = "create"
@@ -688,6 +1174,80 @@ const (
 	PermissionSourceRoleBundle     PermissionSource = "role_bundle"
 	PermissionSourceRoleDelta      PermissionSource = "role_delta"
 	PermissionSourceSelfGrant      PermissionSource = "self_grant"
+)
+
+// Defines values for PlannedAction.
+const (
+	PlannedActionAdd         PlannedAction = "add"
+	PlannedActionAdopt       PlannedAction = "adopt"
+	PlannedActionPending     PlannedAction = "pending"
+	PlannedActionUnsupported PlannedAction = "unsupported"
+)
+
+// Defines values for PlannedAvatarItemKind.
+const (
+	PlannedAvatarItemKindAvatar PlannedAvatarItemKind = "avatar"
+)
+
+// Defines values for PlannedInstallStatus.
+const (
+	PlannedInstallStatusInstall   PlannedInstallStatus = "install"
+	PlannedInstallStatusUnchanged PlannedInstallStatus = "unchanged"
+)
+
+// Defines values for PlannedMcpConnectionKind.
+const (
+	PlannedMcpConnectionKindMcpCatalogEntry PlannedMcpConnectionKind = "mcp_catalog_entry"
+)
+
+// Defines values for PlannedMcpServerItemKind.
+const (
+	PlannedMcpServerItemKindMcpServer PlannedMcpServerItemKind = "mcp_server"
+)
+
+// Defines values for PlannedSecretLinkItemKind.
+const (
+	PlannedSecretLinkItemKindSecretLink PlannedSecretLinkItemKind = "secret_link"
+)
+
+// Defines values for PlannedSettingItemKind.
+const (
+	PlannedSettingItemKindSetting PlannedSettingItemKind = "setting"
+)
+
+// Defines values for PlannedSkillItemKind.
+const (
+	PlannedSkillItemKindSkill PlannedSkillItemKind = "skill"
+)
+
+// Defines values for PlannedSoulItemKind.
+const (
+	PlannedSoulItemKindSoul PlannedSoulItemKind = "soul"
+)
+
+// Defines values for PlannedToolItemKind.
+const (
+	PlannedToolItemKindTool PlannedToolItemKind = "tool"
+)
+
+// Defines values for PlannedVaultConnectionKind.
+const (
+	PlannedVaultConnectionKindVaultSecret PlannedVaultConnectionKind = "vault_secret"
+)
+
+// Defines values for PlatformLoginConnectSecondFactor.
+const (
+	PlatformLoginConnectSecondFactorEmailCode PlatformLoginConnectSecondFactor = "email_code"
+)
+
+// Defines values for RecommendedModelAppliedKind.
+const (
+	RecommendedModelAppliedKindRecommended RecommendedModelAppliedKind = "recommended"
+)
+
+// Defines values for RecommendedModelUnavailableKind.
+const (
+	RecommendedModelUnavailableKindNoCredential RecommendedModelUnavailableKind = "no_credential"
 )
 
 // Defines values for RequirementStatus.
@@ -742,6 +1302,7 @@ const (
 	ResourceIssue                Resource = "issue"
 	ResourceMaintenancePolicy    Resource = "maintenance_policy"
 	ResourceMcpCatalog           Resource = "mcp_catalog"
+	ResourceMcpImage             Resource = "mcp_image"
 	ResourceMcpServer            Resource = "mcp_server"
 	ResourceMcpServerLogs        Resource = "mcp_server_logs"
 	ResourceMember               Resource = "member"
@@ -749,11 +1310,15 @@ const (
 	ResourceMessage              Resource = "message"
 	ResourceMetering             Resource = "metering"
 	ResourceMigration            Resource = "migration"
+	ResourceModelCatalogue       Resource = "model_catalogue"
 	ResourceNotification         Resource = "notification"
 	ResourceObservability        Resource = "observability"
 	ResourceOrg                  Resource = "org"
+	ResourcePack                 Resource = "pack"
 	ResourcePermission           Resource = "permission"
 	ResourcePlan                 Resource = "plan"
+	ResourcePlatformPack         Resource = "platform_pack"
+	ResourcePlatformSkill        Resource = "platform_skill"
 	ResourcePrivateSource        Resource = "private_source"
 	ResourceProcessWatch         Resource = "process_watch"
 	ResourceProfile              Resource = "profile"
@@ -767,6 +1332,7 @@ const (
 	ResourceRootCommand          Resource = "root_command"
 	ResourceRuntime              Resource = "runtime"
 	ResourceSchedule             Resource = "schedule"
+	ResourceScheduleCommand      Resource = "schedule_command"
 	ResourceSecret               Resource = "secret"
 	ResourceSecretLease          Resource = "secret_lease"
 	ResourceSecretPolicy         Resource = "secret_policy"
@@ -790,10 +1356,89 @@ const (
 	ResourceWorkflowRun          Resource = "workflow_run"
 )
 
+// Defines values for RunActionKind.
+const (
+	RunActionKindRun RunActionKind = "run"
+)
+
 // Defines values for RuntimeVaultSensitivity.
 const (
 	RuntimeVaultSensitivityPlain  RuntimeVaultSensitivity = "plain"
 	RuntimeVaultSensitivitySecret RuntimeVaultSensitivity = "secret"
+)
+
+// Defines values for SecretActionKind.
+const (
+	SecretActionKindSecret SecretActionKind = "secret"
+)
+
+// Defines values for SecretLinkRemovalAction.
+const (
+	SecretLinkRemovalActionKeptAdopted SecretLinkRemovalAction = "kept_adopted"
+	SecretLinkRemovalActionRemove      SecretLinkRemovalAction = "remove"
+)
+
+// Defines values for SecretLinkRemovalKind.
+const (
+	SecretLinkRemovalKindSecretLink SecretLinkRemovalKind = "secret_link"
+)
+
+// Defines values for ServerChoiceCompletionKind.
+const (
+	ServerChoiceCompletionKindServerChoice ServerChoiceCompletionKind = "server_choice"
+)
+
+// Defines values for ServerNotCreatedReason.
+const (
+	ServerNotCreatedReasonBillingRequired  ServerNotCreatedReason = "billing_required"
+	ServerNotCreatedReasonNameTaken        ServerNotCreatedReason = "name_taken"
+	ServerNotCreatedReasonNotAttempted     ServerNotCreatedReason = "not_attempted"
+	ServerNotCreatedReasonPlanLimitReached ServerNotCreatedReason = "plan_limit_reached"
+	ServerNotCreatedReasonUnavailable      ServerNotCreatedReason = "unavailable"
+)
+
+// Defines values for SessionVisibility.
+const (
+	SessionVisibilityAgent SessionVisibility = "agent"
+	SessionVisibilityAll   SessionVisibility = "all"
+	SessionVisibilitySelf  SessionVisibility = "self"
+	SessionVisibilityTree  SessionVisibility = "tree"
+)
+
+// Defines values for SettingRemovalAction.
+const (
+	SettingRemovalActionKeptAdopted SettingRemovalAction = "kept_adopted"
+	SettingRemovalActionKeptEdited  SettingRemovalAction = "kept_edited"
+	SettingRemovalActionRestore     SettingRemovalAction = "restore"
+)
+
+// Defines values for SettingRemovalKind.
+const (
+	SettingRemovalKindSetting SettingRemovalKind = "setting"
+)
+
+// Defines values for SetupFormActionKind.
+const (
+	SetupFormActionKindSetupForm SetupFormActionKind = "setup_form"
+)
+
+// Defines values for SetupFormCompletionKind.
+const (
+	SetupFormCompletionKindSetupForm SetupFormCompletionKind = "setup_form"
+)
+
+// Defines values for SkillFilterField.
+const (
+	SkillFilterFieldCreatedAt       SkillFilterField = "created_at"
+	SkillFilterFieldCreatedByBotId  SkillFilterField = "created_by_bot_id"
+	SkillFilterFieldCreatedByUserId SkillFilterField = "created_by_user_id"
+	SkillFilterFieldId              SkillFilterField = "id"
+	SkillFilterFieldName            SkillFilterField = "name"
+	SkillFilterFieldProvider        SkillFilterField = "provider"
+	SkillFilterFieldScope           SkillFilterField = "scope"
+	SkillFilterFieldSlug            SkillFilterField = "slug"
+	SkillFilterFieldSummary         SkillFilterField = "summary"
+	SkillFilterFieldUpdatedAt       SkillFilterField = "updated_at"
 )
 
 // Defines values for SkillProvider.
@@ -812,6 +1457,17 @@ const (
 	SkillProviderVercel      SkillProvider = "vercel"
 )
 
+// Defines values for SkillRemovalAction.
+const (
+	SkillRemovalActionKeptAdopted SkillRemovalAction = "kept_adopted"
+	SkillRemovalActionRemove      SkillRemovalAction = "remove"
+)
+
+// Defines values for SkillRemovalKind.
+const (
+	SkillRemovalKindSkill SkillRemovalKind = "skill"
+)
+
 // Defines values for SkillScope.
 const (
 	SkillScopeBot    SkillScope = "bot"
@@ -824,11 +1480,44 @@ const (
 	SkillSourceKindGithub SkillSourceKind = "github"
 )
 
+// Defines values for SoulRemovalAction.
+const (
+	SoulRemovalActionKept        SoulRemovalAction = "kept"
+	SoulRemovalActionKeptAdopted SoulRemovalAction = "kept_adopted"
+	SoulRemovalActionKeptEdited  SoulRemovalAction = "kept_edited"
+	SoulRemovalActionRestore     SoulRemovalAction = "restore"
+)
+
+// Defines values for SoulRemovalKind.
+const (
+	SoulRemovalKindSoul SoulRemovalKind = "soul"
+)
+
+// Defines values for SuggestionItemKind.
+const (
+	SuggestionItemKindSkill SuggestionItemKind = "skill"
+	SuggestionItemKindTool  SuggestionItemKind = "tool"
+)
+
+// Defines values for SuspensionReason.
+const (
+	SuspensionReasonInactivity SuspensionReason = "inactivity"
+	SuspensionReasonManual     SuspensionReason = "manual"
+)
+
 // Defines values for SyncStatus.
 const (
 	SyncStatusFailed  SyncStatus = "failed"
 	SyncStatusPending SyncStatus = "pending"
 	SyncStatusSynced  SyncStatus = "synced"
+)
+
+// Defines values for TaskPriority.
+const (
+	TaskPriorityHigh   TaskPriority = "high"
+	TaskPriorityLow    TaskPriority = "low"
+	TaskPriorityMedium TaskPriority = "medium"
+	TaskPriorityUrgent TaskPriority = "urgent"
 )
 
 // Defines values for TemplateIcon.
@@ -838,6 +1527,33 @@ const (
 	TemplateIconNewspaper TemplateIcon = "newspaper"
 	TemplateIconSettings  TemplateIcon = "settings"
 	TemplateIconUser      TemplateIcon = "user"
+)
+
+// Defines values for ToolImageConfigDefaultDetail.
+const (
+	ToolImageConfigDefaultDetailAuto     ToolImageConfigDefaultDetail = "auto"
+	ToolImageConfigDefaultDetailHigh     ToolImageConfigDefaultDetail = "high"
+	ToolImageConfigDefaultDetailLow      ToolImageConfigDefaultDetail = "low"
+	ToolImageConfigDefaultDetailOriginal ToolImageConfigDefaultDetail = "original"
+)
+
+// Defines values for ToolImageConfigPatchDefaultDetail.
+const (
+	ToolImageConfigPatchDefaultDetailAuto     ToolImageConfigPatchDefaultDetail = "auto"
+	ToolImageConfigPatchDefaultDetailHigh     ToolImageConfigPatchDefaultDetail = "high"
+	ToolImageConfigPatchDefaultDetailLow      ToolImageConfigPatchDefaultDetail = "low"
+	ToolImageConfigPatchDefaultDetailOriginal ToolImageConfigPatchDefaultDetail = "original"
+)
+
+// Defines values for ToolRemovalAction.
+const (
+	ToolRemovalActionKeptAdopted ToolRemovalAction = "kept_adopted"
+	ToolRemovalActionRemove      ToolRemovalAction = "remove"
+)
+
+// Defines values for ToolRemovalKind.
+const (
+	ToolRemovalKindTool ToolRemovalKind = "tool"
 )
 
 // Defines values for ToolResourceKind.
@@ -889,6 +1605,26 @@ const (
 	ToolsConfigExecSecurityFull      ToolsConfigExecSecurity = "full"
 )
 
+// Defines values for UnavailableActionKind.
+const (
+	UnavailableActionKindUnavailable UnavailableActionKind = "unavailable"
+)
+
+// Defines values for UnsupportedSettingItemKind.
+const (
+	UnsupportedSettingItemKindSetting UnsupportedSettingItemKind = "setting"
+)
+
+// Defines values for UnsupportedSoulItemKind.
+const (
+	UnsupportedSoulItemKindSoul UnsupportedSoulItemKind = "soul"
+)
+
+// Defines values for UnsupportedToolItemKind.
+const (
+	UnsupportedToolItemKindTool UnsupportedToolItemKind = "tool"
+)
+
 // Defines values for UsageError.
 const (
 	UsageErrorMalformed     UsageError = "malformed"
@@ -897,6 +1633,69 @@ const (
 	UsageErrorTokenExpired  UsageError = "token_expired"
 	UsageErrorUpstreamError UsageError = "upstream_error"
 )
+
+// Defines values for WaitForToolsActionKind.
+const (
+	WaitForToolsActionKindWaitForTools WaitForToolsActionKind = "wait_for_tools"
+)
+
+// Defines values for WorkforceTaskFilterField.
+const (
+	WorkforceTaskFilterFieldAssigneeBotId  WorkforceTaskFilterField = "assignee_bot_id"
+	WorkforceTaskFilterFieldAssigneeUserId WorkforceTaskFilterField = "assignee_user_id"
+	WorkforceTaskFilterFieldColumnId       WorkforceTaskFilterField = "column_id"
+	WorkforceTaskFilterFieldDescription    WorkforceTaskFilterField = "description"
+	WorkforceTaskFilterFieldNumber         WorkforceTaskFilterField = "number"
+	WorkforceTaskFilterFieldPriority       WorkforceTaskFilterField = "priority"
+	WorkforceTaskFilterFieldTags           WorkforceTaskFilterField = "tags"
+	WorkforceTaskFilterFieldTitle          WorkforceTaskFilterField = "title"
+	WorkforceTaskFilterFieldUpdatedAt      WorkforceTaskFilterField = "updated_at"
+)
+
+// Defines values for WorkforceTaskLinkDirection.
+const (
+	WorkforceTaskLinkDirectionIncoming WorkforceTaskLinkDirection = "incoming"
+	WorkforceTaskLinkDirectionOutgoing WorkforceTaskLinkDirection = "outgoing"
+)
+
+// Defines values for WorkforceTaskLinkType.
+const (
+	WorkforceTaskLinkTypeBlocks    WorkforceTaskLinkType = "blocks"
+	WorkforceTaskLinkTypeRelatesTo WorkforceTaskLinkType = "relates_to"
+)
+
+// Defines values for WorkforceViewLayout.
+const (
+	WorkforceViewLayoutBoard WorkforceViewLayout = "board"
+	WorkforceViewLayoutTable WorkforceViewLayout = "table"
+)
+
+// Defines values for WorkforceViewScope.
+const (
+	WorkforceViewScopeOrg  WorkforceViewScope = "org"
+	WorkforceViewScopeUser WorkforceViewScope = "user"
+)
+
+// AcceptSuggestionsRequest Request to assign accepted suggested skills/tools to the bot.
+type AcceptSuggestionsRequest struct {
+	// SkillIds Skill IDs to assign
+	SkillIds *[]string `json:"skill_ids,omitempty"`
+
+	// ToolIds Tool IDs to assign
+	ToolIds *[]string `json:"tool_ids,omitempty"`
+}
+
+// AcceptSuggestionsResponse The catalogue items newly assigned by an accept call.
+//
+// Only *newly-created* assignments are reported; ids that were already assigned
+// to the bot are silently skipped and omitted here.
+type AcceptSuggestionsResponse struct {
+	// AcceptedSkillIds Skill IDs newly assigned to the bot
+	AcceptedSkillIds []string `json:"accepted_skill_ids"`
+
+	// AcceptedToolIds Tool IDs newly assigned to the bot
+	AcceptedToolIds []string `json:"accepted_tool_ids"`
+}
 
 // ActiveHoursConfig Active hours window for heartbeat scheduling.
 //
@@ -949,10 +1748,104 @@ type AddonInput struct {
 	Id      string                  `json:"id"`
 }
 
+// AgentContainerImageMcpServerCreate A container-image MCP server create, as an agent describes one.
+//
+// Identical in meaning to :class:`ContainerImageMcpServerCreate`; the only
+// differences are the ones the redactor forces (entry lists rather than
+// caller-keyed maps). Use :meth:`to_service_body` and
+// :meth:`from_service_body` to move between the two — never convert by hand.
+type AgentContainerImageMcpServerCreate struct {
+	// Args Argv-style arguments appended to command/entrypoint
+	Args *[]string `json:"args"`
+
+	// CatalogFormAnswers Answers to the linked template's setup form. This is the way to install a template: answer the fields get_mcp_catalog_entry lists and the platform compiles them onto the env vars, mounts or headers the template declares — including the parts of the template you cannot see and must not restate. Requires mcp_catalog_entry_id. An unknown field id, a mode the field does not allow, or a missing required answer is refused by name.
+	CatalogFormAnswers *[]CatalogFormAnswer `json:"catalog_form_answers,omitempty"`
+
+	// Command Argv-style entrypoint override (null = use image default)
+	Command *[]string `json:"command"`
+
+	// CredentialSidecarImage Per-server credential sidecar image override. Omit/null to inherit the provisioner's configured default.
+	CredentialSidecarImage *string `json:"credential_sidecar_image"`
+
+	// Description Optional free-form description shown alongside the server in the UI
+	Description *string `json:"description"`
+
+	// EnvPlaintext Non-sensitive environment variables, [{"name": ..., "value": ...}]. Never put a secret value here.
+	EnvPlaintext *[]EnvVar `json:"env_plaintext,omitempty"`
+
+	// EnvSecretRefs Vault-backed env vars, [{"name": "GITHUB_TOKEN", "secret_key_path": "mcp.github.token"}]. The path is a pointer resolved at runtime, never the secret value.
+	EnvSecretRefs *[]EnvSecretRef `json:"env_secret_refs,omitempty"`
+
+	// Image Container image reference (e.g. ``ghcr.io/foo/mcp:1.0``). Required on a free-form create; omit it when ``mcp_catalog_entry_id`` is set and let the template supply it.
+	Image *string `json:"image"`
+
+	// IntegrationCredentialIds Integration connections this server is linked to. Unlike every other field here this does not become container configuration: the pod is authorized to fetch short-lived access tokens for these connections and is injected with nothing. The list is the desired state.
+	IntegrationCredentialIds *[]string `json:"integration_credential_ids,omitempty"`
+
+	// McpCatalogEntryId Catalog entry used to prefill this create payload, if any
+	McpCatalogEntryId *string `json:"mcp_catalog_entry_id"`
+
+	// Name Human-readable label for the MCP server (unique per org)
+	Name string `json:"name"`
+
+	// PodHostMode How Botyard sets the HTTP ``Host`` when connecting to an in-cluster MCP pod.
+	//
+	// This is a fixed property of the server's HTTP framework, declared as
+	// configuration (like ``port``) rather than discovered at runtime:
+	//
+	// * ``natural`` — send the pod's in-cluster Service FQDN as ``Host`` (httpx's
+	//   default). Correct for the MCP Python SDK / uvx, Node/npx, and every
+	//   first-party ``ghcr.io/botyard-ai/*`` wrapper image. The default.
+	// * ``pod_localhost`` — send ``Host: localhost:<port>``. Required by servers
+	//   that enforce DNS-rebinding host allowlists (``mark3labs/mcp-go``, e.g.
+	//   ``grafana/mcp-grafana``), which reject the Service FQDN with
+	//   ``403 forbidden: host not allowed``. Sending it to a server that does not
+	//   want it (Python SDK) instead breaks the handshake with ``Session
+	//   terminated`` (the server's ``307`` echoes the forged Host back to the
+	//   client's own localhost).
+	//
+	// Only meaningful for ``runtime_kind=container_image``; ignored for
+	// ``managed_remote`` (the vendor host is always preserved).
+	PodHostMode *McpPodHostMode `json:"pod_host_mode,omitempty"`
+
+	// Port Container port the streamable-http transport listens on. Required on a free-form create; omit it when ``mcp_catalog_entry_id`` is set and let the template supply it.
+	Port *int `json:"port"`
+
+	// RequestTimeoutSeconds Override (seconds) for the gateway's request timeout when proxying tool calls to this MCP. Omit/null to inherit the gateway default.
+	RequestTimeoutSeconds *int `json:"request_timeout_seconds"`
+
+	// Resources Pod compute as MeteredResource line-items, e.g. {"resources": [{"resource_type": "memory_limit", "quantity": "2Gi"}, {"resource_type": "storage", "quantity": "10Gi"}]}. Only the resources being set; the rest keep the platform default shape (100m/500m CPU, 128Mi/512Mi memory, 1Gi scratch). storage sizes the writable scratch volume. Billed like bot resources and capped by the plan's per-MCP-server maximums. Omit for the default shape.
+	Resources *ResourceQuantities `json:"resources"`
+
+	// RuntimeKind Runtime kind tag — always ``container_image`` for this variant
+	RuntimeKind AgentContainerImageMcpServerCreateRuntimeKind `json:"runtime_kind"`
+
+	// SecretFileMounts Runtime Vault secrets mounted read-only into the container, [{"container_path": "/etc/certs/client.pem", "secret_key_path": ...}]. Pointers, not secret values.
+	SecretFileMounts *[]SecretFileMount `json:"secret_file_mounts,omitempty"`
+
+	// Slug URL-safe identifier — server-generated from ``name`` when omitted. Must match ``^[a-z0-9][a-z0-9-]{0,63}$`` if provided.
+	Slug *string `json:"slug"`
+
+	// Transport Wire transport a deployed MCP server exposes to the gateway.
+	Transport *McpServerTransport `json:"transport,omitempty"`
+}
+
+// AgentContainerImageMcpServerCreateRuntimeKind Runtime kind tag — always “container_image“ for this variant
+type AgentContainerImageMcpServerCreateRuntimeKind string
+
 // AllowedAgentModelConfig A model reference that agents are allowed to select.
 type AllowedAgentModelConfig struct {
 	Alias *string `json:"alias"`
 }
+
+// AlreadyRemoved A tombstone: the user removed the target, so there is nothing to do or name.
+type AlreadyRemoved struct {
+	BotPackItemId string             `json:"bot_pack_item_id"`
+	Kind          AlreadyRemovedKind `json:"kind"`
+}
+
+// AlreadyRemovedKind defines model for AlreadyRemoved.Kind.
+type AlreadyRemovedKind string
 
 // AndBotFilterField defines model for And_BotFilterField_.
 type AndBotFilterField struct {
@@ -982,11 +1875,80 @@ type AndMcpCatalogFilterField_Filters_Item struct {
 // AndMcpCatalogFilterFieldKind defines model for AndMcpCatalogFilterField.Kind.
 type AndMcpCatalogFilterFieldKind string
 
+// AndSkillFilterField defines model for And_SkillFilterField_.
+type AndSkillFilterField struct {
+	Filters []AndSkillFilterField_Filters_Item `json:"filters"`
+	Kind    *AndSkillFilterFieldKind           `json:"kind,omitempty"`
+}
+
+// AndSkillFilterField_Filters_Item defines model for And_SkillFilterField_.filters.Item.
+type AndSkillFilterField_Filters_Item struct {
+	union json.RawMessage
+}
+
+// AndSkillFilterFieldKind defines model for AndSkillFilterField.Kind.
+type AndSkillFilterFieldKind string
+
+// AndWorkforceTaskFilterField defines model for And_WorkforceTaskFilterField_.
+type AndWorkforceTaskFilterField struct {
+	Filters []AndWorkforceTaskFilterField_Filters_Item `json:"filters"`
+	Kind    *AndWorkforceTaskFilterFieldKind           `json:"kind,omitempty"`
+}
+
+// AndWorkforceTaskFilterField_Filters_Item defines model for And_WorkforceTaskFilterField_.filters.Item.
+type AndWorkforceTaskFilterField_Filters_Item struct {
+	union json.RawMessage
+}
+
+// AndWorkforceTaskFilterFieldKind defines model for AndWorkforceTaskFilterField.Kind.
+type AndWorkforceTaskFilterFieldKind string
+
 // ApiProtocol Wire protocol for communicating with a provider.
 type ApiProtocol string
 
+// ApprovalAction The capacity gate wants a human to approve exactly this create; then re-run.
+type ApprovalAction struct {
+	Detail string             `json:"detail"`
+	Kind   ApprovalActionKind `json:"kind"`
+
+	// Request A container-image MCP server create, as an agent describes one.
+	//
+	// Identical in meaning to :class:`ContainerImageMcpServerCreate`; the only
+	// differences are the ones the redactor forces (entry lists rather than
+	// caller-keyed maps). Use :meth:`to_service_body` and
+	// :meth:`from_service_body` to move between the two — never convert by hand.
+	Request AgentContainerImageMcpServerCreate `json:"request"`
+}
+
+// ApprovalActionKind defines model for ApprovalAction.Kind.
+type ApprovalActionKind string
+
 // AuthMethod Authentication method for provider credentials.
 type AuthMethod string
+
+// AvatarRemoval defines model for AvatarRemoval.
+type AvatarRemoval struct {
+	Action        AvatarRemovalAction `json:"action"`
+	BotPackItemId string              `json:"bot_pack_item_id"`
+	Kind          AvatarRemovalKind   `json:"kind"`
+	Reason        string              `json:"reason"`
+}
+
+// AvatarRemovalAction defines model for AvatarRemoval.Action.
+type AvatarRemovalAction string
+
+// AvatarRemovalKind defines model for AvatarRemoval.Kind.
+type AvatarRemovalKind string
+
+// AwaitingConnectAction An authorisation is out (its link went to whoever ran the setup).
+type AwaitingConnectAction struct {
+	ComposioConnectionId string                    `json:"composio_connection_id"`
+	ExpiresAt            time.Time                 `json:"expires_at"`
+	Kind                 AwaitingConnectActionKind `json:"kind"`
+}
+
+// AwaitingConnectActionKind defines model for AwaitingConnectAction.Kind.
+type AwaitingConnectActionKind string
 
 // BasicHeaderScheme “Basic base64(username:password)“ — RFC 7617.
 //
@@ -1075,6 +2037,9 @@ type BotCreate struct {
 	// Config Initial bot config (applied on top of defaults)
 	Config BotCreate_Config `json:"config"`
 
+	// Credentials Credential assignments to apply atomically with creation — the same body, validation, and bot-owner gate as `PUT /orgs/{org_id}/bots/{bot_slug}/credentials`. Model routing is derived from these links before the bot is first provisioned, so it boots on the chosen model instead of being reconfigured (and restarted) moments later. Any invalid assignment fails the whole create. Only credentials that already exist can be linked; a bot-private credential needs the bot first and is still assigned after creation.
+	Credentials *BotCredentialAssign `json:"credentials"`
+
 	// Description Short human-facing description / role for the bot (e.g. 'Platform developer'). Display metadata only — not injected into the bot's system prompt.
 	Description *string `json:"description"`
 
@@ -1096,7 +2061,8 @@ type BotCreate struct {
 	// stored config blob* rather than naming the agent software. See
 	// ``Bot.harness`` for the full note.
 	//
-	// Immutable once set — see ``Bot.harness``.
+	// Immutable once set, with one controlled exception: the audited, one-way
+	// OpenClaw → native harness switch (PlatDev #3823). See ``Bot.harness``.
 	Harness *BotHarness `json:"harness,omitempty"`
 
 	// HostingType Who runs the bot's runtime.
@@ -1121,6 +2087,9 @@ type BotCreate struct {
 
 	// Tier Bot subscription tier.
 	Tier *BotTier `json:"tier,omitempty"`
+
+	// ToolDomainSettings Per-tool-domain settings to apply atomically with creation, keyed by domain (e.g. `sessions`) — the same validation and `bot:tool_domain_settings.update` permission as `PUT /orgs/{org_id}/bots/{bot_slug}/tool-domain-settings/{domain}`. Each value's `tool` discriminator must match its key.
+	ToolDomainSettings *map[string]SessionsToolSettings `json:"tool_domain_settings,omitempty"`
 
 	// ToolIds Tools to assign at creation (the wizard's final selection).
 	ToolIds *[]string `json:"tool_ids,omitempty"`
@@ -1171,9 +2140,9 @@ type BotCredentialAssignmentResponse struct {
 	KeyPrefix    *string      `json:"key_prefix"`
 	Label        string       `json:"label"`
 
-	// Model Per-link model preference (only for api_protocol=claude_code_cli credentials). Accepted values are whatever the active Claude CLI backend supports — see ``CLAUDE_CODE_CLI_SUPPORTED_MODELS`` in ``botyard_core.openclaw.config``.
-	Model   *string `json:"model"`
-	Ordinal int     `json:"ordinal"`
+	// NativeLane How native owned mode treats this credential: the lane it serves it on, or why it refuses it (a native bot's chain must be all served). A fact about the credential, so it is set on every bot; the app shows it on native bots. Null unless the assignment is an LLM credential with an API protocol.
+	NativeLane *BotCredentialAssignmentResponse_NativeLane `json:"native_lane"`
+	Ordinal    int                                         `json:"ordinal"`
 
 	// Provider Known provider vendors.
 	Provider CredentialProvider `json:"provider"`
@@ -1183,8 +2152,28 @@ type BotCredentialAssignmentResponse struct {
 	Slug  string          `json:"slug"`
 }
 
+// BotCredentialAssignmentResponse_NativeLane How native owned mode treats this credential: the lane it serves it on, or why it refuses it (a native bot's chain must be all served). A fact about the credential, so it is set on every bot; the app shows it on native bots. Null unless the assignment is an LLM credential with an API protocol.
+type BotCredentialAssignmentResponse_NativeLane struct {
+	union json.RawMessage
+}
+
 // BotFilterField Fields filterable via the bot search endpoint.
 type BotFilterField string
+
+// BotFromPack One created bot, the pack install it was created with, and the model it starts on.
+type BotFromPack struct {
+	// Bot Bot desired/observed state response.
+	Bot     BotResponse   `json:"bot"`
+	Install InstalledPack `json:"install"`
+
+	// Model The model the bot starts on: the pack's recommended model when an org credential runs it, otherwise the default model, with the reason.
+	Model BotFromPack_Model `json:"model"`
+}
+
+// BotFromPack_Model The model the bot starts on: the pack's recommended model when an org credential runs it, otherwise the default model, with the reason.
+type BotFromPack_Model struct {
+	union json.RawMessage
+}
 
 // BotHarness Which agent software the bot runs.
 //
@@ -1198,7 +2187,8 @@ type BotFilterField string
 // stored config blob* rather than naming the agent software. See
 // “Bot.harness“ for the full note.
 //
-// Immutable once set — see “Bot.harness“.
+// Immutable once set, with one controlled exception: the audited, one-way
+// OpenClaw → native harness switch (PlatDev #3823). See “Bot.harness“.
 type BotHarness string
 
 // BotHealthStatus Bot health monitoring status.
@@ -1249,6 +2239,22 @@ type BotListItem struct {
 	//
 	// Set by the API; the reconciler drives ``observed_state`` toward this value.
 	DesiredState DesiredState `json:"desired_state"`
+
+	// Harness Which agent software the bot runs.
+	//
+	// Deliberately named *harness*, not *runtime*: ``runtime`` already carries
+	// five unrelated meanings in this codebase (``Bot.runtime_class``, the bot
+	// runtime image, ``ComponentName.RUNTIME``, Runtime Vault, and the
+	// ``bot_runtime`` audit domain), and *harness* is the vocabulary the native
+	// runtime design already uses.
+	//
+	// Distinct from :class:`BotType`, which discriminates the *shape of the
+	// stored config blob* rather than naming the agent software. See
+	// ``Bot.harness`` for the full note.
+	//
+	// Immutable once set, with one controlled exception: the audited, one-way
+	// OpenClaw → native harness switch (PlatDev #3823). See ``Bot.harness``.
+	Harness BotHarness `json:"harness"`
 
 	// HealthStatus Bot health monitoring status.
 	HealthStatus BotHealthStatus `json:"health_status"`
@@ -1310,14 +2316,178 @@ type BotMemberRole string
 // “complete“. “none“ means the bot was created without guided setup.
 type BotOnboardingState string
 
+// BotPackInstallView defines model for BotPackInstallView.
+type BotPackInstallView struct {
+	BotPackInstallId string `json:"bot_pack_install_id"`
+
+	// Connections Every connection of the installed version, in the pack's connection order: pending, or bound (an MCP server with its health, an MCP server you may not see, or a vault entry).
+	Connections       []BotPackInstallView_Connections_Item `json:"connections"`
+	InstalledAt       time.Time                             `json:"installed_at"`
+	InstalledByBotId  *string                               `json:"installed_by_bot_id"`
+	InstalledByUserId *string                               `json:"installed_by_user_id"`
+	Items             []BotPackInstallView_Items_Item       `json:"items"`
+	Name              string                                `json:"name"`
+	PackId            string                                `json:"pack_id"`
+	PackSlug          string                                `json:"pack_slug"`
+	PackVersionId     string                                `json:"pack_version_id"`
+
+	// PendingConnections Connections whose setup is not done, in connection order. Read what each asks next with the setups resume call (`resume_pack_setups` on MCP).
+	PendingConnections []PendingPackConnection `json:"pending_connections"`
+	UpdatedAt          time.Time               `json:"updated_at"`
+	VersionNo          int                     `json:"version_no"`
+}
+
+// BotPackInstallView_Connections_Item defines model for BotPackInstallView.connections.Item.
+type BotPackInstallView_Connections_Item struct {
+	union json.RawMessage
+}
+
+// BotPackInstallView_Items_Item defines model for BotPackInstallView.items.Item.
+type BotPackInstallView_Items_Item struct {
+	union json.RawMessage
+}
+
+// BotPackItemOrigin Whether an install created an item or found it already on the bot (D11).
+//
+// Uninstall removes only “added“ items that no other install still references.
+type BotPackItemOrigin string
+
+// BotPackMcpServerProvenance defines model for BotPackMcpServerProvenance.
+type BotPackMcpServerProvenance struct {
+	BotPackItemId string                         `json:"bot_pack_item_id"`
+	CreatedAt     time.Time                      `json:"created_at"`
+	Kind          BotPackMcpServerProvenanceKind `json:"kind"`
+
+	// McpServerId The org MCP server the install reused or created. Null once it was deleted.
+	McpServerId *string `json:"mcp_server_id"`
+
+	// Origin Whether an install created an item or found it already on the bot (D11).
+	//
+	// Uninstall removes only ``added`` items that no other install still references.
+	Origin BotPackItemOrigin `json:"origin"`
+}
+
+// BotPackMcpServerProvenanceKind defines model for BotPackMcpServerProvenance.Kind.
+type BotPackMcpServerProvenanceKind string
+
+// BotPackSecretLinkProvenance defines model for BotPackSecretLinkProvenance.
+type BotPackSecretLinkProvenance struct {
+	BotPackItemId string                          `json:"bot_pack_item_id"`
+	CreatedAt     time.Time                       `json:"created_at"`
+	Kind          BotPackSecretLinkProvenanceKind `json:"kind"`
+
+	// Origin Whether an install created an item or found it already on the bot (D11).
+	//
+	// Uninstall removes only ``added`` items that no other install still references.
+	Origin BotPackItemOrigin `json:"origin"`
+
+	// SecretPolicyLinkId The bot's secret link. Null once it was removed from the bot (a tombstone).
+	SecretPolicyLinkId *string `json:"secret_policy_link_id"`
+}
+
+// BotPackSecretLinkProvenanceKind defines model for BotPackSecretLinkProvenance.Kind.
+type BotPackSecretLinkProvenanceKind string
+
+// BotPackSettingProvenance defines model for BotPackSettingProvenance.
+type BotPackSettingProvenance struct {
+	BotPackItemId string                       `json:"bot_pack_item_id"`
+	CreatedAt     time.Time                    `json:"created_at"`
+	Kind          BotPackSettingProvenanceKind `json:"kind"`
+
+	// Origin Whether an install created an item or found it already on the bot (D11).
+	//
+	// Uninstall removes only ``added`` items that no other install still references.
+	Origin BotPackItemOrigin `json:"origin"`
+
+	// SettingPath The dotted settings path, e.g. reasoning_default.
+	SettingPath string `json:"setting_path"`
+}
+
+// BotPackSettingProvenanceKind defines model for BotPackSettingProvenance.Kind.
+type BotPackSettingProvenanceKind string
+
+// BotPackSingletonProvenance The bot's soul, model or avatar: a bot-level value, so the kind is the target.
+type BotPackSingletonProvenance struct {
+	BotPackItemId string                         `json:"bot_pack_item_id"`
+	CreatedAt     time.Time                      `json:"created_at"`
+	Kind          BotPackSingletonProvenanceKind `json:"kind"`
+
+	// Origin Whether an install created an item or found it already on the bot (D11).
+	//
+	// Uninstall removes only ``added`` items that no other install still references.
+	Origin BotPackItemOrigin `json:"origin"`
+}
+
+// BotPackSingletonProvenanceKind defines model for BotPackSingletonProvenance.Kind.
+type BotPackSingletonProvenanceKind string
+
+// BotPackSkillProvenance defines model for BotPackSkillProvenance.
+type BotPackSkillProvenance struct {
+	BotPackItemId string `json:"bot_pack_item_id"`
+
+	// BotSkillId The skill assignment. Null once it was removed from the bot (a tombstone).
+	BotSkillId *string                    `json:"bot_skill_id"`
+	CreatedAt  time.Time                  `json:"created_at"`
+	Kind       BotPackSkillProvenanceKind `json:"kind"`
+
+	// Origin Whether an install created an item or found it already on the bot (D11).
+	//
+	// Uninstall removes only ``added`` items that no other install still references.
+	Origin BotPackItemOrigin `json:"origin"`
+
+	// SkillId The org skill that assignment is of, so a reader can name it and match it to the pack version's skills. Null exactly when `bot_skill_id` is (P3.12).
+	SkillId *string `json:"skill_id"`
+}
+
+// BotPackSkillProvenanceKind defines model for BotPackSkillProvenance.Kind.
+type BotPackSkillProvenanceKind string
+
+// BotPackToolProvenance defines model for BotPackToolProvenance.
+type BotPackToolProvenance struct {
+	BotPackItemId string `json:"bot_pack_item_id"`
+
+	// BotToolId The tool assignment. Null once it was removed from the bot (a tombstone).
+	BotToolId *string                   `json:"bot_tool_id"`
+	CreatedAt time.Time                 `json:"created_at"`
+	Kind      BotPackToolProvenanceKind `json:"kind"`
+
+	// Origin Whether an install created an item or found it already on the bot (D11).
+	//
+	// Uninstall removes only ``added`` items that no other install still references.
+	Origin BotPackItemOrigin `json:"origin"`
+
+	// ToolCatalogId The catalogue tool the install granted, kept after the user removes it so a later bind does not grant it again. Null on items recorded before P2.10, and if the catalogue tool was deleted.
+	ToolCatalogId *string `json:"tool_catalog_id"`
+}
+
+// BotPackToolProvenanceKind defines model for BotPackToolProvenance.Kind.
+type BotPackToolProvenanceKind string
+
+// BotPacks defines model for BotPacks.
+type BotPacks struct {
+	BotId    string               `json:"bot_id"`
+	Installs []BotPackInstallView `json:"installs"`
+}
+
 // BotResponse Bot desired/observed state response.
 type BotResponse struct {
 	// Access Bot visibility within its organization.
 	Access BotAccess `json:"access"`
 
 	// AutoRetryPending True when the bot is FAILED but the reconciler still has a retry scheduled for it (`retry_after` is in the future). Setup is not over: UIs should keep showing progress rather than a terminal 'setup failed' screen, which is what made a first-run bot look broken during a transient config-push error it recovered from a minute later. Goes false once the scheduled retry window has passed without the bot leaving FAILED.
-	AutoRetryPending *bool   `json:"auto_retry_pending,omitempty"`
-	AvatarUrl        *string `json:"avatar_url"`
+	AutoRetryPending *bool `json:"auto_retry_pending,omitempty"`
+
+	// AutoSuspendEffective The authoritative effective inactivity policy after applying the current plan. This remains true on plans that enforce auto-suspend even when the stored auto_suspend_enabled preference is false.
+	AutoSuspendEffective *bool `json:"auto_suspend_effective,omitempty"`
+
+	// AutoSuspendEnabled The owner's stored inactivity-suspension preference. Plans without the auto_suspend_opt_out feature enforce auto-suspend even when this is false.
+	AutoSuspendEnabled bool `json:"auto_suspend_enabled"`
+
+	// AutoSuspendOptOutAvailable Whether the current plan explicitly permits this bot's owner to disable automatic inactivity suspension.
+	AutoSuspendOptOutAvailable *bool `json:"auto_suspend_opt_out_available,omitempty"`
+
+	// AvatarUrl Avatar image: a data URI, an https:// URL, or, for a bot that took its pack's avatar, an API-relative path (`/v1/pack-avatars/{hex}`). Resolve a path against the API base URL, not the page's origin.
+	AvatarUrl *string `json:"avatar_url"`
 
 	// CanManage Whether the calling actor may manage owner-gated bot settings. Advisory for UI affordances; mutation endpoints remain authoritative.
 	CanManage *bool `json:"can_manage,omitempty"`
@@ -1352,7 +2522,8 @@ type BotResponse struct {
 	// stored config blob* rather than naming the agent software. See
 	// ``Bot.harness`` for the full note.
 	//
-	// Immutable once set — see ``Bot.harness``.
+	// Immutable once set, with one controlled exception: the audited, one-way
+	// OpenClaw → native harness switch (PlatDev #3823). See ``Bot.harness``.
 	Harness BotHarness `json:"harness"`
 
 	// HealthStatus Bot health monitoring status.
@@ -1374,7 +2545,10 @@ type BotResponse struct {
 
 	// LastHealthCheckAt Timestamp of the last health check
 	LastHealthCheckAt *time.Time `json:"last_health_check_at"`
-	LastReconciledAt  *time.Time `json:"last_reconciled_at"`
+
+	// LastHumanActivityAt Most recent accepted user, Slack, or Teams message. Schedules, bot output, developer wakes, and health traffic do not update this timestamp.
+	LastHumanActivityAt time.Time  `json:"last_human_activity_at"`
+	LastReconciledAt    *time.Time `json:"last_reconciled_at"`
 
 	// LlmChain The bot's provider chain as it will be, and as it currently is.
 	//
@@ -1440,6 +2614,9 @@ type BotResponse struct {
 	// classes currently in active use are enumerated — extend as needed.
 	StorageClass BotStorageClass `json:"storage_class"`
 
+	// SuspensionReason Why the bot is suspended. Inactivity suspension auto-wakes from the next human message; manual suspension never does.
+	SuspensionReason *SuspensionReason `json:"suspension_reason"`
+
 	// Tier Bot subscription tier.
 	Tier      BotTier   `json:"tier"`
 	UpdatedAt time.Time `json:"updated_at"`
@@ -1452,8 +2629,10 @@ type BotResponse_DesiredConfig struct {
 
 // BotRestartResponse Response for a user-triggered bot container restart.
 type BotRestartResponse struct {
-	Message string `json:"message"`
-	Ok      *bool  `json:"ok,omitempty"`
+	// AppliedPendingUpdate True when the bot had a maintenance restart pending and this restart applied that queued update now instead of only recycling the pod.
+	AppliedPendingUpdate *bool  `json:"applied_pending_update,omitempty"`
+	Message              string `json:"message"`
+	Ok                   *bool  `json:"ok,omitempty"`
 }
 
 // BotRuntimeClass Container runtime class for a bot pod.
@@ -1501,6 +2680,12 @@ type BotSkillAssignmentResponse struct {
 	// Name Skill display name
 	Name string `json:"name"`
 
+	// PinnedVersionId The skill version this bot is pinned to. Null means the bot follows the latest version.
+	PinnedVersionId *string `json:"pinned_version_id"`
+
+	// PinnedVersionNo Version number of the pinned version; null when unpinned.
+	PinnedVersionNo *int `json:"pinned_version_no"`
+
 	// Provider Who provided/authored the skill.
 	Provider SkillProvider `json:"provider"`
 
@@ -1527,6 +2712,21 @@ type BotSkillDeploy struct {
 type BotSkillIds struct {
 	// SkillIds Skill IDs to unassign
 	SkillIds []string `json:"skill_ids"`
+}
+
+// BotSkillPin One pin change for a skill assigned to the bot.
+type BotSkillPin struct {
+	// SkillId Assigned skill to pin or unpin.
+	SkillId string `json:"skill_id"`
+
+	// VersionId Version to pin, from POST /skills/versions/search. Null unpins, so the bot follows the latest version again. A version of an org's own skill can always be pinned. For a platform skill, only a published version or the current latest one can be pinned.
+	VersionId *string `json:"version_id"`
+}
+
+// BotSkillPinsUpdate Request to pin or unpin skills assigned to a bot (batch, all-or-nothing).
+type BotSkillPinsUpdate struct {
+	// Pins Pin changes; each skill at most once.
+	Pins []BotSkillPin `json:"pins"`
 }
 
 // BotStorageClass Storage class for the bot's workspace PVC.
@@ -1612,7 +2812,7 @@ type BotToolAssignmentResponse struct {
 	// Each member names a *different* enforcement point, which is the bar a new
 	// member has to clear. The value appears in every
 	// :meth:`ToolCatalog.build_slug` result, so it is a durable public contract:
-	// ``mcp:botyard:send_email``, ``openclaw::exec``, ``native::host_read``.
+	// ``mcp:botyard:send_email``, ``openclaw::exec``, ``native::file_read``.
 	//
 	// * ``mcp`` — the platform serves the tool over MCP. Enforcement is in the
 	//   gateway, which is also why these rows are reachable from every harness.
@@ -1630,7 +2830,7 @@ type BotToolAssignmentResponse struct {
 	// same **shape** — a builtin, enforced by configuring the agent that owns it —
 	// but they are different agents, and :data:`~botyard_core.hosting.
 	// _HARNESS_TOOL_RUNTIMES` is keyed on this value. Reusing ``openclaw`` would
-	// advertise ``host_read`` to OpenClaw bots, where the name means nothing.
+	// advertise ``file_read`` to OpenClaw bots, where the name means nothing.
 	Runtime ToolRuntime `json:"runtime"`
 
 	// RuntimeToolName Internal runtime tool name
@@ -1654,6 +2854,9 @@ type BotToolAssignmentResponse struct {
 
 	// SyncedAt When this assignment was last confirmed applied to the running bot
 	SyncedAt *time.Time `json:"synced_at"`
+
+	// Title Human-readable title advertised by the MCP server, if any. Display it in preference to ``name`` when present; never use it as an identifier.
+	Title *string `json:"title"`
 
 	// ToolId Tool catalog ID
 	ToolId string `json:"tool_id"`
@@ -1679,6 +2882,9 @@ type BotToolRetrySyncRequest struct {
 //
 // For config changes, use PATCH /{bot_slug}/config instead.
 type BotUpdate struct {
+	// AutoSuspendEnabled Whether this bot should suspend after 14 days without a human or external-channel message. Disabling requires the plan's auto_suspend_opt_out feature; plans without it enforce auto-suspend regardless of a previously stored preference.
+	AutoSuspendEnabled *bool `json:"auto_suspend_enabled,omitempty"`
+
 	// AvatarUrl Avatar image URL — an image data URI (DiceBear SVG, or an uploaded WebP/PNG/JPEG) or an https:// URL. Max 16384 characters. Send null to clear; omit to leave unchanged.
 	AvatarUrl *string `json:"avatar_url"`
 
@@ -1694,6 +2900,128 @@ type BotUpdate struct {
 	// Tier Bot tier
 	Tier *BotTier `json:"tier"`
 }
+
+// BotsFromPacks The created bots, in request order, then where each pack connection's setup stands.
+type BotsFromPacks struct {
+	// Bots One per request, in request order.
+	Bots []BotFromPack `json:"bots"`
+
+	// Setups Every connection of the installs, exactly as `POST …/packs/installs` reports them. Recorded after the bots committed: if this step failed the bots still stand, `setups` is empty, and `POST …/packs/setups/resume` reports them.
+	Setups []PackConnectionSetupResult `json:"setups"`
+}
+
+// BotsFromPacksBody Bots to create, each from one pack version (bot catalogue P2.9).
+type BotsFromPacksBody struct {
+	// Bots One per new bot. Several may use the same pack version; no two may end up with the same name.
+	Bots []PackBotRequest `json:"bots"`
+}
+
+// BoundMcpConnection What binding one “mcp_catalog_entry“ connection did.
+type BoundMcpConnection struct {
+	BotPackInstallId string                 `json:"bot_pack_install_id"`
+	Kind             BoundMcpConnectionKind `json:"kind"`
+
+	// McpServerId The org MCP server the connection is bound to.
+	McpServerId string `json:"mcp_server_id"`
+
+	// MissingTools Tool names the pack enables that the server has not discovered (J7).
+	MissingTools            []string `json:"missing_tools"`
+	PackVersionConnectionId string   `json:"pack_version_connection_id"`
+
+	// Status What binding one pack connection did (bot catalogue P2.7).
+	Status PackBindStatus `json:"status"`
+
+	// ToolIds Tool ids the bound server grants the bot.
+	ToolIds []string `json:"tool_ids"`
+
+	// UnsupportedTools Tool names the server has that this bot's profile cannot serve.
+	UnsupportedTools []string `json:"unsupported_tools"`
+
+	// WithheldToolIds Tool ids the install granted before and the user has since removed from the bot. They stay removed: a bind never grants them again (P2.10).
+	WithheldToolIds []string `json:"withheld_tool_ids"`
+}
+
+// BoundMcpConnectionKind defines model for BoundMcpConnection.Kind.
+type BoundMcpConnectionKind string
+
+// BoundMcpInstallConnection An MCP connection bound to a live org server, and whether that server works.
+type BoundMcpInstallConnection struct {
+	// Account Label for the bound account: the server's name.
+	Account string `json:"account"`
+
+	// ComposioConnectionId The Composio authorisation behind the server, for connect-first servers; null for any other server. Reconnect with `POST …/mcp-servers/connections/{id}/reconnect`.
+	ComposioConnectionId *string `json:"composio_connection_id"`
+
+	// Health One org MCP server's health as an account picker shows it (bot catalogue P3).
+	//
+	// Read from stored state only, never from a vendor call: see
+	// :func:`botyard_core.services.api.mcp_server_health.server_health` for the
+	// rule. Three values, because a picker has three things to say: use it, fix
+	// the sign-in, or expect it not to work.
+	Health McpServerHealth               `json:"health"`
+	Kind   BoundMcpInstallConnectionKind `json:"kind"`
+
+	// McpServerId The org MCP server the connection is bound to.
+	McpServerId string `json:"mcp_server_id"`
+
+	// PackVersionConnectionId The connection of the installed version.
+	PackVersionConnectionId string `json:"pack_version_connection_id"`
+}
+
+// BoundMcpInstallConnectionKind defines model for BoundMcpInstallConnection.Kind.
+type BoundMcpInstallConnectionKind string
+
+// BoundMcpRestrictedInstallConnection An MCP connection bound to a live org server the caller may not see.
+//
+// The server is restricted and the caller is not one of its members. So its
+// name, health and Composio authorisation are withheld, exactly as the MCP
+// server listing withholds the server itself; only its id is given, which the
+// install's provenance already names. Someone who can see the server reads
+// “bound_mcp“.
+type BoundMcpRestrictedInstallConnection struct {
+	Kind BoundMcpRestrictedInstallConnectionKind `json:"kind"`
+
+	// McpServerId The org MCP server the connection is bound to.
+	McpServerId string `json:"mcp_server_id"`
+
+	// PackVersionConnectionId The connection of the installed version.
+	PackVersionConnectionId string `json:"pack_version_connection_id"`
+}
+
+// BoundMcpRestrictedInstallConnectionKind defines model for BoundMcpRestrictedInstallConnection.Kind.
+type BoundMcpRestrictedInstallConnectionKind string
+
+// BoundVaultConnection What binding one “vault_secret“ connection did.
+type BoundVaultConnection struct {
+	BotPackInstallId        string                   `json:"bot_pack_install_id"`
+	Kind                    BoundVaultConnectionKind `json:"kind"`
+	PackVersionConnectionId string                   `json:"pack_version_connection_id"`
+
+	// Status What binding one pack connection did (bot catalogue P2.7).
+	Status PackBindStatus `json:"status"`
+
+	// VaultEntryId The org vault entry linked to the bot.
+	VaultEntryId string `json:"vault_entry_id"`
+}
+
+// BoundVaultConnectionKind defines model for BoundVaultConnection.Kind.
+type BoundVaultConnectionKind string
+
+// BoundVaultInstallConnection A vault connection whose org entry is live and linked to the bot.
+type BoundVaultInstallConnection struct {
+	// KeyPath The entry's key path, as the pack names it.
+	KeyPath string                          `json:"key_path"`
+	Kind    BoundVaultInstallConnectionKind `json:"kind"`
+
+	// PackVersionConnectionId The connection of the installed version.
+	PackVersionConnectionId string `json:"pack_version_connection_id"`
+
+	// VaultEntryId The org vault entry linked to the bot.
+	VaultEntryId string `json:"vault_entry_id"`
+}
+
+// BoundVaultInstallConnectionKind defines model for BoundVaultInstallConnection.Kind.
+type BoundVaultInstallConnectionKind string
 
 // BrowserConfig OpenClaw browser plugin configuration.
 //
@@ -1728,6 +3056,130 @@ type BrowserConfig struct {
 	// NoSandbox Add ``--no-sandbox`` to Chromium's launch args. Required for non-root container deployments where Chromium's setuid + namespace sandboxes can't initialise. Default ``True`` because every Botyard bot pod runs non-root.
 	NoSandbox *bool `json:"no_sandbox,omitempty"`
 }
+
+// BuiltinToolRef A tool built into the bot's own runtime (OpenClaw or native), named.
+//
+// Not served over MCP, so it has no server.
+type BuiltinToolRef struct {
+	Name    string                `json:"name"`
+	Runtime BuiltinToolRefRuntime `json:"runtime"`
+	Slug    string                `json:"slug"`
+	Title   *string               `json:"title"`
+	ToolId  string                `json:"tool_id"`
+}
+
+// BuiltinToolRefRuntime defines model for BuiltinToolRef.Runtime.
+type BuiltinToolRefRuntime string
+
+// CandidateBot A bot using a candidate server that the caller may read.
+type CandidateBot struct {
+	BotId string `json:"bot_id"`
+	Name  string `json:"name"`
+}
+
+// CandidateOwner The person a candidate server is attributed to, and how.
+type CandidateOwner struct {
+	AvatarUrl *string `json:"avatar_url"`
+
+	// Kind `connected_by`: they signed in to the vendor, so it is their account. `added_by`: they added the server; whose vendor account it is is not known.
+	Kind   CandidateOwnerKind `json:"kind"`
+	Name   string             `json:"name"`
+	UserId string             `json:"user_id"`
+}
+
+// CandidateOwnerKind `connected_by`: they signed in to the vendor, so it is their account. `added_by`: they added the server; whose vendor account it is is not known.
+type CandidateOwnerKind string
+
+// CatalogFormAnswer One answer to a field on a catalog template's setup form.
+//
+// A list rather than a “{field_id: value}“ map for the reason this whole
+// module exists: a template is free to name a field “personal_access_token“,
+// and in key position the redactor would mask it. “field_id“ is ordinary
+// data and survives the transcript intact.
+type CatalogFormAnswer struct {
+	// FieldId Form field id from the template's form_spec, e.g. 'org'. Read them off get_mcp_catalog_entry; an id the template does not declare is refused by name.
+	FieldId string `json:"field_id"`
+
+	// Items record_list fields only: the rows, in order (order is meaningful). Leave mode/value at their defaults. An empty list means no rows.
+	Items *[]CatalogFormRecordRow `json:"items"`
+
+	// Mode How a *stored* form value should be interpreted.
+	//
+	// A strict superset of :class:`McpCatalogFormInputMode`, and deliberately so.
+	// ``integration`` is not an input mode: it marks the value of an integration
+	// field, which is the id of the connection this server is linked to, and
+	// nothing is injected into the pod for it. No form ever offers it as a choice.
+	//
+	// The two sets were previously four hand-copied ``Literal`` blocks with no
+	// assertion of their relationship — adding a member to one and not the others
+	// would have drifted silently (PlatDev #2518).
+	Mode *McpCatalogFormValueMode `json:"mode,omitempty"`
+
+	// Value The answer. For 'secret_ref' this is a pointer such as mcp.azure-devops.personal_access_token, never the secret itself.
+	Value *string `json:"value,omitempty"`
+}
+
+// CatalogFormRecordCell One cell of a record_list row: a column id and its value.
+//
+// A list entry, not a “{column_id: value}“ map, for the same reason as
+// :class:`CatalogFormAnswer` — a template may name a column “token“.
+type CatalogFormRecordCell struct {
+	// ColumnId Column id from the record_list field's columns, e.g. 'url'
+	ColumnId string `json:"column_id"`
+
+	// Mode How a *stored* form value should be interpreted.
+	//
+	// A strict superset of :class:`McpCatalogFormInputMode`, and deliberately so.
+	// ``integration`` is not an input mode: it marks the value of an integration
+	// field, which is the id of the connection this server is linked to, and
+	// nothing is injected into the pod for it. No form ever offers it as a choice.
+	//
+	// The two sets were previously four hand-copied ``Literal`` blocks with no
+	// assertion of their relationship — adding a member to one and not the others
+	// would have drifted silently (PlatDev #2518).
+	Mode *McpCatalogFormValueMode `json:"mode,omitempty"`
+
+	// Value The cell's value; empty omits it
+	Value *string `json:"value,omitempty"`
+}
+
+// CatalogFormRecordRow One row of a record_list answer.
+type CatalogFormRecordRow struct {
+	// Cells The row's cells; a column left out is empty (or its default)
+	Cells *[]CatalogFormRecordCell `json:"cells,omitempty"`
+}
+
+// CataloguePack A pack in an org's catalogue, with its latest version's summary.
+type CataloguePack struct {
+	// Latest A version's identity and display fields, without its contents.
+	Latest         PackVersionSummary `json:"latest"`
+	PackId         string             `json:"pack_id"`
+	PublisherOrgId *string            `json:"publisher_org_id"`
+	Slug           string             `json:"slug"`
+
+	// Visibility Who may see a capability pack in the bot catalogue (epic #3551, D4).
+	//
+	// v1 publishes ``curated`` packs only. The other two exist now so customer
+	// publishers and a public marketplace need no remodelling.
+	Visibility PackVisibility `json:"visibility"`
+}
+
+// ChooseServerAction Several of the org's servers fit: choose one (“complete_setups“).
+type ChooseServerAction struct {
+	Kind         ChooseServerActionKind `json:"kind"`
+	McpServerIds []string               `json:"mcp_server_ids"`
+}
+
+// ChooseServerActionKind defines model for ChooseServerAction.Kind.
+type ChooseServerActionKind string
+
+// ChosenModel The request's “credentials“ chose the bot's LLM; the pack's recommendation is unused.
+type ChosenModel struct {
+	Kind ChosenModelKind `json:"kind"`
+}
+
+// ChosenModelKind defines model for ChosenModel.Kind.
+type ChosenModelKind string
 
 // ClaudeCodeProviderEntry Claude Code CLI backend configuration for an openclaw bot.
 //
@@ -1928,11 +3380,19 @@ type ComposioConnectionDetail struct {
 	// Named ``...State`` rather than ``...Status`` on purpose: the vendor's own
 	// status vocabulary is
 	// :class:`~botyard_core.services.composio.client.ComposioConnectionStatus`,
-	// and the two are read side by side in the poll path. These four are Botyard's own
-	// reading of an install attempt, and the mapping between them is a decision
+	// and the two are read side by side in the poll path. These are Botyard's own
+	// reading of a connection, and the mapping between them is a decision
 	// this service makes rather than a rename — notably ``UNKNOWN`` on the vendor
 	// side maps to no terminal state here at all, only to "keep waiting until
 	// ``deadline_at``".
+	//
+	// **Two axes, not one.** :attr:`is_terminal` asks whether the *install attempt*
+	// is over; :attr:`is_installed` asks whether a tile exists. They were the same
+	// question while ``connected`` was the only successful outcome, and
+	// :attr:`NEEDS_REAUTH` is what separates them: the attempt finished, the tile
+	// exists, and the connection is nonetheless not working. Read the one the call
+	// site actually means — the install poll wants :attr:`is_terminal`, the CHECK
+	// constraint and anything reasoning about the tile want :attr:`is_installed`.
 	Status ComposioConnectionState `json:"status"`
 
 	// ToolkitSlug Composio toolkit being authorised
@@ -2002,11 +3462,19 @@ type ComposioConnectionStartRequest struct {
 // Named “...State“ rather than “...Status“ on purpose: the vendor's own
 // status vocabulary is
 // :class:`~botyard_core.services.composio.client.ComposioConnectionStatus`,
-// and the two are read side by side in the poll path. These four are Botyard's own
-// reading of an install attempt, and the mapping between them is a decision
+// and the two are read side by side in the poll path. These are Botyard's own
+// reading of a connection, and the mapping between them is a decision
 // this service makes rather than a rename — notably “UNKNOWN“ on the vendor
 // side maps to no terminal state here at all, only to "keep waiting until
 // “deadline_at“".
+//
+// **Two axes, not one.** :attr:`is_terminal` asks whether the *install attempt*
+// is over; :attr:`is_installed` asks whether a tile exists. They were the same
+// question while “connected“ was the only successful outcome, and
+// :attr:`NEEDS_REAUTH` is what separates them: the attempt finished, the tile
+// exists, and the connection is nonetheless not working. Read the one the call
+// site actually means — the install poll wants :attr:`is_terminal`, the CHECK
+// constraint and anything reasoning about the tile want :attr:`is_installed`.
 type ComposioConnectionState string
 
 // ComposioCredentialFieldSpec One input a credential form must render, as the vendor describes it.
@@ -2025,7 +3493,7 @@ type ComposioCredentialFieldSpec struct {
 	// DisplayName Label to show the customer
 	DisplayName string `json:"display_name"`
 
-	// IsSecret Whether to mask this input. The vendor's own answer, spot-checked across the catalogue and correct every time. It governs **masking only**: every collected value is stored as a secret regardless, so that a vendor flipping this flag can never silently downgrade a live credential.
+	// IsSecret Whether to mask this input: the vendor's own flag, OR'd with a password-name check. The vendor's flag alone is not reliable. It was right for every API_KEY toolkit checked, but four BASIC toolkits mark their required ``password`` as not secret. It governs **masking only**: every collected value is stored as a secret regardless, so a vendor flipping this flag can never silently downgrade a live credential.
 	IsSecret *bool `json:"is_secret,omitempty"`
 
 	// Name Wire key to submit this value under. Frequently a meaningless slot — ``builder_io`` calls its public key ``generic_api_key`` and its private key ``generic_id`` — so never infer sensitivity from it. Use ``is_secret``.
@@ -2072,8 +3540,14 @@ type ComposioCredentialInstallRequest struct {
 	// McpCatalogEntryId Catalog entry for the Composio tile being installed
 	McpCatalogEntryId string `json:"mcp_catalog_entry_id"`
 
+	// McpConnectRequestId The in-chat connect ask this install answers, if it came from a card (platform-development #3014). Binding it is what lets a reopened card show the tile as installed, and what tells the requesting bot its tile landed. Omit it for an install started from the MCP wizard, which has no ask behind it. Must name an ask in your own organization for the same catalogue entry; anything else is refused with 404 before any vendor object or vault entry exists.
+	McpConnectRequestId *string `json:"mcp_connect_request_id"`
+
 	// Values Vendor field name to value, as named by ``ComposioCredentialForm.fields``. Blank optional values are dropped rather than forwarded; an empty string is a value as far as the vendor is concerned.
 	Values map[string]string `json:"values"`
+
+	// VaultEntryRefs Vendor field name to the ``entry_id`` of an existing Runtime Vault entry whose value should be used for that field, instead of typing it into ``values``. A field may appear in ``values`` or here, never both. Only entries the org itself owns resolve: a platform-managed credential, an entry of another organization, an expired entry or an unknown id are all refused with the same 422, so the answer never says which. Requires a signed-in person who may manage the org's vault policies (403 otherwise, including for bots and API keys). The value is **copied** at submit time: rotating the source entry later does not update the integration. Any field may be referenced, secret or not, because the vendor's ``is_secret`` flag is not trusted to decide how a value is handled.
+	VaultEntryRefs *map[string]openapi_types.UUID `json:"vault_entry_refs,omitempty"`
 }
 
 // ComposioCredentialState What an installed tile's credential section renders.
@@ -2103,6 +3577,12 @@ type ComposioCredentialState struct {
 
 	// ToolkitSlug Composio toolkit the fields belong to; NULL when this is not a Composio tile
 	ToolkitSlug *string `json:"toolkit_slug"`
+
+	// VaultDisconnectReason Why the tile was disconnected, when ``vault_sync_state`` is ``disconnected``; NULL otherwise. ``source_deleted``: a linked vault secret was deleted — the fields still carrying its ``source_vault_entry_id`` are the ones to re-point.
+	VaultDisconnectReason *ComposioVaultDisconnectReason `json:"vault_disconnect_reason"`
+
+	// VaultSyncState Out-of-sync marker for a tile whose fields are linked to Runtime Vault secrets. NULL when the tile matches the vault (or links nothing).
+	VaultSyncState *ComposioVaultSyncState `json:"vault_sync_state"`
 }
 
 // ComposioCredentialStateField One input on an *installed* tile's credential form.
@@ -2114,11 +3594,21 @@ type ComposioCredentialState struct {
 // vendor spec read the same way — an edit form that rendered a *stored* copy
 // of the spec would drift from the vendor exactly as an install form would.
 //
-// “is_set“ is the only thing ever said about a stored value. Not its length,
-// not a masked prefix, not its age: a suffix or a length is a real reduction
-// of the search space for the value, and no part of this screen needs one to
-// do its job. The input beside it is always empty, and leaving it empty means
-// "leave this one alone".
+// For a credential, “is_set“ is the only thing ever said about a stored
+// value. Not its length, not a masked prefix, not its age: a suffix or a
+// length is a real reduction of the search space for the value, and no part
+// of this screen needs one to do its job. The input beside it is empty, and
+// leaving it empty means "leave this one alone".
+//
+// **The exception is a field that is plainly not a credential** (#3044), such
+// as a workspace URL, a region or a subdomain. Its stored value comes back in
+// “value“ so the form can show it prefilled and editable. The rule is in
+// :func:`botyard_core.services.composio.credential_display.may_display_stored_value`.
+// It needs the vendor's live flag, Botyard's catalogue snapshot and a broad
+// credential-name check to all agree. A field that is linked to a Runtime
+// Vault entry never carries a “value“: that value belongs to the vault and
+// is shown under the vault's own permissions. “value“ only ever reaches a
+// caller who may already replace this tile's credentials.
 type ComposioCredentialStateField struct {
 	// Default The vendor's suggested value, to prefill the input with
 	Default *string `json:"default"`
@@ -2129,10 +3619,10 @@ type ComposioCredentialStateField struct {
 	// DisplayName Label to show the customer
 	DisplayName string `json:"display_name"`
 
-	// IsSecret Whether to mask this input. The vendor's own answer, spot-checked across the catalogue and correct every time. It governs **masking only**: every collected value is stored as a secret regardless, so that a vendor flipping this flag can never silently downgrade a live credential.
+	// IsSecret Whether to mask this input: the vendor's own flag, OR'd with a password-name check. The vendor's flag alone is not reliable. It was right for every API_KEY toolkit checked, but four BASIC toolkits mark their required ``password`` as not secret. It governs **masking only**: every collected value is stored as a secret regardless, so a vendor flipping this flag can never silently downgrade a live credential.
 	IsSecret *bool `json:"is_secret,omitempty"`
 
-	// IsSet Whether Botyard holds a stored value for this field. Render it as a 'set' indicator next to an **empty** input — never as a value, a mask, or a length. False on a field the customer has never filled in, and false for every field of a tile installed before Botyard kept its own copy.
+	// IsSet Whether Botyard holds a stored value for this field. When ``value`` is null, render it as a 'set' indicator next to an **empty** input — never as a mask or a length. False on a field the customer has never filled in, and false for every field of a tile installed before Botyard kept its own copy.
 	IsSet *bool `json:"is_set,omitempty"`
 
 	// Name Wire key to submit this value under. Frequently a meaningless slot — ``builder_io`` calls its public key ``generic_api_key`` and its private key ``generic_id`` — so never infer sensitivity from it. Use ``is_secret``.
@@ -2140,6 +3630,12 @@ type ComposioCredentialStateField struct {
 
 	// Required Whether the install is refused without it. About *presence*, not about being the credential — several toolkits require only a host or subdomain and make the key itself optional.
 	Required *bool `json:"required,omitempty"`
+
+	// SourceVaultEntryId The Runtime Vault entry this field's stored value is linked to, when it was supplied as a vault reference rather than typed. The tile holds a linked copy: a change to that entry is pushed to the integration in the background (see ``vault_sync_state`` for a push that is pending, failed, or whose entry was deleted). NULL for a typed value.
+	SourceVaultEntryId *string `json:"source_vault_entry_id"`
+
+	// Value The stored value, **only** for a field that is plainly not a credential (a URL, a region, a subdomain): the vendor does not mark it secret, Botyard's catalogue snapshot does not either, and neither its name nor its label looks like a password, token, secret or key. Prefill the input with it; submitting it unchanged is the same as leaving the field alone. NULL for every secret field, for every field linked to a Runtime Vault entry (``source_vault_entry_id``), and for anything not stored. Only returned to callers who may replace this tile's credentials.
+	Value *string `json:"value"`
 }
 
 // ComposioCredentialUpdateRequest A submitted credential *edit*.
@@ -2162,7 +3658,30 @@ type ComposioCredentialStateField struct {
 type ComposioCredentialUpdateRequest struct {
 	// Values Vendor field name to new value, as named by ``ComposioCredentialState.fields``. Send only the fields being changed: an omitted or blank field keeps its stored value. A submission with nothing non-blank in it is refused rather than treated as a no-op rotation, because rebuilding the connection is not free — it replaces the vendor account the tile's live session is pinned to.
 	Values map[string]string `json:"values"`
+
+	// VaultEntryRefs Vendor field name to the ``entry_id`` of an existing Runtime Vault entry to use as that field's new value. Same rules as on install: a field may appear in ``values`` or here but not both, only org-owned entries resolve (anything else is the same 422), a signed-in person with vault-policy management is required, and the value is copied, not linked. A referenced field counts as changed.
+	VaultEntryRefs *map[string]openapi_types.UUID `json:"vault_entry_refs,omitempty"`
 }
+
+// ComposioOAuthConnect Connect opens the vendor's consent page through Composio.
+type ComposioOAuthConnect struct {
+	Kind string `json:"kind"`
+}
+
+// ComposioOAuthConnectAttempt A Composio tile's authorisation (connect method “composio_oauth“).
+type ComposioOAuthConnectAttempt struct {
+	// Connection The pollable state of one authorisation attempt.
+	Connection ComposioConnectionDetail `json:"connection"`
+	Kind       string                   `json:"kind"`
+}
+
+// ComposioVaultDisconnectReason Why a vault-linked tile was disconnected (#3016).
+type ComposioVaultDisconnectReason string
+
+// ComposioVaultSyncState Why a vault-linked tile may not match its Runtime Vault secrets right now (#3016).
+//
+// Absent (“null“) means in sync: every linked field holds the vault's current value.
+type ComposioVaultSyncState string
 
 // ConditionBotFilterField defines model for Condition_BotFilterField_.
 type ConditionBotFilterField struct {
@@ -2191,6 +3710,34 @@ type ConditionMcpCatalogFilterField struct {
 
 // ConditionMcpCatalogFilterFieldKind defines model for ConditionMcpCatalogFilterField.Kind.
 type ConditionMcpCatalogFilterFieldKind string
+
+// ConditionSkillFilterField defines model for Condition_SkillFilterField_.
+type ConditionSkillFilterField struct {
+	// Field Filterable fields on the skill search endpoint.
+	Field SkillFilterField               `json:"field"`
+	Kind  *ConditionSkillFilterFieldKind `json:"kind,omitempty"`
+
+	// Operator Comparison operators allowed in a Condition leaf.
+	Operator FilterOp    `json:"operator"`
+	Value    interface{} `json:"value"`
+}
+
+// ConditionSkillFilterFieldKind defines model for ConditionSkillFilterField.Kind.
+type ConditionSkillFilterFieldKind string
+
+// ConditionWorkforceTaskFilterField defines model for Condition_WorkforceTaskFilterField_.
+type ConditionWorkforceTaskFilterField struct {
+	// Field Filterable fields for workforce task search.
+	Field WorkforceTaskFilterField               `json:"field"`
+	Kind  *ConditionWorkforceTaskFilterFieldKind `json:"kind,omitempty"`
+
+	// Operator Comparison operators allowed in a Condition leaf.
+	Operator FilterOp    `json:"operator"`
+	Value    interface{} `json:"value"`
+}
+
+// ConditionWorkforceTaskFilterFieldKind defines model for ConditionWorkforceTaskFilterField.Kind.
+type ConditionWorkforceTaskFilterFieldKind string
 
 // ConfigFieldDiff One differing field between “desired_config“ and “reconciled_config_json“.
 //
@@ -2244,13 +3791,207 @@ type ConfigFieldDiff_OldValue struct {
 	union json.RawMessage
 }
 
+// ConnectAction Send the user to authorise at the vendor. Only the run that issued it returns it.
+type ConnectAction struct {
+	ComposioConnectionId string            `json:"composio_connection_id"`
+	ExpiresAt            time.Time         `json:"expires_at"`
+	Kind                 ConnectActionKind `json:"kind"`
+
+	// RedirectUrl The vendor consent link. Never stored: for its life it is the authorisation. Re-run the setup for a new one.
+	RedirectUrl string `json:"redirect_url"`
+}
+
+// ConnectActionKind defines model for ConnectAction.Kind.
+type ConnectActionKind string
+
+// ConnectionSetupCredentialForm Connecting a new account means entering the vendor's credentials in Botyard's form.
+type ConnectionSetupCredentialForm struct {
+	Kind ConnectionSetupCredentialFormKind `json:"kind"`
+}
+
+// ConnectionSetupCredentialFormKind defines model for ConnectionSetupCredentialForm.Kind.
+type ConnectionSetupCredentialFormKind string
+
+// ConnectionSetupForm Connecting a new account means answering these setup-form fields.
+type ConnectionSetupForm struct {
+	// Fields Required form field ids the org cannot answer yet. What the org's vault and integration credentials already answer is not listed.
+	Fields []string                `json:"fields"`
+	Kind   ConnectionSetupFormKind `json:"kind"`
+}
+
+// ConnectionSetupFormKind defines model for ConnectionSetupForm.Kind.
+type ConnectionSetupFormKind string
+
+// ConnectionSetupNone A new server can be created with nothing to ask.
+type ConnectionSetupNone struct {
+	Kind ConnectionSetupNoneKind `json:"kind"`
+}
+
+// ConnectionSetupNoneKind defines model for ConnectionSetupNone.Kind.
+type ConnectionSetupNoneKind string
+
+// ConnectionSetupOAuth Connecting a new account means signing in at the vendor (Composio managed OAuth).
+type ConnectionSetupOAuth struct {
+	Kind ConnectionSetupOAuthKind `json:"kind"`
+}
+
+// ConnectionSetupOAuthKind defines model for ConnectionSetupOAuth.Kind.
+type ConnectionSetupOAuthKind string
+
+// ConnectionSetupSecret The secret to store in the org's Runtime Vault, and the entry there if one exists.
+type ConnectionSetupSecret struct {
+	// KeyPath The Runtime Vault key path the pack reads.
+	KeyPath string                    `json:"key_path"`
+	Kind    ConnectionSetupSecretKind `json:"kind"`
+
+	// VaultEntryId The org's usable entry at the key path (org-owned, not expired), or null when there is none yet.
+	VaultEntryId *string `json:"vault_entry_id"`
+}
+
+// ConnectionSetupSecretKind defines model for ConnectionSetupSecret.Kind.
+type ConnectionSetupSecretKind string
+
+// ConnectionSetupUnavailable No new account can be connected: the entry is missing, disabled or unworkable.
+type ConnectionSetupUnavailable struct {
+	Kind   ConnectionSetupUnavailableKind `json:"kind"`
+	Reason string                         `json:"reason"`
+}
+
+// ConnectionSetupUnavailableKind defines model for ConnectionSetupUnavailable.Kind.
+type ConnectionSetupUnavailableKind string
+
+// ContainerImageMcpCatalogEntryDetail The app's creation contract for a container-image (or npx) template.
+type ContainerImageMcpCatalogEntryDetail struct {
+	// Billing Billing facts for explicitly creating from a catalogue entry.
+	Billing McpCatalogBillingImplications `json:"billing"`
+
+	// ConfigurationFields Fields the install asks for: the template's form fields, or for a tile installed with the vendor's own credentials, the vendor's fields as snapshotted at import (target type vendor_credential; secret_ref-only fields are credentials, plaintext-only ones are not). Empty for such a tile when the snapshot was not captured
+	ConfigurationFields *[]McpCatalogFormField `json:"configuration_fields,omitempty"`
+
+	// ConnectMethod How Connect works for a connect-first tile (requires_connect true), or null for any other tile. 'composio_oauth': the popup is the vendor's consent page. 'platform_login': the popup is Botyard's own sign-in page (username, password, then an emailed code), started with POST /integration-logins; the password is never stored. Either way the server is created by the platform when the connection succeeds.
+	ConnectMethod *ContainerImageMcpCatalogEntryDetail_ConnectMethod `json:"connect_method"`
+
+	// ConsentNote Tile-specific disclosure that must be shown to the human approving this install, when the tile carries one. Not a description: it is what the approver is agreeing to, not what the tile does. An addendum to consent_shape for the four canned shapes, never a replacement for one; when consent_shape is 'custom' this text is the body of the disclosure headed by consent_title, and is always present
+	ConsentNote *string `json:"consent_note"`
+
+	// ConsentShape What a customer is actually agreeing to when they authorise a tile.
+	//
+	// For the four *canned* members the member selects the disclosure and the
+	// *copy* belongs to the frontend. That split is most of the point of the type:
+	// an operator picking a member cannot mistype a claim about the customer's
+	// data, and an operator who has never seen this file is not silently asked to
+	// compose one.
+	//
+	// Before this existed the App shipped one hardcoded paragraph above every
+	// Authorise button, asserting all three of *connects as you*, *shared
+	// org-wide*, and *carries your private surface*. That is true of Slack and
+	// false of Google Ads, where the account being linked belongs to the company,
+	// not to the person clicking. A disclosure that overstates is not harmless: it
+	// trains people to skip the next one.
+	//
+	// ``SHARED_ACCOUNT`` and ``NONE`` both drop the personal-surface claim, and
+	// they are not the same. ``SHARED_ACCOUNT`` still has an authorisation step
+	// and still shares one credential across every bot in the org — the customer
+	// needs to know that — whereas ``NONE`` is a tile with nothing to disclose at
+	// all. Collapsing them would put a tile with real org-wide reach behind
+	// silence.
+	//
+	// :attr:`NONE` is deliberately explicit rather than modelled as an absent
+	// value. The column is NOT NULL precisely so that "no warning" is something an
+	// operator chose and can be seen to have chosen, instead of the state a row
+	// falls into when nobody got round to classifying it.
+	//
+	// **Why :attr:`CUSTOM` exists, and why it is not the exception that eats the
+	// rule.** A closed enum is correct when the platform owns the claim. The rule
+	// it was borrowed from guards a statement about *Botyard's own* data handling
+	// ("your prompts are never used for training"), which an operator must not be
+	// able to forge or soften. This disclosure is a different sentence: it
+	// describes what a *third-party* OAuth tile hands over, which is precisely the
+	// thing the operator knows and the platform does not. There is no platform
+	// claim to impersonate here — the operator is the accountable author of the
+	// true statement, and four canned members can only ever approximate it. The
+	// "admin" in question is Botyard staff in Admin -> MCP catalogue; the threat
+	// model is an honest typo, not a hostile tenant.
+	//
+	// The cost is real and was accepted deliberately rather than argued away: a
+	// *stale* custom disclosure is worse than a generic-but-true one, because
+	// specificity reads as authority. The mitigations are an audit trail that
+	// keeps both sides of every edit (see
+	// :class:`~botyard_core.audit_events.AdminMcpCatalogEntryUpdatedContent`) and
+	// deliberate selection, not prohibition.
+	//
+	// ``CUSTOM`` is the one member whose *note* is load-bearing: it replaces the
+	// platform paragraph rather than sitting beneath it, so a ``CUSTOM`` row with
+	// no note is a shape naming a text that does not exist — an empty warning box
+	// at the Authorise click. That state is refused by the API and by
+	// ``ck_mcp_catalog_custom_shape_requires_consent_note``, and unlike
+	// ``operator_consent_note_required`` the requirement is intrinsic to the
+	// member rather than a separate flag an operator sets.
+	ConsentShape *McpConsentShape `json:"consent_shape,omitempty"`
+
+	// ConsentTitle Headline of an operator-authored disclosure, present only when consent_shape is 'custom'. Read it together with consent_note: the two are one disclosure, and quoting the body to the approving human without the headline drops the part they would have read first
+	ConsentTitle           *string                            `json:"consent_title"`
+	CreateGuidance         string                             `json:"create_guidance"`
+	CredentialRequirements *[]McpCatalogCredentialRequirement `json:"credential_requirements,omitempty"`
+	Description            *string                            `json:"description"`
+	FormSpecVersion        *int                               `json:"form_spec_version"`
+
+	// Image Container image this template pins. Locked unless ``configuration_fields`` exposes a top-level ``image`` target, so a configured create must pass exactly this value.
+	Image             string `json:"image"`
+	McpCatalogEntryId string `json:"mcp_catalog_entry_id"`
+	Name              string `json:"name"`
+
+	// PackagingKind How a catalog tile is packaged, which is not how its rows run.
+	//
+	// Open-ended: a package-manager backed tile is a new label here and needs no
+	// change to :class:`McpServerRuntimeKind`, because it still installs as one of
+	// the runtimes that already exist. ``npx`` is the standing example — an npx
+	// tile is deployed as a ``container_image`` row running the shared npx runner.
+	//
+	// Shares the ``mcp_server_runtime_kind`` Postgres type with
+	// :class:`McpServerRuntimeKind`; the labels are a superset, so the two map
+	// onto the same type without a migration.
+	PackagingKind McpCatalogPackagingKind `json:"packaging_kind"`
+
+	// Port Container port this template pins. Locked unless ``configuration_fields`` exposes a top-level ``port`` target, so a configured create must pass exactly this value.
+	Port int `json:"port"`
+
+	// Provisioning Externally visible effects of the explicit creation action.
+	Provisioning McpCatalogProvisioningImplications `json:"provisioning"`
+
+	// RequiresConnect True when this tile is installed by *authorising* it, not by filling in a form. The create path refuses it: the server row is created only once a human has returned from the vendor's consent screen connected. Such a tile reads as zero-config — no configuration_fields, no credential_requirements — so without this flag the contract is indistinguishable from a one-call install that it is not.
+	RequiresConnect *bool `json:"requires_connect,omitempty"`
+
+	// RequiresCredentials True when this tile is installed by a human entering the vendor's credentials into a Botyard form. The create path refuses it. When the vendor's field spec was captured at import, configuration_fields lists the fields (target type vendor_credential; secret_ref-only fields are credentials, plaintext-only ones are not) for display — the install still validates against the vendor's live spec. When it was not captured, configuration_fields is empty. An agent must not attempt to collect a credential itself; chat is not an acceptable channel for one.
+	RequiresCredentials *bool `json:"requires_credentials,omitempty"`
+
+	// RuntimeKind The runtime_kind to pass to create_mcp_server for this template. A packaging kind such as npx is translated for you here, so this value is always accepted by the create tool.
+	RuntimeKind ContainerImageMcpCatalogEntryDetailRuntimeKind `json:"runtime_kind"`
+	Slug        string                                         `json:"slug"`
+
+	// Source Who owns a reusable MCP catalog entry.
+	Source            McpCatalogEntrySource `json:"source"`
+	TemplateUpdatedAt time.Time             `json:"template_updated_at"`
+
+	// Transport Wire transport a deployed MCP server exposes to the gateway.
+	Transport McpServerTransport `json:"transport"`
+}
+
+// ContainerImageMcpCatalogEntryDetail_ConnectMethod How Connect works for a connect-first tile (requires_connect true), or null for any other tile. 'composio_oauth': the popup is the vendor's consent page. 'platform_login': the popup is Botyard's own sign-in page (username, password, then an emailed code), started with POST /integration-logins; the password is never stored. Either way the server is created by the platform when the connection succeeds.
+type ContainerImageMcpCatalogEntryDetail_ConnectMethod struct {
+	union json.RawMessage
+}
+
+// ContainerImageMcpCatalogEntryDetailRuntimeKind The runtime_kind to pass to create_mcp_server for this template. A packaging kind such as npx is translated for you here, so this value is always accepted by the create tool.
+type ContainerImageMcpCatalogEntryDetailRuntimeKind string
+
 // ContainerImageMcpServerCreate Register a new MCP server that Botyard will run as a K8s pod.
 type ContainerImageMcpServerCreate struct {
 	// Args Argv-style arguments appended to command/entrypoint
 	Args *[]string `json:"args"`
 
 	// CatalogFormAnswers Answers to the linked template's setup form, keyed by form field id. The platform projects each answer onto the target the template declares for that field, so a caller never has to compile the form into env vars, mounts or headers itself — and never has to restate a value the template owns. Requires ``mcp_catalog_entry_id``; an unknown field id, a mode the field does not allow, or a missing required answer is refused by name. Answers are projected after template inheritance, so an answer always beats the template's baked default. Answering a field and also writing its target directly is refused rather than silently resolved one way or the other.
-	CatalogFormAnswers *map[string]McpCatalogFormFieldValue `json:"catalog_form_answers,omitempty"`
+	CatalogFormAnswers *map[string]McpCatalogFormFieldValueInput `json:"catalog_form_answers,omitempty"`
 
 	// Command Argv-style entrypoint override (null = use image default)
 	Command *[]string `json:"command"`
@@ -2305,6 +4046,9 @@ type ContainerImageMcpServerCreate struct {
 	// RequestTimeoutSeconds Override (seconds) for the gateway's request timeout when proxying tool calls to this MCP. Omit/null to inherit the gateway default. Applies to both runtime kinds.
 	RequestTimeoutSeconds *int `json:"request_timeout_seconds"`
 
+	// Resources Compute for the server's pod as a list of MeteredResource line-items (only the resources being set; the rest keep the platform default shape). storage sizes the writable scratch volume. Omit to run the platform default shape. Billed like bot resources: anything above the plan's included MCP server resources needs a payment method, and the plan's per-MCP-server maximums apply.
+	Resources *ResourceQuantities `json:"resources"`
+
 	// RuntimeKind Runtime kind tag — always ``container_image`` for this variant
 	RuntimeKind ContainerImageMcpServerCreateRuntimeKind `json:"runtime_kind"`
 
@@ -2343,6 +4087,12 @@ type ContainerImageMcpServerDetail struct {
 
 	// Command Argv-style entrypoint override (null = image default)
 	Command *[]string `json:"command"`
+
+	// ComposioConnectionId The Composio authorisation behind this server, for tiles installed through the connect-first flow; null for every other server. It is what a reconnect is started against.
+	ComposioConnectionId *string `json:"composio_connection_id"`
+
+	// ComposioConnectionState Health of that authorisation, which is **not** the same question as ``observed_state``. A tile whose customer revoked Botyard in their own Google or Slack settings is still ``running`` — the server is up, its endpoint is right, its assignments are intact — and every tool call on it fails. ``needs_reauth`` is that case and is the one worth surfacing: show the tile as degraded and offer the reconnect, rather than reporting a platform fault for something only the customer can fix. Null for a server that is not a Composio tile; ``connected`` when the authorisation is known good.
+	ComposioConnectionState *ComposioConnectionState `json:"composio_connection_state"`
 
 	// ConfigGeneration Monotonic config generation counter bumped on every provisioning-relevant update
 	ConfigGeneration int `json:"config_generation"`
@@ -2425,6 +4175,26 @@ type ContainerImageMcpServerDetail struct {
 	// RequestTimeoutSeconds Per-server gateway request-timeout override (seconds); null inherits the gateway default.
 	RequestTimeoutSeconds *int `json:"request_timeout_seconds"`
 
+	// Resources A set of resource line-items as K8s quantities, keyed by metered resource.
+	//
+	// Used in two roles, distinguished only by completeness:
+	//
+	// * **Plan defaults** (``Plan.resource_defaults[consumer]``) — a complete base
+	//   bundle: every billable ceiling (``cpu_limit`` / ``memory_limit`` /
+	//   ``storage``) set; requests optional (burstable-derived when omitted). There
+	//   is no global fallback — a consumer that can't resolve a complete bundle is
+	//   an invariant break (see ``ResourceDefaultsUnavailableError``).
+	// * **API ``resources``** (create / update) — a *sparse patch*: only the
+	//   line-items the caller is changing ("send what you want to update"). Custom
+	//   values are gated to the enterprise plan at the route. On the read path the
+	//   block carries the bot's full effective resources.
+	//
+	// At most one line-item per resource type.
+	Resources ResourceQuantities `json:"resources"`
+
+	// ResourcesCustomized True once someone set resources on this server; false while it runs the platform default shape.
+	ResourcesCustomized *bool `json:"resources_customized,omitempty"`
+
 	// RuntimeKind Runtime kind tag — always ``container_image`` for this variant
 	RuntimeKind ContainerImageMcpServerDetailRuntimeKind `json:"runtime_kind"`
 
@@ -2444,7 +4214,7 @@ type ContainerImageMcpServerDetail struct {
 	SetupFormSpecVersion *int `json:"setup_form_spec_version"`
 
 	// SetupFormValues Form-shaped setup values derived from the current server config
-	SetupFormValues *map[string]McpCatalogFormFieldValue `json:"setup_form_values,omitempty"`
+	SetupFormValues *map[string]McpCatalogFormFieldValueOutput `json:"setup_form_values,omitempty"`
 
 	// SetupLogoHref Same-origin URL to render this server's setup logo from, or null when no artwork is cached. Prefer this over setup_logo_url for display: the logo is painted through a CSS mask, which is a CORS-restricted resource, so a third-party URL that sends no Access-Control-Allow-Origin header paints nothing at all
 	SetupLogoHref *string `json:"setup_logo_href"`
@@ -2482,6 +4252,12 @@ type ContainerImageMcpServerDetailRuntimeKind string
 
 // ContainerImageMcpServerSummary Summary projection of a container-image MCP server row.
 type ContainerImageMcpServerSummary struct {
+	// ComposioConnectionId The Composio authorisation behind this server, for tiles installed through the connect-first flow; null for every other server. It is what a reconnect is started against.
+	ComposioConnectionId *string `json:"composio_connection_id"`
+
+	// ComposioConnectionState Health of that authorisation, which is **not** the same question as ``observed_state``. A tile whose customer revoked Botyard in their own Google or Slack settings is still ``running`` — the server is up, its endpoint is right, its assignments are intact — and every tool call on it fails. ``needs_reauth`` is that case and is the one worth surfacing: show the tile as degraded and offer the reconnect, rather than reporting a platform fault for something only the customer can fix. Null for a server that is not a Composio tile; ``connected`` when the authorisation is known good.
+	ComposioConnectionState *ComposioConnectionState `json:"composio_connection_state"`
+
 	// CreatedAt When the server was registered
 	CreatedAt time.Time `json:"created_at"`
 
@@ -2581,7 +4357,8 @@ type ContainerImageMcpServerSummaryRuntimeKind string
 // fill the window. Sessions were observed overflowing at ~258k compaction
 // tokens with only 47-72 messages.
 //
-// Unlike :class:`ContextPruningConfig` this does not depend on prompt-cache
+// Unlike OpenClaw's cache-TTL context pruning (which Botyard switches off;
+// see the v2026.6.1 serializer) this does not depend on prompt-cache
 // eligibility — “resolveAgentContextLimits“ takes no provider or auth input,
 // and the persistence write path is ungated (it even falls back to 16000
 // rather than "unbounded" when the context window is unknown). So on the
@@ -2610,73 +4387,30 @@ type ContextLimitsConfig struct {
 	ToolResultMaxChars *int `json:"tool_result_max_chars"`
 }
 
-// ContextPruningConfig Cache-TTL pruning of *old tool results* out of the in-memory context.
-//
-// Complements compaction rather than duplicating it. Compaction summarises
-// *conversation* messages and explicitly refuses to run when there are none
-// ("[compaction] skipping — no real conversation messages"), which is why a
-// second overflow inside one turn is unrecoverable: after the first compaction
-// rotates the transcript, the window refills with tool output that compaction
-// will not touch. Pruning is the only mechanism that reclaims that space —
-// it soft-trims oversized old tool results (head+tail with a “...“ marker)
-// and hard-clears the rest to a placeholder, in memory only; the on-disk
-// transcript is never rewritten.
-//
-// **Known limitation — this does not reach every bot.** OpenClaw registers the
-// pruning extension only in the embedded (“pi“) agent runner, and only when
-// “isCacheTtlEligibleProvider“ holds: provider “anthropic“ /
-// “anthropic-vertex“, an Anthropic model on Bedrock, “modelApi ==
-// anthropic-messages“, or Gemini 2.5/3 on “google-generative-ai“. A bot
-// whose primary is an OpenAI-family model routed through the Botyard proxy is
-// *not* eligible and gets nothing from this block — for those bots
-// :class:`ContextLimitsConfig` is the whole fix. Emitting it anyway is
-// deliberate: it is inert where ineligible, and where eligible it turns
-// pruning on for providers nothing auto-configures (Gemini).
-//
-// **“ttl“ is deliberately not set here.** It is a prompt-cache *coherence*
-// knob, not a responsiveness one: pruning rewrites the prompt prefix, so the
-// TTL exists to hold pruning back until the provider's prompt cache has
-// lapsed anyway, at which point the re-cache is free. OpenClaw's Anthropic
-// auto-config is a matched set — “ttl: 1h“ alongside a 1h heartbeat that
-// deliberately keeps an extended cache warm — and overriding the TTL alone
-// would prune into that warm cache and bust it, precisely when it is most
-// expensive (pruning only engages once the context is >=30% full). Since this
-// block is inert on the OpenAI-family bots that were actually overflowing,
-// any TTL we pinned would apply *only* to bots that were not failing. Leave it
-// to OpenClaw unless there is a measured cache-cost/context-pressure tradeoff
-// to act on.
-type ContextPruningConfig struct {
-	// KeepLastAssistants Number of trailing assistant turns kept unpruned. None omits the key so OpenClaw uses its built-in (3).
-	KeepLastAssistants *int `json:"keep_last_assistants"`
-
-	// MinPrunableToolChars Minimum total chars across prunable tool results before the hard-clear pass runs (soft-trim is not gated by it). The gate is summed over **post-soft-trim** sizes, so a result saturated at ``tool_result_max_chars`` has already been cut to ~3.1k chars (``softTrim`` head 1500 + tail 1500 + notice) by the time it counts: OpenClaw's built-in 50000 needs ~16 such results, and this 32000 needs ~10. A modest loosening, not the two-result trigger it looks like — the knob that actually decides how hard pruning bites is ``softTrim.maxChars``, which Botyard does not currently override. None omits the key.
-	MinPrunableToolChars *int `json:"min_prunable_tool_chars"`
-
-	// Mode ``cache-ttl`` prunes old tool results once the prompt cache TTL has elapsed; ``off`` disables pruning. None omits the key, which lets OpenClaw's Anthropic auto-default (``cache-ttl`` + 1h TTL) apply.
-	Mode *ContextPruningConfigMode `json:"mode"`
-
-	// Ttl How long after the last prompt-cache touch before pruning may run. Defaults to None (key omitted) so OpenClaw's own value applies — its built-in is 5m and ``applyAnthropicConfigDefaults`` installs 1h for Anthropic auth, paired with a 1h heartbeat that keeps an extended cache warm. Lowering it prunes into a still-warm cache and busts it; see the class docstring before overriding.
-	Ttl *string `json:"ttl"`
-}
-
-// ContextPruningConfigMode “cache-ttl“ prunes old tool results once the prompt cache TTL has elapsed; “off“ disables pruning. None omits the key, which lets OpenClaw's Anthropic auto-default (“cache-ttl“ + 1h TTL) apply.
-type ContextPruningConfigMode string
+// ConversationScope How a conversation is scoped for access control.
+type ConversationScope string
 
 // CpuMetrics defines model for CpuMetrics.
 type CpuMetrics struct {
-	// LimitCores CPU quota expressed as cores, or null when unlimited/unavailable
+	// LimitCores Quota expressed in cores, from `cpu.max`. Absent when the host imposes no
+	// quota. Same rule as `MemoryMetrics.limit_bytes`: absent is not zero.
 	LimitCores *float32 `json:"limit_cores"`
 
-	// PercentOfLimit Current CPU consumption as percentage of the CPU limit
+	// PercentOfLimit `usage_cores` as a percentage of `limit_cores`. Absent whenever either
+	// input is absent or the quota is not positive.
 	PercentOfLimit *float32 `json:"percent_of_limit"`
 
-	// SampleWindowMs Milliseconds between the current and previous CPU samples
+	// SampleWindowMs Wall-clock span the rate above was measured over. Present exactly when
+	// `usage_cores` is present, so a consumer can judge how fresh the rate is
+	// instead of assuming a cadence.
 	SampleWindowMs *int `json:"sample_window_ms"`
 
-	// UsageCores Current CPU consumption in cores, derived from consecutive samples
+	// UsageCores Cores consumed over `sample_window_ms`. Absent on the first snapshot of a
+	// connection, and absent whenever the window is not positive.
 	UsageCores *float32 `json:"usage_cores"`
 
-	// UsageUsec Cumulative CPU usage in microseconds
+	// UsageUsec Cumulative CPU time from `cpu.stat`. Monotonic within one boot; it is the
+	// raw counter, not a rate.
 	UsageUsec *int `json:"usage_usec"`
 }
 
@@ -2686,11 +4420,12 @@ type CredentialBackedModelConfig struct {
 	ContextWindow             *int                                      `json:"context_window,omitempty"`
 	Headers                   *map[string]string                        `json:"headers,omitempty"`
 	Id                        string                                    `json:"id"`
-	Input                     *[]CredentialBackedModelConfigInput       `json:"input,omitempty"`
+	Input                     *[]InputModality                          `json:"input,omitempty"`
 	MaxActiveTranscriptBytes  *int                                      `json:"max_active_transcript_bytes"`
 	MaxTokens                 *int                                      `json:"max_tokens,omitempty"`
 	MidTurnPrecheck           *bool                                     `json:"mid_turn_precheck"`
 	Reasoning                 *bool                                     `json:"reasoning,omitempty"`
+	ReasoningEfforts          *[]string                                 `json:"reasoning_efforts"`
 	ReserveTokens             *int                                      `json:"reserve_tokens"`
 	ReserveTokensFloor        *int                                      `json:"reserve_tokens_floor"`
 	ResponsesCompactThreshold *int                                      `json:"responses_compact_threshold"`
@@ -2699,9 +4434,6 @@ type CredentialBackedModelConfig struct {
 	TextVerbosity             *CredentialBackedModelConfigTextVerbosity `json:"text_verbosity"`
 	TruncateAfterCompaction   *bool                                     `json:"truncate_after_compaction"`
 }
-
-// CredentialBackedModelConfigInput defines model for CredentialBackedModelConfig.Input.
-type CredentialBackedModelConfigInput string
 
 // CredentialBackedModelConfigTextVerbosity defines model for CredentialBackedModelConfig.TextVerbosity.
 type CredentialBackedModelConfigTextVerbosity string
@@ -2717,6 +4449,26 @@ type CredentialBotLinksResponse struct {
 	// BotIds Bot IDs explicitly assigned to this credential
 	BotIds []string `json:"bot_ids"`
 }
+
+// CredentialFormAction Enter the vendor's credentials: read the fields with “get_credential_form“.
+type CredentialFormAction struct {
+	Kind              CredentialFormActionKind `json:"kind"`
+	McpCatalogEntryId string                   `json:"mcp_catalog_entry_id"`
+}
+
+// CredentialFormActionKind defines model for CredentialFormAction.Kind.
+type CredentialFormActionKind string
+
+// CredentialFormCompletion The vendor's credentials, typed or as vault entry references. Never stored here.
+type CredentialFormCompletion struct {
+	BotPackConnectionSetupId string                       `json:"bot_pack_connection_setup_id"`
+	Kind                     CredentialFormCompletionKind `json:"kind"`
+	Values                   *map[string]string           `json:"values,omitempty"`
+	VaultEntryRefs           *map[string]string           `json:"vault_entry_refs,omitempty"`
+}
+
+// CredentialFormCompletionKind defines model for CredentialFormCompletion.Kind.
+type CredentialFormCompletionKind string
 
 // CredentialProvider Known provider vendors.
 type CredentialProvider string
@@ -2796,8 +4548,35 @@ type DeployStatus string
 // Set by the API; the reconciler drives “observed_state“ toward this value.
 type DesiredState string
 
+// DismissItem A single suggested item to dismiss for the bot.
+type DismissItem struct {
+	// Id Catalogue item id (skills.id or tool_catalog.id)
+	Id string `json:"id"`
+
+	// Kind Which catalogue surface a suggested item belongs to.
+	//
+	// Discriminates a dismissed-suggestion record (and the accept/dismiss API
+	// payloads) across the combined skills+tools suggestion surface. Stored as a
+	// lowercase string, mirroring :class:`SkillScope` / :class:`ToolRuntime`.
+	Kind SuggestionItemKind `json:"kind"`
+}
+
+// DismissSuggestionsRequest Request to dismiss one or more suggested items for the bot (idempotent).
+type DismissSuggestionsRequest struct {
+	// Items Suggested items to dismiss
+	Items []DismissItem `json:"items"`
+}
+
 // Domain Top-level product area a permission belongs to (a permission axis).
 type Domain string
+
+// DoneAction Bound, with every pack tool the server has.
+type DoneAction struct {
+	Kind DoneActionKind `json:"kind"`
+}
+
+// DoneActionKind defines model for DoneAction.Kind.
+type DoneActionKind string
 
 // EffectivePermissionResponse One permission an actor holds, with the authority that produced it.
 type EffectivePermissionResponse struct {
@@ -2880,6 +4659,35 @@ type EffectivePermissionResponse struct {
 	Source PermissionSource `json:"source"`
 }
 
+// EnvSecretRef One environment variable populated from a Runtime Vault secret.
+type EnvSecretRef struct {
+	// Name Environment variable name, e.g. GITHUB_TOKEN
+	Name string `json:"name"`
+
+	// SecretKeyPath Dotted Runtime Vault key path resolved at runtime, e.g. mcp.github.token. A pointer, never the secret value itself.
+	SecretKeyPath string `json:"secret_key_path"`
+}
+
+// EnvVar One non-sensitive environment variable.
+type EnvVar struct {
+	// Name Environment variable name, e.g. LOG_LEVEL
+	Name string `json:"name"`
+
+	// Value Literal value. Never a secret — route secrets via env_secret_refs.
+	Value string `json:"value"`
+}
+
+// FailedAction A step failed; re-run to retry.
+type FailedAction struct {
+	// Code Why a setup failed. Stored in ``failure_code``.
+	Code   PackSetupFailure `json:"code"`
+	Detail string           `json:"detail"`
+	Kind   FailedActionKind `json:"kind"`
+}
+
+// FailedActionKind defines model for FailedAction.Kind.
+type FailedActionKind string
+
 // FilterNodeBotFilterField defines model for FilterNode_BotFilterField_.
 type FilterNodeBotFilterField struct {
 	union json.RawMessage
@@ -2887,6 +4695,16 @@ type FilterNodeBotFilterField struct {
 
 // FilterNodeMcpCatalogFilterField defines model for FilterNode_McpCatalogFilterField_.
 type FilterNodeMcpCatalogFilterField struct {
+	union json.RawMessage
+}
+
+// FilterNodeSkillFilterField defines model for FilterNode_SkillFilterField_.
+type FilterNodeSkillFilterField struct {
+	union json.RawMessage
+}
+
+// FilterNodeWorkforceTaskFilterField defines model for FilterNode_WorkforceTaskFilterField_.
+type FilterNodeWorkforceTaskFilterField struct {
 	union json.RawMessage
 }
 
@@ -2988,7 +4806,8 @@ type HostingPair struct {
 	// stored config blob* rather than naming the agent software. See
 	// ``Bot.harness`` for the full note.
 	//
-	// Immutable once set — see ``Bot.harness``.
+	// Immutable once set, with one controlled exception: the audited, one-way
+	// OpenClaw → native harness switch (PlatDev #3823). See ``Bot.harness``.
 	Harness BotHarness `json:"harness"`
 
 	// HostingType Who runs the bot's runtime.
@@ -3018,6 +4837,132 @@ type IdentityConfigPatch struct {
 
 	// Theme Bot identity theme
 	Theme *string `json:"theme"`
+}
+
+// InputModality A kind of input a model accepts: text or image.
+type InputModality string
+
+// InstalledPack defines model for InstalledPack.
+type InstalledPack struct {
+	BotPackInstallId string `json:"bot_pack_install_id"`
+
+	// Plan What installing one pack version on one bot will do.
+	Plan PlannedInstall `json:"plan"`
+}
+
+// IntegrationLoginAttemptDetail One sign-in attempt, as the card and the popup read it.
+type IntegrationLoginAttemptDetail struct {
+	AttemptId   string  `json:"attempt_id"`
+	DisplayName *string `json:"display_name"`
+
+	// ExpiresAt Deadline of the current step. Past it the attempt fails 'expired'; a card may count down to it and stop polling there.
+	ExpiresAt time.Time `json:"expires_at"`
+
+	// McpCatalogEntryId The tile a new connection installs; null for a reconnect
+	McpCatalogEntryId *string `json:"mcp_catalog_entry_id"`
+
+	// Provider Known provider vendors.
+	Provider CredentialProvider                   `json:"provider"`
+	Status   IntegrationLoginAttemptDetail_Status `json:"status"`
+}
+
+// IntegrationLoginAttemptDetail_Status defines model for IntegrationLoginAttemptDetail.Status.
+type IntegrationLoginAttemptDetail_Status struct {
+	union json.RawMessage
+}
+
+// IntegrationLoginFailure Why an integration login attempt failed. Closed set (design G3).
+//
+// Worker outcomes (“invalid_credentials“, “mfa_rejected“, “rate_limited“,
+// “unexpected_page“) are passed through; the rest are the orchestrator's own:
+//
+//   - “worker_unavailable“ — the worker could not be reached or answered
+//     malformed; the login may or may not have reached Garmin.
+//   - “worker_session_lost“ — the worker no longer holds the MFA session
+//     (restart, rollout, or its TTL lapsed).
+//   - “client_id_mismatch“ — the minted token's “client_id“ claim is not the
+//     configured “garmin_oauth_client_id“; nothing was stored (a config fault).
+//   - “account_mismatch“ — a reconnect logged into a different Garmin account
+//     than the credential being reconnected; nothing was stored.
+//   - “account_connected_by_another_user“ — the Garmin account is already
+//     connected in this org by someone else; nothing was stored or rotated.
+//   - “limit_exceeded“ — a per-account or global login limit, or a 429 backoff,
+//     refused the login before it reached the worker.
+//   - “expired“ — the attempt outlived its deadline (form never submitted,
+//     MFA never entered, or a process died mid-step).
+//   - “not_permitted“ — the person signing in may not connect this
+//     integration: only someone who may create its MCP server and link the
+//     connection to it (“mcp_server.create“ plus “credential.manage“; org
+//     owners today) may. Refused before any value is stored, or, if authority
+//     was withdrawn mid-login, before the tokens are stored.
+type IntegrationLoginFailure string
+
+// JsonValueInput defines model for JsonValue-Input.
+type JsonValueInput struct {
+	union json.RawMessage
+}
+
+// JsonValueInput0 defines model for .
+type JsonValueInput0 = string
+
+// JsonValueInput1 defines model for .
+type JsonValueInput1 = int
+
+// JsonValueInput2 defines model for .
+type JsonValueInput2 = float32
+
+// JsonValueInput3 defines model for .
+type JsonValueInput3 = bool
+
+// JsonValueInput4 defines model for .
+type JsonValueInput4 = []JsonValueInput
+
+// JsonValueInput5 defines model for .
+type JsonValueInput5 map[string]*JsonValueInput
+
+// LinkedConversationSummary Safe metadata for a conversation linked to a task.
+type LinkedConversationSummary struct {
+	// BotAvatarUrl Bot avatar URL
+	BotAvatarUrl *string `json:"bot_avatar_url"`
+
+	// BotId Bot UUID for the conversation
+	BotId string `json:"bot_id"`
+
+	// BotName Bot display name
+	BotName *string `json:"bot_name"`
+
+	// BotSlug Bot slug
+	BotSlug *string `json:"bot_slug"`
+
+	// ConversationId Conversation UUID
+	ConversationId string `json:"conversation_id"`
+
+	// ConversationScope How a conversation is scoped for access control.
+	ConversationScope ConversationScope `json:"conversation_scope"`
+
+	// HasActiveProcessWatch Whether a readable linked conversation has a live durable process watch
+	HasActiveProcessWatch *bool `json:"has_active_process_watch,omitempty"`
+
+	// HasActiveTimedWake Whether a readable linked conversation has an enabled future awake timer
+	HasActiveTimedWake *bool `json:"has_active_timed_wake,omitempty"`
+
+	// IsReadable Whether the current caller can read/subscribe
+	IsReadable bool `json:"is_readable"`
+
+	// Title Conversation title
+	Title *string `json:"title"`
+
+	// UserAvatarUrl End-user avatar URL
+	UserAvatarUrl *string `json:"user_avatar_url"`
+
+	// UserEmail End-user email, when present
+	UserEmail *string `json:"user_email"`
+
+	// UserId End-user UUID, when present
+	UserId *string `json:"user_id"`
+
+	// UserName End-user display name, when present
+	UserName *string `json:"user_name"`
 }
 
 // LlmChainEntry One credential link, in the bot's routing order — stored losslessly.
@@ -3114,19 +5059,204 @@ type LlmChainState struct {
 	Reconciled *[]LlmChainEntryResponse `json:"reconciled"`
 }
 
+// LoginAwaitingCredentials The popup has not submitted the email and password yet.
+type LoginAwaitingCredentials struct {
+	Kind string `json:"kind"`
+}
+
+// LoginAwaitingMfa The provider emailed a verification code; the popup asks for it.
+type LoginAwaitingMfa struct {
+	// CodeRejected True when the previous code was wrong.
+	CodeRejected bool   `json:"code_rejected"`
+	Kind         string `json:"kind"`
+}
+
+// LoginConnected Done: the connection is stored, and “server“ says what became of the tile.
+type LoginConnected struct {
+	CredentialId string                `json:"credential_id"`
+	Kind         string                `json:"kind"`
+	Server       LoginConnected_Server `json:"server"`
+}
+
+// LoginConnected_Server defines model for LoginConnected.Server.
+type LoginConnected_Server struct {
+	union json.RawMessage
+}
+
+// LoginFailedStatus The attempt ended without a connection. Connect again to retry.
+type LoginFailedStatus struct {
+	Kind string `json:"kind"`
+
+	// Reason Why an integration login attempt failed. Closed set (design G3).
+	//
+	// Worker outcomes (``invalid_credentials``, ``mfa_rejected``, ``rate_limited``,
+	// ``unexpected_page``) are passed through; the rest are the orchestrator's own:
+	//
+	// * ``worker_unavailable`` — the worker could not be reached or answered
+	//   malformed; the login may or may not have reached Garmin.
+	// * ``worker_session_lost`` — the worker no longer holds the MFA session
+	//   (restart, rollout, or its TTL lapsed).
+	// * ``client_id_mismatch`` — the minted token's ``client_id`` claim is not the
+	//   configured ``garmin_oauth_client_id``; nothing was stored (a config fault).
+	// * ``account_mismatch`` — a reconnect logged into a different Garmin account
+	//   than the credential being reconnected; nothing was stored.
+	// * ``account_connected_by_another_user`` — the Garmin account is already
+	//   connected in this org by someone else; nothing was stored or rotated.
+	// * ``limit_exceeded`` — a per-account or global login limit, or a 429 backoff,
+	//   refused the login before it reached the worker.
+	// * ``expired`` — the attempt outlived its deadline (form never submitted,
+	//   MFA never entered, or a process died mid-step).
+	// * ``not_permitted`` — the person signing in may not connect this
+	//   integration: only someone who may create its MCP server and link the
+	//   connection to it (``mcp_server.create`` plus ``credential.manage``; org
+	//   owners today) may. Refused before any value is stored, or, if authority
+	//   was withdrawn mid-login, before the tokens are stored.
+	Reason IntegrationLoginFailure `json:"reason"`
+}
+
+// LoginInProgress The worker is signing in right now; poll again in a moment.
+type LoginInProgress struct {
+	Kind string `json:"kind"`
+}
+
+// ManagedRemoteMcpCatalogEntryDetail The app's creation contract for a managed-remote template.
+type ManagedRemoteMcpCatalogEntryDetail struct {
+	// Billing Billing facts for explicitly creating from a catalogue entry.
+	Billing McpCatalogBillingImplications `json:"billing"`
+
+	// ConfigurationFields Fields the install asks for: the template's form fields, or for a tile installed with the vendor's own credentials, the vendor's fields as snapshotted at import (target type vendor_credential; secret_ref-only fields are credentials, plaintext-only ones are not). Empty for such a tile when the snapshot was not captured
+	ConfigurationFields *[]McpCatalogFormField `json:"configuration_fields,omitempty"`
+
+	// ConnectMethod How Connect works for a connect-first tile (requires_connect true), or null for any other tile. 'composio_oauth': the popup is the vendor's consent page. 'platform_login': the popup is Botyard's own sign-in page (username, password, then an emailed code), started with POST /integration-logins; the password is never stored. Either way the server is created by the platform when the connection succeeds.
+	ConnectMethod *ManagedRemoteMcpCatalogEntryDetail_ConnectMethod `json:"connect_method"`
+
+	// ConsentNote Tile-specific disclosure that must be shown to the human approving this install, when the tile carries one. Not a description: it is what the approver is agreeing to, not what the tile does. An addendum to consent_shape for the four canned shapes, never a replacement for one; when consent_shape is 'custom' this text is the body of the disclosure headed by consent_title, and is always present
+	ConsentNote *string `json:"consent_note"`
+
+	// ConsentShape What a customer is actually agreeing to when they authorise a tile.
+	//
+	// For the four *canned* members the member selects the disclosure and the
+	// *copy* belongs to the frontend. That split is most of the point of the type:
+	// an operator picking a member cannot mistype a claim about the customer's
+	// data, and an operator who has never seen this file is not silently asked to
+	// compose one.
+	//
+	// Before this existed the App shipped one hardcoded paragraph above every
+	// Authorise button, asserting all three of *connects as you*, *shared
+	// org-wide*, and *carries your private surface*. That is true of Slack and
+	// false of Google Ads, where the account being linked belongs to the company,
+	// not to the person clicking. A disclosure that overstates is not harmless: it
+	// trains people to skip the next one.
+	//
+	// ``SHARED_ACCOUNT`` and ``NONE`` both drop the personal-surface claim, and
+	// they are not the same. ``SHARED_ACCOUNT`` still has an authorisation step
+	// and still shares one credential across every bot in the org — the customer
+	// needs to know that — whereas ``NONE`` is a tile with nothing to disclose at
+	// all. Collapsing them would put a tile with real org-wide reach behind
+	// silence.
+	//
+	// :attr:`NONE` is deliberately explicit rather than modelled as an absent
+	// value. The column is NOT NULL precisely so that "no warning" is something an
+	// operator chose and can be seen to have chosen, instead of the state a row
+	// falls into when nobody got round to classifying it.
+	//
+	// **Why :attr:`CUSTOM` exists, and why it is not the exception that eats the
+	// rule.** A closed enum is correct when the platform owns the claim. The rule
+	// it was borrowed from guards a statement about *Botyard's own* data handling
+	// ("your prompts are never used for training"), which an operator must not be
+	// able to forge or soften. This disclosure is a different sentence: it
+	// describes what a *third-party* OAuth tile hands over, which is precisely the
+	// thing the operator knows and the platform does not. There is no platform
+	// claim to impersonate here — the operator is the accountable author of the
+	// true statement, and four canned members can only ever approximate it. The
+	// "admin" in question is Botyard staff in Admin -> MCP catalogue; the threat
+	// model is an honest typo, not a hostile tenant.
+	//
+	// The cost is real and was accepted deliberately rather than argued away: a
+	// *stale* custom disclosure is worse than a generic-but-true one, because
+	// specificity reads as authority. The mitigations are an audit trail that
+	// keeps both sides of every edit (see
+	// :class:`~botyard_core.audit_events.AdminMcpCatalogEntryUpdatedContent`) and
+	// deliberate selection, not prohibition.
+	//
+	// ``CUSTOM`` is the one member whose *note* is load-bearing: it replaces the
+	// platform paragraph rather than sitting beneath it, so a ``CUSTOM`` row with
+	// no note is a shape naming a text that does not exist — an empty warning box
+	// at the Authorise click. That state is refused by the API and by
+	// ``ck_mcp_catalog_custom_shape_requires_consent_note``, and unlike
+	// ``operator_consent_note_required`` the requirement is intrinsic to the
+	// member rather than a separate flag an operator sets.
+	ConsentShape *McpConsentShape `json:"consent_shape,omitempty"`
+
+	// ConsentTitle Headline of an operator-authored disclosure, present only when consent_shape is 'custom'. Read it together with consent_note: the two are one disclosure, and quoting the body to the approving human without the headline drops the part they would have read first
+	ConsentTitle           *string                            `json:"consent_title"`
+	CreateGuidance         string                             `json:"create_guidance"`
+	CredentialRequirements *[]McpCatalogCredentialRequirement `json:"credential_requirements,omitempty"`
+	Description            *string                            `json:"description"`
+
+	// EndpointUrl Vendor endpoint this template pins, or null when the endpoint is minted per install. Locked unless ``configuration_fields`` exposes a top-level ``endpoint_url`` target.
+	EndpointUrl       *string `json:"endpoint_url"`
+	FormSpecVersion   *int    `json:"form_spec_version"`
+	McpCatalogEntryId string  `json:"mcp_catalog_entry_id"`
+	Name              string  `json:"name"`
+
+	// PackagingKind How a catalog tile is packaged, which is not how its rows run.
+	//
+	// Open-ended: a package-manager backed tile is a new label here and needs no
+	// change to :class:`McpServerRuntimeKind`, because it still installs as one of
+	// the runtimes that already exist. ``npx`` is the standing example — an npx
+	// tile is deployed as a ``container_image`` row running the shared npx runner.
+	//
+	// Shares the ``mcp_server_runtime_kind`` Postgres type with
+	// :class:`McpServerRuntimeKind`; the labels are a superset, so the two map
+	// onto the same type without a migration.
+	PackagingKind McpCatalogPackagingKind `json:"packaging_kind"`
+
+	// Provisioning Externally visible effects of the explicit creation action.
+	Provisioning McpCatalogProvisioningImplications `json:"provisioning"`
+
+	// RequiresConnect True when this tile is installed by *authorising* it, not by filling in a form. The create path refuses it: the server row is created only once a human has returned from the vendor's consent screen connected. Such a tile reads as zero-config — no configuration_fields, no credential_requirements — so without this flag the contract is indistinguishable from a one-call install that it is not.
+	RequiresConnect *bool `json:"requires_connect,omitempty"`
+
+	// RequiresCredentials True when this tile is installed by a human entering the vendor's credentials into a Botyard form. The create path refuses it. When the vendor's field spec was captured at import, configuration_fields lists the fields (target type vendor_credential; secret_ref-only fields are credentials, plaintext-only ones are not) for display — the install still validates against the vendor's live spec. When it was not captured, configuration_fields is empty. An agent must not attempt to collect a credential itself; chat is not an acceptable channel for one.
+	RequiresCredentials *bool `json:"requires_credentials,omitempty"`
+
+	// RuntimeKind The runtime_kind to pass to create_mcp_server for this template. A packaging kind such as npx is translated for you here, so this value is always accepted by the create tool.
+	RuntimeKind ManagedRemoteMcpCatalogEntryDetailRuntimeKind `json:"runtime_kind"`
+	Slug        string                                        `json:"slug"`
+
+	// Source Who owns a reusable MCP catalog entry.
+	Source            McpCatalogEntrySource `json:"source"`
+	TemplateUpdatedAt time.Time             `json:"template_updated_at"`
+
+	// Transport Wire transport a deployed MCP server exposes to the gateway.
+	Transport McpServerTransport `json:"transport"`
+}
+
+// ManagedRemoteMcpCatalogEntryDetail_ConnectMethod How Connect works for a connect-first tile (requires_connect true), or null for any other tile. 'composio_oauth': the popup is the vendor's consent page. 'platform_login': the popup is Botyard's own sign-in page (username, password, then an emailed code), started with POST /integration-logins; the password is never stored. Either way the server is created by the platform when the connection succeeds.
+type ManagedRemoteMcpCatalogEntryDetail_ConnectMethod struct {
+	union json.RawMessage
+}
+
+// ManagedRemoteMcpCatalogEntryDetailRuntimeKind The runtime_kind to pass to create_mcp_server for this template. A packaging kind such as npx is translated for you here, so this value is always accepted by the create tool.
+type ManagedRemoteMcpCatalogEntryDetailRuntimeKind string
+
 // ManagedRemoteMcpServerCreate Register a new MCP server that Botyard proxies to a vendor-hosted URL.
 type ManagedRemoteMcpServerCreate struct {
 	// AcknowledgedCredentialHost Destination the caller accepts will receive this server's Runtime Vault secrets. Required when ``secret_headers`` are set and the endpoint is not on the catalog template's own authority; must equal the authority of ``endpoint_url`` — its host, plus ``:port`` when the port is not the scheme default, so a default-port endpoint is named by host alone. Naming the destination rather than sending a bare flag is deliberate: it proves the caller knew *where* the secret was going, and a destination changed after the confirmation was shown no longer matches. Recorded to the audit trail.
 	AcknowledgedCredentialHost *string `json:"acknowledged_credential_host"`
 
 	// CatalogFormAnswers Answers to the linked template's setup form, keyed by form field id. The platform projects each answer onto the target the template declares for that field, so a caller never has to compile the form into env vars, mounts or headers itself — and never has to restate a value the template owns. Requires ``mcp_catalog_entry_id``; an unknown field id, a mode the field does not allow, or a missing required answer is refused by name. Answers are projected after template inheritance, so an answer always beats the template's baked default. Answering a field and also writing its target directly is refused rather than silently resolved one way or the other.
-	CatalogFormAnswers *map[string]McpCatalogFormFieldValue `json:"catalog_form_answers,omitempty"`
+	CatalogFormAnswers *map[string]McpCatalogFormFieldValueInput `json:"catalog_form_answers,omitempty"`
 
 	// Description Optional free-form description shown alongside the server in the UI
 	Description *string `json:"description"`
 
 	// EndpointUrl Vendor-hosted MCP URL (e.g. ``https://mcp.deepwiki.com/mcp``)
 	EndpointUrl string `json:"endpoint_url"`
+
+	// IntegrationCredentialIds Integration connections this server is linked to. Not request configuration: the gateway is authorized to fetch a short-lived access token for the connection and present it to the vendor. Only a server created from a catalog template that declares an ``integration`` field may be linked, because that field is what names the provider a token is vended for.
+	IntegrationCredentialIds *[]string `json:"integration_credential_ids,omitempty"`
 
 	// McpCatalogEntryId Catalog entry used to prefill this create payload, if any
 	McpCatalogEntryId *string `json:"mcp_catalog_entry_id"`
@@ -3180,6 +5310,12 @@ type ManagedRemoteMcpServerDetail struct {
 	// not "every bot in the org"; it is everyone. The ``restricted`` default
 	// exists so that is only ever true because somebody chose it.
 	Access *McpServerAccess `json:"access,omitempty"`
+
+	// ComposioConnectionId The Composio authorisation behind this server, for tiles installed through the connect-first flow; null for every other server. It is what a reconnect is started against.
+	ComposioConnectionId *string `json:"composio_connection_id"`
+
+	// ComposioConnectionState Health of that authorisation, which is **not** the same question as ``observed_state``. A tile whose customer revoked Botyard in their own Google or Slack settings is still ``running`` — the server is up, its endpoint is right, its assignments are intact — and every tool call on it fails. ``needs_reauth`` is that case and is the one worth surfacing: show the tile as degraded and offer the reconnect, rather than reporting a platform fault for something only the customer can fix. Null for a server that is not a Composio tile; ``connected`` when the authorisation is known good.
+	ComposioConnectionState *ComposioConnectionState `json:"composio_connection_state"`
 
 	// ConfigGeneration Monotonic config generation counter bumped on every provisioning-relevant update
 	ConfigGeneration int `json:"config_generation"`
@@ -3249,7 +5385,7 @@ type ManagedRemoteMcpServerDetail struct {
 	SetupFormSpecVersion *int `json:"setup_form_spec_version"`
 
 	// SetupFormValues Form-shaped setup values derived from the current server config
-	SetupFormValues *map[string]McpCatalogFormFieldValue `json:"setup_form_values,omitempty"`
+	SetupFormValues *map[string]McpCatalogFormFieldValueOutput `json:"setup_form_values,omitempty"`
 
 	// SetupLogoHref Same-origin URL to render this server's setup logo from, or null when no artwork is cached. Prefer this over setup_logo_url for display: the logo is painted through a CSS mask, which is a CORS-restricted resource, so a third-party URL that sends no Access-Control-Allow-Origin header paints nothing at all
 	SetupLogoHref *string `json:"setup_logo_href"`
@@ -3295,6 +5431,12 @@ type ManagedRemoteMcpServerDetail_SecretHeaderSchemes_AdditionalProperties struc
 
 // ManagedRemoteMcpServerSummary Summary projection of a managed-remote MCP server row.
 type ManagedRemoteMcpServerSummary struct {
+	// ComposioConnectionId The Composio authorisation behind this server, for tiles installed through the connect-first flow; null for every other server. It is what a reconnect is started against.
+	ComposioConnectionId *string `json:"composio_connection_id"`
+
+	// ComposioConnectionState Health of that authorisation, which is **not** the same question as ``observed_state``. A tile whose customer revoked Botyard in their own Google or Slack settings is still ``running`` — the server is up, its endpoint is right, its assignments are intact — and every tool call on it fails. ``needs_reauth`` is that case and is the one worth surfacing: show the tile as degraded and offer the reconnect, rather than reporting a platform fault for something only the customer can fix. Null for a server that is not a Composio tile; ``connected`` when the authorisation is known good.
+	ComposioConnectionState *ComposioConnectionState `json:"composio_connection_state"`
+
 	// CreatedAt When the server was registered
 	CreatedAt time.Time `json:"created_at"`
 
@@ -3403,132 +5545,6 @@ type McpCatalogCredentialRequirement struct {
 // McpCatalogCredentialRequirementKind Runtime Vault reference or linked provider connection
 type McpCatalogCredentialRequirementKind string
 
-// McpCatalogEntryDetail Side-effect-free, secret-free creation contract for one catalogue entry.
-type McpCatalogEntryDetail struct {
-	// Billing Billing facts for explicitly creating from a catalogue entry.
-	Billing             McpCatalogBillingImplications `json:"billing"`
-	ConfigurationFields *[]McpCatalogFormField        `json:"configuration_fields,omitempty"`
-
-	// ConsentNote Tile-specific disclosure that must be shown to the human approving this install, when the tile carries one. Not a description: it is what the approver is agreeing to, not what the tile does. An addendum to consent_shape for the four canned shapes, never a replacement for one; when consent_shape is 'custom' this text is the body of the disclosure headed by consent_title, and is always present
-	ConsentNote *string `json:"consent_note"`
-
-	// ConsentShape What a customer is actually agreeing to when they authorise a tile.
-	//
-	// For the four *canned* members the member selects the disclosure and the
-	// *copy* belongs to the frontend. That split is most of the point of the type:
-	// an operator picking a member cannot mistype a claim about the customer's
-	// data, and an operator who has never seen this file is not silently asked to
-	// compose one.
-	//
-	// Before this existed the App shipped one hardcoded paragraph above every
-	// Authorise button, asserting all three of *connects as you*, *shared
-	// org-wide*, and *carries your private surface*. That is true of Slack and
-	// false of Google Ads, where the account being linked belongs to the company,
-	// not to the person clicking. A disclosure that overstates is not harmless: it
-	// trains people to skip the next one.
-	//
-	// ``SHARED_ACCOUNT`` and ``NONE`` both drop the personal-surface claim, and
-	// they are not the same. ``SHARED_ACCOUNT`` still has an authorisation step
-	// and still shares one credential across every bot in the org — the customer
-	// needs to know that — whereas ``NONE`` is a tile with nothing to disclose at
-	// all. Collapsing them would put a tile with real org-wide reach behind
-	// silence.
-	//
-	// :attr:`NONE` is deliberately explicit rather than modelled as an absent
-	// value. The column is NOT NULL precisely so that "no warning" is something an
-	// operator chose and can be seen to have chosen, instead of the state a row
-	// falls into when nobody got round to classifying it.
-	//
-	// **Why :attr:`CUSTOM` exists, and why it is not the exception that eats the
-	// rule.** A closed enum is correct when the platform owns the claim. The rule
-	// it was borrowed from guards a statement about *Botyard's own* data handling
-	// ("your prompts are never used for training"), which an operator must not be
-	// able to forge or soften. This disclosure is a different sentence: it
-	// describes what a *third-party* OAuth tile hands over, which is precisely the
-	// thing the operator knows and the platform does not. There is no platform
-	// claim to impersonate here — the operator is the accountable author of the
-	// true statement, and four canned members can only ever approximate it. The
-	// "admin" in question is Botyard staff in Admin -> MCP catalogue; the threat
-	// model is an honest typo, not a hostile tenant.
-	//
-	// The cost is real and was accepted deliberately rather than argued away: a
-	// *stale* custom disclosure is worse than a generic-but-true one, because
-	// specificity reads as authority. The mitigations are an audit trail that
-	// keeps both sides of every edit (see
-	// :class:`~botyard_core.audit_events.AdminMcpCatalogEntryUpdatedContent`) and
-	// deliberate selection, not prohibition.
-	//
-	// ``CUSTOM`` is the one member whose *note* is load-bearing: it replaces the
-	// platform paragraph rather than sitting beneath it, so a ``CUSTOM`` row with
-	// no note is a shape naming a text that does not exist — an empty warning box
-	// at the Authorise click. That state is refused by the API and by
-	// ``ck_mcp_catalog_custom_shape_requires_consent_note``, and unlike
-	// ``operator_consent_note_required`` the requirement is intrinsic to the
-	// member rather than a separate flag an operator sets.
-	ConsentShape *McpConsentShape `json:"consent_shape,omitempty"`
-
-	// ConsentTitle Headline of an operator-authored disclosure, present only when consent_shape is 'custom'. Read it together with consent_note: the two are one disclosure, and quoting the body to the approving human without the headline drops the part they would have read first
-	ConsentTitle           *string                            `json:"consent_title"`
-	CreateGuidance         string                             `json:"create_guidance"`
-	CredentialRequirements *[]McpCatalogCredentialRequirement `json:"credential_requirements,omitempty"`
-	Description            *string                            `json:"description"`
-
-	// EndpointUrl Vendor endpoint this template pins (managed_remote entries only). Locked unless ``configuration_fields`` exposes a top-level ``endpoint_url`` target.
-	EndpointUrl     *string `json:"endpoint_url"`
-	FormSpecVersion *int    `json:"form_spec_version"`
-
-	// Image Container image this template pins (container_image entries only). Locked unless ``configuration_fields`` exposes a top-level ``image`` target, so a configured create must pass exactly this value.
-	Image             *string `json:"image"`
-	McpCatalogEntryId string  `json:"mcp_catalog_entry_id"`
-	Name              string  `json:"name"`
-
-	// PackagingKind How a catalog tile is packaged, which is not how its rows run.
-	//
-	// Open-ended: a package-manager backed tile is a new label here and needs no
-	// change to :class:`McpServerRuntimeKind`, because it still installs as one of
-	// the runtimes that already exist. ``npx`` is the standing example — an npx
-	// tile is deployed as a ``container_image`` row running the shared npx runner.
-	//
-	// Shares the ``mcp_server_runtime_kind`` Postgres type with
-	// :class:`McpServerRuntimeKind`; the labels are a superset, so the two map
-	// onto the same type without a migration.
-	PackagingKind McpCatalogPackagingKind `json:"packaging_kind"`
-
-	// Port Container port this template pins (container_image entries only). Locked unless ``configuration_fields`` exposes a top-level ``port`` target, so a configured create must pass exactly this value.
-	Port *int `json:"port"`
-
-	// Provisioning Externally visible effects of the explicit creation action.
-	Provisioning McpCatalogProvisioningImplications `json:"provisioning"`
-
-	// RequiresConnect True when this tile is installed by *authorising* it, not by filling in a form. The create path refuses it: the server row is created only once a human has returned from the vendor's consent screen connected. Such a tile reads as zero-config — no configuration_fields, no credential_requirements — so without this flag the contract is indistinguishable from a one-call install that it is not.
-	RequiresConnect *bool `json:"requires_connect,omitempty"`
-
-	// RequiresCredentials True when this tile is installed by a human entering the vendor's credentials into a Botyard form. The create path refuses it, and like a connect-first tile it reads as zero-config here — the fields are not in this contract because they come from the vendor and are read live when the form is rendered. An agent must not attempt to collect the credential itself; chat is not an acceptable channel for one.
-	RequiresCredentials *bool `json:"requires_credentials,omitempty"`
-
-	// RuntimeKind How an org-scoped MCP server row actually runs.
-	//
-	// Deliberately closed. Every member here is a shape a ``provider_mcp_servers``
-	// row can hold and a create body can name, and every create/update model pins
-	// one of them as a ``Literal`` discriminator. A value that cannot appear on a
-	// row does not belong in this enum: it used to carry ``npx``, which no row has
-	// ever held and no create model would accept, and advertising it to agents as
-	// a runtime kind produced calls the tool could only refuse (PlatDev #2475).
-	//
-	// How a *catalog tile* is packaged is a separate vocabulary —
-	// :class:`McpCatalogPackagingKind` — related to this one by exactly one public
-	// translation, :func:`server_runtime_kind_for_packaging`.
-	RuntimeKind McpServerRuntimeKind `json:"runtime_kind"`
-	Slug        string               `json:"slug"`
-
-	// Source Who owns a reusable MCP catalog entry.
-	Source            McpCatalogEntrySource `json:"source"`
-	TemplateUpdatedAt time.Time             `json:"template_updated_at"`
-
-	// Transport Wire transport a deployed MCP server exposes to the gateway.
-	Transport McpServerTransport `json:"transport"`
-}
-
 // McpCatalogEntrySource Who owns a reusable MCP catalog entry.
 type McpCatalogEntrySource string
 
@@ -3537,11 +5553,23 @@ type McpCatalogFilterField string
 
 // McpCatalogFormField One field in a template-specific MCP catalog form.
 type McpCatalogFormField struct {
+	// Advanced Presentation hint: render this field inside a collapsed "Advanced settings" section of the setup form, for values that have a sensible default and should rarely be changed. The field stays editable and submits exactly like any other; agents see it unchanged. A required field may only be advanced when it has a default_value, and integration fields can never be advanced.
+	Advanced *bool `json:"advanced,omitempty"`
+
 	// AllowedModes Allowed input modes for text_or_secret_ref fields
 	AllowedModes *[]McpCatalogFormInputMode `json:"allowed_modes"`
 
+	// Columns record_list only: the ordered, typed columns of one row
+	Columns *[]McpCatalogRecordColumn `json:"columns"`
+
+	// Compile record_list only: how the rows compile to JSON in the field's env target, and how secret cells become generated vault-backed env vars
+	Compile *McpCatalogRecordListCompile `json:"compile"`
+
 	// CredentialProvider Provider whose connected credentials this field offers. Required for integration fields, rejected on every other kind.
 	CredentialProvider *CredentialProvider `json:"credential_provider"`
+
+	// DefaultItems record_list only: rows the form starts with, as column id to plaintext value. Secret-capable columns may not be defaulted.
+	DefaultItems *[]map[string]string `json:"default_items"`
 
 	// DefaultMode Initial input mode for text_or_secret_ref fields
 	DefaultMode *McpCatalogFormInputMode `json:"default_mode"`
@@ -3558,11 +5586,20 @@ type McpCatalogFormField struct {
 	// Id Stable field identifier unique within the form spec
 	Id string `json:"id"`
 
+	// ItemLabel record_list only: singular noun for one row, used in "Add <item>" and the empty state. Defaults to the field label.
+	ItemLabel *string `json:"item_label"`
+
 	// Kind Renderer and validation kind
 	Kind McpCatalogFormFieldKind `json:"kind"`
 
 	// Label Human-readable field label
 	Label string `json:"label"`
+
+	// MaxItems record_list only: most rows accepted (default 50)
+	MaxItems *int `json:"max_items"`
+
+	// MinItems record_list only: fewest rows accepted (default 0, or 1 when required)
+	MinItems *int `json:"min_items"`
 
 	// Options Allowed option values for select fields
 	Options *[]string `json:"options"`
@@ -3591,7 +5628,7 @@ type McpCatalogFormFieldTarget struct {
 	// Index Argument index for arg targets when the field replaces an argv slot
 	Index *int `json:"index"`
 
-	// Name Env var name for env targets, argument placeholder name for arg targets, or HTTP header name for header targets
+	// Name Env var name for env targets, argument placeholder name for arg targets, HTTP header name for header targets, or the vendor's field key for vendor_credential targets
 	Name *string `json:"name"`
 
 	// Path Absolute container file path for file targets. The field's secret reference compiles into secret_file_mounts[path] (mounted read-only) instead of an env var. Validated with the same rules as secret_file_mounts keys.
@@ -3603,7 +5640,7 @@ type McpCatalogFormFieldTarget struct {
 	// Scheme How a header target composes its outbound value from the operator's secret. Declared by the template author rather than chosen by the operator: it is a property of what the vendor accepts, not of the credential typed in. Null sends the value verbatim.
 	Scheme *McpCatalogFormFieldTarget_Scheme `json:"scheme"`
 
-	// Type Compiler target bucket
+	// Type Compiler target bucket. vendor_credential never appears in a template's form spec: it marks a field projected from a Composio tile's vendor credential snapshot, whose value goes to the vendor at connect time rather than into the server's configuration.
 	Type McpCatalogFormFieldTargetType `json:"type"`
 }
 
@@ -3615,11 +5652,35 @@ type McpCatalogFormFieldTarget_Scheme struct {
 	union json.RawMessage
 }
 
-// McpCatalogFormFieldTargetType Compiler target bucket
+// McpCatalogFormFieldTargetType Compiler target bucket. vendor_credential never appears in a template's form spec: it marks a field projected from a Composio tile's vendor credential snapshot, whose value goes to the vendor at connect time rather than into the server's configuration.
 type McpCatalogFormFieldTargetType string
 
-// McpCatalogFormFieldValue Current value for one dynamic MCP catalog form field.
-type McpCatalogFormFieldValue struct {
+// McpCatalogFormFieldValueInput Current value for one dynamic MCP catalog form field.
+type McpCatalogFormFieldValueInput struct {
+	// Items record_list fields only: the rows, in order, each a map of column id to that cell's value (mode plaintext or secret_ref). value stays empty. Never set on any other kind, and never nested inside a cell.
+	Items *[]map[string]McpCatalogFormFieldValueInput `json:"items"`
+
+	// Mode How a *stored* form value should be interpreted.
+	//
+	// A strict superset of :class:`McpCatalogFormInputMode`, and deliberately so.
+	// ``integration`` is not an input mode: it marks the value of an integration
+	// field, which is the id of the connection this server is linked to, and
+	// nothing is injected into the pod for it. No form ever offers it as a choice.
+	//
+	// The two sets were previously four hand-copied ``Literal`` blocks with no
+	// assertion of their relationship — adding a member to one and not the others
+	// would have drifted silently (PlatDev #2518).
+	Mode *McpCatalogFormValueMode `json:"mode,omitempty"`
+
+	// Value Plaintext value or secret reference path for the field; the linked connection's credential id for integration fields
+	Value *string `json:"value,omitempty"`
+}
+
+// McpCatalogFormFieldValueOutput Current value for one dynamic MCP catalog form field.
+type McpCatalogFormFieldValueOutput struct {
+	// Items record_list fields only: the rows, in order, each a map of column id to that cell's value (mode plaintext or secret_ref). value stays empty. Never set on any other kind, and never nested inside a cell.
+	Items *[]map[string]McpCatalogFormFieldValueOutput `json:"items"`
+
 	// Mode How a *stored* form value should be interpreted.
 	//
 	// A strict superset of :class:`McpCatalogFormInputMode`, and deliberately so.
@@ -3696,6 +5757,123 @@ type McpCatalogProvisioningImplications struct {
 // McpCatalogProvisioningImplicationsTriggerAction defines model for McpCatalogProvisioningImplications.TriggerAction.
 type McpCatalogProvisioningImplicationsTriggerAction string
 
+// McpCatalogRecordColumn One typed column of a “record_list“ field — a mini form field.
+//
+// Columns are deliberately a smaller vocabulary than fields: no
+// “integration“ (a connection is a server-level decision, not a row's),
+// no “password“ (“secret_ref“ is the vault-backed way to ask), no
+// “textarea“ (a table cell), and no nested “record_list“.
+type McpCatalogRecordColumn struct {
+	// Advanced Render this cell behind the row's own "More" disclosure rather than inline. A required advanced column needs a default_value.
+	Advanced *bool `json:"advanced,omitempty"`
+
+	// AllowedModes Allowed input modes for text_or_secret_ref columns
+	AllowedModes *[]McpCatalogFormInputMode `json:"allowed_modes"`
+
+	// DefaultMode Initial input mode for text_or_secret_ref columns
+	DefaultMode *McpCatalogFormInputMode `json:"default_mode"`
+
+	// DefaultValue Value a newly added row starts with. Never allowed on secret-capable columns: a template does not answer a credential question.
+	DefaultValue *string `json:"default_value"`
+
+	// Description Help text shown as the column header's tooltip
+	Description *string `json:"description"`
+
+	// Display Optional widget hint, with the same rules as a field's display: select columns accept dropdown/radio/segmented, boolean columns switch/checkbox.
+	Display *McpCatalogRecordColumnDisplay `json:"display"`
+
+	// Id Stable column identifier unique within the record_list field
+	Id string `json:"id"`
+
+	// Kind Cell renderer and validation kind
+	Kind McpCatalogRecordColumnKind `json:"kind"`
+
+	// Label Column header label
+	Label string `json:"label"`
+
+	// Options Allowed option values for select columns
+	Options *[]string `json:"options"`
+
+	// Pattern Python/JavaScript-compatible regular expression a plaintext cell must fully match (text and text_or_secret_ref columns only)
+	Pattern *string `json:"pattern"`
+
+	// PatternMessage Message shown when a cell does not match pattern
+	PatternMessage *string `json:"pattern_message"`
+
+	// Placeholder Cell placeholder
+	Placeholder *string `json:"placeholder"`
+
+	// Required Whether every row must fill this cell
+	Required *bool `json:"required,omitempty"`
+
+	// SuggestedSecretPath Suggested dotted secret key path for secret-ref-capable columns
+	SuggestedSecretPath *string `json:"suggested_secret_path"`
+
+	// Unique Whether this cell's value must differ across rows (text, select, number)
+	Unique *bool `json:"unique,omitempty"`
+
+	// Width Layout hint for the column's share of the row
+	Width *McpCatalogRecordColumnWidth `json:"width"`
+}
+
+// McpCatalogRecordColumnDisplay Optional widget hint, with the same rules as a field's display: select columns accept dropdown/radio/segmented, boolean columns switch/checkbox.
+type McpCatalogRecordColumnDisplay string
+
+// McpCatalogRecordColumnKind Cell renderer and validation kind
+type McpCatalogRecordColumnKind string
+
+// McpCatalogRecordColumnWidth Layout hint for the column's share of the row
+type McpCatalogRecordColumnWidth string
+
+// McpCatalogRecordListCompile How a “record_list“ answer compiles into the field's env target as JSON.
+//
+// The JSON lands in “env_plaintext[target.name]“. A secret cell never does:
+// it becomes its own generated “env_secret_refs“ entry named
+// “<secret_env_prefix>_<row>“, and the JSON carries only
+// “secret_placeholder % name“ (“${NAME}“ by default) for an env-expanding
+// consumer to resolve. Generated names are positional — reordering rows
+// renames them — so they are never an identity, only a slot.
+type McpCatalogRecordListCompile struct {
+	// KeyColumn Column whose (required, unique) cell keys each row; object shape only
+	KeyColumn *string `json:"key_column"`
+
+	// SecretEnvPrefix Prefix for generated secret env vars: <prefix>_<row>
+	SecretEnvPrefix *string `json:"secret_env_prefix"`
+
+	// SecretPlaceholder How a secret cell appears inside the JSON; %s is the generated env name
+	SecretPlaceholder *string `json:"secret_placeholder,omitempty"`
+
+	// Shape object: keyed by key_column; array: a list of row values
+	Shape McpCatalogRecordListCompileShape `json:"shape"`
+
+	// Value What each row becomes. Required for object shape; for array shape it defaults to an object of every column keyed by column id.
+	Value *McpCatalogRecordValue `json:"value"`
+}
+
+// McpCatalogRecordListCompileShape object: keyed by key_column; array: a list of row values
+type McpCatalogRecordListCompileShape string
+
+// McpCatalogRecordValue What one row becomes: a single cell, or an object of cells.
+type McpCatalogRecordValue struct {
+	// Column Emit this one (required) column's cell as the row's value
+	Column *string `json:"column"`
+
+	// Columns Emit an object built from these columns' cells
+	Columns *[]McpCatalogRecordValueColumn `json:"columns"`
+}
+
+// McpCatalogRecordValueColumn One column placed into a row's output object, at an optional dotted path.
+//
+// The field is “path“, not “key“: OpenClaw's transcript redactor masks any
+// property named “key“, which would corrupt the tile in the bot's own view.
+type McpCatalogRecordValueColumn struct {
+	// Column Column id whose cell is placed here
+	Column string `json:"column"`
+
+	// Path Dotted output path inside the row object, e.g. headers.Authorization. Defaults to the column id. An empty cell omits its key.
+	Path *string `json:"path"`
+}
+
 // McpCatalogSearchRequest Request body for “POST /v1/orgs/{org_id}/mcp-servers/catalog/search“.
 type McpCatalogSearchRequest struct {
 	// Pagination Query parameters for offset-based paginated endpoints.
@@ -3723,6 +5901,57 @@ type McpCatalogSearchRequest struct {
 // thousands. A row that lands here is seeded disabled.
 type McpCatalogVendorAuthMode string
 
+// McpConnectInstalledServer The live MCP server an in-chat ask resulted in.
+type McpConnectInstalledServer struct {
+	// McpServerId The installed server
+	McpServerId string `json:"mcp_server_id"`
+
+	// Name The server's current name, as the server list shows it
+	Name string `json:"name"`
+}
+
+// McpConnectPrefillAnswer One answer the bot prefilled on a “FORM“ connect card.
+//
+// Exactly one of “value“ (“plaintext“) or “secret_ref“ (“secret_ref“)
+// is set. A plaintext answer is never a secret: the tool refuses plaintext for
+// any field that accepts a vault reference at all, and never takes a
+// “password“ field, so nothing stored here is credential material.
+type McpConnectPrefillAnswer struct {
+	// FieldId Form field this answers
+	FieldId string `json:"field_id"`
+
+	// Mode A mode an operator (or agent) can *answer* a form field in.
+	//
+	// Both members name a way of supplying a value: a literal, or a pointer to
+	// one in the Runtime Vault. What a field offers is its ``allowed_modes``; the
+	// one it starts on is its ``default_mode``.
+	Mode McpCatalogFormInputMode `json:"mode"`
+
+	// SecretRef The proposed vault secret; set only for mode secret_ref
+	SecretRef *McpConnectPrefillSecretRef `json:"secret_ref"`
+
+	// Value The plaintext answer; set only for mode plaintext
+	Value *string `json:"value"`
+}
+
+// McpConnectPrefillSecretRef A vault secret the bot proposed for a secret field, resolved server-side.
+//
+// The bot names it by key path; “request_mcp_connection“ resolves the path
+// through the bot's own lease predicate when the ask is recorded, so a bot can
+// only ever propose a secret it could lease itself, and the card never has to
+// resolve a path (platform-development #3014). Identity and label only — the
+// value never leaves the vault on this path.
+type McpConnectPrefillSecretRef struct {
+	// DisplayName The entry's display name, for the card's chip
+	DisplayName string `json:"display_name"`
+
+	// KeyPath Runtime Vault key path the bot named
+	KeyPath string `json:"key_path"`
+
+	// VaultEntryId The org-owned vault entry that key path resolved to. What the credential install takes in vault_entry_refs.
+	VaultEntryId string `json:"vault_entry_id"`
+}
+
 // McpConnectRequestState What became of one in-chat connect ask, as the card reads it on mount.
 //
 // Deliberately *not* a status of its own. The ask row stores no lifecycle —
@@ -3733,7 +5962,7 @@ type McpCatalogVendorAuthMode string
 //
 // One ask can have produced several attempts (the duplicate-name check answers
 // 409 with the name field still on screen, so rename-and-retry is ordinary), so
-// “connection“ is the *resolved* one: the authorisation that succeeded if any
+// “connect_attempt“ is the *resolved* one: the authorisation that succeeded if any
 // did, else the one still in flight, else the most recent to have ended. Which
 // is to say: the answer to "is there anything here for the reader to know or to
 // resume", never a list for a client to choose from.
@@ -3741,15 +5970,51 @@ type McpCatalogVendorAuthMode string
 // “redirect_url“ is absent, as it is from every read. Resuming an attempt
 // means resuming its **poll**, not recovering its link.
 type McpConnectRequestState struct {
-	// Connection The attempt this ask resolves to, or NULL if nobody has pressed connect yet — which is the ordinary state of a card nobody has acted on, not an error. A ``pending`` attempt here is one to resume polling, including the case where the browser that started it is long gone.
+	// ConnectAttempt The attempt this ask resolves to, by the tile's connect method, or NULL if nobody has pressed connect yet — which is the ordinary state of a card nobody has acted on, not an error. An attempt still in flight is one to resume polling, including the case where the browser that started it is long gone.
+	ConnectAttempt *McpConnectRequestState_ConnectAttempt `json:"connect_attempt"`
+
+	// Connection Deprecated, kept for app builds that predate connect_attempt (PlatDev #4266): the Composio half of connect_attempt, NULL for every other tile.
 	Connection *ComposioConnectionDetail `json:"connection"`
+
+	// InstalledServer The live server this ask resulted in: the one a template-form or confirm install bound to the ask (#3204), or the one a connected Composio attempt installed. NULL while unanswered, and again once that server is deleted, so a reopened card shows the form only when installing again is the right thing to offer. Always NULL for a platform-login ask (#4266): its outcome is the sign-in in connect_attempt.
+	InstalledServer *McpConnectInstalledServer `json:"installed_server"`
 
 	// McpCatalogEntryId Catalogue tile the ask would authorise
 	McpCatalogEntryId string `json:"mcp_catalog_entry_id"`
 
+	// Prefill Answers the bot prefilled for a form card, in field order. Plaintext answers are never secrets; secret answers are vault references already resolved to the entry and checked against the bot's own lease access. Editable by the human before they submit.
+	Prefill *[]McpConnectPrefillAnswer `json:"prefill,omitempty"`
+
 	// RequestId The ask this state belongs to
 	RequestId string `json:"request_id"`
+
+	// Variant Which in-chat card a ``request_mcp_connection`` ask renders as.
+	//
+	// Derived by the server from the catalogue tile when the ask is recorded,
+	// never chosen by the bot (platform-development #3014):
+	//
+	// * ``CONNECT`` — a connect-first tile: the human authorises at the vendor.
+	// * ``FORM`` — a tile with fields to fill in: the vendor's credential form, or
+	//   a template's configuration form. Answers the bot prefilled ride along.
+	// * ``CONFIRM`` — a zero-configuration tile: the human only confirms.
+	Variant *McpConnectVariant `json:"variant,omitempty"`
 }
+
+// McpConnectRequestState_ConnectAttempt The attempt this ask resolves to, by the tile's connect method, or NULL if nobody has pressed connect yet — which is the ordinary state of a card nobody has acted on, not an error. An attempt still in flight is one to resume polling, including the case where the browser that started it is long gone.
+type McpConnectRequestState_ConnectAttempt struct {
+	union json.RawMessage
+}
+
+// McpConnectVariant Which in-chat card a “request_mcp_connection“ ask renders as.
+//
+// Derived by the server from the catalogue tile when the ask is recorded,
+// never chosen by the bot (platform-development #3014):
+//
+//   - “CONNECT“ — a connect-first tile: the human authorises at the vendor.
+//   - “FORM“ — a tile with fields to fill in: the vendor's credential form, or
+//     a template's configuration form. Answers the bot prefilled ride along.
+//   - “CONFIRM“ — a zero-configuration tile: the human only confirms.
+type McpConnectVariant string
 
 // McpConsentShape What a customer is actually agreeing to when they authorise a tile.
 //
@@ -4002,8 +6267,11 @@ type McpServerCatalogEntry struct {
 	// Command Entrypoint override
 	Command *[]string `json:"command"`
 
-	// ConnectAuthMode How this tile is installed, or null when it needs neither flow. Branch on this only for *copy*, never to decide which flow applies: requires_connect and requires_credentials already answer that, and this field is null unless one of them is true. 'oauth2_managed' means the customer signs in to the vendor; 'api_key' means they enter credentials into a Botyard form that stores them — and note that despite the name, some toolkits in this mode ask for a username and password, so copy should say 'credentials' rather than 'API key'. A client that does not recognise the value should fall back to the neutral wording rather than assume a sign-in.
+	// ConnectAuthMode How this tile is installed, or null when it needs neither flow. Branch on this only for *copy*, never to decide which flow applies: requires_connect and requires_credentials already answer that, and this field is null unless one of them is true. 'oauth2_managed' means the customer signs in to the vendor; 'api_key', 'basic' and 'bearer_token' all mean they enter credentials into a Botyard form that stores them, and must be treated alike — despite the name, some 'api_key' toolkits ask for a username and password, so copy should say 'credentials' rather than 'API key'. A client that does not recognise the value should fall back to the neutral wording rather than assume a sign-in.
 	ConnectAuthMode *McpCatalogVendorAuthMode `json:"connect_auth_mode"`
+
+	// ConnectMethod How Connect works for a connect-first tile (requires_connect true), or null for any other tile. 'composio_oauth': the popup is the vendor's consent page. 'platform_login': the popup is Botyard's own sign-in page (username, password, then an emailed code), started with POST /integration-logins; the password is never stored. Either way the server is created by the platform when the connection succeeds.
+	ConnectMethod *McpServerCatalogEntry_ConnectMethod `json:"connect_method"`
 
 	// ConsentNote Tile-specific disclosure text to show at the authorisation step. Null for most tiles. For the four canned shapes this is an addendum to consent_shape and never a replacement for it; when consent_shape is 'custom' it is the BODY of the disclosure, beneath consent_title, and is always present
 	ConsentNote *string `json:"consent_note"`
@@ -4148,8 +6416,21 @@ type McpServerCatalogEntry struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
+// McpServerCatalogEntry_ConnectMethod How Connect works for a connect-first tile (requires_connect true), or null for any other tile. 'composio_oauth': the popup is the vendor's consent page. 'platform_login': the popup is Botyard's own sign-in page (username, password, then an emailed code), started with POST /integration-logins; the password is never stored. Either way the server is created by the platform when the connection succeeds.
+type McpServerCatalogEntry_ConnectMethod struct {
+	union json.RawMessage
+}
+
 // McpServerDesiredState Control-plane intent for an MCP server.
 type McpServerDesiredState string
+
+// McpServerHealth One org MCP server's health as an account picker shows it (bot catalogue P3).
+//
+// Read from stored state only, never from a vendor call: see
+// :func:`botyard_core.services.api.mcp_server_health.server_health` for the
+// rule. Three values, because a picker has three things to say: use it, fix
+// the sign-in, or expect it not to work.
+type McpServerHealth string
 
 // McpServerMember One principal on an MCP server's member list, with display fields resolved.
 //
@@ -4227,19 +6508,20 @@ type McpServerMemberAdd struct {
 	Role *string `json:"role,omitempty"`
 }
 
-// McpServerRuntimeKind How an org-scoped MCP server row actually runs.
-//
-// Deliberately closed. Every member here is a shape a “provider_mcp_servers“
-// row can hold and a create body can name, and every create/update model pins
-// one of them as a “Literal“ discriminator. A value that cannot appear on a
-// row does not belong in this enum: it used to carry “npx“, which no row has
-// ever held and no create model would accept, and advertising it to agents as
-// a runtime kind produced calls the tool could only refuse (PlatDev #2475).
-//
-// How a *catalog tile* is packaged is a separate vocabulary —
-// :class:`McpCatalogPackagingKind` — related to this one by exactly one public
-// translation, :func:`server_runtime_kind_for_packaging`.
-type McpServerRuntimeKind string
+// McpServerRemoval An org MCP server is never deleted (J8); its tool grants are tool items.
+type McpServerRemoval struct {
+	Action        McpServerRemovalAction `json:"action"`
+	BotPackItemId string                 `json:"bot_pack_item_id"`
+	Kind          McpServerRemovalKind   `json:"kind"`
+	McpServerId   string                 `json:"mcp_server_id"`
+	Reason        string                 `json:"reason"`
+}
+
+// McpServerRemovalAction defines model for McpServerRemoval.Action.
+type McpServerRemovalAction string
+
+// McpServerRemovalKind defines model for McpServerRemoval.Kind.
+type McpServerRemovalKind string
 
 // McpServerSetupSource How an MCP server row was created in the setup flow.
 type McpServerSetupSource string
@@ -4271,6 +6553,9 @@ type McpServerUpdate struct {
 
 	// Args Argv-style arguments appended to command. Container-image rows only.
 	Args *[]string `json:"args"`
+
+	// CatalogFormAnswers Re-answer this server's ``record_list`` template fields, keyed by field id, as ``{items: [{column: {mode, value}}]}``. The server compiles each list onto the env target JSON and its positional vault-backed slots, replacing whatever the field wrote before; a ``secret_ref`` cell's value is a Runtime Vault key path. Other field kinds are edited through the env maps they compile to. Container-image rows created from a template only.
+	CatalogFormAnswers *map[string]McpCatalogFormFieldValueInput `json:"catalog_form_answers"`
 
 	// Command Argv-style entrypoint override. Container-image rows only.
 	Command *[]string `json:"command"`
@@ -4325,6 +6610,9 @@ type McpServerUpdate struct {
 	// RequestTimeoutSeconds Per-server gateway request-timeout override (seconds). Send an explicit null to clear it and inherit the gateway default. Applies to both runtime kinds.
 	RequestTimeoutSeconds *int `json:"request_timeout_seconds"`
 
+	// Resources Pod compute as a list of MeteredResource line-items (only the resources being changed; storage = scratch volume size). Send a block to set resources on top of the server's current shape; send null to reset to the platform default shape; omit to leave unchanged. Billed like bot resources and capped by the plan's per-MCP-server maximums. Changing it restarts the pod. Container-image rows only.
+	Resources *ResourceQuantities `json:"resources"`
+
 	// SecretFileMounts Absolute container file path → secret_key_path mounted as read-only files (full replacement). Container-image rows only.
 	SecretFileMounts *map[string]string `json:"secret_file_mounts"`
 
@@ -4346,6 +6634,20 @@ type McpServerUpdate_SecretHeaderSchemes_AdditionalProperties struct {
 	union json.RawMessage
 }
 
+// McpToolRef A tool the platform serves over MCP, named, with the server it comes from.
+type McpToolRef struct {
+	// McpServer The MCP server the tool comes from, as the tool catalogue names it (e.g. 'botyard'). Lets a reader group a pack's tools by integration.
+	McpServer string            `json:"mcp_server"`
+	Name      string            `json:"name"`
+	Runtime   McpToolRefRuntime `json:"runtime"`
+	Slug      string            `json:"slug"`
+	Title     *string           `json:"title"`
+	ToolId    string            `json:"tool_id"`
+}
+
+// McpToolRefRuntime defines model for McpToolRef.Runtime.
+type McpToolRefRuntime string
+
 // McpToolSummary A single tool advertised by an MCP server's “tools/list“ handshake.
 type McpToolSummary struct {
 	// Description Human-readable description of the tool
@@ -4356,42 +6658,48 @@ type McpToolSummary struct {
 
 	// Name Tool name as reported by the MCP server
 	Name string `json:"name"`
+
+	// Title Human-readable display title advertised by the MCP server (null if none)
+	Title *string `json:"title"`
 }
 
 // MemoryEventCounters defines model for MemoryEventCounters.
 type MemoryEventCounters struct {
-	// High memory.events high counter
-	High *int `json:"high"`
-
-	// Low memory.events low counter
-	Low *int `json:"low"`
-
-	// Max memory.events max counter
-	Max *int `json:"max"`
-
-	// Oom memory.events oom counter
-	Oom *int `json:"oom"`
-
-	// OomKill memory.events oom_kill counter
+	High    *int `json:"high"`
+	Low     *int `json:"low"`
+	Max     *int `json:"max"`
+	Oom     *int `json:"oom"`
 	OomKill *int `json:"oom_kill"`
 }
 
 // MemoryMetrics defines model for MemoryMetrics.
 type MemoryMetrics struct {
-	// CurrentBytes OOM-relevant memory working set in bytes: raw cgroup usage minus inactive_file.
-	CurrentBytes *int                 `json:"current_bytes"`
-	Events       *MemoryEventCounters `json:"events"`
+	// CurrentBytes OOM-relevant working set: cgroup usage minus reclaimable `inactive_file`.
+	// This matches cAdvisor/k9s working-set semantics and excludes reclaimable
+	// file-backed cache such as mmap'd bundle pages. It is the number a user is
+	// shown, because it is the number the OOM killer cares about.
+	CurrentBytes *int `json:"current_bytes"`
 
-	// InactiveFileBytes Reclaimable inactive_file bytes subtracted from raw_current_bytes when available.
+	// Events Absent when the host exports no `memory.events`.
+	Events *MemoryEventCounters `json:"events"`
+
+	// InactiveFileBytes Reclaimable bytes subtracted from `raw_current_bytes`. Absent when the
+	// kernel did not export it, in which case `current_bytes` equals the raw
+	// usage and is a conservative overestimate.
 	InactiveFileBytes *int `json:"inactive_file_bytes"`
 
-	// LimitBytes Memory limit, or null when unlimited/unavailable
+	// LimitBytes Enforced limit. Absent when the host imposes none (`memory.max` == "max",
+	// or no cgroup at all). ABSENT IS NOT UNLIMITED-AS-ZERO and must never be
+	// rendered as a limit of any size.
 	LimitBytes *int `json:"limit_bytes"`
 
-	// PercentOfLimit Working-set memory usage as percentage of limit
+	// PercentOfLimit `current_bytes` as a percentage of `limit_bytes`. Absent whenever either
+	// input is absent or the limit is not positive. A consumer must not compute
+	// its own fallback percentage from partial inputs.
 	PercentOfLimit *float32 `json:"percent_of_limit"`
 
-	// RawCurrentBytes Raw cgroup memory usage before subtracting reclaimable inactive_file.
+	// RawCurrentBytes Raw cgroup usage before subtracting `inactive_file`. Kept so the derived
+	// working set above is auditable rather than merely asserted.
 	RawCurrentBytes *int `json:"raw_current_bytes"`
 }
 
@@ -4445,15 +6753,12 @@ type ModelConfig struct {
 	// CliAllowlist Every model the single registered claude-cli backend accepts, from the credential preset. Stored input rather than derived output: it is a catalogue snapshot of the backend, not a projection of the chain, and without it OpenClaw's ``/model`` command rejects any CLI ref the bot is not currently routed to.
 	CliAllowlist  *map[string]AllowedAgentModelConfig `json:"cli_allowlist,omitempty"`
 	ContextWindow *int                                `json:"context_window,omitempty"`
-	Input         *[]ModelConfigInput                 `json:"input,omitempty"`
+	Input         *[]InputModality                    `json:"input,omitempty"`
 	MaxTokens     *int                                `json:"max_tokens,omitempty"`
 	ProviderName  *string                             `json:"provider_name,omitempty"`
 	ProxyBaseUrl  *string                             `json:"proxy_base_url,omitempty"`
 	Reasoning     *bool                               `json:"reasoning,omitempty"`
 }
-
-// ModelConfigInput defines model for ModelConfig.Input.
-type ModelConfigInput string
 
 // ModelRef A reference to a model within an OpenClaw provider.
 //
@@ -4464,6 +6769,78 @@ type ModelRef struct {
 	Model    string  `json:"model"`
 	Provider *string `json:"provider,omitempty"`
 }
+
+// ModelRemoval defines model for ModelRemoval.
+type ModelRemoval struct {
+	Action        ModelRemovalAction `json:"action"`
+	BotPackItemId string             `json:"bot_pack_item_id"`
+	Kind          ModelRemovalKind   `json:"kind"`
+	Reason        string             `json:"reason"`
+}
+
+// ModelRemovalAction defines model for ModelRemoval.Action.
+type ModelRemovalAction string
+
+// ModelRemovalKind defines model for ModelRemoval.Kind.
+type ModelRemovalKind string
+
+// NamedCatalogEntry defines model for NamedCatalogEntry.
+type NamedCatalogEntry struct {
+	LogoHref          *string `json:"logo_href"`
+	LogoUrl           *string `json:"logo_url"`
+	McpCatalogEntryId string  `json:"mcp_catalog_entry_id"`
+	Name              string  `json:"name"`
+	Slug              string  `json:"slug"`
+}
+
+// NamedPackMcpConnection An MCP catalogue entry the pack connects, with the entry named.
+type NamedPackMcpConnection struct {
+	Kind            NamedPackMcpConnectionKind `json:"kind"`
+	McpCatalogEntry NamedCatalogEntry          `json:"mcp_catalog_entry"`
+	Purpose         *string                    `json:"purpose"`
+	Required        bool                       `json:"required"`
+	ToolNames       *[]string                  `json:"tool_names"`
+}
+
+// NamedPackMcpConnectionKind defines model for NamedPackMcpConnection.Kind.
+type NamedPackMcpConnectionKind string
+
+// NamedPackSkill A skill in a pack: which version it pins, and whether the pack needs it.
+type NamedPackSkill struct {
+	Required bool `json:"required"`
+
+	// Skill A pinned skill version, named.
+	Skill SkillVersionRef `json:"skill"`
+}
+
+// NamedPackTool A tool in a pack, and whether the pack needs it.
+type NamedPackTool struct {
+	Required bool               `json:"required"`
+	Tool     NamedPackTool_Tool `json:"tool"`
+}
+
+// NamedPackTool_Tool defines model for NamedPackTool.Tool.
+type NamedPackTool_Tool struct {
+	union json.RawMessage
+}
+
+// NamedPackVaultConnection A vault secret the installer will be asked for.
+type NamedPackVaultConnection struct {
+	Kind     NamedPackVaultConnectionKind `json:"kind"`
+	Purpose  *string                      `json:"purpose"`
+	Required bool                         `json:"required"`
+
+	// SecretSpec A Runtime Vault secret a pack needs the installing org to supply (D30).
+	//
+	// A frozen subset of ``VaultInputSecretSpec``. **There is no value field, and
+	// there never will be:** the value is entered into the buyer's own vault by
+	// the install wizard (P4). ``extra="forbid"`` makes a value-shaped key a
+	// validation error rather than something silently dropped or stored.
+	SecretSpec PackSecretSpec `json:"secret_spec"`
+}
+
+// NamedPackVaultConnectionKind defines model for NamedPackVaultConnection.Kind.
+type NamedPackVaultConnectionKind string
 
 // NativeBotConfig Platform-level native bot config — input to broker prompt rendering.
 //
@@ -4485,11 +6862,13 @@ type NativeBotConfig struct {
 	// and model is the model ID within that provider (e.g. ``"gpt-5.4"``).
 	Model ModelRef `json:"model"`
 
-	// PromptRef Optional managed-prompt ref naming the template source (directory version pins content)
-	PromptRef *string `json:"prompt_ref"`
-
-	// PromptTemplate Bot instructions template rendered into the system prompt stable prefix
-	PromptTemplate string `json:"prompt_template"`
+	// ToolImages How a native bot treats images its MCP tools return.
+	//
+	// Every field is optional and ``None`` means "the platform default", so a
+	// bot that sets nothing behaves exactly as before this model existed, and
+	// clearing a field with an explicit ``null`` patch returns it to the
+	// default. Native bots only: OpenClaw bots have no equivalent setting.
+	ToolImages *ToolImageConfig `json:"tool_images,omitempty"`
 
 	// ToolSearch Tool Search: defer tool schemas out of the prompt behind a search surface.
 	//
@@ -4542,26 +6921,16 @@ type NativeBotConfig struct {
 	ToolSearch *ToolSearchConfig `json:"tool_search,omitempty"`
 }
 
-// NativeConfigConversion Explicit repair of an existing hosted-native agent's legacy config.
-type NativeConfigConversion struct {
-	// Config Platform-level native bot config — input to broker prompt rendering.
-	//
-	// Stored as JSONB in bots.desired_config when bot_type=native. The
-	// ``bot_type`` field is the discriminator for the BotConfig union.
-	//
-	// ``extra="ignore"`` mirrors OpenClawBotConfig: old data with removed
-	// fields still reads (schema evolution safety).
-	Config NativeBotConfig `json:"config"`
-
-	// ExpectedGeneration Config generation read before requesting conversion
-	ExpectedGeneration int `json:"expected_generation"`
-}
-
 // NativeConfigPatch Patchable fields for native bot configs.
 //
-// Minimal by design: model ref + prompt ref/template + host policy only.
+// Minimal by design: model ref + host policy + tool settings only.
 // Structure mirrors “NativeBotConfig“ so “patch_model()“ applies updates
 // recursively without manual field mapping.
+//
+// The instructions are not here: a native bot's soul is a “bot_files“
+// revision, edited through the file surfaces (PlatDev #3684). Unknown fields
+// are refused rather than ignored, so a client still sending the removed
+// instructions field gets a 422 instead of a silently dropped edit.
 type NativeConfigPatch struct {
 	BotType *NativeConfigPatchBotType `json:"bot_type,omitempty"`
 
@@ -4571,11 +6940,8 @@ type NativeConfigPatch struct {
 	// Model Model ref override
 	Model *ModelRef `json:"model"`
 
-	// PromptRef Managed-prompt ref naming the template source
-	PromptRef *string `json:"prompt_ref"`
-
-	// PromptTemplate Bot instructions template
-	PromptTemplate *string `json:"prompt_template"`
+	// ToolImages Tool-image overrides (see ToolImageConfigPatch). Null or omitted means no change.
+	ToolImages *ToolImageConfigPatch `json:"tool_images"`
 
 	// ToolSearch Tool Search overrides (see ToolSearchConfigPatch)
 	ToolSearch *ToolSearchConfigPatch `json:"tool_search"`
@@ -4583,6 +6949,70 @@ type NativeConfigPatch struct {
 
 // NativeConfigPatchBotType defines model for NativeConfigPatch.BotType.
 type NativeConfigPatchBotType string
+
+// NativeLane The six native lanes at cutover (#3734).
+type NativeLane string
+
+// NativeLaneRefusal Why native owned mode refuses a credential, decided at config time (#3734 §5, #3809).
+//
+// The one vocabulary for the config-time refusal: the API answers a native
+// bot's credential edit with it (“native_lane_refused“, 422) and L8c
+// exports it to the app. It is a fact about the credential's provider and
+// protocol only, never its model: every model of a served credential is
+// served, on the wire :func:`native_route_for` picks.
+//
+// The runtime refusal stays the backstop, as the proto
+// “OWNED_REFUSAL_REASON_UNSUPPORTED_PROTOCOL“: a credential that changes
+// under a bot after the edit (an org-level credential edit) still cannot
+// reach the provider.
+type NativeLaneRefusal string
+
+// NativeLaneRefusedProblem 422 “native_lane_refused“: the body a native bot's refused credential edit gets.
+//
+// Declared on every route that re-derives a native bot's chain
+// (:data:`NATIVE_LANE_REFUSED_RESPONSES`), so the generated client types
+// “refused_links“ and its :class:`~botyard_core.native.lanes.NativeLaneRefusal`
+// reasons instead of an untyped extension bag.
+type NativeLaneRefusedProblem struct {
+	// Detail Human-readable explanation specific to this occurrence. Safe to surface to end users — never contains debugging information.
+	Detail string `json:"detail"`
+
+	// ErrorCode Always ``native_lane_refused``; switch on it to narrow the 422
+	ErrorCode NativeLaneRefusedProblemErrorCode `json:"error_code"`
+
+	// Errors Field-level failures (present on 422 responses from validation)
+	Errors *[]ProblemErrorItem `json:"errors"`
+
+	// Instance Request path that produced the error
+	Instance string `json:"instance"`
+
+	// RefusedLinks Every usable LLM credential owned mode refuses, in chain order; the same shape the harness switch's lane_refused result carries
+	RefusedLinks []RefusedNativeLink `json:"refused_links"`
+
+	// Status HTTP status code for this occurrence
+	Status int `json:"status"`
+
+	// Title Short human summary of the problem type; stable across occurrences. Fallback for humans that don't recognise the type URI.
+	Title string `json:"title"`
+
+	// TraceId OpenTelemetry trace ID (32 hex chars) when tracing is active. Lets support pivot from a failure the caller reports straight to the Tempo trace.
+	TraceId *string `json:"trace_id"`
+
+	// Type URI identifier for the problem type; primary machine identifier. Clients should switch on this (or ``error_code``), not on ``title`` or ``detail``.
+	Type                 string                 `json:"type"`
+	AdditionalProperties map[string]interface{} `json:"-"`
+}
+
+// NativeLaneRefusedProblemErrorCode Always “native_lane_refused“; switch on it to narrow the 422
+type NativeLaneRefusedProblemErrorCode string
+
+// NoRecommendedModel The pack recommends no model; the bot keeps the default.
+type NoRecommendedModel struct {
+	Kind NoRecommendedModelKind `json:"kind"`
+}
+
+// NoRecommendedModelKind defines model for NoRecommendedModel.Kind.
+type NoRecommendedModelKind string
 
 // ObservedState Operator's view of where a bot is in the reconciler phase pipeline.
 //
@@ -4686,7 +7116,8 @@ type OpenClawBotConfig struct {
 	// fill the window. Sessions were observed overflowing at ~258k compaction
 	// tokens with only 47-72 messages.
 	//
-	// Unlike :class:`ContextPruningConfig` this does not depend on prompt-cache
+	// Unlike OpenClaw's cache-TTL context pruning (which Botyard switches off;
+	// see the v2026.6.1 serializer) this does not depend on prompt-cache
 	// eligibility — ``resolveAgentContextLimits`` takes no provider or auth input,
 	// and the persistence write path is ungated (it even falls back to 16000
 	// rather than "unbounded" when the context window is unknown). So on the
@@ -4702,43 +7133,6 @@ type OpenClawBotConfig struct {
 	//   ``compaction.mid_turn_precheck=True``. The write-time cap itself is
 	//   unconditional.
 	ContextLimits *ContextLimitsConfig `json:"context_limits,omitempty"`
-
-	// ContextPruning Cache-TTL pruning of *old tool results* out of the in-memory context.
-	//
-	// Complements compaction rather than duplicating it. Compaction summarises
-	// *conversation* messages and explicitly refuses to run when there are none
-	// ("[compaction] skipping — no real conversation messages"), which is why a
-	// second overflow inside one turn is unrecoverable: after the first compaction
-	// rotates the transcript, the window refills with tool output that compaction
-	// will not touch. Pruning is the only mechanism that reclaims that space —
-	// it soft-trims oversized old tool results (head+tail with a ``...`` marker)
-	// and hard-clears the rest to a placeholder, in memory only; the on-disk
-	// transcript is never rewritten.
-	//
-	// **Known limitation — this does not reach every bot.** OpenClaw registers the
-	// pruning extension only in the embedded (``pi``) agent runner, and only when
-	// ``isCacheTtlEligibleProvider`` holds: provider ``anthropic`` /
-	// ``anthropic-vertex``, an Anthropic model on Bedrock, ``modelApi ==
-	// anthropic-messages``, or Gemini 2.5/3 on ``google-generative-ai``. A bot
-	// whose primary is an OpenAI-family model routed through the Botyard proxy is
-	// *not* eligible and gets nothing from this block — for those bots
-	// :class:`ContextLimitsConfig` is the whole fix. Emitting it anyway is
-	// deliberate: it is inert where ineligible, and where eligible it turns
-	// pruning on for providers nothing auto-configures (Gemini).
-	//
-	// **``ttl`` is deliberately not set here.** It is a prompt-cache *coherence*
-	// knob, not a responsiveness one: pruning rewrites the prompt prefix, so the
-	// TTL exists to hold pruning back until the provider's prompt cache has
-	// lapsed anyway, at which point the re-cache is free. OpenClaw's Anthropic
-	// auto-config is a matched set — ``ttl: 1h`` alongside a 1h heartbeat that
-	// deliberately keeps an extended cache warm — and overriding the TTL alone
-	// would prune into that warm cache and bust it, precisely when it is most
-	// expensive (pruning only engages once the context is >=30% full). Since this
-	// block is inert on the OpenAI-family bots that were actually overflowing,
-	// any TTL we pinned would apply *only* to bots that were not failing. Leave it
-	// to OpenClaw unless there is a measured cache-cost/context-pressure tradeoff
-	// to act on.
-	ContextPruning *ContextPruningConfig `json:"context_pruning,omitempty"`
 
 	// Gateway Gateway configuration.
 	Gateway      *GatewayConfig   `json:"gateway,omitempty"`
@@ -4925,6 +7319,669 @@ type OrMcpCatalogFilterField_Filters_Item struct {
 // OrMcpCatalogFilterFieldKind defines model for OrMcpCatalogFilterField.Kind.
 type OrMcpCatalogFilterFieldKind string
 
+// OrSkillFilterField defines model for Or_SkillFilterField_.
+type OrSkillFilterField struct {
+	Filters []OrSkillFilterField_Filters_Item `json:"filters"`
+	Kind    *OrSkillFilterFieldKind           `json:"kind,omitempty"`
+}
+
+// OrSkillFilterField_Filters_Item defines model for Or_SkillFilterField_.filters.Item.
+type OrSkillFilterField_Filters_Item struct {
+	union json.RawMessage
+}
+
+// OrSkillFilterFieldKind defines model for OrSkillFilterField.Kind.
+type OrSkillFilterFieldKind string
+
+// OrWorkforceTaskFilterField defines model for Or_WorkforceTaskFilterField_.
+type OrWorkforceTaskFilterField struct {
+	Filters []OrWorkforceTaskFilterField_Filters_Item `json:"filters"`
+	Kind    *OrWorkforceTaskFilterFieldKind           `json:"kind,omitempty"`
+}
+
+// OrWorkforceTaskFilterField_Filters_Item defines model for Or_WorkforceTaskFilterField_.filters.Item.
+type OrWorkforceTaskFilterField_Filters_Item struct {
+	union json.RawMessage
+}
+
+// OrWorkforceTaskFilterFieldKind defines model for OrWorkforceTaskFilterField.Kind.
+type OrWorkforceTaskFilterFieldKind string
+
+// OrgBotPackInstalls Installed packs and per-item provenance, per requested bot.
+type OrgBotPackInstalls struct {
+	// Bots One entry per readable bot, in request order. Empty installs until P2.
+	Bots []BotPacks `json:"bots"`
+
+	// NotFound Requested bot ids that are malformed, unknown, deleted, in another org, or not readable by the caller. The cases are not distinguished.
+	NotFound []string `json:"not_found"`
+}
+
+// OrgPackVersion A published version with its soul and description: everything "view the pack" shows.
+type OrgPackVersion struct {
+	AvatarSha256     string                            `json:"avatar_sha256"`
+	AvatarUrl        string                            `json:"avatar_url"`
+	Changelog        *string                           `json:"changelog"`
+	Connections      []OrgPackVersion_Connections_Item `json:"connections"`
+	ContentHash      string                            `json:"content_hash"`
+	CreatedAt        time.Time                         `json:"created_at"`
+	DescriptionMd    string                            `json:"description_md"`
+	IsLatest         bool                              `json:"is_latest"`
+	Name             string                            `json:"name"`
+	PackArchived     bool                              `json:"pack_archived"`
+	PackId           string                            `json:"pack_id"`
+	PackSlug         string                            `json:"pack_slug"`
+	PackVersionId    string                            `json:"pack_version_id"`
+	PublisherOrgId   *string                           `json:"publisher_org_id"`
+	RecommendedModel *ModelRef                         `json:"recommended_model"`
+
+	// Settings The bot settings a pack may set: an explicit allow-list (J3).
+	//
+	// Every field is a user-safe behaviour knob that an org member can already
+	// change on their own bot, and each reuses the owner-facing patch type so the
+	// accepted values cannot drift from what the config actually takes. ``None``
+	// means "the pack does not set this".
+	//
+	// **Never allowed, and absent on purpose:** ``host_policy``, credentials and
+	// the LLM chain, provider keys, network or host access,
+	// addons, anything owner-only, and **any heartbeat setting, cadence
+	// included**. A heartbeat runs the bot autonomously on a timer; with a
+	// publisher-written soul and the buyer's tools and credits, a publisher-set
+	// cadence (as often as every 5 minutes) is recurring side effects and spend
+	// the buyer never asked for. Periodic runs are schedules (D8, built in P7)
+	// and must be an explicit owner choice at install, never applied from the
+	// pack (review on PR #3973).
+	//
+	// Adding a field here is a product decision (J3), not a convenience: it lets
+	// content from a publisher change that setting on every bot that installs
+	// the pack. Before adding one, ask whether it makes the bot *act* more often
+	// or more widely; if so it is not a safe setting.
+	Settings PackSettings     `json:"settings"`
+	Skills   []NamedPackSkill `json:"skills"`
+	Soul     string           `json:"soul"`
+
+	// StartWithDefaultTools Whether a bot created from this version also gets the platform's suggested default tools (true) or only the pack's own tools (false). No effect when installing onto an existing bot.
+	StartWithDefaultTools bool   `json:"start_with_default_tools"`
+	Summary               string `json:"summary"`
+
+	// Support What this version can run on each kind of bot, one entry per permitted hosting type and harness. Informational: an install skips unsupported items and never refuses.
+	Support   []ProfilePackSupport `json:"support"`
+	Tools     []NamedPackTool      `json:"tools"`
+	VersionNo int                  `json:"version_no"`
+
+	// Visibility Who may see a capability pack in the bot catalogue (epic #3551, D4).
+	//
+	// v1 publishes ``curated`` packs only. The other two exist now so customer
+	// publishers and a public marketplace need no remodelling.
+	Visibility PackVisibility `json:"visibility"`
+}
+
+// OrgPackVersion_Connections_Item defines model for OrgPackVersion.connections.Item.
+type OrgPackVersion_Connections_Item struct {
+	union json.RawMessage
+}
+
+// OrgPackVersions Versions found, in request order, each with every item named.
+type OrgPackVersions struct {
+	// NotFound Requested ids that are malformed, unknown, or versions of a pack this org cannot see. The three are not distinguished.
+	NotFound []string `json:"not_found"`
+
+	// Versions The versions found.
+	Versions []OrgPackVersion `json:"versions"`
+}
+
+// PackAvatarChoice Whether an install onto an existing bot replaces its avatar (D16).
+type PackAvatarChoice string
+
+// PackBindStatus What binding one pack connection did (bot catalogue P2.7).
+type PackBindStatus string
+
+// PackBindings What was bound, per request, in request order.
+type PackBindings struct {
+	Bindings []PackBindings_Bindings_Item `json:"bindings"`
+}
+
+// PackBindings_Bindings_Item defines model for PackBindings.bindings.Item.
+type PackBindings_Bindings_Item struct {
+	union json.RawMessage
+}
+
+// PackBindingsBody Connections of installs to bind.
+type PackBindingsBody struct {
+	// Bindings One per (install, connection); each at most once.
+	Bindings []PackConnectionBinding `json:"bindings"`
+}
+
+// PackBotCustomAvatar Start with this image instead of the pack's. It is the bot's own, not a pack item.
+type PackBotCustomAvatar struct {
+	// AvatarUrl Avatar image URL — an image data URI (DiceBear SVG, or an uploaded WebP/PNG/JPEG) or an https:// URL. Max 16384 characters.
+	AvatarUrl string                  `json:"avatar_url"`
+	Kind      PackBotCustomAvatarKind `json:"kind"`
+}
+
+// PackBotCustomAvatarKind defines model for PackBotCustomAvatar.Kind.
+type PackBotCustomAvatarKind string
+
+// PackBotPackAvatar Start with the pack's avatar.
+type PackBotPackAvatar struct {
+	Kind PackBotPackAvatarKind `json:"kind"`
+}
+
+// PackBotPackAvatarKind defines model for PackBotPackAvatar.Kind.
+type PackBotPackAvatarKind string
+
+// PackBotRequest One bot to create from one pack version.
+//
+// “settings“ and “connections“ are the install choices of “POST
+// …/packs/installs“ (P3.2), except that “keep“ is refused: a new bot has no
+// value of its own to keep.
+type PackBotRequest struct {
+	// Avatar 'pack' (the default) starts with the pack's avatar; 'custom' with your own.
+	Avatar *PackBotRequest_Avatar `json:"avatar,omitempty"`
+
+	// Connections Per mcp_catalog_entry connection: 'use_server' binds the named org server; 'leave_pending' binds nothing, now or by later setup, until bound explicitly. A connection left out binds as before: the one visible server from its entry. Vault connections take no choice.
+	Connections *[]PackBotRequest_Connections_Item `json:"connections,omitempty"`
+
+	// Credentials Credential links for the new bot, with the same shape, rules and bot-owner gate as `POST /bots`'s `credentials`, applied in the same transaction. When they set the LLM scope they replace the pack's recommended model, and `model` reports `chosen`.
+	Credentials *BotCredentialAssign `json:"credentials"`
+
+	// Description Short human-facing description / role for the bot (e.g. 'Platform developer'). Display metadata only — not injected into the bot's system prompt.
+	Description *string `json:"description"`
+
+	// Harness Which agent software the bot runs.
+	//
+	// Deliberately named *harness*, not *runtime*: ``runtime`` already carries
+	// five unrelated meanings in this codebase (``Bot.runtime_class``, the bot
+	// runtime image, ``ComponentName.RUNTIME``, Runtime Vault, and the
+	// ``bot_runtime`` audit domain), and *harness* is the vocabulary the native
+	// runtime design already uses.
+	//
+	// Distinct from :class:`BotType`, which discriminates the *shape of the
+	// stored config blob* rather than naming the agent software. See
+	// ``Bot.harness`` for the full note.
+	//
+	// Immutable once set, with one controlled exception: the audited, one-way
+	// OpenClaw → native harness switch (PlatDev #3823). See ``Bot.harness``.
+	Harness *BotHarness `json:"harness,omitempty"`
+
+	// HostingType Who runs the bot's runtime.
+	//
+	// Classical SaaS framing, with one caveat recorded so it does not drift:
+	// "self-hosted" classically means the customer runs the *whole product*;
+	// here they run only the **runtime**, while the control plane stays
+	// Botyard's. The term is correct at the *bot* level ("this bot is hosted by
+	// you") and must never be read as "self-hosted Botyard".
+	//
+	// Immutable once set — see ``Bot.hosting_type``.
+	HostingType *BotHostingType `json:"hosting_type,omitempty"`
+
+	// Name The bot's name. Defaults to the pack's name.
+	Name          *string `json:"name"`
+	PackVersionId string  `json:"pack_version_id"`
+
+	// Settings Per pack setting: 'pack' (the default for a setting left out), 'keep' the bot's value, or a 'custom' value. Each path at most once, and only paths the pack sets.
+	Settings *[]PackBotRequest_Settings_Item `json:"settings,omitempty"`
+}
+
+// PackBotRequest_Avatar 'pack' (the default) starts with the pack's avatar; 'custom' with your own.
+type PackBotRequest_Avatar struct {
+	union json.RawMessage
+}
+
+// PackBotRequest_Connections_Item defines model for PackBotRequest.connections.Item.
+type PackBotRequest_Connections_Item struct {
+	union json.RawMessage
+}
+
+// PackBotRequest_Settings_Item defines model for PackBotRequest.settings.Item.
+type PackBotRequest_Settings_Item struct {
+	union json.RawMessage
+}
+
+// PackCataloguePage One keyset page of the org's pack catalogue, in slug order.
+type PackCataloguePage struct {
+	// NextCursor Pass as `cursor` for the next page; null on the last page.
+	NextCursor *string `json:"next_cursor"`
+
+	// NotFound Requested slugs that no listed pack has. Empty when `slugs` is omitted.
+	NotFound []string `json:"not_found"`
+
+	// Packs Unarchived packs with a published version that this org may see: curated, public, and the org's own org_private packs.
+	Packs []CataloguePack `json:"packs"`
+}
+
+// PackConnectionBinding Bind one connection of one install.
+type PackConnectionBinding struct {
+	// BotPackInstallId The pack install (bot_pack_installs) whose connection to bind.
+	BotPackInstallId string `json:"bot_pack_install_id"`
+
+	// McpServerId The org MCP server to bind, for an mcp_catalog_entry connection. Omit it to use the one server from that entry visible to the caller, or the one already bound.
+	McpServerId *string `json:"mcp_server_id"`
+
+	// PackVersionConnectionId The connection of the installed pack version to bind.
+	PackVersionConnectionId string `json:"pack_version_connection_id"`
+}
+
+// PackConnectionCandidate One of the org's servers made from the connection's catalogue entry.
+type PackConnectionCandidate struct {
+	// Access MCP server reachability within its organization.
+	//
+	// The one-for-one mirror of :class:`BotAccess`, and deliberately so — epic
+	// #2672 D10 chose to reproduce the bot access mode rather than invent a
+	// narrower one, because the alternative (an ambient term discriminated by
+	// actor type, "all bots but no humans") would have been a new capability in
+	// the shared policy engine rather than a column on this table.
+	//
+	// ``OPEN`` therefore means **fully** open: the listing rule's ambient term
+	// admits every principal the base permission admits, and ``mcp_server.read``
+	// is held by ``org:member`` *and* ``org:viewer`` and by API-key actors. It is
+	// not "every bot in the org"; it is everyone. The ``restricted`` default
+	// exists so that is only ever true because somebody chose it.
+	Access McpServerAccess `json:"access"`
+
+	// Account What to call the account: the server's name. The vendor account itself (e.g. a mailbox) is not stored anywhere.
+	Account string `json:"account"`
+
+	// Health One org MCP server's health as an account picker shows it (bot catalogue P3).
+	//
+	// Read from stored state only, never from a vendor call: see
+	// :func:`botyard_core.services.api.mcp_server_health.server_health` for the
+	// rule. Three values, because a picker has three things to say: use it, fix
+	// the sign-in, or expect it not to work.
+	Health      McpServerHealth `json:"health"`
+	McpServerId string          `json:"mcp_server_id"`
+
+	// MoreUsedByCount Further bots using it that you may read, beyond `used_by`.
+	MoreUsedByCount int `json:"more_used_by_count"`
+
+	// OtherBotCount Bots using it that you may not read.
+	OtherBotCount int `json:"other_bot_count"`
+
+	// Owner Who connected it (Composio, `kind=connected_by`), else who added it, its earliest owner (`kind=added_by`). Null when no user owns it.
+	Owner *CandidateOwner `json:"owner"`
+
+	// UsedBy Bots using it that you may read, by name; at most 20.
+	UsedBy []CandidateBot `json:"used_by"`
+}
+
+// PackConnectionPreviewBody Pack versions whose connections to preview, before any bot or install exists.
+type PackConnectionPreviewBody struct {
+	// PackVersionIds Pack versions to preview, each at most once (a repeat is a 422).
+	PackVersionIds []string `json:"pack_version_ids"`
+}
+
+// PackConnectionPreviews Per version, what each connection needs and which of the org's accounts fit.
+type PackConnectionPreviews struct {
+	// NotFound Requested ids that are unknown, or versions of a pack this org cannot see. The cases are not distinguished.
+	NotFound []string `json:"not_found"`
+
+	// Versions The versions found, in request order.
+	Versions []PackVersionConnectionPreview `json:"versions"`
+}
+
+// PackConnectionSetupResult One connection of one install: where its setup is, and what it asks next.
+type PackConnectionSetupResult struct {
+	Action PackConnectionSetupResult_Action `json:"action"`
+
+	// BotPackConnectionSetupId The setup, or None for a connection the install bound by itself.
+	BotPackConnectionSetupId *string `json:"bot_pack_connection_setup_id"`
+	BotPackInstallId         string  `json:"bot_pack_install_id"`
+	PackVersionConnectionId  string  `json:"pack_version_connection_id"`
+
+	// State Where one connection's setup is. A native ``pack_setup_state`` enum (stores the member name).
+	State PackSetupState `json:"state"`
+}
+
+// PackConnectionSetupResult_Action defines model for PackConnectionSetupResult.Action.
+type PackConnectionSetupResult_Action struct {
+	union json.RawMessage
+}
+
+// PackInstallPreview What installing would do, per request, in request order. Nothing was written.
+type PackInstallPreview struct {
+	Installs []PlannedInstall `json:"installs"`
+}
+
+// PackInstallRequest One pack version to install on one bot.
+type PackInstallRequest struct {
+	// Avatar Whether an install onto an existing bot replaces its avatar (D16).
+	Avatar *PackAvatarChoice `json:"avatar,omitempty"`
+	BotId  string            `json:"bot_id"`
+
+	// Connections Per mcp_catalog_entry connection: 'use_server' binds the named org server; 'leave_pending' binds nothing, now or by later setup, until bound explicitly. A connection left out binds as before: the one visible server from its entry. Vault connections take no choice.
+	Connections   *[]PackInstallRequest_Connections_Item `json:"connections,omitempty"`
+	PackVersionId string                                 `json:"pack_version_id"`
+
+	// Settings Per pack setting: 'pack' (the default for a setting left out), 'keep' the bot's value, or a 'custom' value. Each path at most once, and only paths the pack sets.
+	Settings *[]PackInstallRequest_Settings_Item `json:"settings,omitempty"`
+}
+
+// PackInstallRequest_Connections_Item defines model for PackInstallRequest.connections.Item.
+type PackInstallRequest_Connections_Item struct {
+	union json.RawMessage
+}
+
+// PackInstallRequest_Settings_Item defines model for PackInstallRequest.settings.Item.
+type PackInstallRequest_Settings_Item struct {
+	union json.RawMessage
+}
+
+// PackInstalls What was installed, then where each connection's setup stands.
+type PackInstalls struct {
+	// Installs One per request, in request order.
+	Installs []InstalledPack `json:"installs"`
+
+	// Setups Every connection of the installs, with what its setup asks next (state `done` when the install bound it). Recorded after the install committed: if this step failed the installs still stand, `setups` is empty, and `POST …/packs/setups/resume` reports them.
+	Setups []PackConnectionSetupResult `json:"setups"`
+}
+
+// PackInstallsBody Pack versions to install, one per bot.
+type PackInstallsBody struct {
+	// Installs One per bot; a bot may appear only once.
+	Installs []PackInstallRequest `json:"installs"`
+}
+
+// PackLeavePendingChoice Bind nothing now, even when exactly one server would fit (J10 = C2).
+//
+// Kept on the install, so the setups recorded after it never auto-bind it either;
+// only an explicit bind does. An MCP catalogue entry connection only.
+type PackLeavePendingChoice struct {
+	Choice PackLeavePendingChoiceChoice `json:"choice"`
+
+	// PackVersionConnectionId A connection of the pack version being installed.
+	PackVersionConnectionId string `json:"pack_version_connection_id"`
+}
+
+// PackLeavePendingChoiceChoice defines model for PackLeavePendingChoice.Choice.
+type PackLeavePendingChoiceChoice string
+
+// PackMcpConnectionPreview An MCP catalogue-entry connection: how to connect a new account, or which to reuse.
+type PackMcpConnectionPreview struct {
+	// Candidates The org's servers from this entry that you may see, by account name.
+	Candidates        []PackConnectionCandidate    `json:"candidates"`
+	Kind              PackMcpConnectionPreviewKind `json:"kind"`
+	McpCatalogEntryId string                       `json:"mcp_catalog_entry_id"`
+
+	// Metered Whether a new server takes a hosted MCP server slot.
+	Metered bool `json:"metered"`
+
+	// MoreCandidatesCount Further servers you may see beyond this page of `candidates`; ask again with a later candidate offset to read them. Zero when the list is whole.
+	MoreCandidatesCount     int                            `json:"more_candidates_count"`
+	PackVersionConnectionId string                         `json:"pack_version_connection_id"`
+	Purpose                 *string                        `json:"purpose"`
+	Required                bool                           `json:"required"`
+	Setup                   PackMcpConnectionPreview_Setup `json:"setup"`
+}
+
+// PackMcpConnectionPreviewKind defines model for PackMcpConnectionPreview.Kind.
+type PackMcpConnectionPreviewKind string
+
+// PackMcpConnectionPreview_Setup defines model for PackMcpConnectionPreview.Setup.
+type PackMcpConnectionPreview_Setup struct {
+	union json.RawMessage
+}
+
+// PackSecretSpec A Runtime Vault secret a pack needs the installing org to supply (D30).
+//
+// A frozen subset of “VaultInputSecretSpec“. **There is no value field, and
+// there never will be:** the value is entered into the buyer's own vault by
+// the install wizard (P4). “extra="forbid"“ makes a value-shaped key a
+// validation error rather than something silently dropped or stored.
+type PackSecretSpec struct {
+	// Description What the secret is for.
+	Description *string `json:"description"`
+
+	// DisplayName Human-readable name, e.g. 'GitHub token'.
+	DisplayName string `json:"display_name"`
+
+	// KeyPath Runtime Vault key path the installing org's secret is stored at.
+	KeyPath string `json:"key_path"`
+
+	// MaxTtlSeconds Maximum lease TTL bots may request for the secret.
+	MaxTtlSeconds int `json:"max_ttl_seconds"`
+
+	// Sensitivity Sensitivity classification for a Runtime Vault entry.
+	Sensitivity *RuntimeVaultSensitivity `json:"sensitivity,omitempty"`
+}
+
+// PackSettingCustomChoice Write “value“ instead of the pack's; uninstall reverts it like the pack's.
+type PackSettingCustomChoice struct {
+	Choice PackSettingCustomChoiceChoice `json:"choice"`
+
+	// Path A top-level :class:`PackSettings` field. A test pins this to the model's fields.
+	Path  PackSettingPath `json:"path"`
+	Value *JsonValueInput `json:"value"`
+}
+
+// PackSettingCustomChoiceChoice defines model for PackSettingCustomChoice.Choice.
+type PackSettingCustomChoiceChoice string
+
+// PackSettingKeepChoice Leave the bot's own value. Nothing is written and no item is recorded.
+type PackSettingKeepChoice struct {
+	Choice PackSettingKeepChoiceChoice `json:"choice"`
+
+	// Path A top-level :class:`PackSettings` field. A test pins this to the model's fields.
+	Path PackSettingPath `json:"path"`
+}
+
+// PackSettingKeepChoiceChoice defines model for PackSettingKeepChoice.Choice.
+type PackSettingKeepChoiceChoice string
+
+// PackSettingPackChoice Apply the pack's value. The same as leaving the setting out.
+type PackSettingPackChoice struct {
+	Choice PackSettingPackChoiceChoice `json:"choice"`
+
+	// Path A top-level :class:`PackSettings` field. A test pins this to the model's fields.
+	Path PackSettingPath `json:"path"`
+}
+
+// PackSettingPackChoiceChoice defines model for PackSettingPackChoice.Choice.
+type PackSettingPackChoiceChoice string
+
+// PackSettingPath A top-level :class:`PackSettings` field. A test pins this to the model's fields.
+type PackSettingPath string
+
+// PackSettings The bot settings a pack may set: an explicit allow-list (J3).
+//
+// Every field is a user-safe behaviour knob that an org member can already
+// change on their own bot, and each reuses the owner-facing patch type so the
+// accepted values cannot drift from what the config actually takes. “None“
+// means "the pack does not set this".
+//
+// **Never allowed, and absent on purpose:** “host_policy“, credentials and
+// the LLM chain, provider keys, network or host access,
+// addons, anything owner-only, and **any heartbeat setting, cadence
+// included**. A heartbeat runs the bot autonomously on a timer; with a
+// publisher-written soul and the buyer's tools and credits, a publisher-set
+// cadence (as often as every 5 minutes) is recurring side effects and spend
+// the buyer never asked for. Periodic runs are schedules (D8, built in P7)
+// and must be an explicit owner choice at install, never applied from the
+// pack (review on PR #3973).
+//
+// Adding a field here is a product decision (J3), not a convenience: it lets
+// content from a publisher change that setting on every bot that installs
+// the pack. Before adding one, ask whether it makes the bot *act* more often
+// or more widely; if so it is not a safe setting.
+type PackSettings struct {
+	// ReasoningDefault Default reasoning mode (off, on or stream).
+	ReasoningDefault *PackSettingsReasoningDefault `json:"reasoning_default"`
+
+	// ThinkingDefault Default thinking budget level for conversations.
+	ThinkingDefault *PackSettingsThinkingDefault `json:"thinking_default"`
+
+	// ToolImages Tool-image handling (native bots).
+	ToolImages *PackToolImageSettings `json:"tool_images"`
+
+	// ToolSearch Tool Search mode and auto threshold.
+	ToolSearch *PackToolSearchSettings `json:"tool_search"`
+}
+
+// PackSettingsReasoningDefault Default reasoning mode (off, on or stream).
+type PackSettingsReasoningDefault string
+
+// PackSettingsThinkingDefault Default thinking budget level for conversations.
+type PackSettingsThinkingDefault string
+
+// PackSetupCompleteBody What a human supplied, one completion per setup.
+type PackSetupCompleteBody struct {
+	// Completions At most one per setup, each of the kind its setup asks for.
+	Completions []PackSetupCompleteBody_Completions_Item `json:"completions"`
+}
+
+// PackSetupCompleteBody_Completions_Item defines model for PackSetupCompleteBody.completions.Item.
+type PackSetupCompleteBody_Completions_Item struct {
+	union json.RawMessage
+}
+
+// PackSetupFailure Why a setup failed. Stored in “failure_code“.
+type PackSetupFailure string
+
+// PackSetupResumeBody Installs whose connection setups to record and report.
+type PackSetupResumeBody struct {
+	// BotPackInstallIds Each install at most once.
+	BotPackInstallIds []string `json:"bot_pack_install_ids"`
+}
+
+// PackSetupRunBody Setups to carry forward with no human input.
+type PackSetupRunBody struct {
+	// BotPackConnectionSetupIds Each setup at most once.
+	BotPackConnectionSetupIds []string `json:"bot_pack_connection_setup_ids"`
+}
+
+// PackSetupState Where one connection's setup is. A native “pack_setup_state“ enum (stores the member name).
+type PackSetupState string
+
+// PackSetups Where each setup stands now. Each committed on its own: not all-or-nothing.
+type PackSetups struct {
+	// Setups One per connection (resume) or per requested setup, in request order.
+	Setups []PackConnectionSetupResult `json:"setups"`
+}
+
+// PackSupport A pack version's support on one profile.
+type PackSupport struct {
+	// Level How much of a pack version a profile can run.
+	Level PackSupportLevel `json:"level"`
+
+	// Unsupported Items skipped on this profile, in pack order: soul, tools, settings.
+	Unsupported []PackSupport_Unsupported_Item `json:"unsupported"`
+}
+
+// PackSupport_Unsupported_Item defines model for PackSupport.unsupported.Item.
+type PackSupport_Unsupported_Item struct {
+	union json.RawMessage
+}
+
+// PackSupportLevel How much of a pack version a profile can run.
+type PackSupportLevel string
+
+// PackToolImageSettings Tool-image settings a pack may set (native). Same fields as the owner patch.
+type PackToolImageSettings struct {
+	// DefaultDetail Detail level for a tool image whose MCP server does not request one (auto, low, high or original). Unset leaves it to the provider's default.
+	DefaultDetail *PackToolImageSettingsDefaultDetail `json:"default_detail"`
+
+	// Enabled Show images returned by tools to the model. False replaces each image with a short text notice. Unset means enabled.
+	Enabled *bool `json:"enabled"`
+
+	// MaxDimensionPx Longest edge, in pixels, a tool image is downscaled to before the model sees it. At most 8000. Unset means the platform default (2000). Values above 2000 only take effect while a request holds 20 images or fewer; beyond that the provider limits every image to 2000 px and a larger one is replaced by a notice.
+	MaxDimensionPx *int `json:"max_dimension_px"`
+}
+
+// PackToolImageSettingsDefaultDetail Detail level for a tool image whose MCP server does not request one (auto, low, high or original). Unset leaves it to the provider's default.
+type PackToolImageSettingsDefaultDetail string
+
+// PackToolSearchSettings Tool Search settings a pack may set. Same fields as the owner patch.
+type PackToolSearchSettings struct {
+	// AutoThresholdPercent Percentage of the context window the tool schemas must exceed before ``auto`` mode defers them. Ignored unless mode is auto, and read only on the claude-cli runtime — OpenClaw's embedded Tool Search has no threshold knob, so auto behaves like always there.
+	AutoThresholdPercent *int `json:"auto_threshold_percent"`
+
+	// Mode always (defer every turn) | auto (defer above the threshold) | off (never defer). Applies whatever mechanism the bot's runtime uses — Claude Code's ENABLE_TOOL_SEARCH on claude-cli bots, OpenClaw's tools.toolSearch on embedded (pi) bots.
+	Mode *PackToolSearchSettingsMode `json:"mode"`
+}
+
+// PackToolSearchSettingsMode always (defer every turn) | auto (defer above the threshold) | off (never defer). Applies whatever mechanism the bot's runtime uses — Claude Code's ENABLE_TOOL_SEARCH on claude-cli bots, OpenClaw's tools.toolSearch on embedded (pi) bots.
+type PackToolSearchSettingsMode string
+
+// PackUninstallRequest One install to remove.
+type PackUninstallRequest struct {
+	BotPackInstallId string `json:"bot_pack_install_id"`
+}
+
+// PackUninstalls Per install, what is (or would be) removed, restored or kept, in request order.
+type PackUninstalls struct {
+	Uninstalls []PlannedUninstall `json:"uninstalls"`
+}
+
+// PackUninstallsBody Installs to preview removing.
+type PackUninstallsBody struct {
+	// Uninstalls Each install at most once.
+	Uninstalls []PackUninstallRequest `json:"uninstalls"`
+}
+
+// PackUseServerChoice Bind this org MCP server, checked as “bind_connections“ checks a named one.
+//
+// An MCP catalogue entry connection only.
+type PackUseServerChoice struct {
+	Choice PackUseServerChoiceChoice `json:"choice"`
+
+	// McpServerId An org MCP server made from the connection's catalogue entry.
+	McpServerId string `json:"mcp_server_id"`
+
+	// PackVersionConnectionId A connection of the pack version being installed.
+	PackVersionConnectionId string `json:"pack_version_connection_id"`
+}
+
+// PackUseServerChoiceChoice defines model for PackUseServerChoice.Choice.
+type PackUseServerChoiceChoice string
+
+// PackVaultConnectionPreview A Runtime Vault secret connection.
+type PackVaultConnectionPreview struct {
+	Kind                    PackVaultConnectionPreviewKind `json:"kind"`
+	PackVersionConnectionId string                         `json:"pack_version_connection_id"`
+	Purpose                 *string                        `json:"purpose"`
+	Required                bool                           `json:"required"`
+
+	// SecretSpec A Runtime Vault secret a pack needs the installing org to supply (D30).
+	//
+	// A frozen subset of ``VaultInputSecretSpec``. **There is no value field, and
+	// there never will be:** the value is entered into the buyer's own vault by
+	// the install wizard (P4). ``extra="forbid"`` makes a value-shaped key a
+	// validation error rather than something silently dropped or stored.
+	SecretSpec PackSecretSpec `json:"secret_spec"`
+
+	// Setup The secret to store in the org's Runtime Vault, and the entry there if one exists.
+	Setup ConnectionSetupSecret `json:"setup"`
+}
+
+// PackVaultConnectionPreviewKind defines model for PackVaultConnectionPreview.Kind.
+type PackVaultConnectionPreviewKind string
+
+// PackVersionConnectionPreview Every connection of one pack version, in connection order.
+type PackVersionConnectionPreview struct {
+	Connections   []PackVersionConnectionPreview_Connections_Item `json:"connections"`
+	PackVersionId string                                          `json:"pack_version_id"`
+}
+
+// PackVersionConnectionPreview_Connections_Item defines model for PackVersionConnectionPreview.connections.Item.
+type PackVersionConnectionPreview_Connections_Item struct {
+	union json.RawMessage
+}
+
+// PackVersionSummary A version's identity and display fields, without its contents.
+type PackVersionSummary struct {
+	AvatarSha256  string    `json:"avatar_sha256"`
+	ContentHash   string    `json:"content_hash"`
+	CreatedAt     time.Time `json:"created_at"`
+	Name          string    `json:"name"`
+	PackVersionId string    `json:"pack_version_id"`
+	Summary       string    `json:"summary"`
+	VersionNo     int       `json:"version_no"`
+}
+
+// PackVisibility Who may see a capability pack in the bot catalogue (epic #3551, D4).
+//
+// v1 publishes “curated“ packs only. The other two exist now so customer
+// publishers and a public marketplace need no remodelling.
+type PackVisibility string
+
 // PaginatedResponseBotListItem defines model for PaginatedResponse_BotListItem_.
 type PaginatedResponseBotListItem struct {
 	// HasMore Whether more items exist beyond this page
@@ -4961,6 +8018,18 @@ type PaginatedResponseSkillSummaryResponse struct {
 	Total int `json:"total"`
 }
 
+// PaginatedResponseTaskResponse defines model for PaginatedResponse_TaskResponse_.
+type PaginatedResponseTaskResponse struct {
+	// HasMore Whether more items exist beyond this page
+	HasMore bool           `json:"has_more"`
+	Items   []TaskResponse `json:"items"`
+	Limit   int            `json:"limit"`
+	Offset  int            `json:"offset"`
+
+	// Total Total number of items matching the query
+	Total int `json:"total"`
+}
+
 // PaginationParams Query parameters for offset-based paginated endpoints.
 type PaginationParams struct {
 	// Limit Items per page
@@ -4968,6 +8037,36 @@ type PaginationParams struct {
 
 	// Offset Number of items to skip
 	Offset *int `json:"offset,omitempty"`
+}
+
+// PendingInstallConnection Not working yet: its setup is not done, or nothing is bound (PlatDev #4018).
+//
+// A connection whose setup is not done is pending even when a server is
+// already bound (“waiting_for_tools“), so every “pending_connections“
+// entry is pending here too. A connection whose binding went away (its server
+// was deleted, its secret expired or was unlinked) is pending again.
+type PendingInstallConnection struct {
+	// BotPackConnectionSetupId The connection's setup; null when none is recorded yet. Run the setups resume call (`resume_pack_setups` on MCP) to record one and read what it asks.
+	BotPackConnectionSetupId *string                      `json:"bot_pack_connection_setup_id"`
+	Kind                     PendingInstallConnectionKind `json:"kind"`
+
+	// PackVersionConnectionId The connection of the installed version.
+	PackVersionConnectionId string `json:"pack_version_connection_id"`
+
+	// State Where the setup is; null when there is no setup, or its record says done but the binding is gone since. The resume call brings it up to date.
+	State *PackSetupState `json:"state"`
+}
+
+// PendingInstallConnectionKind defines model for PendingInstallConnection.Kind.
+type PendingInstallConnectionKind string
+
+// PendingPackConnection A connection of an install that its setup has not finished (P2.8).
+type PendingPackConnection struct {
+	BotPackConnectionSetupId string `json:"bot_pack_connection_setup_id"`
+	PackVersionConnectionId  string `json:"pack_version_connection_id"`
+
+	// State Where one connection's setup is. A native ``pack_setup_state`` enum (stores the member name).
+	State PackSetupState `json:"state"`
 }
 
 // PermissionAction The permission “action“ axis, as it appears on the wire.
@@ -5077,6 +8176,228 @@ type PermissionScopeShape string
 // two surfaces stay reconcilable instead of forking into a third vocabulary.
 type PermissionSource string
 
+// PlannedAction What an install does with one item.
+type PlannedAction string
+
+// PlannedAvatarItem The pack's avatar, only when the request asks for it (D16).
+type PlannedAvatarItem struct {
+	// Action What an install does with one item.
+	Action PlannedAction         `json:"action"`
+	Kind   PlannedAvatarItemKind `json:"kind"`
+
+	// Reason Why, when it is not obvious.
+	Reason *string `json:"reason"`
+}
+
+// PlannedAvatarItemKind defines model for PlannedAvatarItem.Kind.
+type PlannedAvatarItemKind string
+
+// PlannedInstall What installing one pack version on one bot will do.
+type PlannedInstall struct {
+	BotId string `json:"bot_id"`
+
+	// BotPackInstallId The existing install, when unchanged.
+	BotPackInstallId *string                           `json:"bot_pack_install_id"`
+	Connections      []PlannedInstall_Connections_Item `json:"connections"`
+	Items            []PlannedInstall_Items_Item       `json:"items"`
+	PackId           string                            `json:"pack_id"`
+	PackVersionId    string                            `json:"pack_version_id"`
+
+	// RecommendedModel A suggestion only; installs never change the model (J10).
+	RecommendedModel *ModelRef            `json:"recommended_model"`
+	Status           PlannedInstallStatus `json:"status"`
+
+	// Support A pack version's support on one profile.
+	Support PackSupport `json:"support"`
+}
+
+// PlannedInstall_Connections_Item defines model for PlannedInstall.connections.Item.
+type PlannedInstall_Connections_Item struct {
+	union json.RawMessage
+}
+
+// PlannedInstall_Items_Item defines model for PlannedInstall.items.Item.
+type PlannedInstall_Items_Item struct {
+	union json.RawMessage
+}
+
+// PlannedInstallStatus defines model for PlannedInstallStatus.
+type PlannedInstallStatus string
+
+// PlannedMcpConnection An MCP catalogue entry connection and how this install resolves it.
+type PlannedMcpConnection struct {
+	// Action What an install does with one item.
+	Action PlannedAction            `json:"action"`
+	Kind   PlannedMcpConnectionKind `json:"kind"`
+
+	// McpServerIds Servers from this entry visible to the installer. Binds when exactly one.
+	McpServerIds []string `json:"mcp_server_ids"`
+
+	// MissingTools Tool names the pack enables that the bound server has not discovered.
+	MissingTools            []string `json:"missing_tools"`
+	PackVersionConnectionId string   `json:"pack_version_connection_id"`
+
+	// Reason Why it is pending, when it is.
+	Reason *string `json:"reason"`
+
+	// UnsupportedTools Tool names the bound server has that this bot's profile cannot serve.
+	UnsupportedTools []string `json:"unsupported_tools"`
+}
+
+// PlannedMcpConnectionKind defines model for PlannedMcpConnection.Kind.
+type PlannedMcpConnectionKind string
+
+// PlannedMcpServerItem An org MCP server an MCP connection binds to.
+type PlannedMcpServerItem struct {
+	// Action What an install does with one item.
+	Action                  PlannedAction            `json:"action"`
+	Kind                    PlannedMcpServerItemKind `json:"kind"`
+	PackVersionConnectionId string                   `json:"pack_version_connection_id"`
+
+	// Reason Why, when it is not obvious.
+	Reason *string `json:"reason"`
+}
+
+// PlannedMcpServerItemKind defines model for PlannedMcpServerItem.Kind.
+type PlannedMcpServerItemKind string
+
+// PlannedSecretLinkItem A link from the bot to the vault entry a vault connection binds to.
+type PlannedSecretLinkItem struct {
+	// Action What an install does with one item.
+	Action                  PlannedAction             `json:"action"`
+	Kind                    PlannedSecretLinkItemKind `json:"kind"`
+	PackVersionConnectionId string                    `json:"pack_version_connection_id"`
+
+	// Reason Why, when it is not obvious.
+	Reason *string `json:"reason"`
+}
+
+// PlannedSecretLinkItemKind defines model for PlannedSecretLinkItem.Kind.
+type PlannedSecretLinkItemKind string
+
+// PlannedSettingItem One setting leaf. A setting the request chose to “keep“ has none.
+type PlannedSettingItem struct {
+	// Action What an install does with one item.
+	Action PlannedAction          `json:"action"`
+	Kind   PlannedSettingItemKind `json:"kind"`
+
+	// Path The setting's dotted path, e.g. 'tool_search.mode'.
+	Path string `json:"path"`
+
+	// Reason Why, when it is not obvious.
+	Reason *string                          `json:"reason"`
+	Value  *BotyardCoreTypesJsonValueOutput `json:"value"`
+}
+
+// PlannedSettingItemKind defines model for PlannedSettingItem.Kind.
+type PlannedSettingItemKind string
+
+// PlannedSkillItem A pinned skill.
+type PlannedSkillItem struct {
+	// Action What an install does with one item.
+	Action PlannedAction        `json:"action"`
+	Kind   PlannedSkillItemKind `json:"kind"`
+
+	// Reason Why, when it is not obvious.
+	Reason  *string `json:"reason"`
+	SkillId string  `json:"skill_id"`
+}
+
+// PlannedSkillItemKind defines model for PlannedSkillItem.Kind.
+type PlannedSkillItemKind string
+
+// PlannedSoulItem The pack's soul.
+type PlannedSoulItem struct {
+	// Action What an install does with one item.
+	Action PlannedAction       `json:"action"`
+	Kind   PlannedSoulItemKind `json:"kind"`
+
+	// Reason Why, when it is not obvious.
+	Reason *string `json:"reason"`
+}
+
+// PlannedSoulItemKind defines model for PlannedSoulItem.Kind.
+type PlannedSoulItemKind string
+
+// PlannedToolItem A built-in tool.
+type PlannedToolItem struct {
+	// Action What an install does with one item.
+	Action PlannedAction       `json:"action"`
+	Kind   PlannedToolItemKind `json:"kind"`
+
+	// Reason Why, when it is not obvious.
+	Reason *string `json:"reason"`
+	ToolId string  `json:"tool_id"`
+}
+
+// PlannedToolItemKind defines model for PlannedToolItem.Kind.
+type PlannedToolItemKind string
+
+// PlannedUninstall What uninstalling one install does.
+type PlannedUninstall struct {
+	AlreadyRemoved   []AlreadyRemoved              `json:"already_removed"`
+	BotId            string                        `json:"bot_id"`
+	BotPackInstallId string                        `json:"bot_pack_install_id"`
+	Items            []PlannedUninstall_Items_Item `json:"items"`
+	PackId           string                        `json:"pack_id"`
+	PackVersionId    string                        `json:"pack_version_id"`
+}
+
+// PlannedUninstall_Items_Item defines model for PlannedUninstall.items.Item.
+type PlannedUninstall_Items_Item struct {
+	union json.RawMessage
+}
+
+// PlannedVaultConnection A vault secret connection and how this install resolves it.
+type PlannedVaultConnection struct {
+	// Action What an install does with one item.
+	Action                  PlannedAction              `json:"action"`
+	Kind                    PlannedVaultConnectionKind `json:"kind"`
+	PackVersionConnectionId string                     `json:"pack_version_connection_id"`
+
+	// Reason Why it is pending, when it is.
+	Reason *string `json:"reason"`
+
+	// VaultEntryId The org's usable vault entry at the connection's key path. None when there is none yet, which leaves the connection pending.
+	VaultEntryId *string `json:"vault_entry_id"`
+}
+
+// PlannedVaultConnectionKind defines model for PlannedVaultConnection.Kind.
+type PlannedVaultConnectionKind string
+
+// PlatformLoginConnect Connect opens Botyard's sign-in popup for a login-only provider.
+type PlatformLoginConnect struct {
+	Kind string `json:"kind"`
+
+	// PasswordLabel Label of the password field
+	PasswordLabel string `json:"password_label"`
+
+	// Provider Known provider vendors.
+	Provider CredentialProvider `json:"provider"`
+
+	// ProviderLabel The provider's name, for copy (e.g. 'Garmin')
+	ProviderLabel string `json:"provider_label"`
+
+	// SecondFactor What the provider may ask for after the password: a code it emails
+	SecondFactor *PlatformLoginConnectSecondFactor `json:"second_factor,omitempty"`
+
+	// UsernameLabel Label of the username field
+	UsernameLabel string `json:"username_label"`
+}
+
+// PlatformLoginConnectSecondFactor What the provider may ask for after the password: a code it emails
+type PlatformLoginConnectSecondFactor string
+
+// PlatformLoginConnectAttempt A platform-login tile's sign-in (connect method “platform_login“, PlatDev #4266).
+//
+// The reader's own attempt, or one anybody completed: an attempt another
+// person still has open is theirs to finish, and is not shown.
+type PlatformLoginConnectAttempt struct {
+	// Attempt One sign-in attempt, as the card and the popup read it.
+	Attempt IntegrationLoginAttemptDetail `json:"attempt"`
+	Kind    string                        `json:"kind"`
+}
+
 // ProblemDetails RFC 9457 Problem Details response body.
 //
 // Every Botyard error response is a “ProblemDetails“ serialized as
@@ -5127,6 +8448,142 @@ type ProblemErrorItem struct {
 	Type string `json:"type"`
 }
 
+// ProfilePackSupport A pack version's runtime support on one kind of bot (hosting type and harness).
+type ProfilePackSupport struct {
+	// Harness Which agent software the bot runs.
+	//
+	// Deliberately named *harness*, not *runtime*: ``runtime`` already carries
+	// five unrelated meanings in this codebase (``Bot.runtime_class``, the bot
+	// runtime image, ``ComponentName.RUNTIME``, Runtime Vault, and the
+	// ``bot_runtime`` audit domain), and *harness* is the vocabulary the native
+	// runtime design already uses.
+	//
+	// Distinct from :class:`BotType`, which discriminates the *shape of the
+	// stored config blob* rather than naming the agent software. See
+	// ``Bot.harness`` for the full note.
+	//
+	// Immutable once set, with one controlled exception: the audited, one-way
+	// OpenClaw → native harness switch (PlatDev #3823). See ``Bot.harness``.
+	Harness BotHarness `json:"harness"`
+
+	// HostingType Who runs the bot's runtime.
+	//
+	// Classical SaaS framing, with one caveat recorded so it does not drift:
+	// "self-hosted" classically means the customer runs the *whole product*;
+	// here they run only the **runtime**, while the control plane stays
+	// Botyard's. The term is correct at the *bot* level ("this bot is hosted by
+	// you") and must never be read as "self-hosted Botyard".
+	//
+	// Immutable once set — see ``Bot.hosting_type``.
+	HostingType BotHostingType `json:"hosting_type"`
+
+	// Level How much of a pack version a profile can run.
+	Level PackSupportLevel `json:"level"`
+
+	// Unsupported Items skipped on this profile, in pack order: soul, tools, settings.
+	Unsupported []ProfilePackSupport_Unsupported_Item `json:"unsupported"`
+}
+
+// ProfilePackSupport_Unsupported_Item defines model for ProfilePackSupport.unsupported.Item.
+type ProfilePackSupport_Unsupported_Item struct {
+	union json.RawMessage
+}
+
+// ReassignColumnTasksRequest Move all tasks out of a column into another (e.g. before deleting it).
+type ReassignColumnTasksRequest struct {
+	// ToColumnId Column to move the tasks into
+	ToColumnId string `json:"to_column_id"`
+}
+
+// ReassignColumnTasksResponse Result of a column task reassignment.
+type ReassignColumnTasksResponse struct {
+	// Moved Number of tasks moved
+	Moved int `json:"moved"`
+}
+
+// RecommendedModelApplied The bot starts on the pack's recommended model.
+type RecommendedModelApplied struct {
+	// CredentialId The org LLM credential linked to the bot to run it (position 0).
+	CredentialId string                      `json:"credential_id"`
+	Kind         RecommendedModelAppliedKind `json:"kind"`
+
+	// Model A reference to a model within an OpenClaw provider.
+	//
+	// Mirrors OpenClaw's ``ModelRef`` type (``{ provider, model }``).
+	// The provider field is the key in ``models.providers`` (e.g. ``"botyard"``),
+	// and model is the model ID within that provider (e.g. ``"gpt-5.4"``).
+	Model ModelRef `json:"model"`
+}
+
+// RecommendedModelAppliedKind defines model for RecommendedModelApplied.Kind.
+type RecommendedModelAppliedKind string
+
+// RecommendedModelUnavailable The pack recommends a model no org credential can run; the bot keeps the default.
+type RecommendedModelUnavailable struct {
+	Kind RecommendedModelUnavailableKind `json:"kind"`
+
+	// Reason Why it was not applied, for the person creating the bot.
+	Reason string `json:"reason"`
+
+	// RecommendedModel A reference to a model within an OpenClaw provider.
+	//
+	// Mirrors OpenClaw's ``ModelRef`` type (``{ provider, model }``).
+	// The provider field is the key in ``models.providers`` (e.g. ``"botyard"``),
+	// and model is the model ID within that provider (e.g. ``"gpt-5.4"``).
+	RecommendedModel ModelRef `json:"recommended_model"`
+}
+
+// RecommendedModelUnavailableKind defines model for RecommendedModelUnavailable.Kind.
+type RecommendedModelUnavailableKind string
+
+// RefusedNativeLane Native owned mode refuses this credential, whatever the model (PlatDev #3822).
+type RefusedNativeLane struct {
+	Outcome string `json:"outcome"`
+
+	// Reason Why native owned mode refuses a credential, decided at config time (#3734 §5, #3809).
+	//
+	// The one vocabulary for the config-time refusal: the API answers a native
+	// bot's credential edit with it (``native_lane_refused``, 422) and L8c
+	// exports it to the app. It is a fact about the credential's provider and
+	// protocol only, never its model: every model of a served credential is
+	// served, on the wire :func:`native_route_for` picks.
+	//
+	// The runtime refusal stays the backstop, as the proto
+	// ``OWNED_REFUSAL_REASON_UNSUPPORTED_PROTOCOL``: a credential that changes
+	// under a bot after the edit (an org-level credential edit) still cannot
+	// reach the provider.
+	Reason NativeLaneRefusal `json:"reason"`
+}
+
+// RefusedNativeLink One link of a native bot's chain that owned mode does not serve.
+type RefusedNativeLink struct {
+	// ApiProtocol Wire protocol for communicating with a provider.
+	ApiProtocol ApiProtocol `json:"api_protocol"`
+
+	// CredentialId The refused credential
+	CredentialId string `json:"credential_id"`
+
+	// Ordinal The link's position in the LLM chain
+	Ordinal int `json:"ordinal"`
+
+	// Provider Known provider vendors.
+	Provider CredentialProvider `json:"provider"`
+
+	// Reason Why native owned mode refuses a credential, decided at config time (#3734 §5, #3809).
+	//
+	// The one vocabulary for the config-time refusal: the API answers a native
+	// bot's credential edit with it (``native_lane_refused``, 422) and L8c
+	// exports it to the app. It is a fact about the credential's provider and
+	// protocol only, never its model: every model of a served credential is
+	// served, on the wire :func:`native_route_for` picks.
+	//
+	// The runtime refusal stays the backstop, as the proto
+	// ``OWNED_REFUSAL_REASON_UNSUPPORTED_PROTOCOL``: a credential that changes
+	// under a bot after the edit (an org-level credential edit) still cannot
+	// reach the provider.
+	Reason NativeLaneRefusal `json:"reason"`
+}
+
 // RequirementStatus How one tool requirement stands against what an actor holds.
 //
 // Five values rather than the obvious three, because two of the cases that
@@ -5169,11 +8626,11 @@ type RescueStage string
 // sub-resources (“bot:config“ targets a “bot“ object).
 type Resource string
 
-// ResourceMetricsResponse defines model for ResourceMetricsResponse.
-type ResourceMetricsResponse struct {
-	Cpu     CpuMetrics    `json:"cpu"`
-	Memory  MemoryMetrics `json:"memory"`
-	Storage Storage       `json:"storage"`
+// ResourceMetrics defines model for ResourceMetrics.
+type ResourceMetrics struct {
+	Cpu     *CpuMetrics     `json:"cpu"`
+	Memory  *MemoryMetrics  `json:"memory"`
+	Storage *StorageMetrics `json:"storage"`
 }
 
 // ResourceQuantities A set of resource line-items as K8s quantities, keyed by metered resource.
@@ -5210,6 +8667,14 @@ type ResourceQuantity struct {
 	ResourceType MeteredResource `json:"resource_type"`
 }
 
+// ResourceReport defines model for ResourceReport.
+type ResourceReport struct {
+	Metrics *ResourceMetrics `json:"metrics"`
+
+	// SampledAt When the runtime took the sample. Absent when it does not say.
+	SampledAt *time.Time `json:"sampled_at"`
+}
+
 // ResourceScopePayload An instance scope. “resource_id=null“ = every instance of the type.
 //
 // **Do not classify authority by inspecting this.** “resource_id=null“ reads
@@ -5231,8 +8696,32 @@ type ResourceScopePayload struct {
 	ResourceType Resource `json:"resource_type"`
 }
 
+// RunAction Nothing to ask: “run_setups“ creates the server or starts the authorisation.
+type RunAction struct {
+	Kind RunActionKind `json:"kind"`
+}
+
+// RunActionKind defines model for RunAction.Kind.
+type RunActionKind string
+
 // RuntimeVaultSensitivity Sensitivity classification for a Runtime Vault entry.
 type RuntimeVaultSensitivity string
+
+// SecretAction Store this secret in the org's Runtime Vault; the setup links it once it exists.
+type SecretAction struct {
+	Kind SecretActionKind `json:"kind"`
+
+	// SecretSpec A Runtime Vault secret a pack needs the installing org to supply (D30).
+	//
+	// A frozen subset of ``VaultInputSecretSpec``. **There is no value field, and
+	// there never will be:** the value is entered into the buyer's own vault by
+	// the install wizard (P4). ``extra="forbid"`` makes a value-shaped key a
+	// validation error rather than something silently dropped or stored.
+	SecretSpec PackSecretSpec `json:"secret_spec"`
+}
+
+// SecretActionKind defines model for SecretAction.Kind.
+type SecretActionKind string
 
 // SecretExecProviderConfig OpenClaw exec secret provider configuration for Botyard Runtime Vault leases.
 type SecretExecProviderConfig struct {
@@ -5246,6 +8735,30 @@ type SecretExecProviderConfig struct {
 	TimeoutMs         *int      `json:"timeout_ms,omitempty"`
 	TrustedDirs       *[]string `json:"trusted_dirs,omitempty"`
 }
+
+// SecretFileMount One Runtime Vault secret mounted read-only into the container.
+type SecretFileMount struct {
+	// ContainerPath Absolute path inside the container, e.g. /etc/certs/client.pem
+	ContainerPath string `json:"container_path"`
+
+	// SecretKeyPath Dotted Runtime Vault key path whose value becomes the file's contents
+	SecretKeyPath string `json:"secret_key_path"`
+}
+
+// SecretLinkRemoval Only the bot's link goes; the vault entry itself is never touched (J8).
+type SecretLinkRemoval struct {
+	Action        SecretLinkRemovalAction `json:"action"`
+	BotPackItemId string                  `json:"bot_pack_item_id"`
+	Kind          SecretLinkRemovalKind   `json:"kind"`
+	Reason        string                  `json:"reason"`
+	VaultEntryId  string                  `json:"vault_entry_id"`
+}
+
+// SecretLinkRemovalAction defines model for SecretLinkRemoval.Action.
+type SecretLinkRemovalAction string
+
+// SecretLinkRemovalKind defines model for SecretLinkRemoval.Kind.
+type SecretLinkRemovalKind string
 
 // SecretPolicyBotLinksRequest Request to replace the full set of bot links for a policy.
 type SecretPolicyBotLinksRequest struct {
@@ -5368,6 +8881,43 @@ type SecretResolutionConfig struct {
 	MaxRefsPerProvider     *int `json:"max_refs_per_provider,omitempty"`
 }
 
+// ServedNativeLane Native owned mode serves this credential, on “lane“ (PlatDev #3822).
+type ServedNativeLane struct {
+	// Lane The six native lanes at cutover (#3734).
+	Lane    NativeLane `json:"lane"`
+	Outcome string     `json:"outcome"`
+}
+
+// ServerChoiceCompletion Which of the org's servers to bind.
+type ServerChoiceCompletion struct {
+	BotPackConnectionSetupId string                     `json:"bot_pack_connection_setup_id"`
+	Kind                     ServerChoiceCompletionKind `json:"kind"`
+	McpServerId              string                     `json:"mcp_server_id"`
+}
+
+// ServerChoiceCompletionKind defines model for ServerChoiceCompletion.Kind.
+type ServerChoiceCompletionKind string
+
+// ServerCreated The tile's server now exists, using this connection.
+type ServerCreated struct {
+	Kind        string `json:"kind"`
+	McpServerId string `json:"mcp_server_id"`
+}
+
+// ServerNotCreated The connection is stored, but its server could not be created.
+type ServerNotCreated struct {
+	Kind   string                 `json:"kind"`
+	Reason ServerNotCreatedReason `json:"reason"`
+}
+
+// ServerNotCreatedReason defines model for ServerNotCreated.Reason.
+type ServerNotCreatedReason string
+
+// ServerUnchanged A reconnect: the tokens were replaced; servers using them keep working.
+type ServerUnchanged struct {
+	Kind string `json:"kind"`
+}
+
 // SessionConfig Session-reliability settings serialized into the openclaw config.
 type SessionConfig struct {
 	// WriteLockMaxHoldMs Maximum milliseconds a held in-process session write-lock may persist before the watchdog force-releases it. OpenClaw's runtime default (~1020000) leaves a wedged session stuck ~17min; 300000 lets it self-heal in ~5min. Only emitted by v2026.6.1+ serializers.
@@ -5379,6 +8929,66 @@ type SessionConfigPatch struct {
 	// WriteLockMaxHoldMs Watchdog force-release threshold for the session lock (ms).
 	WriteLockMaxHoldMs *int `json:"write_lock_max_hold_ms"`
 }
+
+// SessionVisibility OpenClaw session visibility scope — controls which sessions can see each other.
+type SessionVisibility string
+
+// SessionsToolSettings Settings for the “sessions“ tool domain.
+//
+// Maps to OpenClaw “tools.sessions“ in the serialized config.
+// Requires OpenClaw v2026.3+ — older serializers reject this at
+// “validate_config_for_version“ time rather than silently dropping.
+//
+// Visibility defaults to “all“ — the platform default. Bots without
+// an explicit row in “bot_tool_domain_settings“ are also serialized
+// with “visibility="all"“ (see the v2026.3+ serializers), so the
+// default is consistent across "row exists with no override" and
+// "no row at all" paths.
+type SessionsToolSettings struct {
+	// Tool Discriminator literal.
+	Tool string `json:"tool"`
+
+	// Visibility OpenClaw session visibility scope — controls which sessions can see each other.
+	Visibility *SessionVisibility `json:"visibility,omitempty"`
+}
+
+// SettingRemoval defines model for SettingRemoval.
+type SettingRemoval struct {
+	Action        SettingRemovalAction `json:"action"`
+	BotPackItemId string               `json:"bot_pack_item_id"`
+	Kind          SettingRemovalKind   `json:"kind"`
+	Path          string               `json:"path"`
+	Reason        string               `json:"reason"`
+}
+
+// SettingRemovalAction defines model for SettingRemoval.Action.
+type SettingRemovalAction string
+
+// SettingRemovalKind defines model for SettingRemoval.Kind.
+type SettingRemovalKind string
+
+// SetupFormAction Answer these fields of the entry's setup form (“complete_setups“).
+type SetupFormAction struct {
+	// Fields Form field ids still to answer; what the org already had is answered.
+	Fields            []string            `json:"fields"`
+	Kind              SetupFormActionKind `json:"kind"`
+	McpCatalogEntryId string              `json:"mcp_catalog_entry_id"`
+}
+
+// SetupFormActionKind defines model for SetupFormAction.Kind.
+type SetupFormActionKind string
+
+// SetupFormCompletion Answers to the setup form's remaining fields.
+type SetupFormCompletion struct {
+	BotPackConnectionSetupId string `json:"bot_pack_connection_setup_id"`
+
+	// CatalogFormAnswers Field id to answer. Wins over what the setup answered from the org.
+	CatalogFormAnswers map[string]McpCatalogFormFieldValueInput `json:"catalog_form_answers"`
+	Kind               SetupFormCompletionKind                  `json:"kind"`
+}
+
+// SetupFormCompletionKind defines model for SetupFormCompletion.Kind.
+type SetupFormCompletionKind string
 
 // SkillCreate Request to create a skill.
 type SkillCreate struct {
@@ -5423,6 +9033,9 @@ type SkillFileResponse struct {
 	SortOrder int       `json:"sort_order"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
+
+// SkillFilterField Filterable fields on the skill search endpoint.
+type SkillFilterField string
 
 // SkillImportPreviewResponse What an import would install, resolved but not stored.
 type SkillImportPreviewResponse struct {
@@ -5478,6 +9091,32 @@ type SkillImportSkippedFile struct {
 // SkillProvider Who provided/authored the skill.
 type SkillProvider string
 
+// SkillProviderCount How many visible skills one provider has.
+type SkillProviderCount struct {
+	// Count Visible skills from this provider
+	Count int `json:"count"`
+
+	// Provider Who provided/authored the skill.
+	Provider SkillProvider `json:"provider"`
+}
+
+// SkillProviderCountsRequest Request body for POST /v1/orgs/{org_id}/skills/search/provider-counts.
+type SkillProviderCountsRequest struct {
+	Where *FilterNodeSkillFilterField `json:"where"`
+}
+
+// SkillProviderCountsResponse Per-provider skill counts for a catalogue filter, without the skills themselves.
+//
+// Lets a paged skill picker label its provider rail (and offer only providers
+// that have skills) without loading the whole catalogue.
+type SkillProviderCountsResponse struct {
+	// Providers One entry per provider with at least one matching skill, ordered by provider
+	Providers []SkillProviderCount `json:"providers"`
+
+	// Total Visible skills matching the filter, across all providers
+	Total int `json:"total"`
+}
+
 // SkillRefreshRequest Request to re-pull an imported skill from its source, in place.
 //
 // Every field is optional: an empty body means "re-resolve the recorded
@@ -5493,6 +9132,21 @@ type SkillRefreshRequest struct {
 	// Source Attach the skill to this source instead of its recorded one, using the same reference grammar as import. Requires 'force', because it discards the recorded origin. Required when the skill has no recorded source at all.
 	Source *string `json:"source"`
 }
+
+// SkillRemoval defines model for SkillRemoval.
+type SkillRemoval struct {
+	Action        SkillRemovalAction `json:"action"`
+	BotPackItemId string             `json:"bot_pack_item_id"`
+	Kind          SkillRemovalKind   `json:"kind"`
+	Reason        string             `json:"reason"`
+	SkillId       string             `json:"skill_id"`
+}
+
+// SkillRemovalAction defines model for SkillRemoval.Action.
+type SkillRemovalAction string
+
+// SkillRemovalKind defines model for SkillRemoval.Kind.
+type SkillRemovalKind string
 
 // SkillResponse Skill response with files.
 type SkillResponse struct {
@@ -5629,6 +9283,91 @@ type SkillUpdate struct {
 	Summary *string     `json:"summary"`
 }
 
+// SkillVersionGroup One skill's page of versions, newest first.
+type SkillVersionGroup struct {
+	// HasMore Whether more versions follow at a larger offset.
+	HasMore bool `json:"has_more"`
+
+	// Items Versions on this page.
+	Items []SkillVersionResponse `json:"items"`
+
+	// SkillId Skill id; pass it as ``skill_id`` to pin.
+	SkillId string `json:"skill_id"`
+
+	// SkillSlug Skill slug.
+	SkillSlug string `json:"skill_slug"`
+
+	// Total Total versions recorded for the skill.
+	Total int `json:"total"`
+}
+
+// SkillVersionRef A pinned skill version, named.
+type SkillVersionRef struct {
+	SkillId        string `json:"skill_id"`
+	SkillName      string `json:"skill_name"`
+	SkillSlug      string `json:"skill_slug"`
+	SkillVersionId string `json:"skill_version_id"`
+	VersionName    string `json:"version_name"`
+	VersionNo      int    `json:"version_no"`
+}
+
+// SkillVersionResponse One recorded version of a skill (append-only history).
+type SkillVersionResponse struct {
+	// CreatedAt When this version was recorded.
+	CreatedAt time.Time `json:"created_at"`
+
+	// FilesHash Composite hash of the version's file set.
+	FilesHash string `json:"files_hash"`
+
+	// Id Version id; pass it as ``version_id`` to pin.
+	Id string `json:"id"`
+
+	// IsHead Whether this is the skill's latest version.
+	IsHead bool `json:"is_head"`
+
+	// Name Skill name as of this version.
+	Name string `json:"name"`
+
+	// Pinnable Whether a bot may be pinned to this version.
+	Pinnable bool `json:"pinnable"`
+
+	// PublishedAt When this version was published for pinning; null if unpublished.
+	PublishedAt *time.Time `json:"published_at"`
+
+	// SourceCommitSha Upstream commit the content came from, for imported skills.
+	SourceCommitSha *string `json:"source_commit_sha"`
+
+	// Summary Skill summary as of this version.
+	Summary string `json:"summary"`
+
+	// VersionNo 1-based version number, per skill.
+	VersionNo int `json:"version_no"`
+}
+
+// SkillVersionSearch Request for “POST /skills/versions/search“: versions of several skills.
+type SkillVersionSearch struct {
+	// Limit Versions per skill. The server also caps the whole response at 500 versions, so the applied per-skill limit may be lower; it is echoed.
+	Limit *int `json:"limit,omitempty"`
+
+	// Offset Versions to skip in every skill. To page further into one skill, request that skill alone.
+	Offset *int `json:"offset,omitempty"`
+
+	// SkillSlugs Skills to list versions for; each at most once. All-or-nothing: an unknown or invisible slug fails the whole request with 404.
+	SkillSlugs []string `json:"skill_slugs"`
+}
+
+// SkillVersionSearchResponse Versions of several skills, one group per requested skill, in request order.
+type SkillVersionSearchResponse struct {
+	// Groups One group per requested skill.
+	Groups []SkillVersionGroup `json:"groups"`
+
+	// Limit Per-skill page size actually applied.
+	Limit int `json:"limit"`
+
+	// Offset Offset applied to every skill.
+	Offset int `json:"offset"`
+}
+
 // SkillsConfig Skills loading configuration.
 type SkillsConfig struct {
 	AllowBundled *[]string `json:"allow_bundled,omitempty"`
@@ -5636,10 +9375,92 @@ type SkillsConfig struct {
 	Workspace    *string   `json:"workspace,omitempty"`
 }
 
-// Storage defines model for Storage.
-type Storage struct {
-	Workspace WorkspaceStorageMetrics `json:"workspace"`
+// SoulRemoval defines model for SoulRemoval.
+type SoulRemoval struct {
+	Action        SoulRemovalAction `json:"action"`
+	BotPackItemId string            `json:"bot_pack_item_id"`
+	Kind          SoulRemovalKind   `json:"kind"`
+	Reason        string            `json:"reason"`
 }
+
+// SoulRemovalAction defines model for SoulRemoval.Action.
+type SoulRemovalAction string
+
+// SoulRemovalKind defines model for SoulRemoval.Kind.
+type SoulRemovalKind string
+
+// StorageMetrics defines model for StorageMetrics.
+type StorageMetrics struct {
+	Workspace *WorkspaceStorageMetrics `json:"workspace"`
+}
+
+// SuggestedSkill A suggested platform skill the bot has not assigned or dismissed.
+type SuggestedSkill struct {
+	// Name Skill display name
+	Name string `json:"name"`
+
+	// Provider Who provided/authored the skill.
+	Provider SkillProvider `json:"provider"`
+
+	// SkillId Skill catalogue identifier
+	SkillId string `json:"skill_id"`
+
+	// Slug Skill slug
+	Slug string `json:"slug"`
+
+	// Summary Skill description
+	Summary string `json:"summary"`
+}
+
+// SuggestedTool A suggested platform tool the bot has not assigned or dismissed.
+type SuggestedTool struct {
+	// Description What the tool does
+	Description *string `json:"description"`
+
+	// Domain Tool grouping: github, conversations, inbox, etc.
+	Domain string `json:"domain"`
+
+	// Name Tool display name
+	Name string `json:"name"`
+
+	// Slug Tool composite slug
+	Slug string `json:"slug"`
+
+	// ToolId Tool catalogue identifier
+	ToolId string `json:"tool_id"`
+}
+
+// SuggestionItemKind Which catalogue surface a suggested item belongs to.
+//
+// Discriminates a dismissed-suggestion record (and the accept/dismiss API
+// payloads) across the combined skills+tools suggestion surface. Stored as a
+// lowercase string, mirroring :class:`SkillScope` / :class:`ToolRuntime`.
+type SuggestionItemKind string
+
+// SuggestionsOptOutRequest Request to set the bot's global suggestions opt-out flag.
+type SuggestionsOptOutRequest struct {
+	// OptOut When true, the bot receives no suggestions
+	OptOut bool `json:"opt_out"`
+}
+
+// SuggestionsResponse The combined suggested skills + tools surface for a bot.
+type SuggestionsResponse struct {
+	// OptOut Whether the bot has opted out of suggestions
+	OptOut bool `json:"opt_out"`
+
+	// Skills Suggested skills not yet assigned/dismissed
+	Skills []SuggestedSkill `json:"skills"`
+
+	// Tools Suggested tools not yet assigned/dismissed
+	Tools []SuggestedTool `json:"tools"`
+}
+
+// SuspensionReason Why a bot's desired state is suspended.
+//
+// Manual suspension is an owner's explicit availability decision and never
+// wakes from traffic. Inactivity suspension is platform policy and may be
+// reversed by the next human-authored message.
+type SuspensionReason string
 
 // SyncStatus Async config-apply status for a bot tool assignment.
 //
@@ -5651,8 +9472,354 @@ type Storage struct {
 // lands, or the failure recorder marks them “failed“ (retryable).
 type SyncStatus string
 
+// TaskAssignee A single assignee (user or bot) on a task, with resolved display info.
+type TaskAssignee struct {
+	// ActorType Type of an authenticated principal or a message author.
+	//
+	// ``USER``/``API_KEY``/``BOT``/``MCP_WORKLOAD`` are authenticatable
+	// *principals* — they can carry a credential, populate ``AuthContext``, and be
+	// the subject of an authz decision. ``TEAMS_USER`` is a message-author-only
+	// label for an external
+	// Microsoft Teams sender: it is written to
+	// ``conversation_messages.sender_actor_type`` so an inbound Teams turn is
+	// attributed honestly, but it is NEVER an authenticated principal. The
+	// principal path (``AuthContext``, JWT claims, the ``authz`` engine) rejects
+	// it via :data:`PRINCIPAL_ACTOR_TYPES` / :func:`assert_principal_actor_type`.
+	ActorType ActorType `json:"actor_type"`
+
+	// AvatarUrl Avatar URL of the assignee
+	AvatarUrl *string `json:"avatar_url"`
+
+	// Id Assignee UUID (user or bot)
+	Id string `json:"id"`
+
+	// Name Resolved display name of the assignee
+	Name *string `json:"name"`
+
+	// Position Ordering of the assignee within the task
+	Position int `json:"position"`
+}
+
+// TaskCreate Request body for creating a task.
+type TaskCreate struct {
+	// AssigneeBotId Assigned bot UUID (deprecated: prefer assignee_bot_ids for multiple)
+	AssigneeBotId *string `json:"assignee_bot_id"`
+
+	// AssigneeBotIds Assigned bot UUIDs. Takes precedence over assignee_bot_id when provided
+	AssigneeBotIds *[]string `json:"assignee_bot_ids"`
+
+	// AssigneeUserId Assigned user UUID (deprecated: prefer assignee_user_ids for multiple)
+	AssigneeUserId *string `json:"assignee_user_id"`
+
+	// AssigneeUserIds Assigned user UUIDs. Takes precedence over assignee_user_id when provided
+	AssigneeUserIds *[]string `json:"assignee_user_ids"`
+
+	// ColumnId Column to place the task in
+	ColumnId string `json:"column_id"`
+
+	// Description Markdown description
+	Description *string `json:"description"`
+
+	// DueDate Optional due date
+	DueDate *time.Time `json:"due_date"`
+
+	// GithubPrUrl GitHub pull request URL
+	GithubPrUrl *string `json:"github_pr_url"`
+
+	// LinkedConversationIds Conversation UUIDs to link to this task
+	LinkedConversationIds *[]string `json:"linked_conversation_ids"`
+
+	// Priority Workforce task priority level.
+	Priority *TaskPriority `json:"priority,omitempty"`
+
+	// Tags Tags for bot matching
+	Tags *[]string `json:"tags"`
+
+	// Title Task title
+	Title string `json:"title"`
+}
+
+// TaskLinkCreate One link to create from the path (anchor) task.
+//
+// “direction“ chooses which side the anchor takes: “outgoing“ (default)
+// makes the anchor the “from“ side (it "relates to" / "blocks" the target);
+// “incoming“ makes it the “to“ side (e.g. the anchor "is blocked by" the
+// target). “direction“ is immaterial for the symmetric “relates_to“ type.
+type TaskLinkCreate struct {
+	// Direction A task link as seen from one task's perspective.
+	//
+	// Not stored: computed when projecting a task's links. ``OUTGOING`` means the
+	// viewing task is the ``from`` side of the link row; ``INCOMING`` means it is
+	// the ``to`` side. Combined with the link type this yields the display label —
+	// e.g. ``BLOCKS`` + ``INCOMING`` renders as "blocked by". On writes it lets a
+	// task express an incoming link (e.g. "this task is blocked by X") without a
+	// redundant inverse enum member.
+	Direction *WorkforceTaskLinkDirection `json:"direction,omitempty"`
+
+	// LinkType Canonical type of a directed link between two workforce tasks.
+	//
+	// Stored on ``workforce_task_links.link_type``. ``RELATES_TO`` is symmetric
+	// (order-independent — a pair is stored once, in a canonical task-id order);
+	// ``BLOCKS`` is directional — the ``from`` task blocks the ``to`` task.
+	//
+	// The reverse "blocked by" relationship is a *derived view* of a ``BLOCKS``
+	// row seen from the ``to`` task's side (see ``WorkforceTaskLinkDirection``),
+	// never a stored value — one relationship is always exactly one row.
+	LinkType *WorkforceTaskLinkType `json:"link_type,omitempty"`
+
+	// ToTaskNumber The other task's number within this workforce
+	ToTaskNumber int `json:"to_task_number"`
+}
+
+// TaskLinkSummary A task-to-task link projected from one task's perspective.
+//
+// “link_type“ and “direction“ describe the relationship *as seen from the
+// task this link is attached to*: a “blocks“ link with “direction=incoming“
+// means the viewing task is blocked by “task_number“ ("blocked by"). The
+// remaining fields identify the other task for display/navigation.
+type TaskLinkSummary struct {
+	// CreatedAt When the link was created
+	CreatedAt time.Time `json:"created_at"`
+
+	// Direction A task link as seen from one task's perspective.
+	//
+	// Not stored: computed when projecting a task's links. ``OUTGOING`` means the
+	// viewing task is the ``from`` side of the link row; ``INCOMING`` means it is
+	// the ``to`` side. Combined with the link type this yields the display label —
+	// e.g. ``BLOCKS`` + ``INCOMING`` renders as "blocked by". On writes it lets a
+	// task express an incoming link (e.g. "this task is blocked by X") without a
+	// redundant inverse enum member.
+	Direction WorkforceTaskLinkDirection `json:"direction"`
+
+	// Id Link UUID
+	Id string `json:"id"`
+
+	// LinkType Canonical type of a directed link between two workforce tasks.
+	//
+	// Stored on ``workforce_task_links.link_type``. ``RELATES_TO`` is symmetric
+	// (order-independent — a pair is stored once, in a canonical task-id order);
+	// ``BLOCKS`` is directional — the ``from`` task blocks the ``to`` task.
+	//
+	// The reverse "blocked by" relationship is a *derived view* of a ``BLOCKS``
+	// row seen from the ``to`` task's side (see ``WorkforceTaskLinkDirection``),
+	// never a stored value — one relationship is always exactly one row.
+	LinkType WorkforceTaskLinkType `json:"link_type"`
+
+	// TaskColumnId The other task's column ID
+	TaskColumnId string `json:"task_column_id"`
+
+	// TaskId The other task's UUID
+	TaskId string `json:"task_id"`
+
+	// TaskNumber The other task's number within the workforce
+	TaskNumber int `json:"task_number"`
+
+	// TaskTitle The other task's title
+	TaskTitle string `json:"task_title"`
+}
+
+// TaskLinksCreate Request body for linking the path task to other tasks, all or nothing.
+//
+// Links are created in one transaction: if any item is invalid (unknown task,
+// self-link, already linked, or two items naming the same stored link)
+// nothing is written and the error names the offending task numbers.
+type TaskLinksCreate struct {
+	// Links Links to create from the path task. Each stored link at most once.
+	Links []TaskLinkCreate `json:"links"`
+}
+
+// TaskLinksDelete Request body for removing links from the path task, all or nothing.
+type TaskLinksDelete struct {
+	// LinkIds Link UUIDs to remove; each must involve the path task. Each at most once.
+	LinkIds []string `json:"link_ids"`
+}
+
+// TaskPriority Workforce task priority level.
+type TaskPriority string
+
+// TaskResponse Response body for a task.
+type TaskResponse struct {
+	// AssigneeAvatarUrl Avatar URL of the assignee
+	AssigneeAvatarUrl *string `json:"assignee_avatar_url"`
+
+	// AssigneeBotId Assigned bot UUID
+	AssigneeBotId *string `json:"assignee_bot_id"`
+
+	// AssigneeName Resolved display name of the assignee
+	AssigneeName *string `json:"assignee_name"`
+
+	// AssigneeUserId Assigned user UUID
+	AssigneeUserId *string `json:"assignee_user_id"`
+
+	// Assignees All assignees (users and bots) on the task, in order
+	Assignees *[]TaskAssignee `json:"assignees,omitempty"`
+
+	// ColumnId Column ID
+	ColumnId string `json:"column_id"`
+
+	// CreatedAt Creation timestamp
+	CreatedAt time.Time `json:"created_at"`
+
+	// CreatedByActorId Creator actor UUID
+	CreatedByActorId *string `json:"created_by_actor_id"`
+
+	// CreatedByActorType Type of an authenticated principal or a message author.
+	//
+	// ``USER``/``API_KEY``/``BOT``/``MCP_WORKLOAD`` are authenticatable
+	// *principals* — they can carry a credential, populate ``AuthContext``, and be
+	// the subject of an authz decision. ``TEAMS_USER`` is a message-author-only
+	// label for an external
+	// Microsoft Teams sender: it is written to
+	// ``conversation_messages.sender_actor_type`` so an inbound Teams turn is
+	// attributed honestly, but it is NEVER an authenticated principal. The
+	// principal path (``AuthContext``, JWT claims, the ``authz`` engine) rejects
+	// it via :data:`PRINCIPAL_ACTOR_TYPES` / :func:`assert_principal_actor_type`.
+	CreatedByActorType ActorType `json:"created_by_actor_type"`
+
+	// CreatedByName Creator display name
+	CreatedByName *string `json:"created_by_name"`
+
+	// Description Markdown description
+	Description *string `json:"description"`
+
+	// DueDate Due date
+	DueDate *time.Time `json:"due_date"`
+
+	// FileCount Number of attached files
+	FileCount *int `json:"file_count,omitempty"`
+
+	// GithubPrUrl Linked GitHub pull request URL
+	GithubPrUrl *string `json:"github_pr_url"`
+
+	// Id Task UUID
+	Id string `json:"id"`
+
+	// LinkedConversationIds Conversation UUIDs linked to this task
+	LinkedConversationIds *[]string `json:"linked_conversation_ids"`
+
+	// LinkedConversations Safe summaries for linked conversations, in linked_conversation_ids order
+	LinkedConversations *[]LinkedConversationSummary `json:"linked_conversations"`
+
+	// Links Task-to-task links from this task's perspective. Populated on task-detail responses; None on list/board responses
+	Links *[]TaskLinkSummary `json:"links"`
+
+	// Number Human-friendly ordinal task number within the workforce
+	Number int `json:"number"`
+
+	// Position Position within column
+	Position float32 `json:"position"`
+
+	// Priority Workforce task priority level.
+	Priority TaskPriority `json:"priority"`
+
+	// ReadableLinkedConversationIds Linked conversation UUIDs readable by the current caller
+	ReadableLinkedConversationIds *[]string `json:"readable_linked_conversation_ids"`
+
+	// Tags Tags
+	Tags *[]string `json:"tags"`
+
+	// Title Task title
+	Title string `json:"title"`
+
+	// UpdatedAt Last update timestamp
+	UpdatedAt time.Time `json:"updated_at"`
+
+	// WorkforceId Workforce UUID
+	WorkforceId string `json:"workforce_id"`
+}
+
+// TaskUpdate Request body for updating a task.
+//
+// Omitted fields are left unchanged. To clear a nullable field,
+// explicitly send null.
+type TaskUpdate struct {
+	// AddLinkedConversationIds Conversation UUIDs to link, leaving every other link unchanged. Already-linked ids are ignored, so concurrent writers cannot erase each other's links. Cannot be combined with linked_conversation_ids
+	AddLinkedConversationIds *[]string `json:"add_linked_conversation_ids,omitempty"`
+
+	// AssigneeBotId New assigned bot (deprecated: prefer assignee_bot_ids). Replaces only the bot assignees, leaving user assignees unchanged
+	AssigneeBotId *string `json:"assignee_bot_id"`
+
+	// AssigneeBotIds Full replacement of bot assignees. Takes precedence over assignee_bot_id
+	AssigneeBotIds *[]string `json:"assignee_bot_ids"`
+
+	// AssigneeUserId New assigned user (deprecated: prefer assignee_user_ids). Replaces only the user assignees, leaving bot assignees unchanged
+	AssigneeUserId *string `json:"assignee_user_id"`
+
+	// AssigneeUserIds Full replacement of user assignees. Takes precedence over assignee_user_id
+	AssigneeUserIds *[]string `json:"assignee_user_ids"`
+
+	// ColumnId Move to column
+	ColumnId *string `json:"column_id,omitempty"`
+
+	// Description New description
+	Description *string `json:"description"`
+
+	// DueDate New due date
+	DueDate *time.Time `json:"due_date"`
+
+	// GithubPrUrl GitHub pull request URL
+	GithubPrUrl *string `json:"github_pr_url"`
+
+	// LinkedConversationIds Full replacement of the conversation UUIDs linked to this task. A list written from a stale read erases links made since; to link or unlink individual conversations, prefer add_linked_conversation_ids / remove_linked_conversation_ids
+	LinkedConversationIds *[]string `json:"linked_conversation_ids"`
+
+	// Position New position within column
+	Position *float32 `json:"position,omitempty"`
+
+	// Priority Workforce task priority level.
+	Priority *TaskPriority `json:"priority,omitempty"`
+
+	// RemoveLinkedConversationIds Conversation UUIDs to unlink, leaving every other link unchanged. Ids that are not linked are ignored. Cannot be combined with linked_conversation_ids
+	RemoveLinkedConversationIds *[]string `json:"remove_linked_conversation_ids,omitempty"`
+
+	// Tags New tags
+	Tags *[]string `json:"tags"`
+
+	// Title New title
+	Title *string `json:"title,omitempty"`
+}
+
 // TemplateIcon Lucide icon name for bot templates.
 type TemplateIcon string
+
+// ToolImageConfig How a native bot treats images its MCP tools return.
+//
+// Every field is optional and “None“ means "the platform default", so a
+// bot that sets nothing behaves exactly as before this model existed, and
+// clearing a field with an explicit “null“ patch returns it to the
+// default. Native bots only: OpenClaw bots have no equivalent setting.
+type ToolImageConfig struct {
+	// DefaultDetail Detail level for a tool image whose MCP server does not request one (auto, low, high or original). Unset leaves it to the provider's default.
+	DefaultDetail *ToolImageConfigDefaultDetail `json:"default_detail"`
+
+	// Enabled Show images returned by tools to the model. False replaces each image with a short text notice. Unset means enabled.
+	Enabled *bool `json:"enabled"`
+
+	// MaxDimensionPx Longest edge, in pixels, a tool image is downscaled to before the model sees it. At most 8000. Unset means the platform default (2000). Values above 2000 only take effect while a request holds 20 images or fewer; beyond that the provider limits every image to 2000 px and a larger one is replaced by a notice.
+	MaxDimensionPx *int `json:"max_dimension_px"`
+}
+
+// ToolImageConfigDefaultDetail Detail level for a tool image whose MCP server does not request one (auto, low, high or original). Unset leaves it to the provider's default.
+type ToolImageConfigDefaultDetail string
+
+// ToolImageConfigPatch Patchable tool-image fields (native bots only).
+//
+// The target fields are nullable and “None“ there means "platform
+// default", so an explicit “null“ here resets a field to the default and
+// an omitted field is left unchanged.
+type ToolImageConfigPatch struct {
+	// DefaultDetail Detail level for a tool image whose MCP server does not request one (auto, low, high or original). Unset leaves it to the provider's default.
+	DefaultDetail *ToolImageConfigPatchDefaultDetail `json:"default_detail"`
+
+	// Enabled Show images returned by tools to the model. False replaces each image with a short text notice. Unset means enabled.
+	Enabled *bool `json:"enabled"`
+
+	// MaxDimensionPx Longest edge, in pixels, a tool image is downscaled to before the model sees it. At most 8000. Unset means the platform default (2000). Values above 2000 only take effect while a request holds 20 images or fewer; beyond that the provider limits every image to 2000 px and a larger one is replaced by a notice.
+	MaxDimensionPx *int `json:"max_dimension_px"`
+}
+
+// ToolImageConfigPatchDefaultDetail Detail level for a tool image whose MCP server does not request one (auto, low, high or original). Unset leaves it to the provider's default.
+type ToolImageConfigPatchDefaultDetail string
 
 // ToolPermissionCheckRequest The tool set to resolve. **One call for N tools, never N calls.**
 //
@@ -5669,6 +9836,21 @@ type ToolPermissionCheckResponse struct {
 	MissingPermissions     []MissingPermissionResponse `json:"missing_permissions"`
 	Requirements           []ToolRequirementResponse   `json:"requirements"`
 }
+
+// ToolRemoval defines model for ToolRemoval.
+type ToolRemoval struct {
+	Action        ToolRemovalAction `json:"action"`
+	BotPackItemId string            `json:"bot_pack_item_id"`
+	Kind          ToolRemovalKind   `json:"kind"`
+	Reason        string            `json:"reason"`
+	ToolId        string            `json:"tool_id"`
+}
+
+// ToolRemovalAction defines model for ToolRemoval.Action.
+type ToolRemovalAction string
+
+// ToolRemovalKind defines model for ToolRemoval.Kind.
+type ToolRemovalKind string
 
 // ToolRequirementResponse One *(tool, requirement)* pair and how it stands for this bot.
 type ToolRequirementResponse struct {
@@ -5752,7 +9934,7 @@ type ToolResponse struct {
 	// Each member names a *different* enforcement point, which is the bar a new
 	// member has to clear. The value appears in every
 	// :meth:`ToolCatalog.build_slug` result, so it is a durable public contract:
-	// ``mcp:botyard:send_email``, ``openclaw::exec``, ``native::host_read``.
+	// ``mcp:botyard:send_email``, ``openclaw::exec``, ``native::file_read``.
 	//
 	// * ``mcp`` — the platform serves the tool over MCP. Enforcement is in the
 	//   gateway, which is also why these rows are reachable from every harness.
@@ -5770,7 +9952,7 @@ type ToolResponse struct {
 	// same **shape** — a builtin, enforced by configuring the agent that owns it —
 	// but they are different agents, and :data:`~botyard_core.hosting.
 	// _HARNESS_TOOL_RUNTIMES` is keyed on this value. Reusing ``openclaw`` would
-	// advertise ``host_read`` to OpenClaw bots, where the name means nothing.
+	// advertise ``file_read`` to OpenClaw bots, where the name means nothing.
 	Runtime ToolRuntime `json:"runtime"`
 
 	// RuntimeToolName Internal name used by the runtime — MCP function name or OpenClaw tool ID
@@ -5778,6 +9960,9 @@ type ToolResponse struct {
 
 	// Slug Globally unique composite identifier (runtime:mcp_server:runtime_tool_name)
 	Slug string `json:"slug"`
+
+	// Title Human-readable title advertised by the MCP server, if any. Display it in preference to ``name`` when present; never use it as an identifier.
+	Title *string `json:"title"`
 
 	// UpdatedAt Last update timestamp
 	UpdatedAt time.Time `json:"updated_at"`
@@ -5788,7 +9973,7 @@ type ToolResponse struct {
 // Each member names a *different* enforcement point, which is the bar a new
 // member has to clear. The value appears in every
 // :meth:`ToolCatalog.build_slug` result, so it is a durable public contract:
-// “mcp:botyard:send_email“, “openclaw::exec“, “native::host_read“.
+// “mcp:botyard:send_email“, “openclaw::exec“, “native::file_read“.
 //
 //   - “mcp“ — the platform serves the tool over MCP. Enforcement is in the
 //     gateway, which is also why these rows are reachable from every harness.
@@ -5806,7 +9991,7 @@ type ToolResponse struct {
 // same **shape** — a builtin, enforced by configuring the agent that owns it —
 // but they are different agents, and :data:`~botyard_core.hosting.
 // _HARNESS_TOOL_RUNTIMES` is keyed on this value. Reusing “openclaw“ would
-// advertise “host_read“ to OpenClaw bots, where the name means nothing.
+// advertise “file_read“ to OpenClaw bots, where the name means nothing.
 type ToolRuntime string
 
 // ToolSearchConfig Tool Search: defer tool schemas out of the prompt behind a search surface.
@@ -5943,6 +10128,54 @@ type ToolsConfigExecHost string
 // ToolsConfigExecSecurity defines model for ToolsConfig.ExecSecurity.
 type ToolsConfigExecSecurity string
 
+// UnavailableAction The connection cannot be set up; the rest of the pack is installed.
+type UnavailableAction struct {
+	Kind   UnavailableActionKind `json:"kind"`
+	Reason string                `json:"reason"`
+}
+
+// UnavailableActionKind defines model for UnavailableAction.Kind.
+type UnavailableActionKind string
+
+// UnsupportedSettingItem A setting the pack sets that this profile does not have.
+type UnsupportedSettingItem struct {
+	Kind UnsupportedSettingItemKind `json:"kind"`
+
+	// Reason Why this profile cannot run it, for display.
+	Reason string `json:"reason"`
+
+	// Setting The top-level setting name, e.g. 'tool_images'.
+	Setting string `json:"setting"`
+}
+
+// UnsupportedSettingItemKind defines model for UnsupportedSettingItem.Kind.
+type UnsupportedSettingItemKind string
+
+// UnsupportedSoulItem The pack's soul cannot reach this profile.
+type UnsupportedSoulItem struct {
+	Kind UnsupportedSoulItemKind `json:"kind"`
+
+	// Reason Why this profile cannot run it, for display.
+	Reason string `json:"reason"`
+}
+
+// UnsupportedSoulItemKind defines model for UnsupportedSoulItem.Kind.
+type UnsupportedSoulItemKind string
+
+// UnsupportedToolItem A pack tool this profile cannot serve.
+type UnsupportedToolItem struct {
+	Kind UnsupportedToolItemKind `json:"kind"`
+
+	// Reason Why this profile cannot run it, for display.
+	Reason string `json:"reason"`
+
+	// ToolId The tool's id.
+	ToolId string `json:"tool_id"`
+}
+
+// UnsupportedToolItemKind defines model for UnsupportedToolItem.Kind.
+type UnsupportedToolItemKind string
+
 // UsageError Machine-readable reason a usage snapshot carries no windows.
 //
 // Distinguishes recoverable, user-actionable states (re-link vs. wait vs.
@@ -5972,23 +10205,300 @@ type VerbatimHeaderScheme struct {
 	Scheme string `json:"scheme"`
 }
 
+// WaitForToolsAction Bound; these pack tools appear when the server reports them, with no further call.
+type WaitForToolsAction struct {
+	Kind         WaitForToolsActionKind `json:"kind"`
+	McpServerId  string                 `json:"mcp_server_id"`
+	MissingTools []string               `json:"missing_tools"`
+}
+
+// WaitForToolsActionKind defines model for WaitForToolsAction.Kind.
+type WaitForToolsActionKind string
+
+// WorkforceBotMemberResponse Summary of a bot that is a member of a workforce.
+type WorkforceBotMemberResponse struct {
+	// AvatarUrl Bot avatar image URL
+	AvatarUrl *string `json:"avatar_url"`
+
+	// Id Bot UUID
+	Id string `json:"id"`
+
+	// Name Bot display name
+	Name string `json:"name"`
+
+	// Slug URL-friendly bot identifier
+	Slug string `json:"slug"`
+}
+
+// WorkforceColumn A column definition within a workforce board.
+type WorkforceColumn struct {
+	// Id Unique column identifier
+	Id string `json:"id"`
+
+	// Name Column display name
+	Name string `json:"name"`
+
+	// Position Column ordering position
+	Position int `json:"position"`
+}
+
+// WorkforceCreate Request body for creating a workforce.
+type WorkforceCreate struct {
+	// Columns Column definitions. Defaults to: Backlog, To Do, In Progress, In Review, Done.
+	Columns *[]WorkforceColumn `json:"columns"`
+
+	// Description Optional description
+	Description *string `json:"description"`
+
+	// Name Workforce display name
+	Name string `json:"name"`
+}
+
+// WorkforceListItem Summary item for workforce list.
+type WorkforceListItem struct {
+	// Columns Column definitions. Present on the summary so a caller holding tasks from several boards can name a task's status from its column_id without fetching each board; columns are a JSONB field on the same row this list already reads, so serving them costs no additional query.
+	Columns []WorkforceColumn `json:"columns"`
+
+	// CreatedAt Creation timestamp
+	CreatedAt time.Time `json:"created_at"`
+
+	// Description Optional description
+	Description *string `json:"description"`
+
+	// Id Workforce UUID
+	Id string `json:"id"`
+
+	// Name Display name
+	Name string `json:"name"`
+
+	// Slug URL-friendly identifier
+	Slug string `json:"slug"`
+
+	// UpdatedAt Last update timestamp
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+// WorkforceResponse Response body for a workforce.
+type WorkforceResponse struct {
+	// Columns Column definitions
+	Columns []WorkforceColumn `json:"columns"`
+
+	// CreatedAt Creation timestamp
+	CreatedAt time.Time `json:"created_at"`
+
+	// CreatedBy Creator actor UUID; may identify a user, bot, or API key. Prefer created_by_actor_type and created_by_actor_id. Deprecated; removal tracked by Platform Development task #1274.
+	// Deprecated:
+	CreatedBy string `json:"created_by"`
+
+	// CreatedByActorId Creator actor UUID
+	CreatedByActorId string `json:"created_by_actor_id"`
+
+	// CreatedByActorType Type of an authenticated principal or a message author.
+	//
+	// ``USER``/``API_KEY``/``BOT``/``MCP_WORKLOAD`` are authenticatable
+	// *principals* — they can carry a credential, populate ``AuthContext``, and be
+	// the subject of an authz decision. ``TEAMS_USER`` is a message-author-only
+	// label for an external
+	// Microsoft Teams sender: it is written to
+	// ``conversation_messages.sender_actor_type`` so an inbound Teams turn is
+	// attributed honestly, but it is NEVER an authenticated principal. The
+	// principal path (``AuthContext``, JWT claims, the ``authz`` engine) rejects
+	// it via :data:`PRINCIPAL_ACTOR_TYPES` / :func:`assert_principal_actor_type`.
+	CreatedByActorType ActorType `json:"created_by_actor_type"`
+
+	// Description Optional description
+	Description *string `json:"description"`
+
+	// Id Workforce UUID
+	Id string `json:"id"`
+
+	// Name Display name
+	Name string `json:"name"`
+
+	// OrgId Organization UUID
+	OrgId string `json:"org_id"`
+
+	// Slug URL-friendly identifier
+	Slug string `json:"slug"`
+
+	// UpdatedAt Last update timestamp
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+// WorkforceTaskCounts Active task counts for one board, grouped by the column tasks sit in.
+type WorkforceTaskCounts struct {
+	// Counts Active (non-deleted) task count keyed by column_id. A column with no tasks is omitted rather than reported as zero, so read a missing key as zero. Keys are the column_id stored on the task, which has no foreign key to the board's columns definition — a column removed from the board without its tasks being reassigned still appears here, and callers that render per-column segments must account for ids the board no longer defines.
+	Counts map[string]int `json:"counts"`
+
+	// WorkforceId Workforce UUID
+	WorkforceId string `json:"workforce_id"`
+}
+
+// WorkforceTaskCountsResponse Per-board task counts across an organization.
+//
+// Deliberately a separate surface from “WorkforceListItem“ rather than a
+// field on it. The counts need an aggregate query that the board list does
+// not otherwise run, and the list is the hot path every bot's MCP
+// “list_workforces“ call goes through; folding counts into it would charge
+// every caller for an aggregate that only the launchpad rail reads.
+type WorkforceTaskCountsResponse struct {
+	// Boards One entry per board the caller may view. Boards the caller cannot view are absent entirely — not reported with empty counts — so that the response never discloses that an unviewable board exists.
+	Boards []WorkforceTaskCounts `json:"boards"`
+}
+
+// WorkforceTaskFilterField Filterable fields for workforce task search.
+type WorkforceTaskFilterField string
+
+// WorkforceTaskLinkDirection A task link as seen from one task's perspective.
+//
+// Not stored: computed when projecting a task's links. “OUTGOING“ means the
+// viewing task is the “from“ side of the link row; “INCOMING“ means it is
+// the “to“ side. Combined with the link type this yields the display label —
+// e.g. “BLOCKS“ + “INCOMING“ renders as "blocked by". On writes it lets a
+// task express an incoming link (e.g. "this task is blocked by X") without a
+// redundant inverse enum member.
+type WorkforceTaskLinkDirection string
+
+// WorkforceTaskLinkType Canonical type of a directed link between two workforce tasks.
+//
+// Stored on “workforce_task_links.link_type“. “RELATES_TO“ is symmetric
+// (order-independent — a pair is stored once, in a canonical task-id order);
+// “BLOCKS“ is directional — the “from“ task blocks the “to“ task.
+//
+// The reverse "blocked by" relationship is a *derived view* of a “BLOCKS“
+// row seen from the “to“ task's side (see “WorkforceTaskLinkDirection“),
+// never a stored value — one relationship is always exactly one row.
+type WorkforceTaskLinkType string
+
+// WorkforceTaskSearchRequest Request body for POST .../tasks/search. Empty body = list in scope.
+type WorkforceTaskSearchRequest struct {
+	// Pagination Query parameters for offset-based paginated endpoints.
+	Pagination *PaginationParams                   `json:"pagination,omitempty"`
+	Where      *FilterNodeWorkforceTaskFilterField `json:"where"`
+}
+
+// WorkforceUpdate Request body for updating a workforce.
+type WorkforceUpdate struct {
+	// Columns Updated column list
+	Columns *[]WorkforceColumn `json:"columns"`
+
+	// Description New description
+	Description *string `json:"description"`
+
+	// Name New name
+	Name *string `json:"name"`
+
+	// Slug New slug
+	Slug *string `json:"slug"`
+}
+
+// WorkforceViewCreate Create a private stored view for a workforce board.
+type WorkforceViewCreate struct {
+	// Name Stored view display name
+	Name string `json:"name"`
+
+	// State A restorable snapshot of workforce board URL state.
+	State WorkforceViewState `json:"state"`
+}
+
+// WorkforceViewLayout Presentation mode restored by a workforce view.
+type WorkforceViewLayout string
+
+// WorkforceViewResponse A named workforce view visible to the current user.
+type WorkforceViewResponse struct {
+	// CreatedAt Creation timestamp
+	CreatedAt time.Time `json:"created_at"`
+
+	// Id Stored view UUID
+	Id string `json:"id"`
+
+	// Name Stored view display name
+	Name string `json:"name"`
+
+	// Scope Visibility scope for a stored workforce view.
+	Scope WorkforceViewScope `json:"scope"`
+
+	// State A restorable snapshot of workforce board URL state.
+	State WorkforceViewState `json:"state"`
+
+	// UpdatedAt Last update timestamp
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+// WorkforceViewScope Visibility scope for a stored workforce view.
+type WorkforceViewScope string
+
+// WorkforceViewState A restorable snapshot of workforce board URL state.
+type WorkforceViewState struct {
+	// ActiveOnly Show only active tasks
+	ActiveOnly *bool `json:"active_only,omitempty"`
+
+	// AssigneeIds Selected user and bot assignee UUIDs
+	AssigneeIds *[]string `json:"assignee_ids,omitempty"`
+
+	// Layout Presentation mode restored by a workforce view.
+	Layout *WorkforceViewLayout `json:"layout,omitempty"`
+
+	// Priorities Selected task priorities
+	Priorities *[]TaskPriority `json:"priorities,omitempty"`
+
+	// Search Free-text task search
+	Search *string `json:"search,omitempty"`
+
+	// Tags Selected task tags
+	Tags *[]string `json:"tags,omitempty"`
+
+	// UpdatedWithin Relative update window or an inclusive since date
+	UpdatedWithin *string `json:"updated_within"`
+}
+
+// WorkforceViewUpdate Sparse update for a caller-owned stored view.
+type WorkforceViewUpdate struct {
+	// Name New stored view name
+	Name *string `json:"name,omitempty"`
+
+	// State A restorable snapshot of workforce board URL state.
+	State *WorkforceViewState `json:"state,omitempty"`
+}
+
 // WorkspaceStorageMetrics defines model for WorkspaceStorageMetrics.
 type WorkspaceStorageMetrics struct {
-	// AvailableBytes Bytes available to an unprivileged process, or null when unavailable
+	// AvailableBytes Bytes available to an unprivileged writer (`f_bavail`), which is what the
+	// bot can actually use. Deliberately distinct from `free_bytes`.
 	AvailableBytes *int `json:"available_bytes"`
 
-	// FreeBytes Total free bytes on the filesystem, or null when unavailable
+	// FreeBytes Bytes free including the root-reserved margin (`f_bfree`).
 	FreeBytes *int `json:"free_bytes"`
 
-	// Path Filesystem path sampled by statfs
-	Path string `json:"path"`
-
-	// TotalBytes Total filesystem capacity in bytes, or null when unavailable
-	TotalBytes *int `json:"total_bytes"`
-
-	// UsedBytes Used bytes, computed as total - free, or null when unavailable
-	UsedBytes *int `json:"used_bytes"`
+	// Path Absolute path that was measured. Always set, even when the counts are not,
+	// so a receiver can say WHICH path it could not measure.
+	Path       *string `json:"path,omitempty"`
+	TotalBytes *int    `json:"total_bytes"`
+	UsedBytes  *int    `json:"used_bytes"`
 }
+
+// BotyardCoreTypesJsonValueOutput defines model for botyard_core__types__JsonValue-Output.
+type BotyardCoreTypesJsonValueOutput struct {
+	union json.RawMessage
+}
+
+// BotyardCoreTypesJsonValueOutput0 defines model for .
+type BotyardCoreTypesJsonValueOutput0 = string
+
+// BotyardCoreTypesJsonValueOutput1 defines model for .
+type BotyardCoreTypesJsonValueOutput1 = int
+
+// BotyardCoreTypesJsonValueOutput2 defines model for .
+type BotyardCoreTypesJsonValueOutput2 = float32
+
+// BotyardCoreTypesJsonValueOutput3 defines model for .
+type BotyardCoreTypesJsonValueOutput3 = bool
+
+// BotyardCoreTypesJsonValueOutput4 defines model for .
+type BotyardCoreTypesJsonValueOutput4 = []BotyardCoreTypesJsonValueOutput
+
+// BotyardCoreTypesJsonValueOutput5 defines model for .
+type BotyardCoreTypesJsonValueOutput5 map[string]*BotyardCoreTypesJsonValueOutput
 
 // ListBotsV1OrgsOrgIdBotsGetParams defines parameters for ListBotsV1OrgsOrgIdBotsGet.
 type ListBotsV1OrgsOrgIdBotsGetParams struct {
@@ -6025,10 +10535,50 @@ type CreateMcpServerV1OrgsOrgIdMcpServersPostJSONBody struct {
 	union json.RawMessage
 }
 
+// CreateMcpServerV1OrgsOrgIdMcpServersPostParams defines parameters for CreateMcpServerV1OrgsOrgIdMcpServersPost.
+type CreateMcpServerV1OrgsOrgIdMcpServersPostParams struct {
+	// McpConnectRequestId The in-chat ask (request_mcp_connection) this create answers, sent by the chat install card for a template-form or confirm tile. Binds the new server to the ask, adds the asking bot as a member (never owner, and no tools) and tells it the tile landed. 404 when the ask is not this org's or is for another tile; 409 mcp_connect_request_answered when it already has a live server.
+	McpConnectRequestId *string `form:"mcp_connect_request_id,omitempty" json:"mcp_connect_request_id,omitempty"`
+}
+
+// ListPacksV1OrgsOrgIdPacksGetParams defines parameters for ListPacksV1OrgsOrgIdPacksGet.
+type ListPacksV1OrgsOrgIdPacksGetParams struct {
+	// Slugs Only packs with these slugs (each at most once). Omit for all.
+	Slugs *[]string `form:"slugs,omitempty" json:"slugs,omitempty"`
+
+	// Cursor The previous page's `next_cursor`; omit for the first page.
+	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
+	Limit  *int    `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
+// UninstallPacksV1OrgsOrgIdPacksInstallsDeleteParams defines parameters for UninstallPacksV1OrgsOrgIdPacksInstallsDelete.
+type UninstallPacksV1OrgsOrgIdPacksInstallsDeleteParams struct {
+	// BotPackInstallIds Installs to remove, each at most once.
+	BotPackInstallIds []openapi_types.UUID `form:"bot_pack_install_ids" json:"bot_pack_install_ids"`
+}
+
+// ListBotPackInstallsV1OrgsOrgIdPacksInstallsGetParams defines parameters for ListBotPackInstallsV1OrgsOrgIdPacksInstallsGet.
+type ListBotPackInstallsV1OrgsOrgIdPacksInstallsGetParams struct {
+	// BotIds Bots to read, each at most once.
+	BotIds []openapi_types.UUID `form:"bot_ids" json:"bot_ids"`
+}
+
+// GetPackVersionsV1OrgsOrgIdPacksVersionsGetParams defines parameters for GetPackVersionsV1OrgsOrgIdPacksVersionsGet.
+type GetPackVersionsV1OrgsOrgIdPacksVersionsGetParams struct {
+	// PackVersionIds Versions to read, each at most once.
+	PackVersionIds []openapi_types.UUID `form:"pack_version_ids" json:"pack_version_ids"`
+}
+
 // ListSkillsV1OrgsOrgIdSkillsGetParams defines parameters for ListSkillsV1OrgsOrgIdSkillsGet.
 type ListSkillsV1OrgsOrgIdSkillsGetParams struct {
 	Limit  *int `form:"limit,omitempty" json:"limit,omitempty"`
 	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+}
+
+// DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteParams defines parameters for DeleteSkillV1OrgsOrgIdSkillsSkillSlugDelete.
+type DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteParams struct {
+	// Force Delete anyway: also remove the skill from bots pinned to one of its versions. Without it, a pinned skill is refused with 409 skill_in_use.
+	Force *bool `form:"force,omitempty" json:"force,omitempty"`
 }
 
 // ListToolsV1OrgsOrgIdToolsGetParams defines parameters for ListToolsV1OrgsOrgIdToolsGet.
@@ -6061,8 +10611,17 @@ type ListServableToolsV1OrgsOrgIdToolsServableGetParams struct {
 	McpServer *string `form:"mcp_server,omitempty" json:"mcp_server,omitempty"`
 }
 
+// ListTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksGetParams defines parameters for ListTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksGet.
+type ListTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksGetParams struct {
+	Limit  *int `form:"limit,omitempty" json:"limit,omitempty"`
+	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+}
+
 // CreateBotV1OrgsOrgIdBotsPostJSONRequestBody defines body for CreateBotV1OrgsOrgIdBotsPost for application/json ContentType.
 type CreateBotV1OrgsOrgIdBotsPostJSONRequestBody = BotCreate
+
+// CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostJSONRequestBody defines body for CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPost for application/json ContentType.
+type CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostJSONRequestBody = BotsFromPacksBody
 
 // SearchBotsV1OrgsOrgIdBotsSearchPostJSONRequestBody defines body for SearchBotsV1OrgsOrgIdBotsSearchPost for application/json ContentType.
 type SearchBotsV1OrgsOrgIdBotsSearchPostJSONRequestBody = BotSearchRequest
@@ -6072,9 +10631,6 @@ type UpdateBotV1OrgsOrgIdBotsBotSlugPatchJSONRequestBody = BotUpdate
 
 // UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchJSONRequestBody defines body for UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatch for application/json ContentType.
 type UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchJSONRequestBody = BotConfigUpdate
-
-// ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostJSONRequestBody defines body for ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePost for application/json ContentType.
-type ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostJSONRequestBody = NativeConfigConversion
 
 // CopyBotV1OrgsOrgIdBotsBotSlugCopyPostJSONRequestBody defines body for CopyBotV1OrgsOrgIdBotsBotSlugCopyPost for application/json ContentType.
 type CopyBotV1OrgsOrgIdBotsBotSlugCopyPostJSONRequestBody = BotCopyRequest
@@ -6090,6 +10646,18 @@ type AssignSkillsV1OrgsOrgIdBotsBotSlugSkillsPutJSONRequestBody = BotSkillAssign
 
 // DeployBotSkillsV1OrgsOrgIdBotsBotSlugSkillsDeployPostJSONRequestBody defines body for DeployBotSkillsV1OrgsOrgIdBotsBotSlugSkillsDeployPost for application/json ContentType.
 type DeployBotSkillsV1OrgsOrgIdBotsBotSlugSkillsDeployPostJSONRequestBody = BotSkillDeploy
+
+// SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutJSONRequestBody defines body for SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPut for application/json ContentType.
+type SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutJSONRequestBody = BotSkillPinsUpdate
+
+// AcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPostJSONRequestBody defines body for AcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPost for application/json ContentType.
+type AcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPostJSONRequestBody = AcceptSuggestionsRequest
+
+// DismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPostJSONRequestBody defines body for DismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPost for application/json ContentType.
+type DismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPostJSONRequestBody = DismissSuggestionsRequest
+
+// SetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPutJSONRequestBody defines body for SetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPut for application/json ContentType.
+type SetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPutJSONRequestBody = SuggestionsOptOutRequest
 
 // UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteJSONRequestBody defines body for UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDelete for application/json ContentType.
 type UnassignToolsV1OrgsOrgIdBotsBotSlugToolsDeleteJSONRequestBody = BotToolIds
@@ -6133,6 +10701,30 @@ type UpdateComposioCredentialsV1OrgsOrgIdMcpServersMcpServerIdComposioCredential
 // AddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPutJSONRequestBody defines body for AddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPut for application/json ContentType.
 type AddMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersPutJSONRequestBody = McpServerMemberAdd
 
+// PreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPostJSONRequestBody defines body for PreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPost for application/json ContentType.
+type PreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPostJSONRequestBody = PackConnectionPreviewBody
+
+// InstallPacksV1OrgsOrgIdPacksInstallsPostJSONRequestBody defines body for InstallPacksV1OrgsOrgIdPacksInstallsPost for application/json ContentType.
+type InstallPacksV1OrgsOrgIdPacksInstallsPostJSONRequestBody = PackInstallsBody
+
+// BindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPostJSONRequestBody defines body for BindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPost for application/json ContentType.
+type BindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPostJSONRequestBody = PackBindingsBody
+
+// PreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPostJSONRequestBody defines body for PreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPost for application/json ContentType.
+type PreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPostJSONRequestBody = PackInstallsBody
+
+// CompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePostJSONRequestBody defines body for CompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePost for application/json ContentType.
+type CompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePostJSONRequestBody = PackSetupCompleteBody
+
+// ResumePackSetupsV1OrgsOrgIdPacksSetupsResumePostJSONRequestBody defines body for ResumePackSetupsV1OrgsOrgIdPacksSetupsResumePost for application/json ContentType.
+type ResumePackSetupsV1OrgsOrgIdPacksSetupsResumePostJSONRequestBody = PackSetupResumeBody
+
+// RunPackSetupsV1OrgsOrgIdPacksSetupsRunPostJSONRequestBody defines body for RunPackSetupsV1OrgsOrgIdPacksSetupsRunPost for application/json ContentType.
+type RunPackSetupsV1OrgsOrgIdPacksSetupsRunPostJSONRequestBody = PackSetupRunBody
+
+// PreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPostJSONRequestBody defines body for PreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPost for application/json ContentType.
+type PreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPostJSONRequestBody = PackUninstallsBody
+
 // CreateSecretPolicyV1OrgsOrgIdSecretPoliciesPostJSONRequestBody defines body for CreateSecretPolicyV1OrgsOrgIdSecretPoliciesPost for application/json ContentType.
 type CreateSecretPolicyV1OrgsOrgIdSecretPoliciesPostJSONRequestBody = SecretPolicyCreateRequest
 
@@ -6151,11 +10743,221 @@ type ImportSkillV1OrgsOrgIdSkillsImportPostJSONRequestBody = SkillImportRequest
 // PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostJSONRequestBody defines body for PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPost for application/json ContentType.
 type PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostJSONRequestBody = SkillImportRequest
 
+// CountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPostJSONRequestBody defines body for CountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPost for application/json ContentType.
+type CountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPostJSONRequestBody = SkillProviderCountsRequest
+
+// SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostJSONRequestBody defines body for SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPost for application/json ContentType.
+type SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostJSONRequestBody = SkillVersionSearch
+
 // UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchJSONRequestBody defines body for UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatch for application/json ContentType.
 type UpdateSkillV1OrgsOrgIdSkillsSkillSlugPatchJSONRequestBody = SkillUpdate
 
 // RefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPostJSONRequestBody defines body for RefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPost for application/json ContentType.
 type RefreshSkillV1OrgsOrgIdSkillsSkillSlugRefreshPostJSONRequestBody = SkillRefreshRequest
+
+// CreateWorkforceV1OrgsOrgIdWorkforcesPostJSONRequestBody defines body for CreateWorkforceV1OrgsOrgIdWorkforcesPost for application/json ContentType.
+type CreateWorkforceV1OrgsOrgIdWorkforcesPostJSONRequestBody = WorkforceCreate
+
+// UpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatchJSONRequestBody defines body for UpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatch for application/json ContentType.
+type UpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatchJSONRequestBody = WorkforceUpdate
+
+// ReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPostJSONRequestBody defines body for ReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPost for application/json ContentType.
+type ReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPostJSONRequestBody = ReassignColumnTasksRequest
+
+// CreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPostJSONRequestBody defines body for CreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPost for application/json ContentType.
+type CreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPostJSONRequestBody = TaskCreate
+
+// SearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPostJSONRequestBody defines body for SearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPost for application/json ContentType.
+type SearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPostJSONRequestBody = WorkforceTaskSearchRequest
+
+// UpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatchJSONRequestBody defines body for UpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatch for application/json ContentType.
+type UpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatchJSONRequestBody = TaskUpdate
+
+// CreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPostJSONRequestBody defines body for CreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPost for application/json ContentType.
+type CreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPostJSONRequestBody = TaskLinksCreate
+
+// DeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePostJSONRequestBody defines body for DeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePost for application/json ContentType.
+type DeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePostJSONRequestBody = TaskLinksDelete
+
+// CreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPostJSONRequestBody defines body for CreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPost for application/json ContentType.
+type CreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPostJSONRequestBody = WorkforceViewCreate
+
+// UpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatchJSONRequestBody defines body for UpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatch for application/json ContentType.
+type UpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatchJSONRequestBody = WorkforceViewUpdate
+
+// Getter for additional properties for NativeLaneRefusedProblem. Returns the specified
+// element and whether it was found
+func (a NativeLaneRefusedProblem) Get(fieldName string) (value interface{}, found bool) {
+	if a.AdditionalProperties != nil {
+		value, found = a.AdditionalProperties[fieldName]
+	}
+	return
+}
+
+// Setter for additional properties for NativeLaneRefusedProblem
+func (a *NativeLaneRefusedProblem) Set(fieldName string, value interface{}) {
+	if a.AdditionalProperties == nil {
+		a.AdditionalProperties = make(map[string]interface{})
+	}
+	a.AdditionalProperties[fieldName] = value
+}
+
+// Override default JSON handling for NativeLaneRefusedProblem to handle AdditionalProperties
+func (a *NativeLaneRefusedProblem) UnmarshalJSON(b []byte) error {
+	object := make(map[string]json.RawMessage)
+	err := json.Unmarshal(b, &object)
+	if err != nil {
+		return err
+	}
+
+	if raw, found := object["detail"]; found {
+		err = json.Unmarshal(raw, &a.Detail)
+		if err != nil {
+			return fmt.Errorf("error reading 'detail': %w", err)
+		}
+		delete(object, "detail")
+	}
+
+	if raw, found := object["error_code"]; found {
+		err = json.Unmarshal(raw, &a.ErrorCode)
+		if err != nil {
+			return fmt.Errorf("error reading 'error_code': %w", err)
+		}
+		delete(object, "error_code")
+	}
+
+	if raw, found := object["errors"]; found {
+		err = json.Unmarshal(raw, &a.Errors)
+		if err != nil {
+			return fmt.Errorf("error reading 'errors': %w", err)
+		}
+		delete(object, "errors")
+	}
+
+	if raw, found := object["instance"]; found {
+		err = json.Unmarshal(raw, &a.Instance)
+		if err != nil {
+			return fmt.Errorf("error reading 'instance': %w", err)
+		}
+		delete(object, "instance")
+	}
+
+	if raw, found := object["refused_links"]; found {
+		err = json.Unmarshal(raw, &a.RefusedLinks)
+		if err != nil {
+			return fmt.Errorf("error reading 'refused_links': %w", err)
+		}
+		delete(object, "refused_links")
+	}
+
+	if raw, found := object["status"]; found {
+		err = json.Unmarshal(raw, &a.Status)
+		if err != nil {
+			return fmt.Errorf("error reading 'status': %w", err)
+		}
+		delete(object, "status")
+	}
+
+	if raw, found := object["title"]; found {
+		err = json.Unmarshal(raw, &a.Title)
+		if err != nil {
+			return fmt.Errorf("error reading 'title': %w", err)
+		}
+		delete(object, "title")
+	}
+
+	if raw, found := object["trace_id"]; found {
+		err = json.Unmarshal(raw, &a.TraceId)
+		if err != nil {
+			return fmt.Errorf("error reading 'trace_id': %w", err)
+		}
+		delete(object, "trace_id")
+	}
+
+	if raw, found := object["type"]; found {
+		err = json.Unmarshal(raw, &a.Type)
+		if err != nil {
+			return fmt.Errorf("error reading 'type': %w", err)
+		}
+		delete(object, "type")
+	}
+
+	if len(object) != 0 {
+		a.AdditionalProperties = make(map[string]interface{})
+		for fieldName, fieldBuf := range object {
+			var fieldVal interface{}
+			err := json.Unmarshal(fieldBuf, &fieldVal)
+			if err != nil {
+				return fmt.Errorf("error unmarshaling field %s: %w", fieldName, err)
+			}
+			a.AdditionalProperties[fieldName] = fieldVal
+		}
+	}
+	return nil
+}
+
+// Override default JSON handling for NativeLaneRefusedProblem to handle AdditionalProperties
+func (a NativeLaneRefusedProblem) MarshalJSON() ([]byte, error) {
+	var err error
+	object := make(map[string]json.RawMessage)
+
+	object["detail"], err = json.Marshal(a.Detail)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'detail': %w", err)
+	}
+
+	object["error_code"], err = json.Marshal(a.ErrorCode)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'error_code': %w", err)
+	}
+
+	if a.Errors != nil {
+		object["errors"], err = json.Marshal(a.Errors)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'errors': %w", err)
+		}
+	}
+
+	object["instance"], err = json.Marshal(a.Instance)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'instance': %w", err)
+	}
+
+	object["refused_links"], err = json.Marshal(a.RefusedLinks)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'refused_links': %w", err)
+	}
+
+	object["status"], err = json.Marshal(a.Status)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'status': %w", err)
+	}
+
+	object["title"], err = json.Marshal(a.Title)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'title': %w", err)
+	}
+
+	if a.TraceId != nil {
+		object["trace_id"], err = json.Marshal(a.TraceId)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'trace_id': %w", err)
+		}
+	}
+
+	object["type"], err = json.Marshal(a.Type)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'type': %w", err)
+	}
+
+	for fieldName, field := range a.AdditionalProperties {
+		object[fieldName], err = json.Marshal(field)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling '%s': %w", fieldName, err)
+		}
+	}
+	return json.Marshal(object)
+}
 
 // Getter for additional properties for ProblemDetails. Returns the specified
 // element and whether it was found
@@ -6494,6 +11296,182 @@ func (t *AndMcpCatalogFilterField_Filters_Item) UnmarshalJSON(b []byte) error {
 	return err
 }
 
+// AsAndSkillFilterField returns the union data inside the AndSkillFilterField_Filters_Item as a AndSkillFilterField
+func (t AndSkillFilterField_Filters_Item) AsAndSkillFilterField() (AndSkillFilterField, error) {
+	var body AndSkillFilterField
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAndSkillFilterField overwrites any union data inside the AndSkillFilterField_Filters_Item as the provided AndSkillFilterField
+func (t *AndSkillFilterField_Filters_Item) FromAndSkillFilterField(v AndSkillFilterField) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAndSkillFilterField performs a merge with any union data inside the AndSkillFilterField_Filters_Item, using the provided AndSkillFilterField
+func (t *AndSkillFilterField_Filters_Item) MergeAndSkillFilterField(v AndSkillFilterField) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsOrSkillFilterField returns the union data inside the AndSkillFilterField_Filters_Item as a OrSkillFilterField
+func (t AndSkillFilterField_Filters_Item) AsOrSkillFilterField() (OrSkillFilterField, error) {
+	var body OrSkillFilterField
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromOrSkillFilterField overwrites any union data inside the AndSkillFilterField_Filters_Item as the provided OrSkillFilterField
+func (t *AndSkillFilterField_Filters_Item) FromOrSkillFilterField(v OrSkillFilterField) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeOrSkillFilterField performs a merge with any union data inside the AndSkillFilterField_Filters_Item, using the provided OrSkillFilterField
+func (t *AndSkillFilterField_Filters_Item) MergeOrSkillFilterField(v OrSkillFilterField) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsConditionSkillFilterField returns the union data inside the AndSkillFilterField_Filters_Item as a ConditionSkillFilterField
+func (t AndSkillFilterField_Filters_Item) AsConditionSkillFilterField() (ConditionSkillFilterField, error) {
+	var body ConditionSkillFilterField
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromConditionSkillFilterField overwrites any union data inside the AndSkillFilterField_Filters_Item as the provided ConditionSkillFilterField
+func (t *AndSkillFilterField_Filters_Item) FromConditionSkillFilterField(v ConditionSkillFilterField) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeConditionSkillFilterField performs a merge with any union data inside the AndSkillFilterField_Filters_Item, using the provided ConditionSkillFilterField
+func (t *AndSkillFilterField_Filters_Item) MergeConditionSkillFilterField(v ConditionSkillFilterField) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t AndSkillFilterField_Filters_Item) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *AndSkillFilterField_Filters_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsAndWorkforceTaskFilterField returns the union data inside the AndWorkforceTaskFilterField_Filters_Item as a AndWorkforceTaskFilterField
+func (t AndWorkforceTaskFilterField_Filters_Item) AsAndWorkforceTaskFilterField() (AndWorkforceTaskFilterField, error) {
+	var body AndWorkforceTaskFilterField
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAndWorkforceTaskFilterField overwrites any union data inside the AndWorkforceTaskFilterField_Filters_Item as the provided AndWorkforceTaskFilterField
+func (t *AndWorkforceTaskFilterField_Filters_Item) FromAndWorkforceTaskFilterField(v AndWorkforceTaskFilterField) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAndWorkforceTaskFilterField performs a merge with any union data inside the AndWorkforceTaskFilterField_Filters_Item, using the provided AndWorkforceTaskFilterField
+func (t *AndWorkforceTaskFilterField_Filters_Item) MergeAndWorkforceTaskFilterField(v AndWorkforceTaskFilterField) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsOrWorkforceTaskFilterField returns the union data inside the AndWorkforceTaskFilterField_Filters_Item as a OrWorkforceTaskFilterField
+func (t AndWorkforceTaskFilterField_Filters_Item) AsOrWorkforceTaskFilterField() (OrWorkforceTaskFilterField, error) {
+	var body OrWorkforceTaskFilterField
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromOrWorkforceTaskFilterField overwrites any union data inside the AndWorkforceTaskFilterField_Filters_Item as the provided OrWorkforceTaskFilterField
+func (t *AndWorkforceTaskFilterField_Filters_Item) FromOrWorkforceTaskFilterField(v OrWorkforceTaskFilterField) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeOrWorkforceTaskFilterField performs a merge with any union data inside the AndWorkforceTaskFilterField_Filters_Item, using the provided OrWorkforceTaskFilterField
+func (t *AndWorkforceTaskFilterField_Filters_Item) MergeOrWorkforceTaskFilterField(v OrWorkforceTaskFilterField) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsConditionWorkforceTaskFilterField returns the union data inside the AndWorkforceTaskFilterField_Filters_Item as a ConditionWorkforceTaskFilterField
+func (t AndWorkforceTaskFilterField_Filters_Item) AsConditionWorkforceTaskFilterField() (ConditionWorkforceTaskFilterField, error) {
+	var body ConditionWorkforceTaskFilterField
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromConditionWorkforceTaskFilterField overwrites any union data inside the AndWorkforceTaskFilterField_Filters_Item as the provided ConditionWorkforceTaskFilterField
+func (t *AndWorkforceTaskFilterField_Filters_Item) FromConditionWorkforceTaskFilterField(v ConditionWorkforceTaskFilterField) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeConditionWorkforceTaskFilterField performs a merge with any union data inside the AndWorkforceTaskFilterField_Filters_Item, using the provided ConditionWorkforceTaskFilterField
+func (t *AndWorkforceTaskFilterField_Filters_Item) MergeConditionWorkforceTaskFilterField(v ConditionWorkforceTaskFilterField) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t AndWorkforceTaskFilterField_Filters_Item) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *AndWorkforceTaskFilterField_Filters_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
 // AsOpenClawConfigPatch returns the union data inside the BotConfigUpdate_Config as a OpenClawConfigPatch
 func (t BotConfigUpdate_Config) AsOpenClawConfigPatch() (OpenClawConfigPatch, error) {
 	var body OpenClawConfigPatch
@@ -6614,6 +11592,559 @@ func (t BotCreate_Config) MarshalJSON() ([]byte, error) {
 }
 
 func (t *BotCreate_Config) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsServedNativeLane returns the union data inside the BotCredentialAssignmentResponse_NativeLane as a ServedNativeLane
+func (t BotCredentialAssignmentResponse_NativeLane) AsServedNativeLane() (ServedNativeLane, error) {
+	var body ServedNativeLane
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromServedNativeLane overwrites any union data inside the BotCredentialAssignmentResponse_NativeLane as the provided ServedNativeLane
+func (t *BotCredentialAssignmentResponse_NativeLane) FromServedNativeLane(v ServedNativeLane) error {
+	v.Outcome = "served"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeServedNativeLane performs a merge with any union data inside the BotCredentialAssignmentResponse_NativeLane, using the provided ServedNativeLane
+func (t *BotCredentialAssignmentResponse_NativeLane) MergeServedNativeLane(v ServedNativeLane) error {
+	v.Outcome = "served"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsRefusedNativeLane returns the union data inside the BotCredentialAssignmentResponse_NativeLane as a RefusedNativeLane
+func (t BotCredentialAssignmentResponse_NativeLane) AsRefusedNativeLane() (RefusedNativeLane, error) {
+	var body RefusedNativeLane
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromRefusedNativeLane overwrites any union data inside the BotCredentialAssignmentResponse_NativeLane as the provided RefusedNativeLane
+func (t *BotCredentialAssignmentResponse_NativeLane) FromRefusedNativeLane(v RefusedNativeLane) error {
+	v.Outcome = "refused"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeRefusedNativeLane performs a merge with any union data inside the BotCredentialAssignmentResponse_NativeLane, using the provided RefusedNativeLane
+func (t *BotCredentialAssignmentResponse_NativeLane) MergeRefusedNativeLane(v RefusedNativeLane) error {
+	v.Outcome = "refused"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t BotCredentialAssignmentResponse_NativeLane) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"outcome"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t BotCredentialAssignmentResponse_NativeLane) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "refused":
+		return t.AsRefusedNativeLane()
+	case "served":
+		return t.AsServedNativeLane()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t BotCredentialAssignmentResponse_NativeLane) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *BotCredentialAssignmentResponse_NativeLane) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsRecommendedModelApplied returns the union data inside the BotFromPack_Model as a RecommendedModelApplied
+func (t BotFromPack_Model) AsRecommendedModelApplied() (RecommendedModelApplied, error) {
+	var body RecommendedModelApplied
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromRecommendedModelApplied overwrites any union data inside the BotFromPack_Model as the provided RecommendedModelApplied
+func (t *BotFromPack_Model) FromRecommendedModelApplied(v RecommendedModelApplied) error {
+	v.Kind = "recommended"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeRecommendedModelApplied performs a merge with any union data inside the BotFromPack_Model, using the provided RecommendedModelApplied
+func (t *BotFromPack_Model) MergeRecommendedModelApplied(v RecommendedModelApplied) error {
+	v.Kind = "recommended"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsRecommendedModelUnavailable returns the union data inside the BotFromPack_Model as a RecommendedModelUnavailable
+func (t BotFromPack_Model) AsRecommendedModelUnavailable() (RecommendedModelUnavailable, error) {
+	var body RecommendedModelUnavailable
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromRecommendedModelUnavailable overwrites any union data inside the BotFromPack_Model as the provided RecommendedModelUnavailable
+func (t *BotFromPack_Model) FromRecommendedModelUnavailable(v RecommendedModelUnavailable) error {
+	v.Kind = "no_credential"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeRecommendedModelUnavailable performs a merge with any union data inside the BotFromPack_Model, using the provided RecommendedModelUnavailable
+func (t *BotFromPack_Model) MergeRecommendedModelUnavailable(v RecommendedModelUnavailable) error {
+	v.Kind = "no_credential"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsNoRecommendedModel returns the union data inside the BotFromPack_Model as a NoRecommendedModel
+func (t BotFromPack_Model) AsNoRecommendedModel() (NoRecommendedModel, error) {
+	var body NoRecommendedModel
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromNoRecommendedModel overwrites any union data inside the BotFromPack_Model as the provided NoRecommendedModel
+func (t *BotFromPack_Model) FromNoRecommendedModel(v NoRecommendedModel) error {
+	v.Kind = "not_recommended"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeNoRecommendedModel performs a merge with any union data inside the BotFromPack_Model, using the provided NoRecommendedModel
+func (t *BotFromPack_Model) MergeNoRecommendedModel(v NoRecommendedModel) error {
+	v.Kind = "not_recommended"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsChosenModel returns the union data inside the BotFromPack_Model as a ChosenModel
+func (t BotFromPack_Model) AsChosenModel() (ChosenModel, error) {
+	var body ChosenModel
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromChosenModel overwrites any union data inside the BotFromPack_Model as the provided ChosenModel
+func (t *BotFromPack_Model) FromChosenModel(v ChosenModel) error {
+	v.Kind = "chosen"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeChosenModel performs a merge with any union data inside the BotFromPack_Model, using the provided ChosenModel
+func (t *BotFromPack_Model) MergeChosenModel(v ChosenModel) error {
+	v.Kind = "chosen"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t BotFromPack_Model) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"kind"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t BotFromPack_Model) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "chosen":
+		return t.AsChosenModel()
+	case "no_credential":
+		return t.AsRecommendedModelUnavailable()
+	case "not_recommended":
+		return t.AsNoRecommendedModel()
+	case "recommended":
+		return t.AsRecommendedModelApplied()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t BotFromPack_Model) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *BotFromPack_Model) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsPendingInstallConnection returns the union data inside the BotPackInstallView_Connections_Item as a PendingInstallConnection
+func (t BotPackInstallView_Connections_Item) AsPendingInstallConnection() (PendingInstallConnection, error) {
+	var body PendingInstallConnection
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPendingInstallConnection overwrites any union data inside the BotPackInstallView_Connections_Item as the provided PendingInstallConnection
+func (t *BotPackInstallView_Connections_Item) FromPendingInstallConnection(v PendingInstallConnection) error {
+	v.Kind = "pending"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePendingInstallConnection performs a merge with any union data inside the BotPackInstallView_Connections_Item, using the provided PendingInstallConnection
+func (t *BotPackInstallView_Connections_Item) MergePendingInstallConnection(v PendingInstallConnection) error {
+	v.Kind = "pending"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsBoundMcpInstallConnection returns the union data inside the BotPackInstallView_Connections_Item as a BoundMcpInstallConnection
+func (t BotPackInstallView_Connections_Item) AsBoundMcpInstallConnection() (BoundMcpInstallConnection, error) {
+	var body BoundMcpInstallConnection
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBoundMcpInstallConnection overwrites any union data inside the BotPackInstallView_Connections_Item as the provided BoundMcpInstallConnection
+func (t *BotPackInstallView_Connections_Item) FromBoundMcpInstallConnection(v BoundMcpInstallConnection) error {
+	v.Kind = "bound_mcp"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeBoundMcpInstallConnection performs a merge with any union data inside the BotPackInstallView_Connections_Item, using the provided BoundMcpInstallConnection
+func (t *BotPackInstallView_Connections_Item) MergeBoundMcpInstallConnection(v BoundMcpInstallConnection) error {
+	v.Kind = "bound_mcp"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsBoundMcpRestrictedInstallConnection returns the union data inside the BotPackInstallView_Connections_Item as a BoundMcpRestrictedInstallConnection
+func (t BotPackInstallView_Connections_Item) AsBoundMcpRestrictedInstallConnection() (BoundMcpRestrictedInstallConnection, error) {
+	var body BoundMcpRestrictedInstallConnection
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBoundMcpRestrictedInstallConnection overwrites any union data inside the BotPackInstallView_Connections_Item as the provided BoundMcpRestrictedInstallConnection
+func (t *BotPackInstallView_Connections_Item) FromBoundMcpRestrictedInstallConnection(v BoundMcpRestrictedInstallConnection) error {
+	v.Kind = "bound_mcp_restricted"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeBoundMcpRestrictedInstallConnection performs a merge with any union data inside the BotPackInstallView_Connections_Item, using the provided BoundMcpRestrictedInstallConnection
+func (t *BotPackInstallView_Connections_Item) MergeBoundMcpRestrictedInstallConnection(v BoundMcpRestrictedInstallConnection) error {
+	v.Kind = "bound_mcp_restricted"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsBoundVaultInstallConnection returns the union data inside the BotPackInstallView_Connections_Item as a BoundVaultInstallConnection
+func (t BotPackInstallView_Connections_Item) AsBoundVaultInstallConnection() (BoundVaultInstallConnection, error) {
+	var body BoundVaultInstallConnection
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBoundVaultInstallConnection overwrites any union data inside the BotPackInstallView_Connections_Item as the provided BoundVaultInstallConnection
+func (t *BotPackInstallView_Connections_Item) FromBoundVaultInstallConnection(v BoundVaultInstallConnection) error {
+	v.Kind = "bound_vault"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeBoundVaultInstallConnection performs a merge with any union data inside the BotPackInstallView_Connections_Item, using the provided BoundVaultInstallConnection
+func (t *BotPackInstallView_Connections_Item) MergeBoundVaultInstallConnection(v BoundVaultInstallConnection) error {
+	v.Kind = "bound_vault"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t BotPackInstallView_Connections_Item) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"kind"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t BotPackInstallView_Connections_Item) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "bound_mcp":
+		return t.AsBoundMcpInstallConnection()
+	case "bound_mcp_restricted":
+		return t.AsBoundMcpRestrictedInstallConnection()
+	case "bound_vault":
+		return t.AsBoundVaultInstallConnection()
+	case "pending":
+		return t.AsPendingInstallConnection()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t BotPackInstallView_Connections_Item) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *BotPackInstallView_Connections_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsBotPackSkillProvenance returns the union data inside the BotPackInstallView_Items_Item as a BotPackSkillProvenance
+func (t BotPackInstallView_Items_Item) AsBotPackSkillProvenance() (BotPackSkillProvenance, error) {
+	var body BotPackSkillProvenance
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBotPackSkillProvenance overwrites any union data inside the BotPackInstallView_Items_Item as the provided BotPackSkillProvenance
+func (t *BotPackInstallView_Items_Item) FromBotPackSkillProvenance(v BotPackSkillProvenance) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeBotPackSkillProvenance performs a merge with any union data inside the BotPackInstallView_Items_Item, using the provided BotPackSkillProvenance
+func (t *BotPackInstallView_Items_Item) MergeBotPackSkillProvenance(v BotPackSkillProvenance) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsBotPackToolProvenance returns the union data inside the BotPackInstallView_Items_Item as a BotPackToolProvenance
+func (t BotPackInstallView_Items_Item) AsBotPackToolProvenance() (BotPackToolProvenance, error) {
+	var body BotPackToolProvenance
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBotPackToolProvenance overwrites any union data inside the BotPackInstallView_Items_Item as the provided BotPackToolProvenance
+func (t *BotPackInstallView_Items_Item) FromBotPackToolProvenance(v BotPackToolProvenance) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeBotPackToolProvenance performs a merge with any union data inside the BotPackInstallView_Items_Item, using the provided BotPackToolProvenance
+func (t *BotPackInstallView_Items_Item) MergeBotPackToolProvenance(v BotPackToolProvenance) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsBotPackMcpServerProvenance returns the union data inside the BotPackInstallView_Items_Item as a BotPackMcpServerProvenance
+func (t BotPackInstallView_Items_Item) AsBotPackMcpServerProvenance() (BotPackMcpServerProvenance, error) {
+	var body BotPackMcpServerProvenance
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBotPackMcpServerProvenance overwrites any union data inside the BotPackInstallView_Items_Item as the provided BotPackMcpServerProvenance
+func (t *BotPackInstallView_Items_Item) FromBotPackMcpServerProvenance(v BotPackMcpServerProvenance) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeBotPackMcpServerProvenance performs a merge with any union data inside the BotPackInstallView_Items_Item, using the provided BotPackMcpServerProvenance
+func (t *BotPackInstallView_Items_Item) MergeBotPackMcpServerProvenance(v BotPackMcpServerProvenance) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsBotPackSecretLinkProvenance returns the union data inside the BotPackInstallView_Items_Item as a BotPackSecretLinkProvenance
+func (t BotPackInstallView_Items_Item) AsBotPackSecretLinkProvenance() (BotPackSecretLinkProvenance, error) {
+	var body BotPackSecretLinkProvenance
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBotPackSecretLinkProvenance overwrites any union data inside the BotPackInstallView_Items_Item as the provided BotPackSecretLinkProvenance
+func (t *BotPackInstallView_Items_Item) FromBotPackSecretLinkProvenance(v BotPackSecretLinkProvenance) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeBotPackSecretLinkProvenance performs a merge with any union data inside the BotPackInstallView_Items_Item, using the provided BotPackSecretLinkProvenance
+func (t *BotPackInstallView_Items_Item) MergeBotPackSecretLinkProvenance(v BotPackSecretLinkProvenance) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsBotPackSettingProvenance returns the union data inside the BotPackInstallView_Items_Item as a BotPackSettingProvenance
+func (t BotPackInstallView_Items_Item) AsBotPackSettingProvenance() (BotPackSettingProvenance, error) {
+	var body BotPackSettingProvenance
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBotPackSettingProvenance overwrites any union data inside the BotPackInstallView_Items_Item as the provided BotPackSettingProvenance
+func (t *BotPackInstallView_Items_Item) FromBotPackSettingProvenance(v BotPackSettingProvenance) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeBotPackSettingProvenance performs a merge with any union data inside the BotPackInstallView_Items_Item, using the provided BotPackSettingProvenance
+func (t *BotPackInstallView_Items_Item) MergeBotPackSettingProvenance(v BotPackSettingProvenance) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsBotPackSingletonProvenance returns the union data inside the BotPackInstallView_Items_Item as a BotPackSingletonProvenance
+func (t BotPackInstallView_Items_Item) AsBotPackSingletonProvenance() (BotPackSingletonProvenance, error) {
+	var body BotPackSingletonProvenance
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBotPackSingletonProvenance overwrites any union data inside the BotPackInstallView_Items_Item as the provided BotPackSingletonProvenance
+func (t *BotPackInstallView_Items_Item) FromBotPackSingletonProvenance(v BotPackSingletonProvenance) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeBotPackSingletonProvenance performs a merge with any union data inside the BotPackInstallView_Items_Item, using the provided BotPackSingletonProvenance
+func (t *BotPackInstallView_Items_Item) MergeBotPackSingletonProvenance(v BotPackSingletonProvenance) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t BotPackInstallView_Items_Item) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *BotPackInstallView_Items_Item) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }
@@ -6997,6 +12528,95 @@ func (t *ConfigFieldDiff_OldValue) UnmarshalJSON(b []byte) error {
 	return err
 }
 
+// AsComposioOAuthConnect returns the union data inside the ContainerImageMcpCatalogEntryDetail_ConnectMethod as a ComposioOAuthConnect
+func (t ContainerImageMcpCatalogEntryDetail_ConnectMethod) AsComposioOAuthConnect() (ComposioOAuthConnect, error) {
+	var body ComposioOAuthConnect
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromComposioOAuthConnect overwrites any union data inside the ContainerImageMcpCatalogEntryDetail_ConnectMethod as the provided ComposioOAuthConnect
+func (t *ContainerImageMcpCatalogEntryDetail_ConnectMethod) FromComposioOAuthConnect(v ComposioOAuthConnect) error {
+	v.Kind = "composio_oauth"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeComposioOAuthConnect performs a merge with any union data inside the ContainerImageMcpCatalogEntryDetail_ConnectMethod, using the provided ComposioOAuthConnect
+func (t *ContainerImageMcpCatalogEntryDetail_ConnectMethod) MergeComposioOAuthConnect(v ComposioOAuthConnect) error {
+	v.Kind = "composio_oauth"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPlatformLoginConnect returns the union data inside the ContainerImageMcpCatalogEntryDetail_ConnectMethod as a PlatformLoginConnect
+func (t ContainerImageMcpCatalogEntryDetail_ConnectMethod) AsPlatformLoginConnect() (PlatformLoginConnect, error) {
+	var body PlatformLoginConnect
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPlatformLoginConnect overwrites any union data inside the ContainerImageMcpCatalogEntryDetail_ConnectMethod as the provided PlatformLoginConnect
+func (t *ContainerImageMcpCatalogEntryDetail_ConnectMethod) FromPlatformLoginConnect(v PlatformLoginConnect) error {
+	v.Kind = "platform_login"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePlatformLoginConnect performs a merge with any union data inside the ContainerImageMcpCatalogEntryDetail_ConnectMethod, using the provided PlatformLoginConnect
+func (t *ContainerImageMcpCatalogEntryDetail_ConnectMethod) MergePlatformLoginConnect(v PlatformLoginConnect) error {
+	v.Kind = "platform_login"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t ContainerImageMcpCatalogEntryDetail_ConnectMethod) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"kind"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t ContainerImageMcpCatalogEntryDetail_ConnectMethod) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "composio_oauth":
+		return t.AsComposioOAuthConnect()
+	case "platform_login":
+		return t.AsPlatformLoginConnect()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t ContainerImageMcpCatalogEntryDetail_ConnectMethod) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *ContainerImageMcpCatalogEntryDetail_ConnectMethod) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
 // AsAndBotFilterField returns the union data inside the FilterNodeBotFilterField as a AndBotFilterField
 func (t FilterNodeBotFilterField) AsAndBotFilterField() (AndBotFilterField, error) {
 	var body AndBotFilterField
@@ -7169,6 +12789,735 @@ func (t FilterNodeMcpCatalogFilterField) MarshalJSON() ([]byte, error) {
 }
 
 func (t *FilterNodeMcpCatalogFilterField) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsAndSkillFilterField returns the union data inside the FilterNodeSkillFilterField as a AndSkillFilterField
+func (t FilterNodeSkillFilterField) AsAndSkillFilterField() (AndSkillFilterField, error) {
+	var body AndSkillFilterField
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAndSkillFilterField overwrites any union data inside the FilterNodeSkillFilterField as the provided AndSkillFilterField
+func (t *FilterNodeSkillFilterField) FromAndSkillFilterField(v AndSkillFilterField) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAndSkillFilterField performs a merge with any union data inside the FilterNodeSkillFilterField, using the provided AndSkillFilterField
+func (t *FilterNodeSkillFilterField) MergeAndSkillFilterField(v AndSkillFilterField) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsOrSkillFilterField returns the union data inside the FilterNodeSkillFilterField as a OrSkillFilterField
+func (t FilterNodeSkillFilterField) AsOrSkillFilterField() (OrSkillFilterField, error) {
+	var body OrSkillFilterField
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromOrSkillFilterField overwrites any union data inside the FilterNodeSkillFilterField as the provided OrSkillFilterField
+func (t *FilterNodeSkillFilterField) FromOrSkillFilterField(v OrSkillFilterField) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeOrSkillFilterField performs a merge with any union data inside the FilterNodeSkillFilterField, using the provided OrSkillFilterField
+func (t *FilterNodeSkillFilterField) MergeOrSkillFilterField(v OrSkillFilterField) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsConditionSkillFilterField returns the union data inside the FilterNodeSkillFilterField as a ConditionSkillFilterField
+func (t FilterNodeSkillFilterField) AsConditionSkillFilterField() (ConditionSkillFilterField, error) {
+	var body ConditionSkillFilterField
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromConditionSkillFilterField overwrites any union data inside the FilterNodeSkillFilterField as the provided ConditionSkillFilterField
+func (t *FilterNodeSkillFilterField) FromConditionSkillFilterField(v ConditionSkillFilterField) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeConditionSkillFilterField performs a merge with any union data inside the FilterNodeSkillFilterField, using the provided ConditionSkillFilterField
+func (t *FilterNodeSkillFilterField) MergeConditionSkillFilterField(v ConditionSkillFilterField) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t FilterNodeSkillFilterField) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *FilterNodeSkillFilterField) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsAndWorkforceTaskFilterField returns the union data inside the FilterNodeWorkforceTaskFilterField as a AndWorkforceTaskFilterField
+func (t FilterNodeWorkforceTaskFilterField) AsAndWorkforceTaskFilterField() (AndWorkforceTaskFilterField, error) {
+	var body AndWorkforceTaskFilterField
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAndWorkforceTaskFilterField overwrites any union data inside the FilterNodeWorkforceTaskFilterField as the provided AndWorkforceTaskFilterField
+func (t *FilterNodeWorkforceTaskFilterField) FromAndWorkforceTaskFilterField(v AndWorkforceTaskFilterField) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAndWorkforceTaskFilterField performs a merge with any union data inside the FilterNodeWorkforceTaskFilterField, using the provided AndWorkforceTaskFilterField
+func (t *FilterNodeWorkforceTaskFilterField) MergeAndWorkforceTaskFilterField(v AndWorkforceTaskFilterField) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsOrWorkforceTaskFilterField returns the union data inside the FilterNodeWorkforceTaskFilterField as a OrWorkforceTaskFilterField
+func (t FilterNodeWorkforceTaskFilterField) AsOrWorkforceTaskFilterField() (OrWorkforceTaskFilterField, error) {
+	var body OrWorkforceTaskFilterField
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromOrWorkforceTaskFilterField overwrites any union data inside the FilterNodeWorkforceTaskFilterField as the provided OrWorkforceTaskFilterField
+func (t *FilterNodeWorkforceTaskFilterField) FromOrWorkforceTaskFilterField(v OrWorkforceTaskFilterField) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeOrWorkforceTaskFilterField performs a merge with any union data inside the FilterNodeWorkforceTaskFilterField, using the provided OrWorkforceTaskFilterField
+func (t *FilterNodeWorkforceTaskFilterField) MergeOrWorkforceTaskFilterField(v OrWorkforceTaskFilterField) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsConditionWorkforceTaskFilterField returns the union data inside the FilterNodeWorkforceTaskFilterField as a ConditionWorkforceTaskFilterField
+func (t FilterNodeWorkforceTaskFilterField) AsConditionWorkforceTaskFilterField() (ConditionWorkforceTaskFilterField, error) {
+	var body ConditionWorkforceTaskFilterField
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromConditionWorkforceTaskFilterField overwrites any union data inside the FilterNodeWorkforceTaskFilterField as the provided ConditionWorkforceTaskFilterField
+func (t *FilterNodeWorkforceTaskFilterField) FromConditionWorkforceTaskFilterField(v ConditionWorkforceTaskFilterField) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeConditionWorkforceTaskFilterField performs a merge with any union data inside the FilterNodeWorkforceTaskFilterField, using the provided ConditionWorkforceTaskFilterField
+func (t *FilterNodeWorkforceTaskFilterField) MergeConditionWorkforceTaskFilterField(v ConditionWorkforceTaskFilterField) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t FilterNodeWorkforceTaskFilterField) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *FilterNodeWorkforceTaskFilterField) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsLoginAwaitingCredentials returns the union data inside the IntegrationLoginAttemptDetail_Status as a LoginAwaitingCredentials
+func (t IntegrationLoginAttemptDetail_Status) AsLoginAwaitingCredentials() (LoginAwaitingCredentials, error) {
+	var body LoginAwaitingCredentials
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromLoginAwaitingCredentials overwrites any union data inside the IntegrationLoginAttemptDetail_Status as the provided LoginAwaitingCredentials
+func (t *IntegrationLoginAttemptDetail_Status) FromLoginAwaitingCredentials(v LoginAwaitingCredentials) error {
+	v.Kind = "awaiting_credentials"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeLoginAwaitingCredentials performs a merge with any union data inside the IntegrationLoginAttemptDetail_Status, using the provided LoginAwaitingCredentials
+func (t *IntegrationLoginAttemptDetail_Status) MergeLoginAwaitingCredentials(v LoginAwaitingCredentials) error {
+	v.Kind = "awaiting_credentials"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsLoginInProgress returns the union data inside the IntegrationLoginAttemptDetail_Status as a LoginInProgress
+func (t IntegrationLoginAttemptDetail_Status) AsLoginInProgress() (LoginInProgress, error) {
+	var body LoginInProgress
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromLoginInProgress overwrites any union data inside the IntegrationLoginAttemptDetail_Status as the provided LoginInProgress
+func (t *IntegrationLoginAttemptDetail_Status) FromLoginInProgress(v LoginInProgress) error {
+	v.Kind = "logging_in"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeLoginInProgress performs a merge with any union data inside the IntegrationLoginAttemptDetail_Status, using the provided LoginInProgress
+func (t *IntegrationLoginAttemptDetail_Status) MergeLoginInProgress(v LoginInProgress) error {
+	v.Kind = "logging_in"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsLoginAwaitingMfa returns the union data inside the IntegrationLoginAttemptDetail_Status as a LoginAwaitingMfa
+func (t IntegrationLoginAttemptDetail_Status) AsLoginAwaitingMfa() (LoginAwaitingMfa, error) {
+	var body LoginAwaitingMfa
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromLoginAwaitingMfa overwrites any union data inside the IntegrationLoginAttemptDetail_Status as the provided LoginAwaitingMfa
+func (t *IntegrationLoginAttemptDetail_Status) FromLoginAwaitingMfa(v LoginAwaitingMfa) error {
+	v.Kind = "awaiting_mfa"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeLoginAwaitingMfa performs a merge with any union data inside the IntegrationLoginAttemptDetail_Status, using the provided LoginAwaitingMfa
+func (t *IntegrationLoginAttemptDetail_Status) MergeLoginAwaitingMfa(v LoginAwaitingMfa) error {
+	v.Kind = "awaiting_mfa"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsLoginConnected returns the union data inside the IntegrationLoginAttemptDetail_Status as a LoginConnected
+func (t IntegrationLoginAttemptDetail_Status) AsLoginConnected() (LoginConnected, error) {
+	var body LoginConnected
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromLoginConnected overwrites any union data inside the IntegrationLoginAttemptDetail_Status as the provided LoginConnected
+func (t *IntegrationLoginAttemptDetail_Status) FromLoginConnected(v LoginConnected) error {
+	v.Kind = "connected"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeLoginConnected performs a merge with any union data inside the IntegrationLoginAttemptDetail_Status, using the provided LoginConnected
+func (t *IntegrationLoginAttemptDetail_Status) MergeLoginConnected(v LoginConnected) error {
+	v.Kind = "connected"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsLoginFailedStatus returns the union data inside the IntegrationLoginAttemptDetail_Status as a LoginFailedStatus
+func (t IntegrationLoginAttemptDetail_Status) AsLoginFailedStatus() (LoginFailedStatus, error) {
+	var body LoginFailedStatus
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromLoginFailedStatus overwrites any union data inside the IntegrationLoginAttemptDetail_Status as the provided LoginFailedStatus
+func (t *IntegrationLoginAttemptDetail_Status) FromLoginFailedStatus(v LoginFailedStatus) error {
+	v.Kind = "failed"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeLoginFailedStatus performs a merge with any union data inside the IntegrationLoginAttemptDetail_Status, using the provided LoginFailedStatus
+func (t *IntegrationLoginAttemptDetail_Status) MergeLoginFailedStatus(v LoginFailedStatus) error {
+	v.Kind = "failed"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t IntegrationLoginAttemptDetail_Status) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"kind"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t IntegrationLoginAttemptDetail_Status) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "awaiting_credentials":
+		return t.AsLoginAwaitingCredentials()
+	case "awaiting_mfa":
+		return t.AsLoginAwaitingMfa()
+	case "connected":
+		return t.AsLoginConnected()
+	case "failed":
+		return t.AsLoginFailedStatus()
+	case "logging_in":
+		return t.AsLoginInProgress()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t IntegrationLoginAttemptDetail_Status) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *IntegrationLoginAttemptDetail_Status) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsJsonValueInput0 returns the union data inside the JsonValueInput as a JsonValueInput0
+func (t JsonValueInput) AsJsonValueInput0() (JsonValueInput0, error) {
+	var body JsonValueInput0
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromJsonValueInput0 overwrites any union data inside the JsonValueInput as the provided JsonValueInput0
+func (t *JsonValueInput) FromJsonValueInput0(v JsonValueInput0) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeJsonValueInput0 performs a merge with any union data inside the JsonValueInput, using the provided JsonValueInput0
+func (t *JsonValueInput) MergeJsonValueInput0(v JsonValueInput0) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsJsonValueInput1 returns the union data inside the JsonValueInput as a JsonValueInput1
+func (t JsonValueInput) AsJsonValueInput1() (JsonValueInput1, error) {
+	var body JsonValueInput1
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromJsonValueInput1 overwrites any union data inside the JsonValueInput as the provided JsonValueInput1
+func (t *JsonValueInput) FromJsonValueInput1(v JsonValueInput1) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeJsonValueInput1 performs a merge with any union data inside the JsonValueInput, using the provided JsonValueInput1
+func (t *JsonValueInput) MergeJsonValueInput1(v JsonValueInput1) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsJsonValueInput2 returns the union data inside the JsonValueInput as a JsonValueInput2
+func (t JsonValueInput) AsJsonValueInput2() (JsonValueInput2, error) {
+	var body JsonValueInput2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromJsonValueInput2 overwrites any union data inside the JsonValueInput as the provided JsonValueInput2
+func (t *JsonValueInput) FromJsonValueInput2(v JsonValueInput2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeJsonValueInput2 performs a merge with any union data inside the JsonValueInput, using the provided JsonValueInput2
+func (t *JsonValueInput) MergeJsonValueInput2(v JsonValueInput2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsJsonValueInput3 returns the union data inside the JsonValueInput as a JsonValueInput3
+func (t JsonValueInput) AsJsonValueInput3() (JsonValueInput3, error) {
+	var body JsonValueInput3
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromJsonValueInput3 overwrites any union data inside the JsonValueInput as the provided JsonValueInput3
+func (t *JsonValueInput) FromJsonValueInput3(v JsonValueInput3) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeJsonValueInput3 performs a merge with any union data inside the JsonValueInput, using the provided JsonValueInput3
+func (t *JsonValueInput) MergeJsonValueInput3(v JsonValueInput3) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsJsonValueInput4 returns the union data inside the JsonValueInput as a JsonValueInput4
+func (t JsonValueInput) AsJsonValueInput4() (JsonValueInput4, error) {
+	var body JsonValueInput4
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromJsonValueInput4 overwrites any union data inside the JsonValueInput as the provided JsonValueInput4
+func (t *JsonValueInput) FromJsonValueInput4(v JsonValueInput4) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeJsonValueInput4 performs a merge with any union data inside the JsonValueInput, using the provided JsonValueInput4
+func (t *JsonValueInput) MergeJsonValueInput4(v JsonValueInput4) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsJsonValueInput5 returns the union data inside the JsonValueInput as a JsonValueInput5
+func (t JsonValueInput) AsJsonValueInput5() (JsonValueInput5, error) {
+	var body JsonValueInput5
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromJsonValueInput5 overwrites any union data inside the JsonValueInput as the provided JsonValueInput5
+func (t *JsonValueInput) FromJsonValueInput5(v JsonValueInput5) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeJsonValueInput5 performs a merge with any union data inside the JsonValueInput, using the provided JsonValueInput5
+func (t *JsonValueInput) MergeJsonValueInput5(v JsonValueInput5) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t JsonValueInput) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *JsonValueInput) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsServerCreated returns the union data inside the LoginConnected_Server as a ServerCreated
+func (t LoginConnected_Server) AsServerCreated() (ServerCreated, error) {
+	var body ServerCreated
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromServerCreated overwrites any union data inside the LoginConnected_Server as the provided ServerCreated
+func (t *LoginConnected_Server) FromServerCreated(v ServerCreated) error {
+	v.Kind = "created"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeServerCreated performs a merge with any union data inside the LoginConnected_Server, using the provided ServerCreated
+func (t *LoginConnected_Server) MergeServerCreated(v ServerCreated) error {
+	v.Kind = "created"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsServerUnchanged returns the union data inside the LoginConnected_Server as a ServerUnchanged
+func (t LoginConnected_Server) AsServerUnchanged() (ServerUnchanged, error) {
+	var body ServerUnchanged
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromServerUnchanged overwrites any union data inside the LoginConnected_Server as the provided ServerUnchanged
+func (t *LoginConnected_Server) FromServerUnchanged(v ServerUnchanged) error {
+	v.Kind = "unchanged"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeServerUnchanged performs a merge with any union data inside the LoginConnected_Server, using the provided ServerUnchanged
+func (t *LoginConnected_Server) MergeServerUnchanged(v ServerUnchanged) error {
+	v.Kind = "unchanged"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsServerNotCreated returns the union data inside the LoginConnected_Server as a ServerNotCreated
+func (t LoginConnected_Server) AsServerNotCreated() (ServerNotCreated, error) {
+	var body ServerNotCreated
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromServerNotCreated overwrites any union data inside the LoginConnected_Server as the provided ServerNotCreated
+func (t *LoginConnected_Server) FromServerNotCreated(v ServerNotCreated) error {
+	v.Kind = "not_created"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeServerNotCreated performs a merge with any union data inside the LoginConnected_Server, using the provided ServerNotCreated
+func (t *LoginConnected_Server) MergeServerNotCreated(v ServerNotCreated) error {
+	v.Kind = "not_created"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t LoginConnected_Server) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"kind"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t LoginConnected_Server) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "created":
+		return t.AsServerCreated()
+	case "not_created":
+		return t.AsServerNotCreated()
+	case "unchanged":
+		return t.AsServerUnchanged()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t LoginConnected_Server) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *LoginConnected_Server) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsComposioOAuthConnect returns the union data inside the ManagedRemoteMcpCatalogEntryDetail_ConnectMethod as a ComposioOAuthConnect
+func (t ManagedRemoteMcpCatalogEntryDetail_ConnectMethod) AsComposioOAuthConnect() (ComposioOAuthConnect, error) {
+	var body ComposioOAuthConnect
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromComposioOAuthConnect overwrites any union data inside the ManagedRemoteMcpCatalogEntryDetail_ConnectMethod as the provided ComposioOAuthConnect
+func (t *ManagedRemoteMcpCatalogEntryDetail_ConnectMethod) FromComposioOAuthConnect(v ComposioOAuthConnect) error {
+	v.Kind = "composio_oauth"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeComposioOAuthConnect performs a merge with any union data inside the ManagedRemoteMcpCatalogEntryDetail_ConnectMethod, using the provided ComposioOAuthConnect
+func (t *ManagedRemoteMcpCatalogEntryDetail_ConnectMethod) MergeComposioOAuthConnect(v ComposioOAuthConnect) error {
+	v.Kind = "composio_oauth"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPlatformLoginConnect returns the union data inside the ManagedRemoteMcpCatalogEntryDetail_ConnectMethod as a PlatformLoginConnect
+func (t ManagedRemoteMcpCatalogEntryDetail_ConnectMethod) AsPlatformLoginConnect() (PlatformLoginConnect, error) {
+	var body PlatformLoginConnect
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPlatformLoginConnect overwrites any union data inside the ManagedRemoteMcpCatalogEntryDetail_ConnectMethod as the provided PlatformLoginConnect
+func (t *ManagedRemoteMcpCatalogEntryDetail_ConnectMethod) FromPlatformLoginConnect(v PlatformLoginConnect) error {
+	v.Kind = "platform_login"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePlatformLoginConnect performs a merge with any union data inside the ManagedRemoteMcpCatalogEntryDetail_ConnectMethod, using the provided PlatformLoginConnect
+func (t *ManagedRemoteMcpCatalogEntryDetail_ConnectMethod) MergePlatformLoginConnect(v PlatformLoginConnect) error {
+	v.Kind = "platform_login"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t ManagedRemoteMcpCatalogEntryDetail_ConnectMethod) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"kind"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t ManagedRemoteMcpCatalogEntryDetail_ConnectMethod) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "composio_oauth":
+		return t.AsComposioOAuthConnect()
+	case "platform_login":
+		return t.AsPlatformLoginConnect()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t ManagedRemoteMcpCatalogEntryDetail_ConnectMethod) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *ManagedRemoteMcpCatalogEntryDetail_ConnectMethod) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }
@@ -7530,6 +13879,184 @@ func (t *McpCatalogFormFieldTarget_Scheme) UnmarshalJSON(b []byte) error {
 	return err
 }
 
+// AsComposioOAuthConnectAttempt returns the union data inside the McpConnectRequestState_ConnectAttempt as a ComposioOAuthConnectAttempt
+func (t McpConnectRequestState_ConnectAttempt) AsComposioOAuthConnectAttempt() (ComposioOAuthConnectAttempt, error) {
+	var body ComposioOAuthConnectAttempt
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromComposioOAuthConnectAttempt overwrites any union data inside the McpConnectRequestState_ConnectAttempt as the provided ComposioOAuthConnectAttempt
+func (t *McpConnectRequestState_ConnectAttempt) FromComposioOAuthConnectAttempt(v ComposioOAuthConnectAttempt) error {
+	v.Kind = "composio_oauth"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeComposioOAuthConnectAttempt performs a merge with any union data inside the McpConnectRequestState_ConnectAttempt, using the provided ComposioOAuthConnectAttempt
+func (t *McpConnectRequestState_ConnectAttempt) MergeComposioOAuthConnectAttempt(v ComposioOAuthConnectAttempt) error {
+	v.Kind = "composio_oauth"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPlatformLoginConnectAttempt returns the union data inside the McpConnectRequestState_ConnectAttempt as a PlatformLoginConnectAttempt
+func (t McpConnectRequestState_ConnectAttempt) AsPlatformLoginConnectAttempt() (PlatformLoginConnectAttempt, error) {
+	var body PlatformLoginConnectAttempt
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPlatformLoginConnectAttempt overwrites any union data inside the McpConnectRequestState_ConnectAttempt as the provided PlatformLoginConnectAttempt
+func (t *McpConnectRequestState_ConnectAttempt) FromPlatformLoginConnectAttempt(v PlatformLoginConnectAttempt) error {
+	v.Kind = "platform_login"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePlatformLoginConnectAttempt performs a merge with any union data inside the McpConnectRequestState_ConnectAttempt, using the provided PlatformLoginConnectAttempt
+func (t *McpConnectRequestState_ConnectAttempt) MergePlatformLoginConnectAttempt(v PlatformLoginConnectAttempt) error {
+	v.Kind = "platform_login"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t McpConnectRequestState_ConnectAttempt) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"kind"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t McpConnectRequestState_ConnectAttempt) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "composio_oauth":
+		return t.AsComposioOAuthConnectAttempt()
+	case "platform_login":
+		return t.AsPlatformLoginConnectAttempt()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t McpConnectRequestState_ConnectAttempt) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *McpConnectRequestState_ConnectAttempt) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsComposioOAuthConnect returns the union data inside the McpServerCatalogEntry_ConnectMethod as a ComposioOAuthConnect
+func (t McpServerCatalogEntry_ConnectMethod) AsComposioOAuthConnect() (ComposioOAuthConnect, error) {
+	var body ComposioOAuthConnect
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromComposioOAuthConnect overwrites any union data inside the McpServerCatalogEntry_ConnectMethod as the provided ComposioOAuthConnect
+func (t *McpServerCatalogEntry_ConnectMethod) FromComposioOAuthConnect(v ComposioOAuthConnect) error {
+	v.Kind = "composio_oauth"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeComposioOAuthConnect performs a merge with any union data inside the McpServerCatalogEntry_ConnectMethod, using the provided ComposioOAuthConnect
+func (t *McpServerCatalogEntry_ConnectMethod) MergeComposioOAuthConnect(v ComposioOAuthConnect) error {
+	v.Kind = "composio_oauth"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPlatformLoginConnect returns the union data inside the McpServerCatalogEntry_ConnectMethod as a PlatformLoginConnect
+func (t McpServerCatalogEntry_ConnectMethod) AsPlatformLoginConnect() (PlatformLoginConnect, error) {
+	var body PlatformLoginConnect
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPlatformLoginConnect overwrites any union data inside the McpServerCatalogEntry_ConnectMethod as the provided PlatformLoginConnect
+func (t *McpServerCatalogEntry_ConnectMethod) FromPlatformLoginConnect(v PlatformLoginConnect) error {
+	v.Kind = "platform_login"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePlatformLoginConnect performs a merge with any union data inside the McpServerCatalogEntry_ConnectMethod, using the provided PlatformLoginConnect
+func (t *McpServerCatalogEntry_ConnectMethod) MergePlatformLoginConnect(v PlatformLoginConnect) error {
+	v.Kind = "platform_login"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t McpServerCatalogEntry_ConnectMethod) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"kind"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t McpServerCatalogEntry_ConnectMethod) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "composio_oauth":
+		return t.AsComposioOAuthConnect()
+	case "platform_login":
+		return t.AsPlatformLoginConnect()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t McpServerCatalogEntry_ConnectMethod) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *McpServerCatalogEntry_ConnectMethod) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
 // AsVerbatimHeaderScheme returns the union data inside the McpServerUpdate_SecretHeaderSchemes_AdditionalProperties as a VerbatimHeaderScheme
 func (t McpServerUpdate_SecretHeaderSchemes_AdditionalProperties) AsVerbatimHeaderScheme() (VerbatimHeaderScheme, error) {
 	var body VerbatimHeaderScheme
@@ -7645,6 +14172,68 @@ func (t McpServerUpdate_SecretHeaderSchemes_AdditionalProperties) MarshalJSON() 
 }
 
 func (t *McpServerUpdate_SecretHeaderSchemes_AdditionalProperties) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsMcpToolRef returns the union data inside the NamedPackTool_Tool as a McpToolRef
+func (t NamedPackTool_Tool) AsMcpToolRef() (McpToolRef, error) {
+	var body McpToolRef
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromMcpToolRef overwrites any union data inside the NamedPackTool_Tool as the provided McpToolRef
+func (t *NamedPackTool_Tool) FromMcpToolRef(v McpToolRef) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeMcpToolRef performs a merge with any union data inside the NamedPackTool_Tool, using the provided McpToolRef
+func (t *NamedPackTool_Tool) MergeMcpToolRef(v McpToolRef) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsBuiltinToolRef returns the union data inside the NamedPackTool_Tool as a BuiltinToolRef
+func (t NamedPackTool_Tool) AsBuiltinToolRef() (BuiltinToolRef, error) {
+	var body BuiltinToolRef
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBuiltinToolRef overwrites any union data inside the NamedPackTool_Tool as the provided BuiltinToolRef
+func (t *NamedPackTool_Tool) FromBuiltinToolRef(v BuiltinToolRef) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeBuiltinToolRef performs a merge with any union data inside the NamedPackTool_Tool, using the provided BuiltinToolRef
+func (t *NamedPackTool_Tool) MergeBuiltinToolRef(v BuiltinToolRef) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t NamedPackTool_Tool) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *NamedPackTool_Tool) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }
@@ -7825,6 +14414,2476 @@ func (t *OrMcpCatalogFilterField_Filters_Item) UnmarshalJSON(b []byte) error {
 	return err
 }
 
+// AsAndSkillFilterField returns the union data inside the OrSkillFilterField_Filters_Item as a AndSkillFilterField
+func (t OrSkillFilterField_Filters_Item) AsAndSkillFilterField() (AndSkillFilterField, error) {
+	var body AndSkillFilterField
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAndSkillFilterField overwrites any union data inside the OrSkillFilterField_Filters_Item as the provided AndSkillFilterField
+func (t *OrSkillFilterField_Filters_Item) FromAndSkillFilterField(v AndSkillFilterField) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAndSkillFilterField performs a merge with any union data inside the OrSkillFilterField_Filters_Item, using the provided AndSkillFilterField
+func (t *OrSkillFilterField_Filters_Item) MergeAndSkillFilterField(v AndSkillFilterField) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsOrSkillFilterField returns the union data inside the OrSkillFilterField_Filters_Item as a OrSkillFilterField
+func (t OrSkillFilterField_Filters_Item) AsOrSkillFilterField() (OrSkillFilterField, error) {
+	var body OrSkillFilterField
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromOrSkillFilterField overwrites any union data inside the OrSkillFilterField_Filters_Item as the provided OrSkillFilterField
+func (t *OrSkillFilterField_Filters_Item) FromOrSkillFilterField(v OrSkillFilterField) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeOrSkillFilterField performs a merge with any union data inside the OrSkillFilterField_Filters_Item, using the provided OrSkillFilterField
+func (t *OrSkillFilterField_Filters_Item) MergeOrSkillFilterField(v OrSkillFilterField) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsConditionSkillFilterField returns the union data inside the OrSkillFilterField_Filters_Item as a ConditionSkillFilterField
+func (t OrSkillFilterField_Filters_Item) AsConditionSkillFilterField() (ConditionSkillFilterField, error) {
+	var body ConditionSkillFilterField
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromConditionSkillFilterField overwrites any union data inside the OrSkillFilterField_Filters_Item as the provided ConditionSkillFilterField
+func (t *OrSkillFilterField_Filters_Item) FromConditionSkillFilterField(v ConditionSkillFilterField) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeConditionSkillFilterField performs a merge with any union data inside the OrSkillFilterField_Filters_Item, using the provided ConditionSkillFilterField
+func (t *OrSkillFilterField_Filters_Item) MergeConditionSkillFilterField(v ConditionSkillFilterField) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t OrSkillFilterField_Filters_Item) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *OrSkillFilterField_Filters_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsAndWorkforceTaskFilterField returns the union data inside the OrWorkforceTaskFilterField_Filters_Item as a AndWorkforceTaskFilterField
+func (t OrWorkforceTaskFilterField_Filters_Item) AsAndWorkforceTaskFilterField() (AndWorkforceTaskFilterField, error) {
+	var body AndWorkforceTaskFilterField
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAndWorkforceTaskFilterField overwrites any union data inside the OrWorkforceTaskFilterField_Filters_Item as the provided AndWorkforceTaskFilterField
+func (t *OrWorkforceTaskFilterField_Filters_Item) FromAndWorkforceTaskFilterField(v AndWorkforceTaskFilterField) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAndWorkforceTaskFilterField performs a merge with any union data inside the OrWorkforceTaskFilterField_Filters_Item, using the provided AndWorkforceTaskFilterField
+func (t *OrWorkforceTaskFilterField_Filters_Item) MergeAndWorkforceTaskFilterField(v AndWorkforceTaskFilterField) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsOrWorkforceTaskFilterField returns the union data inside the OrWorkforceTaskFilterField_Filters_Item as a OrWorkforceTaskFilterField
+func (t OrWorkforceTaskFilterField_Filters_Item) AsOrWorkforceTaskFilterField() (OrWorkforceTaskFilterField, error) {
+	var body OrWorkforceTaskFilterField
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromOrWorkforceTaskFilterField overwrites any union data inside the OrWorkforceTaskFilterField_Filters_Item as the provided OrWorkforceTaskFilterField
+func (t *OrWorkforceTaskFilterField_Filters_Item) FromOrWorkforceTaskFilterField(v OrWorkforceTaskFilterField) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeOrWorkforceTaskFilterField performs a merge with any union data inside the OrWorkforceTaskFilterField_Filters_Item, using the provided OrWorkforceTaskFilterField
+func (t *OrWorkforceTaskFilterField_Filters_Item) MergeOrWorkforceTaskFilterField(v OrWorkforceTaskFilterField) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsConditionWorkforceTaskFilterField returns the union data inside the OrWorkforceTaskFilterField_Filters_Item as a ConditionWorkforceTaskFilterField
+func (t OrWorkforceTaskFilterField_Filters_Item) AsConditionWorkforceTaskFilterField() (ConditionWorkforceTaskFilterField, error) {
+	var body ConditionWorkforceTaskFilterField
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromConditionWorkforceTaskFilterField overwrites any union data inside the OrWorkforceTaskFilterField_Filters_Item as the provided ConditionWorkforceTaskFilterField
+func (t *OrWorkforceTaskFilterField_Filters_Item) FromConditionWorkforceTaskFilterField(v ConditionWorkforceTaskFilterField) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeConditionWorkforceTaskFilterField performs a merge with any union data inside the OrWorkforceTaskFilterField_Filters_Item, using the provided ConditionWorkforceTaskFilterField
+func (t *OrWorkforceTaskFilterField_Filters_Item) MergeConditionWorkforceTaskFilterField(v ConditionWorkforceTaskFilterField) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t OrWorkforceTaskFilterField_Filters_Item) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *OrWorkforceTaskFilterField_Filters_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsNamedPackMcpConnection returns the union data inside the OrgPackVersion_Connections_Item as a NamedPackMcpConnection
+func (t OrgPackVersion_Connections_Item) AsNamedPackMcpConnection() (NamedPackMcpConnection, error) {
+	var body NamedPackMcpConnection
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromNamedPackMcpConnection overwrites any union data inside the OrgPackVersion_Connections_Item as the provided NamedPackMcpConnection
+func (t *OrgPackVersion_Connections_Item) FromNamedPackMcpConnection(v NamedPackMcpConnection) error {
+	v.Kind = "mcp_catalog_entry"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeNamedPackMcpConnection performs a merge with any union data inside the OrgPackVersion_Connections_Item, using the provided NamedPackMcpConnection
+func (t *OrgPackVersion_Connections_Item) MergeNamedPackMcpConnection(v NamedPackMcpConnection) error {
+	v.Kind = "mcp_catalog_entry"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsNamedPackVaultConnection returns the union data inside the OrgPackVersion_Connections_Item as a NamedPackVaultConnection
+func (t OrgPackVersion_Connections_Item) AsNamedPackVaultConnection() (NamedPackVaultConnection, error) {
+	var body NamedPackVaultConnection
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromNamedPackVaultConnection overwrites any union data inside the OrgPackVersion_Connections_Item as the provided NamedPackVaultConnection
+func (t *OrgPackVersion_Connections_Item) FromNamedPackVaultConnection(v NamedPackVaultConnection) error {
+	v.Kind = "vault_secret"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeNamedPackVaultConnection performs a merge with any union data inside the OrgPackVersion_Connections_Item, using the provided NamedPackVaultConnection
+func (t *OrgPackVersion_Connections_Item) MergeNamedPackVaultConnection(v NamedPackVaultConnection) error {
+	v.Kind = "vault_secret"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t OrgPackVersion_Connections_Item) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"kind"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t OrgPackVersion_Connections_Item) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "mcp_catalog_entry":
+		return t.AsNamedPackMcpConnection()
+	case "vault_secret":
+		return t.AsNamedPackVaultConnection()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t OrgPackVersion_Connections_Item) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *OrgPackVersion_Connections_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsBoundMcpConnection returns the union data inside the PackBindings_Bindings_Item as a BoundMcpConnection
+func (t PackBindings_Bindings_Item) AsBoundMcpConnection() (BoundMcpConnection, error) {
+	var body BoundMcpConnection
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBoundMcpConnection overwrites any union data inside the PackBindings_Bindings_Item as the provided BoundMcpConnection
+func (t *PackBindings_Bindings_Item) FromBoundMcpConnection(v BoundMcpConnection) error {
+	v.Kind = "mcp_catalog_entry"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeBoundMcpConnection performs a merge with any union data inside the PackBindings_Bindings_Item, using the provided BoundMcpConnection
+func (t *PackBindings_Bindings_Item) MergeBoundMcpConnection(v BoundMcpConnection) error {
+	v.Kind = "mcp_catalog_entry"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsBoundVaultConnection returns the union data inside the PackBindings_Bindings_Item as a BoundVaultConnection
+func (t PackBindings_Bindings_Item) AsBoundVaultConnection() (BoundVaultConnection, error) {
+	var body BoundVaultConnection
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBoundVaultConnection overwrites any union data inside the PackBindings_Bindings_Item as the provided BoundVaultConnection
+func (t *PackBindings_Bindings_Item) FromBoundVaultConnection(v BoundVaultConnection) error {
+	v.Kind = "vault_secret"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeBoundVaultConnection performs a merge with any union data inside the PackBindings_Bindings_Item, using the provided BoundVaultConnection
+func (t *PackBindings_Bindings_Item) MergeBoundVaultConnection(v BoundVaultConnection) error {
+	v.Kind = "vault_secret"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t PackBindings_Bindings_Item) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"kind"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t PackBindings_Bindings_Item) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "mcp_catalog_entry":
+		return t.AsBoundMcpConnection()
+	case "vault_secret":
+		return t.AsBoundVaultConnection()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t PackBindings_Bindings_Item) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *PackBindings_Bindings_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsPackBotPackAvatar returns the union data inside the PackBotRequest_Avatar as a PackBotPackAvatar
+func (t PackBotRequest_Avatar) AsPackBotPackAvatar() (PackBotPackAvatar, error) {
+	var body PackBotPackAvatar
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPackBotPackAvatar overwrites any union data inside the PackBotRequest_Avatar as the provided PackBotPackAvatar
+func (t *PackBotRequest_Avatar) FromPackBotPackAvatar(v PackBotPackAvatar) error {
+	v.Kind = "pack"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePackBotPackAvatar performs a merge with any union data inside the PackBotRequest_Avatar, using the provided PackBotPackAvatar
+func (t *PackBotRequest_Avatar) MergePackBotPackAvatar(v PackBotPackAvatar) error {
+	v.Kind = "pack"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPackBotCustomAvatar returns the union data inside the PackBotRequest_Avatar as a PackBotCustomAvatar
+func (t PackBotRequest_Avatar) AsPackBotCustomAvatar() (PackBotCustomAvatar, error) {
+	var body PackBotCustomAvatar
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPackBotCustomAvatar overwrites any union data inside the PackBotRequest_Avatar as the provided PackBotCustomAvatar
+func (t *PackBotRequest_Avatar) FromPackBotCustomAvatar(v PackBotCustomAvatar) error {
+	v.Kind = "custom"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePackBotCustomAvatar performs a merge with any union data inside the PackBotRequest_Avatar, using the provided PackBotCustomAvatar
+func (t *PackBotRequest_Avatar) MergePackBotCustomAvatar(v PackBotCustomAvatar) error {
+	v.Kind = "custom"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t PackBotRequest_Avatar) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"kind"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t PackBotRequest_Avatar) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "custom":
+		return t.AsPackBotCustomAvatar()
+	case "pack":
+		return t.AsPackBotPackAvatar()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t PackBotRequest_Avatar) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *PackBotRequest_Avatar) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsPackUseServerChoice returns the union data inside the PackBotRequest_Connections_Item as a PackUseServerChoice
+func (t PackBotRequest_Connections_Item) AsPackUseServerChoice() (PackUseServerChoice, error) {
+	var body PackUseServerChoice
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPackUseServerChoice overwrites any union data inside the PackBotRequest_Connections_Item as the provided PackUseServerChoice
+func (t *PackBotRequest_Connections_Item) FromPackUseServerChoice(v PackUseServerChoice) error {
+	v.Choice = "use_server"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePackUseServerChoice performs a merge with any union data inside the PackBotRequest_Connections_Item, using the provided PackUseServerChoice
+func (t *PackBotRequest_Connections_Item) MergePackUseServerChoice(v PackUseServerChoice) error {
+	v.Choice = "use_server"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPackLeavePendingChoice returns the union data inside the PackBotRequest_Connections_Item as a PackLeavePendingChoice
+func (t PackBotRequest_Connections_Item) AsPackLeavePendingChoice() (PackLeavePendingChoice, error) {
+	var body PackLeavePendingChoice
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPackLeavePendingChoice overwrites any union data inside the PackBotRequest_Connections_Item as the provided PackLeavePendingChoice
+func (t *PackBotRequest_Connections_Item) FromPackLeavePendingChoice(v PackLeavePendingChoice) error {
+	v.Choice = "leave_pending"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePackLeavePendingChoice performs a merge with any union data inside the PackBotRequest_Connections_Item, using the provided PackLeavePendingChoice
+func (t *PackBotRequest_Connections_Item) MergePackLeavePendingChoice(v PackLeavePendingChoice) error {
+	v.Choice = "leave_pending"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t PackBotRequest_Connections_Item) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"choice"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t PackBotRequest_Connections_Item) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "leave_pending":
+		return t.AsPackLeavePendingChoice()
+	case "use_server":
+		return t.AsPackUseServerChoice()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t PackBotRequest_Connections_Item) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *PackBotRequest_Connections_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsPackSettingPackChoice returns the union data inside the PackBotRequest_Settings_Item as a PackSettingPackChoice
+func (t PackBotRequest_Settings_Item) AsPackSettingPackChoice() (PackSettingPackChoice, error) {
+	var body PackSettingPackChoice
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPackSettingPackChoice overwrites any union data inside the PackBotRequest_Settings_Item as the provided PackSettingPackChoice
+func (t *PackBotRequest_Settings_Item) FromPackSettingPackChoice(v PackSettingPackChoice) error {
+	v.Choice = "pack"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePackSettingPackChoice performs a merge with any union data inside the PackBotRequest_Settings_Item, using the provided PackSettingPackChoice
+func (t *PackBotRequest_Settings_Item) MergePackSettingPackChoice(v PackSettingPackChoice) error {
+	v.Choice = "pack"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPackSettingKeepChoice returns the union data inside the PackBotRequest_Settings_Item as a PackSettingKeepChoice
+func (t PackBotRequest_Settings_Item) AsPackSettingKeepChoice() (PackSettingKeepChoice, error) {
+	var body PackSettingKeepChoice
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPackSettingKeepChoice overwrites any union data inside the PackBotRequest_Settings_Item as the provided PackSettingKeepChoice
+func (t *PackBotRequest_Settings_Item) FromPackSettingKeepChoice(v PackSettingKeepChoice) error {
+	v.Choice = "keep"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePackSettingKeepChoice performs a merge with any union data inside the PackBotRequest_Settings_Item, using the provided PackSettingKeepChoice
+func (t *PackBotRequest_Settings_Item) MergePackSettingKeepChoice(v PackSettingKeepChoice) error {
+	v.Choice = "keep"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPackSettingCustomChoice returns the union data inside the PackBotRequest_Settings_Item as a PackSettingCustomChoice
+func (t PackBotRequest_Settings_Item) AsPackSettingCustomChoice() (PackSettingCustomChoice, error) {
+	var body PackSettingCustomChoice
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPackSettingCustomChoice overwrites any union data inside the PackBotRequest_Settings_Item as the provided PackSettingCustomChoice
+func (t *PackBotRequest_Settings_Item) FromPackSettingCustomChoice(v PackSettingCustomChoice) error {
+	v.Choice = "custom"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePackSettingCustomChoice performs a merge with any union data inside the PackBotRequest_Settings_Item, using the provided PackSettingCustomChoice
+func (t *PackBotRequest_Settings_Item) MergePackSettingCustomChoice(v PackSettingCustomChoice) error {
+	v.Choice = "custom"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t PackBotRequest_Settings_Item) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"choice"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t PackBotRequest_Settings_Item) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "custom":
+		return t.AsPackSettingCustomChoice()
+	case "keep":
+		return t.AsPackSettingKeepChoice()
+	case "pack":
+		return t.AsPackSettingPackChoice()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t PackBotRequest_Settings_Item) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *PackBotRequest_Settings_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsSetupFormAction returns the union data inside the PackConnectionSetupResult_Action as a SetupFormAction
+func (t PackConnectionSetupResult_Action) AsSetupFormAction() (SetupFormAction, error) {
+	var body SetupFormAction
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSetupFormAction overwrites any union data inside the PackConnectionSetupResult_Action as the provided SetupFormAction
+func (t *PackConnectionSetupResult_Action) FromSetupFormAction(v SetupFormAction) error {
+	v.Kind = "setup_form"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSetupFormAction performs a merge with any union data inside the PackConnectionSetupResult_Action, using the provided SetupFormAction
+func (t *PackConnectionSetupResult_Action) MergeSetupFormAction(v SetupFormAction) error {
+	v.Kind = "setup_form"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsCredentialFormAction returns the union data inside the PackConnectionSetupResult_Action as a CredentialFormAction
+func (t PackConnectionSetupResult_Action) AsCredentialFormAction() (CredentialFormAction, error) {
+	var body CredentialFormAction
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromCredentialFormAction overwrites any union data inside the PackConnectionSetupResult_Action as the provided CredentialFormAction
+func (t *PackConnectionSetupResult_Action) FromCredentialFormAction(v CredentialFormAction) error {
+	v.Kind = "credential_form"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeCredentialFormAction performs a merge with any union data inside the PackConnectionSetupResult_Action, using the provided CredentialFormAction
+func (t *PackConnectionSetupResult_Action) MergeCredentialFormAction(v CredentialFormAction) error {
+	v.Kind = "credential_form"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSecretAction returns the union data inside the PackConnectionSetupResult_Action as a SecretAction
+func (t PackConnectionSetupResult_Action) AsSecretAction() (SecretAction, error) {
+	var body SecretAction
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSecretAction overwrites any union data inside the PackConnectionSetupResult_Action as the provided SecretAction
+func (t *PackConnectionSetupResult_Action) FromSecretAction(v SecretAction) error {
+	v.Kind = "secret"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSecretAction performs a merge with any union data inside the PackConnectionSetupResult_Action, using the provided SecretAction
+func (t *PackConnectionSetupResult_Action) MergeSecretAction(v SecretAction) error {
+	v.Kind = "secret"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsChooseServerAction returns the union data inside the PackConnectionSetupResult_Action as a ChooseServerAction
+func (t PackConnectionSetupResult_Action) AsChooseServerAction() (ChooseServerAction, error) {
+	var body ChooseServerAction
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromChooseServerAction overwrites any union data inside the PackConnectionSetupResult_Action as the provided ChooseServerAction
+func (t *PackConnectionSetupResult_Action) FromChooseServerAction(v ChooseServerAction) error {
+	v.Kind = "choose_server"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeChooseServerAction performs a merge with any union data inside the PackConnectionSetupResult_Action, using the provided ChooseServerAction
+func (t *PackConnectionSetupResult_Action) MergeChooseServerAction(v ChooseServerAction) error {
+	v.Kind = "choose_server"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsRunAction returns the union data inside the PackConnectionSetupResult_Action as a RunAction
+func (t PackConnectionSetupResult_Action) AsRunAction() (RunAction, error) {
+	var body RunAction
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromRunAction overwrites any union data inside the PackConnectionSetupResult_Action as the provided RunAction
+func (t *PackConnectionSetupResult_Action) FromRunAction(v RunAction) error {
+	v.Kind = "run"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeRunAction performs a merge with any union data inside the PackConnectionSetupResult_Action, using the provided RunAction
+func (t *PackConnectionSetupResult_Action) MergeRunAction(v RunAction) error {
+	v.Kind = "run"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsConnectAction returns the union data inside the PackConnectionSetupResult_Action as a ConnectAction
+func (t PackConnectionSetupResult_Action) AsConnectAction() (ConnectAction, error) {
+	var body ConnectAction
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromConnectAction overwrites any union data inside the PackConnectionSetupResult_Action as the provided ConnectAction
+func (t *PackConnectionSetupResult_Action) FromConnectAction(v ConnectAction) error {
+	v.Kind = "connect"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeConnectAction performs a merge with any union data inside the PackConnectionSetupResult_Action, using the provided ConnectAction
+func (t *PackConnectionSetupResult_Action) MergeConnectAction(v ConnectAction) error {
+	v.Kind = "connect"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsAwaitingConnectAction returns the union data inside the PackConnectionSetupResult_Action as a AwaitingConnectAction
+func (t PackConnectionSetupResult_Action) AsAwaitingConnectAction() (AwaitingConnectAction, error) {
+	var body AwaitingConnectAction
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAwaitingConnectAction overwrites any union data inside the PackConnectionSetupResult_Action as the provided AwaitingConnectAction
+func (t *PackConnectionSetupResult_Action) FromAwaitingConnectAction(v AwaitingConnectAction) error {
+	v.Kind = "awaiting_connect"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAwaitingConnectAction performs a merge with any union data inside the PackConnectionSetupResult_Action, using the provided AwaitingConnectAction
+func (t *PackConnectionSetupResult_Action) MergeAwaitingConnectAction(v AwaitingConnectAction) error {
+	v.Kind = "awaiting_connect"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsApprovalAction returns the union data inside the PackConnectionSetupResult_Action as a ApprovalAction
+func (t PackConnectionSetupResult_Action) AsApprovalAction() (ApprovalAction, error) {
+	var body ApprovalAction
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromApprovalAction overwrites any union data inside the PackConnectionSetupResult_Action as the provided ApprovalAction
+func (t *PackConnectionSetupResult_Action) FromApprovalAction(v ApprovalAction) error {
+	v.Kind = "approval"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeApprovalAction performs a merge with any union data inside the PackConnectionSetupResult_Action, using the provided ApprovalAction
+func (t *PackConnectionSetupResult_Action) MergeApprovalAction(v ApprovalAction) error {
+	v.Kind = "approval"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsWaitForToolsAction returns the union data inside the PackConnectionSetupResult_Action as a WaitForToolsAction
+func (t PackConnectionSetupResult_Action) AsWaitForToolsAction() (WaitForToolsAction, error) {
+	var body WaitForToolsAction
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromWaitForToolsAction overwrites any union data inside the PackConnectionSetupResult_Action as the provided WaitForToolsAction
+func (t *PackConnectionSetupResult_Action) FromWaitForToolsAction(v WaitForToolsAction) error {
+	v.Kind = "wait_for_tools"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeWaitForToolsAction performs a merge with any union data inside the PackConnectionSetupResult_Action, using the provided WaitForToolsAction
+func (t *PackConnectionSetupResult_Action) MergeWaitForToolsAction(v WaitForToolsAction) error {
+	v.Kind = "wait_for_tools"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsUnavailableAction returns the union data inside the PackConnectionSetupResult_Action as a UnavailableAction
+func (t PackConnectionSetupResult_Action) AsUnavailableAction() (UnavailableAction, error) {
+	var body UnavailableAction
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromUnavailableAction overwrites any union data inside the PackConnectionSetupResult_Action as the provided UnavailableAction
+func (t *PackConnectionSetupResult_Action) FromUnavailableAction(v UnavailableAction) error {
+	v.Kind = "unavailable"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeUnavailableAction performs a merge with any union data inside the PackConnectionSetupResult_Action, using the provided UnavailableAction
+func (t *PackConnectionSetupResult_Action) MergeUnavailableAction(v UnavailableAction) error {
+	v.Kind = "unavailable"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsFailedAction returns the union data inside the PackConnectionSetupResult_Action as a FailedAction
+func (t PackConnectionSetupResult_Action) AsFailedAction() (FailedAction, error) {
+	var body FailedAction
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromFailedAction overwrites any union data inside the PackConnectionSetupResult_Action as the provided FailedAction
+func (t *PackConnectionSetupResult_Action) FromFailedAction(v FailedAction) error {
+	v.Kind = "failed"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeFailedAction performs a merge with any union data inside the PackConnectionSetupResult_Action, using the provided FailedAction
+func (t *PackConnectionSetupResult_Action) MergeFailedAction(v FailedAction) error {
+	v.Kind = "failed"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsDoneAction returns the union data inside the PackConnectionSetupResult_Action as a DoneAction
+func (t PackConnectionSetupResult_Action) AsDoneAction() (DoneAction, error) {
+	var body DoneAction
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromDoneAction overwrites any union data inside the PackConnectionSetupResult_Action as the provided DoneAction
+func (t *PackConnectionSetupResult_Action) FromDoneAction(v DoneAction) error {
+	v.Kind = "done"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeDoneAction performs a merge with any union data inside the PackConnectionSetupResult_Action, using the provided DoneAction
+func (t *PackConnectionSetupResult_Action) MergeDoneAction(v DoneAction) error {
+	v.Kind = "done"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t PackConnectionSetupResult_Action) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"kind"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t PackConnectionSetupResult_Action) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "approval":
+		return t.AsApprovalAction()
+	case "awaiting_connect":
+		return t.AsAwaitingConnectAction()
+	case "choose_server":
+		return t.AsChooseServerAction()
+	case "connect":
+		return t.AsConnectAction()
+	case "credential_form":
+		return t.AsCredentialFormAction()
+	case "done":
+		return t.AsDoneAction()
+	case "failed":
+		return t.AsFailedAction()
+	case "run":
+		return t.AsRunAction()
+	case "secret":
+		return t.AsSecretAction()
+	case "setup_form":
+		return t.AsSetupFormAction()
+	case "unavailable":
+		return t.AsUnavailableAction()
+	case "wait_for_tools":
+		return t.AsWaitForToolsAction()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t PackConnectionSetupResult_Action) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *PackConnectionSetupResult_Action) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsPackUseServerChoice returns the union data inside the PackInstallRequest_Connections_Item as a PackUseServerChoice
+func (t PackInstallRequest_Connections_Item) AsPackUseServerChoice() (PackUseServerChoice, error) {
+	var body PackUseServerChoice
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPackUseServerChoice overwrites any union data inside the PackInstallRequest_Connections_Item as the provided PackUseServerChoice
+func (t *PackInstallRequest_Connections_Item) FromPackUseServerChoice(v PackUseServerChoice) error {
+	v.Choice = "use_server"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePackUseServerChoice performs a merge with any union data inside the PackInstallRequest_Connections_Item, using the provided PackUseServerChoice
+func (t *PackInstallRequest_Connections_Item) MergePackUseServerChoice(v PackUseServerChoice) error {
+	v.Choice = "use_server"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPackLeavePendingChoice returns the union data inside the PackInstallRequest_Connections_Item as a PackLeavePendingChoice
+func (t PackInstallRequest_Connections_Item) AsPackLeavePendingChoice() (PackLeavePendingChoice, error) {
+	var body PackLeavePendingChoice
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPackLeavePendingChoice overwrites any union data inside the PackInstallRequest_Connections_Item as the provided PackLeavePendingChoice
+func (t *PackInstallRequest_Connections_Item) FromPackLeavePendingChoice(v PackLeavePendingChoice) error {
+	v.Choice = "leave_pending"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePackLeavePendingChoice performs a merge with any union data inside the PackInstallRequest_Connections_Item, using the provided PackLeavePendingChoice
+func (t *PackInstallRequest_Connections_Item) MergePackLeavePendingChoice(v PackLeavePendingChoice) error {
+	v.Choice = "leave_pending"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t PackInstallRequest_Connections_Item) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"choice"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t PackInstallRequest_Connections_Item) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "leave_pending":
+		return t.AsPackLeavePendingChoice()
+	case "use_server":
+		return t.AsPackUseServerChoice()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t PackInstallRequest_Connections_Item) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *PackInstallRequest_Connections_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsPackSettingPackChoice returns the union data inside the PackInstallRequest_Settings_Item as a PackSettingPackChoice
+func (t PackInstallRequest_Settings_Item) AsPackSettingPackChoice() (PackSettingPackChoice, error) {
+	var body PackSettingPackChoice
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPackSettingPackChoice overwrites any union data inside the PackInstallRequest_Settings_Item as the provided PackSettingPackChoice
+func (t *PackInstallRequest_Settings_Item) FromPackSettingPackChoice(v PackSettingPackChoice) error {
+	v.Choice = "pack"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePackSettingPackChoice performs a merge with any union data inside the PackInstallRequest_Settings_Item, using the provided PackSettingPackChoice
+func (t *PackInstallRequest_Settings_Item) MergePackSettingPackChoice(v PackSettingPackChoice) error {
+	v.Choice = "pack"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPackSettingKeepChoice returns the union data inside the PackInstallRequest_Settings_Item as a PackSettingKeepChoice
+func (t PackInstallRequest_Settings_Item) AsPackSettingKeepChoice() (PackSettingKeepChoice, error) {
+	var body PackSettingKeepChoice
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPackSettingKeepChoice overwrites any union data inside the PackInstallRequest_Settings_Item as the provided PackSettingKeepChoice
+func (t *PackInstallRequest_Settings_Item) FromPackSettingKeepChoice(v PackSettingKeepChoice) error {
+	v.Choice = "keep"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePackSettingKeepChoice performs a merge with any union data inside the PackInstallRequest_Settings_Item, using the provided PackSettingKeepChoice
+func (t *PackInstallRequest_Settings_Item) MergePackSettingKeepChoice(v PackSettingKeepChoice) error {
+	v.Choice = "keep"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPackSettingCustomChoice returns the union data inside the PackInstallRequest_Settings_Item as a PackSettingCustomChoice
+func (t PackInstallRequest_Settings_Item) AsPackSettingCustomChoice() (PackSettingCustomChoice, error) {
+	var body PackSettingCustomChoice
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPackSettingCustomChoice overwrites any union data inside the PackInstallRequest_Settings_Item as the provided PackSettingCustomChoice
+func (t *PackInstallRequest_Settings_Item) FromPackSettingCustomChoice(v PackSettingCustomChoice) error {
+	v.Choice = "custom"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePackSettingCustomChoice performs a merge with any union data inside the PackInstallRequest_Settings_Item, using the provided PackSettingCustomChoice
+func (t *PackInstallRequest_Settings_Item) MergePackSettingCustomChoice(v PackSettingCustomChoice) error {
+	v.Choice = "custom"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t PackInstallRequest_Settings_Item) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"choice"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t PackInstallRequest_Settings_Item) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "custom":
+		return t.AsPackSettingCustomChoice()
+	case "keep":
+		return t.AsPackSettingKeepChoice()
+	case "pack":
+		return t.AsPackSettingPackChoice()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t PackInstallRequest_Settings_Item) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *PackInstallRequest_Settings_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsConnectionSetupOAuth returns the union data inside the PackMcpConnectionPreview_Setup as a ConnectionSetupOAuth
+func (t PackMcpConnectionPreview_Setup) AsConnectionSetupOAuth() (ConnectionSetupOAuth, error) {
+	var body ConnectionSetupOAuth
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromConnectionSetupOAuth overwrites any union data inside the PackMcpConnectionPreview_Setup as the provided ConnectionSetupOAuth
+func (t *PackMcpConnectionPreview_Setup) FromConnectionSetupOAuth(v ConnectionSetupOAuth) error {
+	v.Kind = "oauth"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeConnectionSetupOAuth performs a merge with any union data inside the PackMcpConnectionPreview_Setup, using the provided ConnectionSetupOAuth
+func (t *PackMcpConnectionPreview_Setup) MergeConnectionSetupOAuth(v ConnectionSetupOAuth) error {
+	v.Kind = "oauth"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsConnectionSetupCredentialForm returns the union data inside the PackMcpConnectionPreview_Setup as a ConnectionSetupCredentialForm
+func (t PackMcpConnectionPreview_Setup) AsConnectionSetupCredentialForm() (ConnectionSetupCredentialForm, error) {
+	var body ConnectionSetupCredentialForm
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromConnectionSetupCredentialForm overwrites any union data inside the PackMcpConnectionPreview_Setup as the provided ConnectionSetupCredentialForm
+func (t *PackMcpConnectionPreview_Setup) FromConnectionSetupCredentialForm(v ConnectionSetupCredentialForm) error {
+	v.Kind = "credential_form"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeConnectionSetupCredentialForm performs a merge with any union data inside the PackMcpConnectionPreview_Setup, using the provided ConnectionSetupCredentialForm
+func (t *PackMcpConnectionPreview_Setup) MergeConnectionSetupCredentialForm(v ConnectionSetupCredentialForm) error {
+	v.Kind = "credential_form"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsConnectionSetupForm returns the union data inside the PackMcpConnectionPreview_Setup as a ConnectionSetupForm
+func (t PackMcpConnectionPreview_Setup) AsConnectionSetupForm() (ConnectionSetupForm, error) {
+	var body ConnectionSetupForm
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromConnectionSetupForm overwrites any union data inside the PackMcpConnectionPreview_Setup as the provided ConnectionSetupForm
+func (t *PackMcpConnectionPreview_Setup) FromConnectionSetupForm(v ConnectionSetupForm) error {
+	v.Kind = "setup_form"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeConnectionSetupForm performs a merge with any union data inside the PackMcpConnectionPreview_Setup, using the provided ConnectionSetupForm
+func (t *PackMcpConnectionPreview_Setup) MergeConnectionSetupForm(v ConnectionSetupForm) error {
+	v.Kind = "setup_form"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsConnectionSetupNone returns the union data inside the PackMcpConnectionPreview_Setup as a ConnectionSetupNone
+func (t PackMcpConnectionPreview_Setup) AsConnectionSetupNone() (ConnectionSetupNone, error) {
+	var body ConnectionSetupNone
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromConnectionSetupNone overwrites any union data inside the PackMcpConnectionPreview_Setup as the provided ConnectionSetupNone
+func (t *PackMcpConnectionPreview_Setup) FromConnectionSetupNone(v ConnectionSetupNone) error {
+	v.Kind = "none"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeConnectionSetupNone performs a merge with any union data inside the PackMcpConnectionPreview_Setup, using the provided ConnectionSetupNone
+func (t *PackMcpConnectionPreview_Setup) MergeConnectionSetupNone(v ConnectionSetupNone) error {
+	v.Kind = "none"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsConnectionSetupUnavailable returns the union data inside the PackMcpConnectionPreview_Setup as a ConnectionSetupUnavailable
+func (t PackMcpConnectionPreview_Setup) AsConnectionSetupUnavailable() (ConnectionSetupUnavailable, error) {
+	var body ConnectionSetupUnavailable
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromConnectionSetupUnavailable overwrites any union data inside the PackMcpConnectionPreview_Setup as the provided ConnectionSetupUnavailable
+func (t *PackMcpConnectionPreview_Setup) FromConnectionSetupUnavailable(v ConnectionSetupUnavailable) error {
+	v.Kind = "unavailable"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeConnectionSetupUnavailable performs a merge with any union data inside the PackMcpConnectionPreview_Setup, using the provided ConnectionSetupUnavailable
+func (t *PackMcpConnectionPreview_Setup) MergeConnectionSetupUnavailable(v ConnectionSetupUnavailable) error {
+	v.Kind = "unavailable"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t PackMcpConnectionPreview_Setup) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"kind"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t PackMcpConnectionPreview_Setup) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "credential_form":
+		return t.AsConnectionSetupCredentialForm()
+	case "none":
+		return t.AsConnectionSetupNone()
+	case "oauth":
+		return t.AsConnectionSetupOAuth()
+	case "setup_form":
+		return t.AsConnectionSetupForm()
+	case "unavailable":
+		return t.AsConnectionSetupUnavailable()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t PackMcpConnectionPreview_Setup) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *PackMcpConnectionPreview_Setup) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsSetupFormCompletion returns the union data inside the PackSetupCompleteBody_Completions_Item as a SetupFormCompletion
+func (t PackSetupCompleteBody_Completions_Item) AsSetupFormCompletion() (SetupFormCompletion, error) {
+	var body SetupFormCompletion
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSetupFormCompletion overwrites any union data inside the PackSetupCompleteBody_Completions_Item as the provided SetupFormCompletion
+func (t *PackSetupCompleteBody_Completions_Item) FromSetupFormCompletion(v SetupFormCompletion) error {
+	v.Kind = "setup_form"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSetupFormCompletion performs a merge with any union data inside the PackSetupCompleteBody_Completions_Item, using the provided SetupFormCompletion
+func (t *PackSetupCompleteBody_Completions_Item) MergeSetupFormCompletion(v SetupFormCompletion) error {
+	v.Kind = "setup_form"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsCredentialFormCompletion returns the union data inside the PackSetupCompleteBody_Completions_Item as a CredentialFormCompletion
+func (t PackSetupCompleteBody_Completions_Item) AsCredentialFormCompletion() (CredentialFormCompletion, error) {
+	var body CredentialFormCompletion
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromCredentialFormCompletion overwrites any union data inside the PackSetupCompleteBody_Completions_Item as the provided CredentialFormCompletion
+func (t *PackSetupCompleteBody_Completions_Item) FromCredentialFormCompletion(v CredentialFormCompletion) error {
+	v.Kind = "credential_form"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeCredentialFormCompletion performs a merge with any union data inside the PackSetupCompleteBody_Completions_Item, using the provided CredentialFormCompletion
+func (t *PackSetupCompleteBody_Completions_Item) MergeCredentialFormCompletion(v CredentialFormCompletion) error {
+	v.Kind = "credential_form"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsServerChoiceCompletion returns the union data inside the PackSetupCompleteBody_Completions_Item as a ServerChoiceCompletion
+func (t PackSetupCompleteBody_Completions_Item) AsServerChoiceCompletion() (ServerChoiceCompletion, error) {
+	var body ServerChoiceCompletion
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromServerChoiceCompletion overwrites any union data inside the PackSetupCompleteBody_Completions_Item as the provided ServerChoiceCompletion
+func (t *PackSetupCompleteBody_Completions_Item) FromServerChoiceCompletion(v ServerChoiceCompletion) error {
+	v.Kind = "server_choice"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeServerChoiceCompletion performs a merge with any union data inside the PackSetupCompleteBody_Completions_Item, using the provided ServerChoiceCompletion
+func (t *PackSetupCompleteBody_Completions_Item) MergeServerChoiceCompletion(v ServerChoiceCompletion) error {
+	v.Kind = "server_choice"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t PackSetupCompleteBody_Completions_Item) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"kind"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t PackSetupCompleteBody_Completions_Item) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "credential_form":
+		return t.AsCredentialFormCompletion()
+	case "server_choice":
+		return t.AsServerChoiceCompletion()
+	case "setup_form":
+		return t.AsSetupFormCompletion()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t PackSetupCompleteBody_Completions_Item) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *PackSetupCompleteBody_Completions_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsUnsupportedSoulItem returns the union data inside the PackSupport_Unsupported_Item as a UnsupportedSoulItem
+func (t PackSupport_Unsupported_Item) AsUnsupportedSoulItem() (UnsupportedSoulItem, error) {
+	var body UnsupportedSoulItem
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromUnsupportedSoulItem overwrites any union data inside the PackSupport_Unsupported_Item as the provided UnsupportedSoulItem
+func (t *PackSupport_Unsupported_Item) FromUnsupportedSoulItem(v UnsupportedSoulItem) error {
+	v.Kind = "soul"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeUnsupportedSoulItem performs a merge with any union data inside the PackSupport_Unsupported_Item, using the provided UnsupportedSoulItem
+func (t *PackSupport_Unsupported_Item) MergeUnsupportedSoulItem(v UnsupportedSoulItem) error {
+	v.Kind = "soul"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsUnsupportedToolItem returns the union data inside the PackSupport_Unsupported_Item as a UnsupportedToolItem
+func (t PackSupport_Unsupported_Item) AsUnsupportedToolItem() (UnsupportedToolItem, error) {
+	var body UnsupportedToolItem
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromUnsupportedToolItem overwrites any union data inside the PackSupport_Unsupported_Item as the provided UnsupportedToolItem
+func (t *PackSupport_Unsupported_Item) FromUnsupportedToolItem(v UnsupportedToolItem) error {
+	v.Kind = "tool"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeUnsupportedToolItem performs a merge with any union data inside the PackSupport_Unsupported_Item, using the provided UnsupportedToolItem
+func (t *PackSupport_Unsupported_Item) MergeUnsupportedToolItem(v UnsupportedToolItem) error {
+	v.Kind = "tool"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsUnsupportedSettingItem returns the union data inside the PackSupport_Unsupported_Item as a UnsupportedSettingItem
+func (t PackSupport_Unsupported_Item) AsUnsupportedSettingItem() (UnsupportedSettingItem, error) {
+	var body UnsupportedSettingItem
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromUnsupportedSettingItem overwrites any union data inside the PackSupport_Unsupported_Item as the provided UnsupportedSettingItem
+func (t *PackSupport_Unsupported_Item) FromUnsupportedSettingItem(v UnsupportedSettingItem) error {
+	v.Kind = "setting"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeUnsupportedSettingItem performs a merge with any union data inside the PackSupport_Unsupported_Item, using the provided UnsupportedSettingItem
+func (t *PackSupport_Unsupported_Item) MergeUnsupportedSettingItem(v UnsupportedSettingItem) error {
+	v.Kind = "setting"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t PackSupport_Unsupported_Item) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"kind"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t PackSupport_Unsupported_Item) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "setting":
+		return t.AsUnsupportedSettingItem()
+	case "soul":
+		return t.AsUnsupportedSoulItem()
+	case "tool":
+		return t.AsUnsupportedToolItem()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t PackSupport_Unsupported_Item) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *PackSupport_Unsupported_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsPackMcpConnectionPreview returns the union data inside the PackVersionConnectionPreview_Connections_Item as a PackMcpConnectionPreview
+func (t PackVersionConnectionPreview_Connections_Item) AsPackMcpConnectionPreview() (PackMcpConnectionPreview, error) {
+	var body PackMcpConnectionPreview
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPackMcpConnectionPreview overwrites any union data inside the PackVersionConnectionPreview_Connections_Item as the provided PackMcpConnectionPreview
+func (t *PackVersionConnectionPreview_Connections_Item) FromPackMcpConnectionPreview(v PackMcpConnectionPreview) error {
+	v.Kind = "mcp_catalog_entry"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePackMcpConnectionPreview performs a merge with any union data inside the PackVersionConnectionPreview_Connections_Item, using the provided PackMcpConnectionPreview
+func (t *PackVersionConnectionPreview_Connections_Item) MergePackMcpConnectionPreview(v PackMcpConnectionPreview) error {
+	v.Kind = "mcp_catalog_entry"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPackVaultConnectionPreview returns the union data inside the PackVersionConnectionPreview_Connections_Item as a PackVaultConnectionPreview
+func (t PackVersionConnectionPreview_Connections_Item) AsPackVaultConnectionPreview() (PackVaultConnectionPreview, error) {
+	var body PackVaultConnectionPreview
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPackVaultConnectionPreview overwrites any union data inside the PackVersionConnectionPreview_Connections_Item as the provided PackVaultConnectionPreview
+func (t *PackVersionConnectionPreview_Connections_Item) FromPackVaultConnectionPreview(v PackVaultConnectionPreview) error {
+	v.Kind = "vault_secret"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePackVaultConnectionPreview performs a merge with any union data inside the PackVersionConnectionPreview_Connections_Item, using the provided PackVaultConnectionPreview
+func (t *PackVersionConnectionPreview_Connections_Item) MergePackVaultConnectionPreview(v PackVaultConnectionPreview) error {
+	v.Kind = "vault_secret"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t PackVersionConnectionPreview_Connections_Item) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"kind"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t PackVersionConnectionPreview_Connections_Item) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "mcp_catalog_entry":
+		return t.AsPackMcpConnectionPreview()
+	case "vault_secret":
+		return t.AsPackVaultConnectionPreview()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t PackVersionConnectionPreview_Connections_Item) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *PackVersionConnectionPreview_Connections_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsPlannedMcpConnection returns the union data inside the PlannedInstall_Connections_Item as a PlannedMcpConnection
+func (t PlannedInstall_Connections_Item) AsPlannedMcpConnection() (PlannedMcpConnection, error) {
+	var body PlannedMcpConnection
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPlannedMcpConnection overwrites any union data inside the PlannedInstall_Connections_Item as the provided PlannedMcpConnection
+func (t *PlannedInstall_Connections_Item) FromPlannedMcpConnection(v PlannedMcpConnection) error {
+	v.Kind = "mcp_catalog_entry"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePlannedMcpConnection performs a merge with any union data inside the PlannedInstall_Connections_Item, using the provided PlannedMcpConnection
+func (t *PlannedInstall_Connections_Item) MergePlannedMcpConnection(v PlannedMcpConnection) error {
+	v.Kind = "mcp_catalog_entry"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPlannedVaultConnection returns the union data inside the PlannedInstall_Connections_Item as a PlannedVaultConnection
+func (t PlannedInstall_Connections_Item) AsPlannedVaultConnection() (PlannedVaultConnection, error) {
+	var body PlannedVaultConnection
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPlannedVaultConnection overwrites any union data inside the PlannedInstall_Connections_Item as the provided PlannedVaultConnection
+func (t *PlannedInstall_Connections_Item) FromPlannedVaultConnection(v PlannedVaultConnection) error {
+	v.Kind = "vault_secret"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePlannedVaultConnection performs a merge with any union data inside the PlannedInstall_Connections_Item, using the provided PlannedVaultConnection
+func (t *PlannedInstall_Connections_Item) MergePlannedVaultConnection(v PlannedVaultConnection) error {
+	v.Kind = "vault_secret"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t PlannedInstall_Connections_Item) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"kind"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t PlannedInstall_Connections_Item) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "mcp_catalog_entry":
+		return t.AsPlannedMcpConnection()
+	case "vault_secret":
+		return t.AsPlannedVaultConnection()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t PlannedInstall_Connections_Item) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *PlannedInstall_Connections_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsPlannedSoulItem returns the union data inside the PlannedInstall_Items_Item as a PlannedSoulItem
+func (t PlannedInstall_Items_Item) AsPlannedSoulItem() (PlannedSoulItem, error) {
+	var body PlannedSoulItem
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPlannedSoulItem overwrites any union data inside the PlannedInstall_Items_Item as the provided PlannedSoulItem
+func (t *PlannedInstall_Items_Item) FromPlannedSoulItem(v PlannedSoulItem) error {
+	v.Kind = "soul"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePlannedSoulItem performs a merge with any union data inside the PlannedInstall_Items_Item, using the provided PlannedSoulItem
+func (t *PlannedInstall_Items_Item) MergePlannedSoulItem(v PlannedSoulItem) error {
+	v.Kind = "soul"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPlannedSkillItem returns the union data inside the PlannedInstall_Items_Item as a PlannedSkillItem
+func (t PlannedInstall_Items_Item) AsPlannedSkillItem() (PlannedSkillItem, error) {
+	var body PlannedSkillItem
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPlannedSkillItem overwrites any union data inside the PlannedInstall_Items_Item as the provided PlannedSkillItem
+func (t *PlannedInstall_Items_Item) FromPlannedSkillItem(v PlannedSkillItem) error {
+	v.Kind = "skill"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePlannedSkillItem performs a merge with any union data inside the PlannedInstall_Items_Item, using the provided PlannedSkillItem
+func (t *PlannedInstall_Items_Item) MergePlannedSkillItem(v PlannedSkillItem) error {
+	v.Kind = "skill"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPlannedToolItem returns the union data inside the PlannedInstall_Items_Item as a PlannedToolItem
+func (t PlannedInstall_Items_Item) AsPlannedToolItem() (PlannedToolItem, error) {
+	var body PlannedToolItem
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPlannedToolItem overwrites any union data inside the PlannedInstall_Items_Item as the provided PlannedToolItem
+func (t *PlannedInstall_Items_Item) FromPlannedToolItem(v PlannedToolItem) error {
+	v.Kind = "tool"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePlannedToolItem performs a merge with any union data inside the PlannedInstall_Items_Item, using the provided PlannedToolItem
+func (t *PlannedInstall_Items_Item) MergePlannedToolItem(v PlannedToolItem) error {
+	v.Kind = "tool"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPlannedSettingItem returns the union data inside the PlannedInstall_Items_Item as a PlannedSettingItem
+func (t PlannedInstall_Items_Item) AsPlannedSettingItem() (PlannedSettingItem, error) {
+	var body PlannedSettingItem
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPlannedSettingItem overwrites any union data inside the PlannedInstall_Items_Item as the provided PlannedSettingItem
+func (t *PlannedInstall_Items_Item) FromPlannedSettingItem(v PlannedSettingItem) error {
+	v.Kind = "setting"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePlannedSettingItem performs a merge with any union data inside the PlannedInstall_Items_Item, using the provided PlannedSettingItem
+func (t *PlannedInstall_Items_Item) MergePlannedSettingItem(v PlannedSettingItem) error {
+	v.Kind = "setting"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPlannedAvatarItem returns the union data inside the PlannedInstall_Items_Item as a PlannedAvatarItem
+func (t PlannedInstall_Items_Item) AsPlannedAvatarItem() (PlannedAvatarItem, error) {
+	var body PlannedAvatarItem
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPlannedAvatarItem overwrites any union data inside the PlannedInstall_Items_Item as the provided PlannedAvatarItem
+func (t *PlannedInstall_Items_Item) FromPlannedAvatarItem(v PlannedAvatarItem) error {
+	v.Kind = "avatar"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePlannedAvatarItem performs a merge with any union data inside the PlannedInstall_Items_Item, using the provided PlannedAvatarItem
+func (t *PlannedInstall_Items_Item) MergePlannedAvatarItem(v PlannedAvatarItem) error {
+	v.Kind = "avatar"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPlannedMcpServerItem returns the union data inside the PlannedInstall_Items_Item as a PlannedMcpServerItem
+func (t PlannedInstall_Items_Item) AsPlannedMcpServerItem() (PlannedMcpServerItem, error) {
+	var body PlannedMcpServerItem
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPlannedMcpServerItem overwrites any union data inside the PlannedInstall_Items_Item as the provided PlannedMcpServerItem
+func (t *PlannedInstall_Items_Item) FromPlannedMcpServerItem(v PlannedMcpServerItem) error {
+	v.Kind = "mcp_server"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePlannedMcpServerItem performs a merge with any union data inside the PlannedInstall_Items_Item, using the provided PlannedMcpServerItem
+func (t *PlannedInstall_Items_Item) MergePlannedMcpServerItem(v PlannedMcpServerItem) error {
+	v.Kind = "mcp_server"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPlannedSecretLinkItem returns the union data inside the PlannedInstall_Items_Item as a PlannedSecretLinkItem
+func (t PlannedInstall_Items_Item) AsPlannedSecretLinkItem() (PlannedSecretLinkItem, error) {
+	var body PlannedSecretLinkItem
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPlannedSecretLinkItem overwrites any union data inside the PlannedInstall_Items_Item as the provided PlannedSecretLinkItem
+func (t *PlannedInstall_Items_Item) FromPlannedSecretLinkItem(v PlannedSecretLinkItem) error {
+	v.Kind = "secret_link"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePlannedSecretLinkItem performs a merge with any union data inside the PlannedInstall_Items_Item, using the provided PlannedSecretLinkItem
+func (t *PlannedInstall_Items_Item) MergePlannedSecretLinkItem(v PlannedSecretLinkItem) error {
+	v.Kind = "secret_link"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t PlannedInstall_Items_Item) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"kind"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t PlannedInstall_Items_Item) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "avatar":
+		return t.AsPlannedAvatarItem()
+	case "mcp_server":
+		return t.AsPlannedMcpServerItem()
+	case "secret_link":
+		return t.AsPlannedSecretLinkItem()
+	case "setting":
+		return t.AsPlannedSettingItem()
+	case "skill":
+		return t.AsPlannedSkillItem()
+	case "soul":
+		return t.AsPlannedSoulItem()
+	case "tool":
+		return t.AsPlannedToolItem()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t PlannedInstall_Items_Item) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *PlannedInstall_Items_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsSkillRemoval returns the union data inside the PlannedUninstall_Items_Item as a SkillRemoval
+func (t PlannedUninstall_Items_Item) AsSkillRemoval() (SkillRemoval, error) {
+	var body SkillRemoval
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSkillRemoval overwrites any union data inside the PlannedUninstall_Items_Item as the provided SkillRemoval
+func (t *PlannedUninstall_Items_Item) FromSkillRemoval(v SkillRemoval) error {
+	v.Kind = "skill"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSkillRemoval performs a merge with any union data inside the PlannedUninstall_Items_Item, using the provided SkillRemoval
+func (t *PlannedUninstall_Items_Item) MergeSkillRemoval(v SkillRemoval) error {
+	v.Kind = "skill"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsToolRemoval returns the union data inside the PlannedUninstall_Items_Item as a ToolRemoval
+func (t PlannedUninstall_Items_Item) AsToolRemoval() (ToolRemoval, error) {
+	var body ToolRemoval
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromToolRemoval overwrites any union data inside the PlannedUninstall_Items_Item as the provided ToolRemoval
+func (t *PlannedUninstall_Items_Item) FromToolRemoval(v ToolRemoval) error {
+	v.Kind = "tool"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeToolRemoval performs a merge with any union data inside the PlannedUninstall_Items_Item, using the provided ToolRemoval
+func (t *PlannedUninstall_Items_Item) MergeToolRemoval(v ToolRemoval) error {
+	v.Kind = "tool"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSecretLinkRemoval returns the union data inside the PlannedUninstall_Items_Item as a SecretLinkRemoval
+func (t PlannedUninstall_Items_Item) AsSecretLinkRemoval() (SecretLinkRemoval, error) {
+	var body SecretLinkRemoval
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSecretLinkRemoval overwrites any union data inside the PlannedUninstall_Items_Item as the provided SecretLinkRemoval
+func (t *PlannedUninstall_Items_Item) FromSecretLinkRemoval(v SecretLinkRemoval) error {
+	v.Kind = "secret_link"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSecretLinkRemoval performs a merge with any union data inside the PlannedUninstall_Items_Item, using the provided SecretLinkRemoval
+func (t *PlannedUninstall_Items_Item) MergeSecretLinkRemoval(v SecretLinkRemoval) error {
+	v.Kind = "secret_link"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsMcpServerRemoval returns the union data inside the PlannedUninstall_Items_Item as a McpServerRemoval
+func (t PlannedUninstall_Items_Item) AsMcpServerRemoval() (McpServerRemoval, error) {
+	var body McpServerRemoval
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromMcpServerRemoval overwrites any union data inside the PlannedUninstall_Items_Item as the provided McpServerRemoval
+func (t *PlannedUninstall_Items_Item) FromMcpServerRemoval(v McpServerRemoval) error {
+	v.Kind = "mcp_server"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeMcpServerRemoval performs a merge with any union data inside the PlannedUninstall_Items_Item, using the provided McpServerRemoval
+func (t *PlannedUninstall_Items_Item) MergeMcpServerRemoval(v McpServerRemoval) error {
+	v.Kind = "mcp_server"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSoulRemoval returns the union data inside the PlannedUninstall_Items_Item as a SoulRemoval
+func (t PlannedUninstall_Items_Item) AsSoulRemoval() (SoulRemoval, error) {
+	var body SoulRemoval
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSoulRemoval overwrites any union data inside the PlannedUninstall_Items_Item as the provided SoulRemoval
+func (t *PlannedUninstall_Items_Item) FromSoulRemoval(v SoulRemoval) error {
+	v.Kind = "soul"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSoulRemoval performs a merge with any union data inside the PlannedUninstall_Items_Item, using the provided SoulRemoval
+func (t *PlannedUninstall_Items_Item) MergeSoulRemoval(v SoulRemoval) error {
+	v.Kind = "soul"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSettingRemoval returns the union data inside the PlannedUninstall_Items_Item as a SettingRemoval
+func (t PlannedUninstall_Items_Item) AsSettingRemoval() (SettingRemoval, error) {
+	var body SettingRemoval
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSettingRemoval overwrites any union data inside the PlannedUninstall_Items_Item as the provided SettingRemoval
+func (t *PlannedUninstall_Items_Item) FromSettingRemoval(v SettingRemoval) error {
+	v.Kind = "setting"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSettingRemoval performs a merge with any union data inside the PlannedUninstall_Items_Item, using the provided SettingRemoval
+func (t *PlannedUninstall_Items_Item) MergeSettingRemoval(v SettingRemoval) error {
+	v.Kind = "setting"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsAvatarRemoval returns the union data inside the PlannedUninstall_Items_Item as a AvatarRemoval
+func (t PlannedUninstall_Items_Item) AsAvatarRemoval() (AvatarRemoval, error) {
+	var body AvatarRemoval
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAvatarRemoval overwrites any union data inside the PlannedUninstall_Items_Item as the provided AvatarRemoval
+func (t *PlannedUninstall_Items_Item) FromAvatarRemoval(v AvatarRemoval) error {
+	v.Kind = "avatar"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAvatarRemoval performs a merge with any union data inside the PlannedUninstall_Items_Item, using the provided AvatarRemoval
+func (t *PlannedUninstall_Items_Item) MergeAvatarRemoval(v AvatarRemoval) error {
+	v.Kind = "avatar"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsModelRemoval returns the union data inside the PlannedUninstall_Items_Item as a ModelRemoval
+func (t PlannedUninstall_Items_Item) AsModelRemoval() (ModelRemoval, error) {
+	var body ModelRemoval
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromModelRemoval overwrites any union data inside the PlannedUninstall_Items_Item as the provided ModelRemoval
+func (t *PlannedUninstall_Items_Item) FromModelRemoval(v ModelRemoval) error {
+	v.Kind = "model"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeModelRemoval performs a merge with any union data inside the PlannedUninstall_Items_Item, using the provided ModelRemoval
+func (t *PlannedUninstall_Items_Item) MergeModelRemoval(v ModelRemoval) error {
+	v.Kind = "model"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t PlannedUninstall_Items_Item) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"kind"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t PlannedUninstall_Items_Item) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "avatar":
+		return t.AsAvatarRemoval()
+	case "mcp_server":
+		return t.AsMcpServerRemoval()
+	case "model":
+		return t.AsModelRemoval()
+	case "secret_link":
+		return t.AsSecretLinkRemoval()
+	case "setting":
+		return t.AsSettingRemoval()
+	case "skill":
+		return t.AsSkillRemoval()
+	case "soul":
+		return t.AsSoulRemoval()
+	case "tool":
+		return t.AsToolRemoval()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t PlannedUninstall_Items_Item) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *PlannedUninstall_Items_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsUnsupportedSoulItem returns the union data inside the ProfilePackSupport_Unsupported_Item as a UnsupportedSoulItem
+func (t ProfilePackSupport_Unsupported_Item) AsUnsupportedSoulItem() (UnsupportedSoulItem, error) {
+	var body UnsupportedSoulItem
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromUnsupportedSoulItem overwrites any union data inside the ProfilePackSupport_Unsupported_Item as the provided UnsupportedSoulItem
+func (t *ProfilePackSupport_Unsupported_Item) FromUnsupportedSoulItem(v UnsupportedSoulItem) error {
+	v.Kind = "soul"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeUnsupportedSoulItem performs a merge with any union data inside the ProfilePackSupport_Unsupported_Item, using the provided UnsupportedSoulItem
+func (t *ProfilePackSupport_Unsupported_Item) MergeUnsupportedSoulItem(v UnsupportedSoulItem) error {
+	v.Kind = "soul"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsUnsupportedToolItem returns the union data inside the ProfilePackSupport_Unsupported_Item as a UnsupportedToolItem
+func (t ProfilePackSupport_Unsupported_Item) AsUnsupportedToolItem() (UnsupportedToolItem, error) {
+	var body UnsupportedToolItem
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromUnsupportedToolItem overwrites any union data inside the ProfilePackSupport_Unsupported_Item as the provided UnsupportedToolItem
+func (t *ProfilePackSupport_Unsupported_Item) FromUnsupportedToolItem(v UnsupportedToolItem) error {
+	v.Kind = "tool"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeUnsupportedToolItem performs a merge with any union data inside the ProfilePackSupport_Unsupported_Item, using the provided UnsupportedToolItem
+func (t *ProfilePackSupport_Unsupported_Item) MergeUnsupportedToolItem(v UnsupportedToolItem) error {
+	v.Kind = "tool"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsUnsupportedSettingItem returns the union data inside the ProfilePackSupport_Unsupported_Item as a UnsupportedSettingItem
+func (t ProfilePackSupport_Unsupported_Item) AsUnsupportedSettingItem() (UnsupportedSettingItem, error) {
+	var body UnsupportedSettingItem
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromUnsupportedSettingItem overwrites any union data inside the ProfilePackSupport_Unsupported_Item as the provided UnsupportedSettingItem
+func (t *ProfilePackSupport_Unsupported_Item) FromUnsupportedSettingItem(v UnsupportedSettingItem) error {
+	v.Kind = "setting"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeUnsupportedSettingItem performs a merge with any union data inside the ProfilePackSupport_Unsupported_Item, using the provided UnsupportedSettingItem
+func (t *ProfilePackSupport_Unsupported_Item) MergeUnsupportedSettingItem(v UnsupportedSettingItem) error {
+	v.Kind = "setting"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t ProfilePackSupport_Unsupported_Item) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"kind"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t ProfilePackSupport_Unsupported_Item) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "setting":
+		return t.AsUnsupportedSettingItem()
+	case "soul":
+		return t.AsUnsupportedSoulItem()
+	case "tool":
+		return t.AsUnsupportedToolItem()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t ProfilePackSupport_Unsupported_Item) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *ProfilePackSupport_Unsupported_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
 // AsToolsConfigElevatedAllowFrom0 returns the union data inside the ToolsConfig_ElevatedAllowFrom_Item as a ToolsConfigElevatedAllowFrom0
 func (t ToolsConfig_ElevatedAllowFrom_Item) AsToolsConfigElevatedAllowFrom0() (ToolsConfigElevatedAllowFrom0, error) {
 	var body ToolsConfigElevatedAllowFrom0
@@ -7883,6 +16942,172 @@ func (t ToolsConfig_ElevatedAllowFrom_Item) MarshalJSON() ([]byte, error) {
 }
 
 func (t *ToolsConfig_ElevatedAllowFrom_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsBotyardCoreTypesJsonValueOutput0 returns the union data inside the BotyardCoreTypesJsonValueOutput as a BotyardCoreTypesJsonValueOutput0
+func (t BotyardCoreTypesJsonValueOutput) AsBotyardCoreTypesJsonValueOutput0() (BotyardCoreTypesJsonValueOutput0, error) {
+	var body BotyardCoreTypesJsonValueOutput0
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBotyardCoreTypesJsonValueOutput0 overwrites any union data inside the BotyardCoreTypesJsonValueOutput as the provided BotyardCoreTypesJsonValueOutput0
+func (t *BotyardCoreTypesJsonValueOutput) FromBotyardCoreTypesJsonValueOutput0(v BotyardCoreTypesJsonValueOutput0) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeBotyardCoreTypesJsonValueOutput0 performs a merge with any union data inside the BotyardCoreTypesJsonValueOutput, using the provided BotyardCoreTypesJsonValueOutput0
+func (t *BotyardCoreTypesJsonValueOutput) MergeBotyardCoreTypesJsonValueOutput0(v BotyardCoreTypesJsonValueOutput0) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsBotyardCoreTypesJsonValueOutput1 returns the union data inside the BotyardCoreTypesJsonValueOutput as a BotyardCoreTypesJsonValueOutput1
+func (t BotyardCoreTypesJsonValueOutput) AsBotyardCoreTypesJsonValueOutput1() (BotyardCoreTypesJsonValueOutput1, error) {
+	var body BotyardCoreTypesJsonValueOutput1
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBotyardCoreTypesJsonValueOutput1 overwrites any union data inside the BotyardCoreTypesJsonValueOutput as the provided BotyardCoreTypesJsonValueOutput1
+func (t *BotyardCoreTypesJsonValueOutput) FromBotyardCoreTypesJsonValueOutput1(v BotyardCoreTypesJsonValueOutput1) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeBotyardCoreTypesJsonValueOutput1 performs a merge with any union data inside the BotyardCoreTypesJsonValueOutput, using the provided BotyardCoreTypesJsonValueOutput1
+func (t *BotyardCoreTypesJsonValueOutput) MergeBotyardCoreTypesJsonValueOutput1(v BotyardCoreTypesJsonValueOutput1) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsBotyardCoreTypesJsonValueOutput2 returns the union data inside the BotyardCoreTypesJsonValueOutput as a BotyardCoreTypesJsonValueOutput2
+func (t BotyardCoreTypesJsonValueOutput) AsBotyardCoreTypesJsonValueOutput2() (BotyardCoreTypesJsonValueOutput2, error) {
+	var body BotyardCoreTypesJsonValueOutput2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBotyardCoreTypesJsonValueOutput2 overwrites any union data inside the BotyardCoreTypesJsonValueOutput as the provided BotyardCoreTypesJsonValueOutput2
+func (t *BotyardCoreTypesJsonValueOutput) FromBotyardCoreTypesJsonValueOutput2(v BotyardCoreTypesJsonValueOutput2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeBotyardCoreTypesJsonValueOutput2 performs a merge with any union data inside the BotyardCoreTypesJsonValueOutput, using the provided BotyardCoreTypesJsonValueOutput2
+func (t *BotyardCoreTypesJsonValueOutput) MergeBotyardCoreTypesJsonValueOutput2(v BotyardCoreTypesJsonValueOutput2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsBotyardCoreTypesJsonValueOutput3 returns the union data inside the BotyardCoreTypesJsonValueOutput as a BotyardCoreTypesJsonValueOutput3
+func (t BotyardCoreTypesJsonValueOutput) AsBotyardCoreTypesJsonValueOutput3() (BotyardCoreTypesJsonValueOutput3, error) {
+	var body BotyardCoreTypesJsonValueOutput3
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBotyardCoreTypesJsonValueOutput3 overwrites any union data inside the BotyardCoreTypesJsonValueOutput as the provided BotyardCoreTypesJsonValueOutput3
+func (t *BotyardCoreTypesJsonValueOutput) FromBotyardCoreTypesJsonValueOutput3(v BotyardCoreTypesJsonValueOutput3) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeBotyardCoreTypesJsonValueOutput3 performs a merge with any union data inside the BotyardCoreTypesJsonValueOutput, using the provided BotyardCoreTypesJsonValueOutput3
+func (t *BotyardCoreTypesJsonValueOutput) MergeBotyardCoreTypesJsonValueOutput3(v BotyardCoreTypesJsonValueOutput3) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsBotyardCoreTypesJsonValueOutput4 returns the union data inside the BotyardCoreTypesJsonValueOutput as a BotyardCoreTypesJsonValueOutput4
+func (t BotyardCoreTypesJsonValueOutput) AsBotyardCoreTypesJsonValueOutput4() (BotyardCoreTypesJsonValueOutput4, error) {
+	var body BotyardCoreTypesJsonValueOutput4
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBotyardCoreTypesJsonValueOutput4 overwrites any union data inside the BotyardCoreTypesJsonValueOutput as the provided BotyardCoreTypesJsonValueOutput4
+func (t *BotyardCoreTypesJsonValueOutput) FromBotyardCoreTypesJsonValueOutput4(v BotyardCoreTypesJsonValueOutput4) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeBotyardCoreTypesJsonValueOutput4 performs a merge with any union data inside the BotyardCoreTypesJsonValueOutput, using the provided BotyardCoreTypesJsonValueOutput4
+func (t *BotyardCoreTypesJsonValueOutput) MergeBotyardCoreTypesJsonValueOutput4(v BotyardCoreTypesJsonValueOutput4) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsBotyardCoreTypesJsonValueOutput5 returns the union data inside the BotyardCoreTypesJsonValueOutput as a BotyardCoreTypesJsonValueOutput5
+func (t BotyardCoreTypesJsonValueOutput) AsBotyardCoreTypesJsonValueOutput5() (BotyardCoreTypesJsonValueOutput5, error) {
+	var body BotyardCoreTypesJsonValueOutput5
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBotyardCoreTypesJsonValueOutput5 overwrites any union data inside the BotyardCoreTypesJsonValueOutput as the provided BotyardCoreTypesJsonValueOutput5
+func (t *BotyardCoreTypesJsonValueOutput) FromBotyardCoreTypesJsonValueOutput5(v BotyardCoreTypesJsonValueOutput5) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeBotyardCoreTypesJsonValueOutput5 performs a merge with any union data inside the BotyardCoreTypesJsonValueOutput, using the provided BotyardCoreTypesJsonValueOutput5
+func (t *BotyardCoreTypesJsonValueOutput) MergeBotyardCoreTypesJsonValueOutput5(v BotyardCoreTypesJsonValueOutput5) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t BotyardCoreTypesJsonValueOutput) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *BotyardCoreTypesJsonValueOutput) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }
@@ -7971,6 +17196,11 @@ type ClientInterface interface {
 
 	CreateBotV1OrgsOrgIdBotsPost(ctx context.Context, orgId string, body CreateBotV1OrgsOrgIdBotsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostWithBody request with any body
+	CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPost(ctx context.Context, orgId string, body CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGet request
 	GetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGet(ctx context.Context, orgId string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -7978,6 +17208,9 @@ type ClientInterface interface {
 	SearchBotsV1OrgsOrgIdBotsSearchPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	SearchBotsV1OrgsOrgIdBotsSearchPost(ctx context.Context, orgId string, body SearchBotsV1OrgsOrgIdBotsSearchPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListBotWorkforcesV1OrgsOrgIdBotsBotIdWorkforcesGet request
+	ListBotWorkforcesV1OrgsOrgIdBotsBotIdWorkforcesGet(ctx context.Context, orgId string, botId string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// DeleteBotV1OrgsOrgIdBotsBotSlugDelete request
 	DeleteBotV1OrgsOrgIdBotsBotSlugDelete(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -7997,11 +17230,6 @@ type ClientInterface interface {
 	UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatch(ctx context.Context, orgId string, botSlug string, body UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostWithBody request with any body
-	ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePost(ctx context.Context, orgId string, botSlug string, body ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CopyBotV1OrgsOrgIdBotsBotSlugCopyPostWithBody request with any body
 	CopyBotV1OrgsOrgIdBotsBotSlugCopyPostWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -8049,8 +17277,31 @@ type ClientInterface interface {
 
 	DeployBotSkillsV1OrgsOrgIdBotsBotSlugSkillsDeployPost(ctx context.Context, orgId string, botSlug string, body DeployBotSkillsV1OrgsOrgIdBotsBotSlugSkillsDeployPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutWithBody request with any body
+	SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPut(ctx context.Context, orgId string, botSlug string, body SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// UnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDelete request
 	UnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDelete(ctx context.Context, orgId string, botSlug string, skillSlug string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetSuggestionsV1OrgsOrgIdBotsBotSlugSuggestionsGet request
+	GetSuggestionsV1OrgsOrgIdBotsBotSlugSuggestionsGet(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// AcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPostWithBody request with any body
+	AcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPostWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	AcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPost(ctx context.Context, orgId string, botSlug string, body AcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPostWithBody request with any body
+	DismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPostWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	DismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPost(ctx context.Context, orgId string, botSlug string, body DismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// SetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPutWithBody request with any body
+	SetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPutWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	SetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPut(ctx context.Context, orgId string, botSlug string, body SetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// SuspendBotV1OrgsOrgIdBotsBotSlugSuspendPost request
 	SuspendBotV1OrgsOrgIdBotsBotSlugSuspendPost(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -8101,9 +17352,9 @@ type ClientInterface interface {
 	ListMcpServersV1OrgsOrgIdMcpServersGet(ctx context.Context, orgId string, params *ListMcpServersV1OrgsOrgIdMcpServersGetParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CreateMcpServerV1OrgsOrgIdMcpServersPostWithBody request with any body
-	CreateMcpServerV1OrgsOrgIdMcpServersPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	CreateMcpServerV1OrgsOrgIdMcpServersPostWithBody(ctx context.Context, orgId string, params *CreateMcpServerV1OrgsOrgIdMcpServersPostParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	CreateMcpServerV1OrgsOrgIdMcpServersPost(ctx context.Context, orgId string, body CreateMcpServerV1OrgsOrgIdMcpServersPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	CreateMcpServerV1OrgsOrgIdMcpServersPost(ctx context.Context, orgId string, params *CreateMcpServerV1OrgsOrgIdMcpServersPostParams, body CreateMcpServerV1OrgsOrgIdMcpServersPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// SearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostWithBody request with any body
 	SearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -8134,6 +17385,9 @@ type ClientInterface interface {
 
 	// GetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdGet request
 	GetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdGet(ctx context.Context, orgId string, composioConnectionId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPost request
+	ReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPost(ctx context.Context, orgId string, composioConnectionId string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDelete request
 	DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDelete(ctx context.Context, orgId string, mcpServerId string, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -8178,6 +17432,58 @@ type ClientInterface interface {
 
 	// RestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPost request
 	RestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPost(ctx context.Context, orgId string, mcpServerId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListPacksV1OrgsOrgIdPacksGet request
+	ListPacksV1OrgsOrgIdPacksGet(ctx context.Context, orgId string, params *ListPacksV1OrgsOrgIdPacksGetParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPostWithBody request with any body
+	PreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPost(ctx context.Context, orgId string, body PreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UninstallPacksV1OrgsOrgIdPacksInstallsDelete request
+	UninstallPacksV1OrgsOrgIdPacksInstallsDelete(ctx context.Context, orgId string, params *UninstallPacksV1OrgsOrgIdPacksInstallsDeleteParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListBotPackInstallsV1OrgsOrgIdPacksInstallsGet request
+	ListBotPackInstallsV1OrgsOrgIdPacksInstallsGet(ctx context.Context, orgId string, params *ListBotPackInstallsV1OrgsOrgIdPacksInstallsGetParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// InstallPacksV1OrgsOrgIdPacksInstallsPostWithBody request with any body
+	InstallPacksV1OrgsOrgIdPacksInstallsPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	InstallPacksV1OrgsOrgIdPacksInstallsPost(ctx context.Context, orgId string, body InstallPacksV1OrgsOrgIdPacksInstallsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// BindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPostWithBody request with any body
+	BindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	BindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPost(ctx context.Context, orgId string, body BindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPostWithBody request with any body
+	PreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPost(ctx context.Context, orgId string, body PreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePostWithBody request with any body
+	CompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePost(ctx context.Context, orgId string, body CompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ResumePackSetupsV1OrgsOrgIdPacksSetupsResumePostWithBody request with any body
+	ResumePackSetupsV1OrgsOrgIdPacksSetupsResumePostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	ResumePackSetupsV1OrgsOrgIdPacksSetupsResumePost(ctx context.Context, orgId string, body ResumePackSetupsV1OrgsOrgIdPacksSetupsResumePostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// RunPackSetupsV1OrgsOrgIdPacksSetupsRunPostWithBody request with any body
+	RunPackSetupsV1OrgsOrgIdPacksSetupsRunPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	RunPackSetupsV1OrgsOrgIdPacksSetupsRunPost(ctx context.Context, orgId string, body RunPackSetupsV1OrgsOrgIdPacksSetupsRunPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPostWithBody request with any body
+	PreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPost(ctx context.Context, orgId string, body PreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetPackVersionsV1OrgsOrgIdPacksVersionsGet request
+	GetPackVersionsV1OrgsOrgIdPacksVersionsGet(ctx context.Context, orgId string, params *GetPackVersionsV1OrgsOrgIdPacksVersionsGetParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ListSecretPoliciesV1OrgsOrgIdSecretPoliciesGet request
 	ListSecretPoliciesV1OrgsOrgIdSecretPoliciesGet(ctx context.Context, orgId string, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -8224,8 +17530,18 @@ type ClientInterface interface {
 
 	PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPost(ctx context.Context, orgId string, body PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// CountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPostWithBody request with any body
+	CountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPost(ctx context.Context, orgId string, body CountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostWithBody request with any body
+	SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPost(ctx context.Context, orgId string, body SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// DeleteSkillV1OrgsOrgIdSkillsSkillSlugDelete request
-	DeleteSkillV1OrgsOrgIdSkillsSkillSlugDelete(ctx context.Context, orgId string, skillSlug string, reqEditors ...RequestEditorFn) (*http.Response, error)
+	DeleteSkillV1OrgsOrgIdSkillsSkillSlugDelete(ctx context.Context, orgId string, skillSlug string, params *DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetSkillV1OrgsOrgIdSkillsSkillSlugGet request
 	GetSkillV1OrgsOrgIdSkillsSkillSlugGet(ctx context.Context, orgId string, skillSlug string, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -8248,6 +17564,98 @@ type ClientInterface interface {
 
 	// GetToolV1OrgsOrgIdToolsToolIdGet request
 	GetToolV1OrgsOrgIdToolsToolIdGet(ctx context.Context, orgId string, toolId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListWorkforcesV1OrgsOrgIdWorkforcesGet request
+	ListWorkforcesV1OrgsOrgIdWorkforcesGet(ctx context.Context, orgId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateWorkforceV1OrgsOrgIdWorkforcesPostWithBody request with any body
+	CreateWorkforceV1OrgsOrgIdWorkforcesPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateWorkforceV1OrgsOrgIdWorkforcesPost(ctx context.Context, orgId string, body CreateWorkforceV1OrgsOrgIdWorkforcesPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetWorkforceTaskCountsV1OrgsOrgIdWorkforcesTaskCountsGet request
+	GetWorkforceTaskCountsV1OrgsOrgIdWorkforcesTaskCountsGet(ctx context.Context, orgId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugDelete request
+	DeleteWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugDelete(ctx context.Context, orgId string, workforceSlug string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugGet request
+	GetWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugGet(ctx context.Context, orgId string, workforceSlug string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatchWithBody request with any body
+	UpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatchWithBody(ctx context.Context, orgId string, workforceSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatch(ctx context.Context, orgId string, workforceSlug string, body UpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListWorkforceBotsV1OrgsOrgIdWorkforcesWorkforceSlugBotsGet request
+	ListWorkforceBotsV1OrgsOrgIdWorkforcesWorkforceSlugBotsGet(ctx context.Context, orgId string, workforceSlug string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// RemoveBotFromWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdDelete request
+	RemoveBotFromWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdDelete(ctx context.Context, orgId string, workforceSlug string, botId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// AddBotToWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdPost request
+	AddBotToWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdPost(ctx context.Context, orgId string, workforceSlug string, botId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPostWithBody request with any body
+	ReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPostWithBody(ctx context.Context, orgId string, workforceSlug string, columnId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	ReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPost(ctx context.Context, orgId string, workforceSlug string, columnId string, body ReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksGet request
+	ListTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksGet(ctx context.Context, orgId string, workforceSlug string, params *ListTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksGetParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPostWithBody request with any body
+	CreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPostWithBody(ctx context.Context, orgId string, workforceSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPost(ctx context.Context, orgId string, workforceSlug string, body CreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetTaskByNumberV1OrgsOrgIdWorkforcesWorkforceSlugTasksByNumberTaskNumberGet request
+	GetTaskByNumberV1OrgsOrgIdWorkforcesWorkforceSlugTasksByNumberTaskNumberGet(ctx context.Context, orgId string, workforceSlug string, taskNumber int, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// SearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPostWithBody request with any body
+	SearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPostWithBody(ctx context.Context, orgId string, workforceSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	SearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPost(ctx context.Context, orgId string, workforceSlug string, body SearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListTaskTagsV1OrgsOrgIdWorkforcesWorkforceSlugTasksTagsGet request
+	ListTaskTagsV1OrgsOrgIdWorkforcesWorkforceSlugTasksTagsGet(ctx context.Context, orgId string, workforceSlug string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdDelete request
+	DeleteTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdDelete(ctx context.Context, orgId string, workforceSlug string, taskId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdGet request
+	GetTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdGet(ctx context.Context, orgId string, workforceSlug string, taskId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatchWithBody request with any body
+	UpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatchWithBody(ctx context.Context, orgId string, workforceSlug string, taskId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatch(ctx context.Context, orgId string, workforceSlug string, taskId string, body UpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPostWithBody request with any body
+	CreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPostWithBody(ctx context.Context, orgId string, workforceSlug string, taskNumber int, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPost(ctx context.Context, orgId string, workforceSlug string, taskNumber int, body CreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePostWithBody request with any body
+	DeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePostWithBody(ctx context.Context, orgId string, workforceSlug string, taskNumber int, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	DeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePost(ctx context.Context, orgId string, workforceSlug string, taskNumber int, body DeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListWorkforceViewsV1OrgsOrgIdWorkforcesWorkforceSlugViewsGet request
+	ListWorkforceViewsV1OrgsOrgIdWorkforcesWorkforceSlugViewsGet(ctx context.Context, orgId string, workforceSlug string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPostWithBody request with any body
+	CreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPostWithBody(ctx context.Context, orgId string, workforceSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPost(ctx context.Context, orgId string, workforceSlug string, body CreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdDelete request
+	DeleteWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdDelete(ctx context.Context, orgId string, workforceSlug string, viewId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatchWithBody request with any body
+	UpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatchWithBody(ctx context.Context, orgId string, workforceSlug string, viewId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatch(ctx context.Context, orgId string, workforceSlug string, viewId string, body UpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
 func (c *Client) ListBotTemplatesV1OrgsOrgIdBotTemplatesGet(ctx context.Context, orgId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -8298,6 +17706,30 @@ func (c *Client) CreateBotV1OrgsOrgIdBotsPost(ctx context.Context, orgId string,
 	return c.Client.Do(req)
 }
 
+func (c *Client) CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostRequestWithBody(c.Server, orgId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPost(ctx context.Context, orgId string, body CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostRequest(c.Server, orgId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) GetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGet(ctx context.Context, orgId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGetRequest(c.Server, orgId)
 	if err != nil {
@@ -8324,6 +17756,18 @@ func (c *Client) SearchBotsV1OrgsOrgIdBotsSearchPostWithBody(ctx context.Context
 
 func (c *Client) SearchBotsV1OrgsOrgIdBotsSearchPost(ctx context.Context, orgId string, body SearchBotsV1OrgsOrgIdBotsSearchPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewSearchBotsV1OrgsOrgIdBotsSearchPostRequest(c.Server, orgId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListBotWorkforcesV1OrgsOrgIdBotsBotIdWorkforcesGet(ctx context.Context, orgId string, botId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListBotWorkforcesV1OrgsOrgIdBotsBotIdWorkforcesGetRequest(c.Server, orgId, botId)
 	if err != nil {
 		return nil, err
 	}
@@ -8408,30 +17852,6 @@ func (c *Client) UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchWithBody(ctx co
 
 func (c *Client) UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatch(ctx context.Context, orgId string, botSlug string, body UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchRequest(c.Server, orgId, botSlug, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostRequestWithBody(c.Server, orgId, botSlug, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePost(ctx context.Context, orgId string, botSlug string, body ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostRequest(c.Server, orgId, botSlug, body)
 	if err != nil {
 		return nil, err
 	}
@@ -8646,8 +18066,116 @@ func (c *Client) DeployBotSkillsV1OrgsOrgIdBotsBotSlugSkillsDeployPost(ctx conte
 	return c.Client.Do(req)
 }
 
+func (c *Client) SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutRequestWithBody(c.Server, orgId, botSlug, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPut(ctx context.Context, orgId string, botSlug string, body SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutRequest(c.Server, orgId, botSlug, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) UnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDelete(ctx context.Context, orgId string, botSlug string, skillSlug string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDeleteRequest(c.Server, orgId, botSlug, skillSlug)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetSuggestionsV1OrgsOrgIdBotsBotSlugSuggestionsGet(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetSuggestionsV1OrgsOrgIdBotsBotSlugSuggestionsGetRequest(c.Server, orgId, botSlug)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) AcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPostWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPostRequestWithBody(c.Server, orgId, botSlug, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) AcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPost(ctx context.Context, orgId string, botSlug string, body AcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPostRequest(c.Server, orgId, botSlug, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPostWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPostRequestWithBody(c.Server, orgId, botSlug, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPost(ctx context.Context, orgId string, botSlug string, body DismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPostRequest(c.Server, orgId, botSlug, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) SetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPutWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPutRequestWithBody(c.Server, orgId, botSlug, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) SetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPut(ctx context.Context, orgId string, botSlug string, body SetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPutRequest(c.Server, orgId, botSlug, body)
 	if err != nil {
 		return nil, err
 	}
@@ -8874,8 +18402,8 @@ func (c *Client) ListMcpServersV1OrgsOrgIdMcpServersGet(ctx context.Context, org
 	return c.Client.Do(req)
 }
 
-func (c *Client) CreateMcpServerV1OrgsOrgIdMcpServersPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreateMcpServerV1OrgsOrgIdMcpServersPostRequestWithBody(c.Server, orgId, contentType, body)
+func (c *Client) CreateMcpServerV1OrgsOrgIdMcpServersPostWithBody(ctx context.Context, orgId string, params *CreateMcpServerV1OrgsOrgIdMcpServersPostParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateMcpServerV1OrgsOrgIdMcpServersPostRequestWithBody(c.Server, orgId, params, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -8886,8 +18414,8 @@ func (c *Client) CreateMcpServerV1OrgsOrgIdMcpServersPostWithBody(ctx context.Co
 	return c.Client.Do(req)
 }
 
-func (c *Client) CreateMcpServerV1OrgsOrgIdMcpServersPost(ctx context.Context, orgId string, body CreateMcpServerV1OrgsOrgIdMcpServersPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreateMcpServerV1OrgsOrgIdMcpServersPostRequest(c.Server, orgId, body)
+func (c *Client) CreateMcpServerV1OrgsOrgIdMcpServersPost(ctx context.Context, orgId string, params *CreateMcpServerV1OrgsOrgIdMcpServersPostParams, body CreateMcpServerV1OrgsOrgIdMcpServersPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateMcpServerV1OrgsOrgIdMcpServersPostRequest(c.Server, orgId, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -9020,6 +18548,18 @@ func (c *Client) CancelComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposi
 
 func (c *Client) GetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdGet(ctx context.Context, orgId string, composioConnectionId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdGetRequest(c.Server, orgId, composioConnectionId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPost(ctx context.Context, orgId string, composioConnectionId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPostRequest(c.Server, orgId, composioConnectionId)
 	if err != nil {
 		return nil, err
 	}
@@ -9212,6 +18752,246 @@ func (c *Client) RefreshMcpServerToolsV1OrgsOrgIdMcpServersMcpServerIdRefreshToo
 
 func (c *Client) RestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPost(ctx context.Context, orgId string, mcpServerId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewRestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPostRequest(c.Server, orgId, mcpServerId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListPacksV1OrgsOrgIdPacksGet(ctx context.Context, orgId string, params *ListPacksV1OrgsOrgIdPacksGetParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListPacksV1OrgsOrgIdPacksGetRequest(c.Server, orgId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPostRequestWithBody(c.Server, orgId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPost(ctx context.Context, orgId string, body PreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPostRequest(c.Server, orgId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UninstallPacksV1OrgsOrgIdPacksInstallsDelete(ctx context.Context, orgId string, params *UninstallPacksV1OrgsOrgIdPacksInstallsDeleteParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUninstallPacksV1OrgsOrgIdPacksInstallsDeleteRequest(c.Server, orgId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListBotPackInstallsV1OrgsOrgIdPacksInstallsGet(ctx context.Context, orgId string, params *ListBotPackInstallsV1OrgsOrgIdPacksInstallsGetParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListBotPackInstallsV1OrgsOrgIdPacksInstallsGetRequest(c.Server, orgId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) InstallPacksV1OrgsOrgIdPacksInstallsPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewInstallPacksV1OrgsOrgIdPacksInstallsPostRequestWithBody(c.Server, orgId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) InstallPacksV1OrgsOrgIdPacksInstallsPost(ctx context.Context, orgId string, body InstallPacksV1OrgsOrgIdPacksInstallsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewInstallPacksV1OrgsOrgIdPacksInstallsPostRequest(c.Server, orgId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) BindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewBindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPostRequestWithBody(c.Server, orgId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) BindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPost(ctx context.Context, orgId string, body BindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewBindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPostRequest(c.Server, orgId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPostRequestWithBody(c.Server, orgId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPost(ctx context.Context, orgId string, body PreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPostRequest(c.Server, orgId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePostRequestWithBody(c.Server, orgId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePost(ctx context.Context, orgId string, body CompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePostRequest(c.Server, orgId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ResumePackSetupsV1OrgsOrgIdPacksSetupsResumePostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewResumePackSetupsV1OrgsOrgIdPacksSetupsResumePostRequestWithBody(c.Server, orgId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ResumePackSetupsV1OrgsOrgIdPacksSetupsResumePost(ctx context.Context, orgId string, body ResumePackSetupsV1OrgsOrgIdPacksSetupsResumePostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewResumePackSetupsV1OrgsOrgIdPacksSetupsResumePostRequest(c.Server, orgId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) RunPackSetupsV1OrgsOrgIdPacksSetupsRunPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRunPackSetupsV1OrgsOrgIdPacksSetupsRunPostRequestWithBody(c.Server, orgId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) RunPackSetupsV1OrgsOrgIdPacksSetupsRunPost(ctx context.Context, orgId string, body RunPackSetupsV1OrgsOrgIdPacksSetupsRunPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRunPackSetupsV1OrgsOrgIdPacksSetupsRunPostRequest(c.Server, orgId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPostRequestWithBody(c.Server, orgId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPost(ctx context.Context, orgId string, body PreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPostRequest(c.Server, orgId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetPackVersionsV1OrgsOrgIdPacksVersionsGet(ctx context.Context, orgId string, params *GetPackVersionsV1OrgsOrgIdPacksVersionsGetParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetPackVersionsV1OrgsOrgIdPacksVersionsGetRequest(c.Server, orgId, params)
 	if err != nil {
 		return nil, err
 	}
@@ -9426,8 +19206,56 @@ func (c *Client) PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPost(ctx contex
 	return c.Client.Do(req)
 }
 
-func (c *Client) DeleteSkillV1OrgsOrgIdSkillsSkillSlugDelete(ctx context.Context, orgId string, skillSlug string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewDeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteRequest(c.Server, orgId, skillSlug)
+func (c *Client) CountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPostRequestWithBody(c.Server, orgId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPost(ctx context.Context, orgId string, body CountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPostRequest(c.Server, orgId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostRequestWithBody(c.Server, orgId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPost(ctx context.Context, orgId string, body SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostRequest(c.Server, orgId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteSkillV1OrgsOrgIdSkillsSkillSlugDelete(ctx context.Context, orgId string, skillSlug string, params *DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteRequest(c.Server, orgId, skillSlug, params)
 	if err != nil {
 		return nil, err
 	}
@@ -9524,6 +19352,414 @@ func (c *Client) ListServableToolsV1OrgsOrgIdToolsServableGet(ctx context.Contex
 
 func (c *Client) GetToolV1OrgsOrgIdToolsToolIdGet(ctx context.Context, orgId string, toolId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetToolV1OrgsOrgIdToolsToolIdGetRequest(c.Server, orgId, toolId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListWorkforcesV1OrgsOrgIdWorkforcesGet(ctx context.Context, orgId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListWorkforcesV1OrgsOrgIdWorkforcesGetRequest(c.Server, orgId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateWorkforceV1OrgsOrgIdWorkforcesPostWithBody(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateWorkforceV1OrgsOrgIdWorkforcesPostRequestWithBody(c.Server, orgId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateWorkforceV1OrgsOrgIdWorkforcesPost(ctx context.Context, orgId string, body CreateWorkforceV1OrgsOrgIdWorkforcesPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateWorkforceV1OrgsOrgIdWorkforcesPostRequest(c.Server, orgId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetWorkforceTaskCountsV1OrgsOrgIdWorkforcesTaskCountsGet(ctx context.Context, orgId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetWorkforceTaskCountsV1OrgsOrgIdWorkforcesTaskCountsGetRequest(c.Server, orgId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugDelete(ctx context.Context, orgId string, workforceSlug string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugDeleteRequest(c.Server, orgId, workforceSlug)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugGet(ctx context.Context, orgId string, workforceSlug string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugGetRequest(c.Server, orgId, workforceSlug)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatchWithBody(ctx context.Context, orgId string, workforceSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatchRequestWithBody(c.Server, orgId, workforceSlug, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatch(ctx context.Context, orgId string, workforceSlug string, body UpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatchRequest(c.Server, orgId, workforceSlug, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListWorkforceBotsV1OrgsOrgIdWorkforcesWorkforceSlugBotsGet(ctx context.Context, orgId string, workforceSlug string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListWorkforceBotsV1OrgsOrgIdWorkforcesWorkforceSlugBotsGetRequest(c.Server, orgId, workforceSlug)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) RemoveBotFromWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdDelete(ctx context.Context, orgId string, workforceSlug string, botId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRemoveBotFromWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdDeleteRequest(c.Server, orgId, workforceSlug, botId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) AddBotToWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdPost(ctx context.Context, orgId string, workforceSlug string, botId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAddBotToWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdPostRequest(c.Server, orgId, workforceSlug, botId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPostWithBody(ctx context.Context, orgId string, workforceSlug string, columnId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPostRequestWithBody(c.Server, orgId, workforceSlug, columnId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPost(ctx context.Context, orgId string, workforceSlug string, columnId string, body ReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPostRequest(c.Server, orgId, workforceSlug, columnId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksGet(ctx context.Context, orgId string, workforceSlug string, params *ListTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksGetParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksGetRequest(c.Server, orgId, workforceSlug, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPostWithBody(ctx context.Context, orgId string, workforceSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPostRequestWithBody(c.Server, orgId, workforceSlug, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPost(ctx context.Context, orgId string, workforceSlug string, body CreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPostRequest(c.Server, orgId, workforceSlug, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetTaskByNumberV1OrgsOrgIdWorkforcesWorkforceSlugTasksByNumberTaskNumberGet(ctx context.Context, orgId string, workforceSlug string, taskNumber int, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetTaskByNumberV1OrgsOrgIdWorkforcesWorkforceSlugTasksByNumberTaskNumberGetRequest(c.Server, orgId, workforceSlug, taskNumber)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) SearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPostWithBody(ctx context.Context, orgId string, workforceSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPostRequestWithBody(c.Server, orgId, workforceSlug, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) SearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPost(ctx context.Context, orgId string, workforceSlug string, body SearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPostRequest(c.Server, orgId, workforceSlug, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListTaskTagsV1OrgsOrgIdWorkforcesWorkforceSlugTasksTagsGet(ctx context.Context, orgId string, workforceSlug string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListTaskTagsV1OrgsOrgIdWorkforcesWorkforceSlugTasksTagsGetRequest(c.Server, orgId, workforceSlug)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdDelete(ctx context.Context, orgId string, workforceSlug string, taskId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdDeleteRequest(c.Server, orgId, workforceSlug, taskId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdGet(ctx context.Context, orgId string, workforceSlug string, taskId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdGetRequest(c.Server, orgId, workforceSlug, taskId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatchWithBody(ctx context.Context, orgId string, workforceSlug string, taskId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatchRequestWithBody(c.Server, orgId, workforceSlug, taskId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatch(ctx context.Context, orgId string, workforceSlug string, taskId string, body UpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatchRequest(c.Server, orgId, workforceSlug, taskId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPostWithBody(ctx context.Context, orgId string, workforceSlug string, taskNumber int, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPostRequestWithBody(c.Server, orgId, workforceSlug, taskNumber, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPost(ctx context.Context, orgId string, workforceSlug string, taskNumber int, body CreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPostRequest(c.Server, orgId, workforceSlug, taskNumber, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePostWithBody(ctx context.Context, orgId string, workforceSlug string, taskNumber int, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePostRequestWithBody(c.Server, orgId, workforceSlug, taskNumber, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePost(ctx context.Context, orgId string, workforceSlug string, taskNumber int, body DeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePostRequest(c.Server, orgId, workforceSlug, taskNumber, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListWorkforceViewsV1OrgsOrgIdWorkforcesWorkforceSlugViewsGet(ctx context.Context, orgId string, workforceSlug string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListWorkforceViewsV1OrgsOrgIdWorkforcesWorkforceSlugViewsGetRequest(c.Server, orgId, workforceSlug)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPostWithBody(ctx context.Context, orgId string, workforceSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPostRequestWithBody(c.Server, orgId, workforceSlug, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPost(ctx context.Context, orgId string, workforceSlug string, body CreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPostRequest(c.Server, orgId, workforceSlug, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdDelete(ctx context.Context, orgId string, workforceSlug string, viewId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdDeleteRequest(c.Server, orgId, workforceSlug, viewId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatchWithBody(ctx context.Context, orgId string, workforceSlug string, viewId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatchRequestWithBody(c.Server, orgId, workforceSlug, viewId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatch(ctx context.Context, orgId string, workforceSlug string, viewId string, body UpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatchRequest(c.Server, orgId, workforceSlug, viewId, body)
 	if err != nil {
 		return nil, err
 	}
@@ -9703,6 +19939,53 @@ func NewCreateBotV1OrgsOrgIdBotsPostRequestWithBody(server string, orgId string,
 	return req, nil
 }
 
+// NewCreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostRequest calls the generic CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPost builder with application/json body
+func NewCreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostRequest(server string, orgId string, body CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostRequestWithBody(server, orgId, "application/json", bodyReader)
+}
+
+// NewCreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostRequestWithBody generates requests for CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPost with any type of body
+func NewCreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostRequestWithBody(server string, orgId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/bots/from-pack", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewGetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGetRequest generates requests for GetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGet
 func NewGetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGetRequest(server string, orgId string) (*http.Request, error) {
 	var err error
@@ -9780,6 +20063,47 @@ func NewSearchBotsV1OrgsOrgIdBotsSearchPostRequestWithBody(server string, orgId 
 	}
 
 	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewListBotWorkforcesV1OrgsOrgIdBotsBotIdWorkforcesGetRequest generates requests for ListBotWorkforcesV1OrgsOrgIdBotsBotIdWorkforcesGet
+func NewListBotWorkforcesV1OrgsOrgIdBotsBotIdWorkforcesGetRequest(server string, orgId string, botId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "bot_id", runtime.ParamLocationPath, botId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/bots/%s/workforces", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
 
 	return req, nil
 }
@@ -10006,60 +20330,6 @@ func NewUpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchRequestWithBody(server s
 	}
 
 	req, err := http.NewRequest("PATCH", queryURL.String(), body)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Add("Content-Type", contentType)
-
-	return req, nil
-}
-
-// NewConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostRequest calls the generic ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePost builder with application/json body
-func NewConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostRequest(server string, orgId string, botSlug string, body ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-	bodyReader = bytes.NewReader(buf)
-	return NewConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostRequestWithBody(server, orgId, botSlug, "application/json", bodyReader)
-}
-
-// NewConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostRequestWithBody generates requests for ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePost with any type of body
-func NewConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostRequestWithBody(server string, orgId string, botSlug string, contentType string, body io.Reader) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
-	if err != nil {
-		return nil, err
-	}
-
-	var pathParam1 string
-
-	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "bot_slug", runtime.ParamLocationPath, botSlug)
-	if err != nil {
-		return nil, err
-	}
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/v1/orgs/%s/bots/%s/config/convert-native", pathParam0, pathParam1)
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("POST", queryURL.String(), body)
 	if err != nil {
 		return nil, err
 	}
@@ -10655,6 +20925,60 @@ func NewDeployBotSkillsV1OrgsOrgIdBotsBotSlugSkillsDeployPostRequestWithBody(ser
 	return req, nil
 }
 
+// NewSetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutRequest calls the generic SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPut builder with application/json body
+func NewSetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutRequest(server string, orgId string, botSlug string, body SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewSetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutRequestWithBody(server, orgId, botSlug, "application/json", bodyReader)
+}
+
+// NewSetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutRequestWithBody generates requests for SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPut with any type of body
+func NewSetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutRequestWithBody(server string, orgId string, botSlug string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "bot_slug", runtime.ParamLocationPath, botSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/bots/%s/skills/pins", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewUnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDeleteRequest generates requests for UnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDelete
 func NewUnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDeleteRequest(server string, orgId string, botSlug string, skillSlug string) (*http.Request, error) {
 	var err error
@@ -10699,6 +21023,209 @@ func NewUnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDeleteRequest(server s
 	if err != nil {
 		return nil, err
 	}
+
+	return req, nil
+}
+
+// NewGetSuggestionsV1OrgsOrgIdBotsBotSlugSuggestionsGetRequest generates requests for GetSuggestionsV1OrgsOrgIdBotsBotSlugSuggestionsGet
+func NewGetSuggestionsV1OrgsOrgIdBotsBotSlugSuggestionsGetRequest(server string, orgId string, botSlug string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "bot_slug", runtime.ParamLocationPath, botSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/bots/%s/suggestions", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewAcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPostRequest calls the generic AcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPost builder with application/json body
+func NewAcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPostRequest(server string, orgId string, botSlug string, body AcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewAcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPostRequestWithBody(server, orgId, botSlug, "application/json", bodyReader)
+}
+
+// NewAcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPostRequestWithBody generates requests for AcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPost with any type of body
+func NewAcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPostRequestWithBody(server string, orgId string, botSlug string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "bot_slug", runtime.ParamLocationPath, botSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/bots/%s/suggestions/accept", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPostRequest calls the generic DismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPost builder with application/json body
+func NewDismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPostRequest(server string, orgId string, botSlug string, body DismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewDismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPostRequestWithBody(server, orgId, botSlug, "application/json", bodyReader)
+}
+
+// NewDismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPostRequestWithBody generates requests for DismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPost with any type of body
+func NewDismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPostRequestWithBody(server string, orgId string, botSlug string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "bot_slug", runtime.ParamLocationPath, botSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/bots/%s/suggestions/dismiss", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewSetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPutRequest calls the generic SetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPut builder with application/json body
+func NewSetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPutRequest(server string, orgId string, botSlug string, body SetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPutJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewSetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPutRequestWithBody(server, orgId, botSlug, "application/json", bodyReader)
+}
+
+// NewSetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPutRequestWithBody generates requests for SetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPut with any type of body
+func NewSetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPutRequestWithBody(server string, orgId string, botSlug string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "bot_slug", runtime.ParamLocationPath, botSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/bots/%s/suggestions/opt-out", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
 
 	return req, nil
 }
@@ -11320,18 +21847,18 @@ func NewListMcpServersV1OrgsOrgIdMcpServersGetRequest(server string, orgId strin
 }
 
 // NewCreateMcpServerV1OrgsOrgIdMcpServersPostRequest calls the generic CreateMcpServerV1OrgsOrgIdMcpServersPost builder with application/json body
-func NewCreateMcpServerV1OrgsOrgIdMcpServersPostRequest(server string, orgId string, body CreateMcpServerV1OrgsOrgIdMcpServersPostJSONRequestBody) (*http.Request, error) {
+func NewCreateMcpServerV1OrgsOrgIdMcpServersPostRequest(server string, orgId string, params *CreateMcpServerV1OrgsOrgIdMcpServersPostParams, body CreateMcpServerV1OrgsOrgIdMcpServersPostJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewCreateMcpServerV1OrgsOrgIdMcpServersPostRequestWithBody(server, orgId, "application/json", bodyReader)
+	return NewCreateMcpServerV1OrgsOrgIdMcpServersPostRequestWithBody(server, orgId, params, "application/json", bodyReader)
 }
 
 // NewCreateMcpServerV1OrgsOrgIdMcpServersPostRequestWithBody generates requests for CreateMcpServerV1OrgsOrgIdMcpServersPost with any type of body
-func NewCreateMcpServerV1OrgsOrgIdMcpServersPostRequestWithBody(server string, orgId string, contentType string, body io.Reader) (*http.Request, error) {
+func NewCreateMcpServerV1OrgsOrgIdMcpServersPostRequestWithBody(server string, orgId string, params *CreateMcpServerV1OrgsOrgIdMcpServersPostParams, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -11354,6 +21881,28 @@ func NewCreateMcpServerV1OrgsOrgIdMcpServersPostRequestWithBody(server string, o
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.McpConnectRequestId != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "mcp_connect_request_id", runtime.ParamLocationQuery, *params.McpConnectRequestId); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
 	}
 
 	req, err := http.NewRequest("POST", queryURL.String(), body)
@@ -11705,6 +22254,47 @@ func NewGetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionI
 	}
 
 	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPostRequest generates requests for ReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPost
+func NewReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPostRequest(server string, orgId string, composioConnectionId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "composio_connection_id", runtime.ParamLocationPath, composioConnectionId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/mcp-servers/connections/%s/reconnect", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -12270,6 +22860,626 @@ func NewRestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPostRequest(serve
 	return req, nil
 }
 
+// NewListPacksV1OrgsOrgIdPacksGetRequest generates requests for ListPacksV1OrgsOrgIdPacksGet
+func NewListPacksV1OrgsOrgIdPacksGetRequest(server string, orgId string, params *ListPacksV1OrgsOrgIdPacksGetParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/packs", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Slugs != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "slugs", runtime.ParamLocationQuery, *params.Slugs); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Cursor != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "cursor", runtime.ParamLocationQuery, *params.Cursor); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "limit", runtime.ParamLocationQuery, *params.Limit); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPostRequest calls the generic PreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPost builder with application/json body
+func NewPreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPostRequest(server string, orgId string, body PreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPostRequestWithBody(server, orgId, "application/json", bodyReader)
+}
+
+// NewPreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPostRequestWithBody generates requests for PreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPost with any type of body
+func NewPreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPostRequestWithBody(server string, orgId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/packs/connections/preview", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewUninstallPacksV1OrgsOrgIdPacksInstallsDeleteRequest generates requests for UninstallPacksV1OrgsOrgIdPacksInstallsDelete
+func NewUninstallPacksV1OrgsOrgIdPacksInstallsDeleteRequest(server string, orgId string, params *UninstallPacksV1OrgsOrgIdPacksInstallsDeleteParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/packs/installs", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "bot_pack_install_ids", runtime.ParamLocationQuery, params.BotPackInstallIds); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewListBotPackInstallsV1OrgsOrgIdPacksInstallsGetRequest generates requests for ListBotPackInstallsV1OrgsOrgIdPacksInstallsGet
+func NewListBotPackInstallsV1OrgsOrgIdPacksInstallsGetRequest(server string, orgId string, params *ListBotPackInstallsV1OrgsOrgIdPacksInstallsGetParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/packs/installs", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "bot_ids", runtime.ParamLocationQuery, params.BotIds); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewInstallPacksV1OrgsOrgIdPacksInstallsPostRequest calls the generic InstallPacksV1OrgsOrgIdPacksInstallsPost builder with application/json body
+func NewInstallPacksV1OrgsOrgIdPacksInstallsPostRequest(server string, orgId string, body InstallPacksV1OrgsOrgIdPacksInstallsPostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewInstallPacksV1OrgsOrgIdPacksInstallsPostRequestWithBody(server, orgId, "application/json", bodyReader)
+}
+
+// NewInstallPacksV1OrgsOrgIdPacksInstallsPostRequestWithBody generates requests for InstallPacksV1OrgsOrgIdPacksInstallsPost with any type of body
+func NewInstallPacksV1OrgsOrgIdPacksInstallsPostRequestWithBody(server string, orgId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/packs/installs", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewBindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPostRequest calls the generic BindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPost builder with application/json body
+func NewBindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPostRequest(server string, orgId string, body BindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewBindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPostRequestWithBody(server, orgId, "application/json", bodyReader)
+}
+
+// NewBindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPostRequestWithBody generates requests for BindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPost with any type of body
+func NewBindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPostRequestWithBody(server string, orgId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/packs/installs/connections", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewPreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPostRequest calls the generic PreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPost builder with application/json body
+func NewPreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPostRequest(server string, orgId string, body PreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPostRequestWithBody(server, orgId, "application/json", bodyReader)
+}
+
+// NewPreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPostRequestWithBody generates requests for PreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPost with any type of body
+func NewPreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPostRequestWithBody(server string, orgId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/packs/installs/preview", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewCompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePostRequest calls the generic CompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePost builder with application/json body
+func NewCompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePostRequest(server string, orgId string, body CompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePostRequestWithBody(server, orgId, "application/json", bodyReader)
+}
+
+// NewCompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePostRequestWithBody generates requests for CompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePost with any type of body
+func NewCompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePostRequestWithBody(server string, orgId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/packs/setups/complete", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewResumePackSetupsV1OrgsOrgIdPacksSetupsResumePostRequest calls the generic ResumePackSetupsV1OrgsOrgIdPacksSetupsResumePost builder with application/json body
+func NewResumePackSetupsV1OrgsOrgIdPacksSetupsResumePostRequest(server string, orgId string, body ResumePackSetupsV1OrgsOrgIdPacksSetupsResumePostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewResumePackSetupsV1OrgsOrgIdPacksSetupsResumePostRequestWithBody(server, orgId, "application/json", bodyReader)
+}
+
+// NewResumePackSetupsV1OrgsOrgIdPacksSetupsResumePostRequestWithBody generates requests for ResumePackSetupsV1OrgsOrgIdPacksSetupsResumePost with any type of body
+func NewResumePackSetupsV1OrgsOrgIdPacksSetupsResumePostRequestWithBody(server string, orgId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/packs/setups/resume", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewRunPackSetupsV1OrgsOrgIdPacksSetupsRunPostRequest calls the generic RunPackSetupsV1OrgsOrgIdPacksSetupsRunPost builder with application/json body
+func NewRunPackSetupsV1OrgsOrgIdPacksSetupsRunPostRequest(server string, orgId string, body RunPackSetupsV1OrgsOrgIdPacksSetupsRunPostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewRunPackSetupsV1OrgsOrgIdPacksSetupsRunPostRequestWithBody(server, orgId, "application/json", bodyReader)
+}
+
+// NewRunPackSetupsV1OrgsOrgIdPacksSetupsRunPostRequestWithBody generates requests for RunPackSetupsV1OrgsOrgIdPacksSetupsRunPost with any type of body
+func NewRunPackSetupsV1OrgsOrgIdPacksSetupsRunPostRequestWithBody(server string, orgId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/packs/setups/run", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewPreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPostRequest calls the generic PreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPost builder with application/json body
+func NewPreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPostRequest(server string, orgId string, body PreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPostRequestWithBody(server, orgId, "application/json", bodyReader)
+}
+
+// NewPreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPostRequestWithBody generates requests for PreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPost with any type of body
+func NewPreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPostRequestWithBody(server string, orgId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/packs/uninstalls/preview", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetPackVersionsV1OrgsOrgIdPacksVersionsGetRequest generates requests for GetPackVersionsV1OrgsOrgIdPacksVersionsGet
+func NewGetPackVersionsV1OrgsOrgIdPacksVersionsGetRequest(server string, orgId string, params *GetPackVersionsV1OrgsOrgIdPacksVersionsGetParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/packs/versions", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "pack_version_ids", runtime.ParamLocationQuery, params.PackVersionIds); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewListSecretPoliciesV1OrgsOrgIdSecretPoliciesGetRequest generates requests for ListSecretPoliciesV1OrgsOrgIdSecretPoliciesGet
 func NewListSecretPoliciesV1OrgsOrgIdSecretPoliciesGetRequest(server string, orgId string) (*http.Request, error) {
 	var err error
@@ -12795,8 +24005,102 @@ func NewPreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostRequestWithBody(serv
 	return req, nil
 }
 
+// NewCountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPostRequest calls the generic CountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPost builder with application/json body
+func NewCountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPostRequest(server string, orgId string, body CountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPostRequestWithBody(server, orgId, "application/json", bodyReader)
+}
+
+// NewCountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPostRequestWithBody generates requests for CountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPost with any type of body
+func NewCountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPostRequestWithBody(server string, orgId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/skills/search/provider-counts", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewSearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostRequest calls the generic SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPost builder with application/json body
+func NewSearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostRequest(server string, orgId string, body SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewSearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostRequestWithBody(server, orgId, "application/json", bodyReader)
+}
+
+// NewSearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostRequestWithBody generates requests for SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPost with any type of body
+func NewSearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostRequestWithBody(server string, orgId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/skills/versions/search", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewDeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteRequest generates requests for DeleteSkillV1OrgsOrgIdSkillsSkillSlugDelete
-func NewDeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteRequest(server string, orgId string, skillSlug string) (*http.Request, error) {
+func NewDeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteRequest(server string, orgId string, skillSlug string, params *DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteParams) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -12826,6 +24130,28 @@ func NewDeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteRequest(server string, orgId 
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Force != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "force", runtime.ParamLocationQuery, *params.Force); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
 	}
 
 	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
@@ -13226,6 +24552,1214 @@ func NewGetToolV1OrgsOrgIdToolsToolIdGetRequest(server string, orgId string, too
 	return req, nil
 }
 
+// NewListWorkforcesV1OrgsOrgIdWorkforcesGetRequest generates requests for ListWorkforcesV1OrgsOrgIdWorkforcesGet
+func NewListWorkforcesV1OrgsOrgIdWorkforcesGetRequest(server string, orgId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/workforces", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCreateWorkforceV1OrgsOrgIdWorkforcesPostRequest calls the generic CreateWorkforceV1OrgsOrgIdWorkforcesPost builder with application/json body
+func NewCreateWorkforceV1OrgsOrgIdWorkforcesPostRequest(server string, orgId string, body CreateWorkforceV1OrgsOrgIdWorkforcesPostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateWorkforceV1OrgsOrgIdWorkforcesPostRequestWithBody(server, orgId, "application/json", bodyReader)
+}
+
+// NewCreateWorkforceV1OrgsOrgIdWorkforcesPostRequestWithBody generates requests for CreateWorkforceV1OrgsOrgIdWorkforcesPost with any type of body
+func NewCreateWorkforceV1OrgsOrgIdWorkforcesPostRequestWithBody(server string, orgId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/workforces", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetWorkforceTaskCountsV1OrgsOrgIdWorkforcesTaskCountsGetRequest generates requests for GetWorkforceTaskCountsV1OrgsOrgIdWorkforcesTaskCountsGet
+func NewGetWorkforceTaskCountsV1OrgsOrgIdWorkforcesTaskCountsGetRequest(server string, orgId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/workforces/task-counts", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewDeleteWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugDeleteRequest generates requests for DeleteWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugDelete
+func NewDeleteWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugDeleteRequest(server string, orgId string, workforceSlug string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "workforce_slug", runtime.ParamLocationPath, workforceSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/workforces/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugGetRequest generates requests for GetWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugGet
+func NewGetWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugGetRequest(server string, orgId string, workforceSlug string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "workforce_slug", runtime.ParamLocationPath, workforceSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/workforces/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatchRequest calls the generic UpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatch builder with application/json body
+func NewUpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatchRequest(server string, orgId string, workforceSlug string, body UpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatchJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatchRequestWithBody(server, orgId, workforceSlug, "application/json", bodyReader)
+}
+
+// NewUpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatchRequestWithBody generates requests for UpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatch with any type of body
+func NewUpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatchRequestWithBody(server string, orgId string, workforceSlug string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "workforce_slug", runtime.ParamLocationPath, workforceSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/workforces/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PATCH", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewListWorkforceBotsV1OrgsOrgIdWorkforcesWorkforceSlugBotsGetRequest generates requests for ListWorkforceBotsV1OrgsOrgIdWorkforcesWorkforceSlugBotsGet
+func NewListWorkforceBotsV1OrgsOrgIdWorkforcesWorkforceSlugBotsGetRequest(server string, orgId string, workforceSlug string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "workforce_slug", runtime.ParamLocationPath, workforceSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/workforces/%s/bots", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewRemoveBotFromWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdDeleteRequest generates requests for RemoveBotFromWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdDelete
+func NewRemoveBotFromWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdDeleteRequest(server string, orgId string, workforceSlug string, botId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "workforce_slug", runtime.ParamLocationPath, workforceSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam2 string
+
+	pathParam2, err = runtime.StyleParamWithLocation("simple", false, "bot_id", runtime.ParamLocationPath, botId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/workforces/%s/bots/%s", pathParam0, pathParam1, pathParam2)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewAddBotToWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdPostRequest generates requests for AddBotToWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdPost
+func NewAddBotToWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdPostRequest(server string, orgId string, workforceSlug string, botId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "workforce_slug", runtime.ParamLocationPath, workforceSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam2 string
+
+	pathParam2, err = runtime.StyleParamWithLocation("simple", false, "bot_id", runtime.ParamLocationPath, botId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/workforces/%s/bots/%s", pathParam0, pathParam1, pathParam2)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPostRequest calls the generic ReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPost builder with application/json body
+func NewReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPostRequest(server string, orgId string, workforceSlug string, columnId string, body ReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPostRequestWithBody(server, orgId, workforceSlug, columnId, "application/json", bodyReader)
+}
+
+// NewReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPostRequestWithBody generates requests for ReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPost with any type of body
+func NewReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPostRequestWithBody(server string, orgId string, workforceSlug string, columnId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "workforce_slug", runtime.ParamLocationPath, workforceSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam2 string
+
+	pathParam2, err = runtime.StyleParamWithLocation("simple", false, "column_id", runtime.ParamLocationPath, columnId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/workforces/%s/columns/%s/reassign-tasks", pathParam0, pathParam1, pathParam2)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewListTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksGetRequest generates requests for ListTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksGet
+func NewListTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksGetRequest(server string, orgId string, workforceSlug string, params *ListTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksGetParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "workforce_slug", runtime.ParamLocationPath, workforceSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/workforces/%s/tasks", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "limit", runtime.ParamLocationQuery, *params.Limit); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Offset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "offset", runtime.ParamLocationQuery, *params.Offset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPostRequest calls the generic CreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPost builder with application/json body
+func NewCreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPostRequest(server string, orgId string, workforceSlug string, body CreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPostRequestWithBody(server, orgId, workforceSlug, "application/json", bodyReader)
+}
+
+// NewCreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPostRequestWithBody generates requests for CreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPost with any type of body
+func NewCreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPostRequestWithBody(server string, orgId string, workforceSlug string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "workforce_slug", runtime.ParamLocationPath, workforceSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/workforces/%s/tasks", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetTaskByNumberV1OrgsOrgIdWorkforcesWorkforceSlugTasksByNumberTaskNumberGetRequest generates requests for GetTaskByNumberV1OrgsOrgIdWorkforcesWorkforceSlugTasksByNumberTaskNumberGet
+func NewGetTaskByNumberV1OrgsOrgIdWorkforcesWorkforceSlugTasksByNumberTaskNumberGetRequest(server string, orgId string, workforceSlug string, taskNumber int) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "workforce_slug", runtime.ParamLocationPath, workforceSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam2 string
+
+	pathParam2, err = runtime.StyleParamWithLocation("simple", false, "task_number", runtime.ParamLocationPath, taskNumber)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/workforces/%s/tasks/by-number/%s", pathParam0, pathParam1, pathParam2)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewSearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPostRequest calls the generic SearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPost builder with application/json body
+func NewSearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPostRequest(server string, orgId string, workforceSlug string, body SearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewSearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPostRequestWithBody(server, orgId, workforceSlug, "application/json", bodyReader)
+}
+
+// NewSearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPostRequestWithBody generates requests for SearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPost with any type of body
+func NewSearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPostRequestWithBody(server string, orgId string, workforceSlug string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "workforce_slug", runtime.ParamLocationPath, workforceSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/workforces/%s/tasks/search", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewListTaskTagsV1OrgsOrgIdWorkforcesWorkforceSlugTasksTagsGetRequest generates requests for ListTaskTagsV1OrgsOrgIdWorkforcesWorkforceSlugTasksTagsGet
+func NewListTaskTagsV1OrgsOrgIdWorkforcesWorkforceSlugTasksTagsGetRequest(server string, orgId string, workforceSlug string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "workforce_slug", runtime.ParamLocationPath, workforceSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/workforces/%s/tasks/tags", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewDeleteTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdDeleteRequest generates requests for DeleteTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdDelete
+func NewDeleteTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdDeleteRequest(server string, orgId string, workforceSlug string, taskId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "workforce_slug", runtime.ParamLocationPath, workforceSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam2 string
+
+	pathParam2, err = runtime.StyleParamWithLocation("simple", false, "task_id", runtime.ParamLocationPath, taskId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/workforces/%s/tasks/%s", pathParam0, pathParam1, pathParam2)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdGetRequest generates requests for GetTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdGet
+func NewGetTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdGetRequest(server string, orgId string, workforceSlug string, taskId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "workforce_slug", runtime.ParamLocationPath, workforceSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam2 string
+
+	pathParam2, err = runtime.StyleParamWithLocation("simple", false, "task_id", runtime.ParamLocationPath, taskId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/workforces/%s/tasks/%s", pathParam0, pathParam1, pathParam2)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatchRequest calls the generic UpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatch builder with application/json body
+func NewUpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatchRequest(server string, orgId string, workforceSlug string, taskId string, body UpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatchJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatchRequestWithBody(server, orgId, workforceSlug, taskId, "application/json", bodyReader)
+}
+
+// NewUpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatchRequestWithBody generates requests for UpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatch with any type of body
+func NewUpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatchRequestWithBody(server string, orgId string, workforceSlug string, taskId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "workforce_slug", runtime.ParamLocationPath, workforceSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam2 string
+
+	pathParam2, err = runtime.StyleParamWithLocation("simple", false, "task_id", runtime.ParamLocationPath, taskId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/workforces/%s/tasks/%s", pathParam0, pathParam1, pathParam2)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PATCH", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewCreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPostRequest calls the generic CreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPost builder with application/json body
+func NewCreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPostRequest(server string, orgId string, workforceSlug string, taskNumber int, body CreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPostRequestWithBody(server, orgId, workforceSlug, taskNumber, "application/json", bodyReader)
+}
+
+// NewCreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPostRequestWithBody generates requests for CreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPost with any type of body
+func NewCreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPostRequestWithBody(server string, orgId string, workforceSlug string, taskNumber int, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "workforce_slug", runtime.ParamLocationPath, workforceSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam2 string
+
+	pathParam2, err = runtime.StyleParamWithLocation("simple", false, "task_number", runtime.ParamLocationPath, taskNumber)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/workforces/%s/tasks/%s/links", pathParam0, pathParam1, pathParam2)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePostRequest calls the generic DeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePost builder with application/json body
+func NewDeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePostRequest(server string, orgId string, workforceSlug string, taskNumber int, body DeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewDeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePostRequestWithBody(server, orgId, workforceSlug, taskNumber, "application/json", bodyReader)
+}
+
+// NewDeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePostRequestWithBody generates requests for DeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePost with any type of body
+func NewDeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePostRequestWithBody(server string, orgId string, workforceSlug string, taskNumber int, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "workforce_slug", runtime.ParamLocationPath, workforceSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam2 string
+
+	pathParam2, err = runtime.StyleParamWithLocation("simple", false, "task_number", runtime.ParamLocationPath, taskNumber)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/workforces/%s/tasks/%s/links/delete", pathParam0, pathParam1, pathParam2)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewListWorkforceViewsV1OrgsOrgIdWorkforcesWorkforceSlugViewsGetRequest generates requests for ListWorkforceViewsV1OrgsOrgIdWorkforcesWorkforceSlugViewsGet
+func NewListWorkforceViewsV1OrgsOrgIdWorkforcesWorkforceSlugViewsGetRequest(server string, orgId string, workforceSlug string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "workforce_slug", runtime.ParamLocationPath, workforceSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/workforces/%s/views", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPostRequest calls the generic CreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPost builder with application/json body
+func NewCreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPostRequest(server string, orgId string, workforceSlug string, body CreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPostRequestWithBody(server, orgId, workforceSlug, "application/json", bodyReader)
+}
+
+// NewCreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPostRequestWithBody generates requests for CreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPost with any type of body
+func NewCreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPostRequestWithBody(server string, orgId string, workforceSlug string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "workforce_slug", runtime.ParamLocationPath, workforceSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/workforces/%s/views", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdDeleteRequest generates requests for DeleteWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdDelete
+func NewDeleteWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdDeleteRequest(server string, orgId string, workforceSlug string, viewId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "workforce_slug", runtime.ParamLocationPath, workforceSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam2 string
+
+	pathParam2, err = runtime.StyleParamWithLocation("simple", false, "view_id", runtime.ParamLocationPath, viewId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/workforces/%s/views/%s", pathParam0, pathParam1, pathParam2)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatchRequest calls the generic UpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatch builder with application/json body
+func NewUpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatchRequest(server string, orgId string, workforceSlug string, viewId string, body UpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatchJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatchRequestWithBody(server, orgId, workforceSlug, viewId, "application/json", bodyReader)
+}
+
+// NewUpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatchRequestWithBody generates requests for UpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatch with any type of body
+func NewUpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatchRequestWithBody(server string, orgId string, workforceSlug string, viewId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "workforce_slug", runtime.ParamLocationPath, workforceSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam2 string
+
+	pathParam2, err = runtime.StyleParamWithLocation("simple", false, "view_id", runtime.ParamLocationPath, viewId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/workforces/%s/views/%s", pathParam0, pathParam1, pathParam2)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PATCH", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 func (c *Client) applyEditors(ctx context.Context, req *http.Request, additionalEditors []RequestEditorFn) error {
 	for _, r := range c.RequestEditors {
 		if err := r(ctx, req); err != nil {
@@ -13280,6 +25814,11 @@ type ClientWithResponsesInterface interface {
 
 	CreateBotV1OrgsOrgIdBotsPostWithResponse(ctx context.Context, orgId string, body CreateBotV1OrgsOrgIdBotsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateBotV1OrgsOrgIdBotsPostResponse, error)
 
+	// CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostWithBodyWithResponse request with any body
+	CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostResponse, error)
+
+	CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostWithResponse(ctx context.Context, orgId string, body CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostResponse, error)
+
 	// GetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGetWithResponse request
 	GetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGetWithResponse(ctx context.Context, orgId string, reqEditors ...RequestEditorFn) (*GetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGetResponse, error)
 
@@ -13287,6 +25826,9 @@ type ClientWithResponsesInterface interface {
 	SearchBotsV1OrgsOrgIdBotsSearchPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SearchBotsV1OrgsOrgIdBotsSearchPostResponse, error)
 
 	SearchBotsV1OrgsOrgIdBotsSearchPostWithResponse(ctx context.Context, orgId string, body SearchBotsV1OrgsOrgIdBotsSearchPostJSONRequestBody, reqEditors ...RequestEditorFn) (*SearchBotsV1OrgsOrgIdBotsSearchPostResponse, error)
+
+	// ListBotWorkforcesV1OrgsOrgIdBotsBotIdWorkforcesGetWithResponse request
+	ListBotWorkforcesV1OrgsOrgIdBotsBotIdWorkforcesGetWithResponse(ctx context.Context, orgId string, botId string, reqEditors ...RequestEditorFn) (*ListBotWorkforcesV1OrgsOrgIdBotsBotIdWorkforcesGetResponse, error)
 
 	// DeleteBotV1OrgsOrgIdBotsBotSlugDeleteWithResponse request
 	DeleteBotV1OrgsOrgIdBotsBotSlugDeleteWithResponse(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*DeleteBotV1OrgsOrgIdBotsBotSlugDeleteResponse, error)
@@ -13306,11 +25848,6 @@ type ClientWithResponsesInterface interface {
 	UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchResponse, error)
 
 	UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchWithResponse(ctx context.Context, orgId string, botSlug string, body UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchResponse, error)
-
-	// ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostWithBodyWithResponse request with any body
-	ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostResponse, error)
-
-	ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostWithResponse(ctx context.Context, orgId string, botSlug string, body ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostJSONRequestBody, reqEditors ...RequestEditorFn) (*ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostResponse, error)
 
 	// CopyBotV1OrgsOrgIdBotsBotSlugCopyPostWithBodyWithResponse request with any body
 	CopyBotV1OrgsOrgIdBotsBotSlugCopyPostWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CopyBotV1OrgsOrgIdBotsBotSlugCopyPostResponse, error)
@@ -13358,8 +25895,31 @@ type ClientWithResponsesInterface interface {
 
 	DeployBotSkillsV1OrgsOrgIdBotsBotSlugSkillsDeployPostWithResponse(ctx context.Context, orgId string, botSlug string, body DeployBotSkillsV1OrgsOrgIdBotsBotSlugSkillsDeployPostJSONRequestBody, reqEditors ...RequestEditorFn) (*DeployBotSkillsV1OrgsOrgIdBotsBotSlugSkillsDeployPostResponse, error)
 
+	// SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutWithBodyWithResponse request with any body
+	SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutResponse, error)
+
+	SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutWithResponse(ctx context.Context, orgId string, botSlug string, body SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutJSONRequestBody, reqEditors ...RequestEditorFn) (*SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutResponse, error)
+
 	// UnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDeleteWithResponse request
 	UnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDeleteWithResponse(ctx context.Context, orgId string, botSlug string, skillSlug string, reqEditors ...RequestEditorFn) (*UnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDeleteResponse, error)
+
+	// GetSuggestionsV1OrgsOrgIdBotsBotSlugSuggestionsGetWithResponse request
+	GetSuggestionsV1OrgsOrgIdBotsBotSlugSuggestionsGetWithResponse(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*GetSuggestionsV1OrgsOrgIdBotsBotSlugSuggestionsGetResponse, error)
+
+	// AcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPostWithBodyWithResponse request with any body
+	AcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPostWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPostResponse, error)
+
+	AcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPostWithResponse(ctx context.Context, orgId string, botSlug string, body AcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPostJSONRequestBody, reqEditors ...RequestEditorFn) (*AcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPostResponse, error)
+
+	// DismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPostWithBodyWithResponse request with any body
+	DismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPostWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*DismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPostResponse, error)
+
+	DismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPostWithResponse(ctx context.Context, orgId string, botSlug string, body DismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPostJSONRequestBody, reqEditors ...RequestEditorFn) (*DismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPostResponse, error)
+
+	// SetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPutWithBodyWithResponse request with any body
+	SetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPutWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPutResponse, error)
+
+	SetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPutWithResponse(ctx context.Context, orgId string, botSlug string, body SetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPutJSONRequestBody, reqEditors ...RequestEditorFn) (*SetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPutResponse, error)
 
 	// SuspendBotV1OrgsOrgIdBotsBotSlugSuspendPostWithResponse request
 	SuspendBotV1OrgsOrgIdBotsBotSlugSuspendPostWithResponse(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*SuspendBotV1OrgsOrgIdBotsBotSlugSuspendPostResponse, error)
@@ -13410,9 +25970,9 @@ type ClientWithResponsesInterface interface {
 	ListMcpServersV1OrgsOrgIdMcpServersGetWithResponse(ctx context.Context, orgId string, params *ListMcpServersV1OrgsOrgIdMcpServersGetParams, reqEditors ...RequestEditorFn) (*ListMcpServersV1OrgsOrgIdMcpServersGetResponse, error)
 
 	// CreateMcpServerV1OrgsOrgIdMcpServersPostWithBodyWithResponse request with any body
-	CreateMcpServerV1OrgsOrgIdMcpServersPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateMcpServerV1OrgsOrgIdMcpServersPostResponse, error)
+	CreateMcpServerV1OrgsOrgIdMcpServersPostWithBodyWithResponse(ctx context.Context, orgId string, params *CreateMcpServerV1OrgsOrgIdMcpServersPostParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateMcpServerV1OrgsOrgIdMcpServersPostResponse, error)
 
-	CreateMcpServerV1OrgsOrgIdMcpServersPostWithResponse(ctx context.Context, orgId string, body CreateMcpServerV1OrgsOrgIdMcpServersPostJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateMcpServerV1OrgsOrgIdMcpServersPostResponse, error)
+	CreateMcpServerV1OrgsOrgIdMcpServersPostWithResponse(ctx context.Context, orgId string, params *CreateMcpServerV1OrgsOrgIdMcpServersPostParams, body CreateMcpServerV1OrgsOrgIdMcpServersPostJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateMcpServerV1OrgsOrgIdMcpServersPostResponse, error)
 
 	// SearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostWithBodyWithResponse request with any body
 	SearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostResponse, error)
@@ -13443,6 +26003,9 @@ type ClientWithResponsesInterface interface {
 
 	// GetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdGetWithResponse request
 	GetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdGetWithResponse(ctx context.Context, orgId string, composioConnectionId string, reqEditors ...RequestEditorFn) (*GetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdGetResponse, error)
+
+	// ReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPostWithResponse request
+	ReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPostWithResponse(ctx context.Context, orgId string, composioConnectionId string, reqEditors ...RequestEditorFn) (*ReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPostResponse, error)
 
 	// DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteWithResponse request
 	DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteWithResponse(ctx context.Context, orgId string, mcpServerId string, reqEditors ...RequestEditorFn) (*DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteResponse, error)
@@ -13487,6 +26050,58 @@ type ClientWithResponsesInterface interface {
 
 	// RestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPostWithResponse request
 	RestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPostWithResponse(ctx context.Context, orgId string, mcpServerId string, reqEditors ...RequestEditorFn) (*RestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPostResponse, error)
+
+	// ListPacksV1OrgsOrgIdPacksGetWithResponse request
+	ListPacksV1OrgsOrgIdPacksGetWithResponse(ctx context.Context, orgId string, params *ListPacksV1OrgsOrgIdPacksGetParams, reqEditors ...RequestEditorFn) (*ListPacksV1OrgsOrgIdPacksGetResponse, error)
+
+	// PreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPostWithBodyWithResponse request with any body
+	PreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPostResponse, error)
+
+	PreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPostWithResponse(ctx context.Context, orgId string, body PreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPostJSONRequestBody, reqEditors ...RequestEditorFn) (*PreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPostResponse, error)
+
+	// UninstallPacksV1OrgsOrgIdPacksInstallsDeleteWithResponse request
+	UninstallPacksV1OrgsOrgIdPacksInstallsDeleteWithResponse(ctx context.Context, orgId string, params *UninstallPacksV1OrgsOrgIdPacksInstallsDeleteParams, reqEditors ...RequestEditorFn) (*UninstallPacksV1OrgsOrgIdPacksInstallsDeleteResponse, error)
+
+	// ListBotPackInstallsV1OrgsOrgIdPacksInstallsGetWithResponse request
+	ListBotPackInstallsV1OrgsOrgIdPacksInstallsGetWithResponse(ctx context.Context, orgId string, params *ListBotPackInstallsV1OrgsOrgIdPacksInstallsGetParams, reqEditors ...RequestEditorFn) (*ListBotPackInstallsV1OrgsOrgIdPacksInstallsGetResponse, error)
+
+	// InstallPacksV1OrgsOrgIdPacksInstallsPostWithBodyWithResponse request with any body
+	InstallPacksV1OrgsOrgIdPacksInstallsPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*InstallPacksV1OrgsOrgIdPacksInstallsPostResponse, error)
+
+	InstallPacksV1OrgsOrgIdPacksInstallsPostWithResponse(ctx context.Context, orgId string, body InstallPacksV1OrgsOrgIdPacksInstallsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*InstallPacksV1OrgsOrgIdPacksInstallsPostResponse, error)
+
+	// BindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPostWithBodyWithResponse request with any body
+	BindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*BindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPostResponse, error)
+
+	BindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPostWithResponse(ctx context.Context, orgId string, body BindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*BindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPostResponse, error)
+
+	// PreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPostWithBodyWithResponse request with any body
+	PreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPostResponse, error)
+
+	PreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPostWithResponse(ctx context.Context, orgId string, body PreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPostJSONRequestBody, reqEditors ...RequestEditorFn) (*PreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPostResponse, error)
+
+	// CompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePostWithBodyWithResponse request with any body
+	CompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePostResponse, error)
+
+	CompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePostWithResponse(ctx context.Context, orgId string, body CompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePostJSONRequestBody, reqEditors ...RequestEditorFn) (*CompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePostResponse, error)
+
+	// ResumePackSetupsV1OrgsOrgIdPacksSetupsResumePostWithBodyWithResponse request with any body
+	ResumePackSetupsV1OrgsOrgIdPacksSetupsResumePostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ResumePackSetupsV1OrgsOrgIdPacksSetupsResumePostResponse, error)
+
+	ResumePackSetupsV1OrgsOrgIdPacksSetupsResumePostWithResponse(ctx context.Context, orgId string, body ResumePackSetupsV1OrgsOrgIdPacksSetupsResumePostJSONRequestBody, reqEditors ...RequestEditorFn) (*ResumePackSetupsV1OrgsOrgIdPacksSetupsResumePostResponse, error)
+
+	// RunPackSetupsV1OrgsOrgIdPacksSetupsRunPostWithBodyWithResponse request with any body
+	RunPackSetupsV1OrgsOrgIdPacksSetupsRunPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RunPackSetupsV1OrgsOrgIdPacksSetupsRunPostResponse, error)
+
+	RunPackSetupsV1OrgsOrgIdPacksSetupsRunPostWithResponse(ctx context.Context, orgId string, body RunPackSetupsV1OrgsOrgIdPacksSetupsRunPostJSONRequestBody, reqEditors ...RequestEditorFn) (*RunPackSetupsV1OrgsOrgIdPacksSetupsRunPostResponse, error)
+
+	// PreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPostWithBodyWithResponse request with any body
+	PreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPostResponse, error)
+
+	PreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPostWithResponse(ctx context.Context, orgId string, body PreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPostJSONRequestBody, reqEditors ...RequestEditorFn) (*PreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPostResponse, error)
+
+	// GetPackVersionsV1OrgsOrgIdPacksVersionsGetWithResponse request
+	GetPackVersionsV1OrgsOrgIdPacksVersionsGetWithResponse(ctx context.Context, orgId string, params *GetPackVersionsV1OrgsOrgIdPacksVersionsGetParams, reqEditors ...RequestEditorFn) (*GetPackVersionsV1OrgsOrgIdPacksVersionsGetResponse, error)
 
 	// ListSecretPoliciesV1OrgsOrgIdSecretPoliciesGetWithResponse request
 	ListSecretPoliciesV1OrgsOrgIdSecretPoliciesGetWithResponse(ctx context.Context, orgId string, reqEditors ...RequestEditorFn) (*ListSecretPoliciesV1OrgsOrgIdSecretPoliciesGetResponse, error)
@@ -13533,8 +26148,18 @@ type ClientWithResponsesInterface interface {
 
 	PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostWithResponse(ctx context.Context, orgId string, body PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostJSONRequestBody, reqEditors ...RequestEditorFn) (*PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostResponse, error)
 
+	// CountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPostWithBodyWithResponse request with any body
+	CountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPostResponse, error)
+
+	CountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPostWithResponse(ctx context.Context, orgId string, body CountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*CountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPostResponse, error)
+
+	// SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostWithBodyWithResponse request with any body
+	SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostResponse, error)
+
+	SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostWithResponse(ctx context.Context, orgId string, body SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostJSONRequestBody, reqEditors ...RequestEditorFn) (*SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostResponse, error)
+
 	// DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteWithResponse request
-	DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteWithResponse(ctx context.Context, orgId string, skillSlug string, reqEditors ...RequestEditorFn) (*DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteResponse, error)
+	DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteWithResponse(ctx context.Context, orgId string, skillSlug string, params *DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteParams, reqEditors ...RequestEditorFn) (*DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteResponse, error)
 
 	// GetSkillV1OrgsOrgIdSkillsSkillSlugGetWithResponse request
 	GetSkillV1OrgsOrgIdSkillsSkillSlugGetWithResponse(ctx context.Context, orgId string, skillSlug string, reqEditors ...RequestEditorFn) (*GetSkillV1OrgsOrgIdSkillsSkillSlugGetResponse, error)
@@ -13557,6 +26182,98 @@ type ClientWithResponsesInterface interface {
 
 	// GetToolV1OrgsOrgIdToolsToolIdGetWithResponse request
 	GetToolV1OrgsOrgIdToolsToolIdGetWithResponse(ctx context.Context, orgId string, toolId string, reqEditors ...RequestEditorFn) (*GetToolV1OrgsOrgIdToolsToolIdGetResponse, error)
+
+	// ListWorkforcesV1OrgsOrgIdWorkforcesGetWithResponse request
+	ListWorkforcesV1OrgsOrgIdWorkforcesGetWithResponse(ctx context.Context, orgId string, reqEditors ...RequestEditorFn) (*ListWorkforcesV1OrgsOrgIdWorkforcesGetResponse, error)
+
+	// CreateWorkforceV1OrgsOrgIdWorkforcesPostWithBodyWithResponse request with any body
+	CreateWorkforceV1OrgsOrgIdWorkforcesPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateWorkforceV1OrgsOrgIdWorkforcesPostResponse, error)
+
+	CreateWorkforceV1OrgsOrgIdWorkforcesPostWithResponse(ctx context.Context, orgId string, body CreateWorkforceV1OrgsOrgIdWorkforcesPostJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateWorkforceV1OrgsOrgIdWorkforcesPostResponse, error)
+
+	// GetWorkforceTaskCountsV1OrgsOrgIdWorkforcesTaskCountsGetWithResponse request
+	GetWorkforceTaskCountsV1OrgsOrgIdWorkforcesTaskCountsGetWithResponse(ctx context.Context, orgId string, reqEditors ...RequestEditorFn) (*GetWorkforceTaskCountsV1OrgsOrgIdWorkforcesTaskCountsGetResponse, error)
+
+	// DeleteWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugDeleteWithResponse request
+	DeleteWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugDeleteWithResponse(ctx context.Context, orgId string, workforceSlug string, reqEditors ...RequestEditorFn) (*DeleteWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugDeleteResponse, error)
+
+	// GetWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugGetWithResponse request
+	GetWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugGetWithResponse(ctx context.Context, orgId string, workforceSlug string, reqEditors ...RequestEditorFn) (*GetWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugGetResponse, error)
+
+	// UpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatchWithBodyWithResponse request with any body
+	UpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatchWithBodyWithResponse(ctx context.Context, orgId string, workforceSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatchResponse, error)
+
+	UpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatchWithResponse(ctx context.Context, orgId string, workforceSlug string, body UpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatchResponse, error)
+
+	// ListWorkforceBotsV1OrgsOrgIdWorkforcesWorkforceSlugBotsGetWithResponse request
+	ListWorkforceBotsV1OrgsOrgIdWorkforcesWorkforceSlugBotsGetWithResponse(ctx context.Context, orgId string, workforceSlug string, reqEditors ...RequestEditorFn) (*ListWorkforceBotsV1OrgsOrgIdWorkforcesWorkforceSlugBotsGetResponse, error)
+
+	// RemoveBotFromWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdDeleteWithResponse request
+	RemoveBotFromWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdDeleteWithResponse(ctx context.Context, orgId string, workforceSlug string, botId string, reqEditors ...RequestEditorFn) (*RemoveBotFromWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdDeleteResponse, error)
+
+	// AddBotToWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdPostWithResponse request
+	AddBotToWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdPostWithResponse(ctx context.Context, orgId string, workforceSlug string, botId string, reqEditors ...RequestEditorFn) (*AddBotToWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdPostResponse, error)
+
+	// ReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPostWithBodyWithResponse request with any body
+	ReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPostWithBodyWithResponse(ctx context.Context, orgId string, workforceSlug string, columnId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPostResponse, error)
+
+	ReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPostWithResponse(ctx context.Context, orgId string, workforceSlug string, columnId string, body ReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPostJSONRequestBody, reqEditors ...RequestEditorFn) (*ReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPostResponse, error)
+
+	// ListTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksGetWithResponse request
+	ListTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksGetWithResponse(ctx context.Context, orgId string, workforceSlug string, params *ListTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksGetParams, reqEditors ...RequestEditorFn) (*ListTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksGetResponse, error)
+
+	// CreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPostWithBodyWithResponse request with any body
+	CreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPostWithBodyWithResponse(ctx context.Context, orgId string, workforceSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPostResponse, error)
+
+	CreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPostWithResponse(ctx context.Context, orgId string, workforceSlug string, body CreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPostJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPostResponse, error)
+
+	// GetTaskByNumberV1OrgsOrgIdWorkforcesWorkforceSlugTasksByNumberTaskNumberGetWithResponse request
+	GetTaskByNumberV1OrgsOrgIdWorkforcesWorkforceSlugTasksByNumberTaskNumberGetWithResponse(ctx context.Context, orgId string, workforceSlug string, taskNumber int, reqEditors ...RequestEditorFn) (*GetTaskByNumberV1OrgsOrgIdWorkforcesWorkforceSlugTasksByNumberTaskNumberGetResponse, error)
+
+	// SearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPostWithBodyWithResponse request with any body
+	SearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPostWithBodyWithResponse(ctx context.Context, orgId string, workforceSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPostResponse, error)
+
+	SearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPostWithResponse(ctx context.Context, orgId string, workforceSlug string, body SearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPostJSONRequestBody, reqEditors ...RequestEditorFn) (*SearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPostResponse, error)
+
+	// ListTaskTagsV1OrgsOrgIdWorkforcesWorkforceSlugTasksTagsGetWithResponse request
+	ListTaskTagsV1OrgsOrgIdWorkforcesWorkforceSlugTasksTagsGetWithResponse(ctx context.Context, orgId string, workforceSlug string, reqEditors ...RequestEditorFn) (*ListTaskTagsV1OrgsOrgIdWorkforcesWorkforceSlugTasksTagsGetResponse, error)
+
+	// DeleteTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdDeleteWithResponse request
+	DeleteTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdDeleteWithResponse(ctx context.Context, orgId string, workforceSlug string, taskId string, reqEditors ...RequestEditorFn) (*DeleteTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdDeleteResponse, error)
+
+	// GetTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdGetWithResponse request
+	GetTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdGetWithResponse(ctx context.Context, orgId string, workforceSlug string, taskId string, reqEditors ...RequestEditorFn) (*GetTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdGetResponse, error)
+
+	// UpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatchWithBodyWithResponse request with any body
+	UpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatchWithBodyWithResponse(ctx context.Context, orgId string, workforceSlug string, taskId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatchResponse, error)
+
+	UpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatchWithResponse(ctx context.Context, orgId string, workforceSlug string, taskId string, body UpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatchResponse, error)
+
+	// CreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPostWithBodyWithResponse request with any body
+	CreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPostWithBodyWithResponse(ctx context.Context, orgId string, workforceSlug string, taskNumber int, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPostResponse, error)
+
+	CreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPostWithResponse(ctx context.Context, orgId string, workforceSlug string, taskNumber int, body CreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPostJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPostResponse, error)
+
+	// DeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePostWithBodyWithResponse request with any body
+	DeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePostWithBodyWithResponse(ctx context.Context, orgId string, workforceSlug string, taskNumber int, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*DeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePostResponse, error)
+
+	DeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePostWithResponse(ctx context.Context, orgId string, workforceSlug string, taskNumber int, body DeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePostJSONRequestBody, reqEditors ...RequestEditorFn) (*DeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePostResponse, error)
+
+	// ListWorkforceViewsV1OrgsOrgIdWorkforcesWorkforceSlugViewsGetWithResponse request
+	ListWorkforceViewsV1OrgsOrgIdWorkforcesWorkforceSlugViewsGetWithResponse(ctx context.Context, orgId string, workforceSlug string, reqEditors ...RequestEditorFn) (*ListWorkforceViewsV1OrgsOrgIdWorkforcesWorkforceSlugViewsGetResponse, error)
+
+	// CreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPostWithBodyWithResponse request with any body
+	CreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPostWithBodyWithResponse(ctx context.Context, orgId string, workforceSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPostResponse, error)
+
+	CreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPostWithResponse(ctx context.Context, orgId string, workforceSlug string, body CreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPostResponse, error)
+
+	// DeleteWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdDeleteWithResponse request
+	DeleteWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdDeleteWithResponse(ctx context.Context, orgId string, workforceSlug string, viewId string, reqEditors ...RequestEditorFn) (*DeleteWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdDeleteResponse, error)
+
+	// UpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatchWithBodyWithResponse request with any body
+	UpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatchWithBodyWithResponse(ctx context.Context, orgId string, workforceSlug string, viewId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatchResponse, error)
+
+	UpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatchWithResponse(ctx context.Context, orgId string, workforceSlug string, viewId string, body UpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatchResponse, error)
 }
 
 type ListBotTemplatesV1OrgsOrgIdBotTemplatesGetResponse struct {
@@ -13606,9 +26323,13 @@ func (r ListBotsV1OrgsOrgIdBotsGetResponse) StatusCode() int {
 }
 
 type CreateBotV1OrgsOrgIdBotsPostResponse struct {
-	Body                          []byte
-	HTTPResponse                  *http.Response
-	JSON201                       *BotResponse
+	Body                      []byte
+	HTTPResponse              *http.Response
+	JSON201                   *BotResponse
+	JSON422                   *NativeLaneRefusedProblem
+	ApplicationproblemJSON422 *struct {
+		union json.RawMessage
+	}
 	ApplicationproblemJSONDefault *ProblemDetails
 }
 
@@ -13622,6 +26343,29 @@ func (r CreateBotV1OrgsOrgIdBotsPostResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r CreateBotV1OrgsOrgIdBotsPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON201                       *BotsFromPacks
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -13668,6 +26412,29 @@ func (r SearchBotsV1OrgsOrgIdBotsSearchPostResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r SearchBotsV1OrgsOrgIdBotsSearchPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListBotWorkforcesV1OrgsOrgIdBotsBotIdWorkforcesGetResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *[]WorkforceListItem
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r ListBotWorkforcesV1OrgsOrgIdBotsBotIdWorkforcesGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListBotWorkforcesV1OrgsOrgIdBotsBotIdWorkforcesGetResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -13789,33 +26556,14 @@ func (r UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchResponse) StatusCode() i
 	return 0
 }
 
-type ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostResponse struct {
-	Body                          []byte
-	HTTPResponse                  *http.Response
-	JSON200                       *BotResponse
-	ApplicationproblemJSONDefault *ProblemDetails
-}
-
-// Status returns HTTPResponse.Status
-func (r ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
 type CopyBotV1OrgsOrgIdBotsBotSlugCopyPostResponse struct {
-	Body                          []byte
-	HTTPResponse                  *http.Response
-	JSON201                       *BotCopyResponse
+	Body                      []byte
+	HTTPResponse              *http.Response
+	JSON201                   *BotCopyResponse
+	JSON422                   *NativeLaneRefusedProblem
+	ApplicationproblemJSON422 *struct {
+		union json.RawMessage
+	}
 	ApplicationproblemJSONDefault *ProblemDetails
 }
 
@@ -13859,9 +26607,13 @@ func (r ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetResponse) StatusCo
 }
 
 type AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutResponse struct {
-	Body                          []byte
-	HTTPResponse                  *http.Response
-	JSON201                       *[]BotCredentialAssignmentResponse
+	Body                      []byte
+	HTTPResponse              *http.Response
+	JSON201                   *[]BotCredentialAssignmentResponse
+	JSON422                   *NativeLaneRefusedProblem
+	ApplicationproblemJSON422 *struct {
+		union json.RawMessage
+	}
 	ApplicationproblemJSONDefault *ProblemDetails
 }
 
@@ -13882,8 +26634,12 @@ func (r AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutResponse) StatusCod
 }
 
 type UnassignCredentialV1OrgsOrgIdBotsBotSlugCredentialsCredentialIdDeleteResponse struct {
-	Body                          []byte
-	HTTPResponse                  *http.Response
+	Body                      []byte
+	HTTPResponse              *http.Response
+	JSON422                   *NativeLaneRefusedProblem
+	ApplicationproblemJSON422 *struct {
+		union json.RawMessage
+	}
 	ApplicationproblemJSONDefault *ProblemDetails
 }
 
@@ -13929,7 +26685,7 @@ func (r FinishBotOnboardingRouteV1OrgsOrgIdBotsBotSlugFinishOnboardingPostRespon
 type GetBotResourcesV1OrgsOrgIdBotsBotSlugResourcesGetResponse struct {
 	Body                          []byte
 	HTTPResponse                  *http.Response
-	JSON200                       *ResourceMetricsResponse
+	JSON200                       *ResourceReport
 	ApplicationproblemJSONDefault *ProblemDetails
 }
 
@@ -14086,6 +26842,29 @@ func (r DeployBotSkillsV1OrgsOrgIdBotsBotSlugSkillsDeployPostResponse) StatusCod
 	return 0
 }
 
+type SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *[]BotSkillAssignmentResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type UnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDeleteResponse struct {
 	Body                          []byte
 	HTTPResponse                  *http.Response
@@ -14102,6 +26881,97 @@ func (r UnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDeleteResponse) Status
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r UnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDeleteResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetSuggestionsV1OrgsOrgIdBotsBotSlugSuggestionsGetResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *SuggestionsResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r GetSuggestionsV1OrgsOrgIdBotsBotSlugSuggestionsGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetSuggestionsV1OrgsOrgIdBotsBotSlugSuggestionsGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type AcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPostResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON201                       *AcceptSuggestionsResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r AcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r AcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPostResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r DismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type SetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPutResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *SuggestionsResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r SetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPutResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r SetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPutResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -14435,9 +27305,11 @@ func (r SearchMcpCatalogV1OrgsOrgIdMcpServersCatalogSearchPostResponse) StatusCo
 }
 
 type GetMcpCatalogEntryV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdGetResponse struct {
-	Body                          []byte
-	HTTPResponse                  *http.Response
-	JSON200                       *McpCatalogEntryDetail
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		union json.RawMessage
+	}
 	ApplicationproblemJSONDefault *ProblemDetails
 }
 
@@ -14589,6 +27461,29 @@ func (r GetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionI
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r GetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPostResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON201                       *ComposioConnectionStart
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r ReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPostResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -14879,6 +27774,282 @@ func (r RestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPostResponse) Sta
 	return 0
 }
 
+type ListPacksV1OrgsOrgIdPacksGetResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *PackCataloguePage
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r ListPacksV1OrgsOrgIdPacksGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListPacksV1OrgsOrgIdPacksGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPostResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *PackConnectionPreviews
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r PreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UninstallPacksV1OrgsOrgIdPacksInstallsDeleteResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *PackUninstalls
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r UninstallPacksV1OrgsOrgIdPacksInstallsDeleteResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UninstallPacksV1OrgsOrgIdPacksInstallsDeleteResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListBotPackInstallsV1OrgsOrgIdPacksInstallsGetResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *OrgBotPackInstalls
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r ListBotPackInstallsV1OrgsOrgIdPacksInstallsGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListBotPackInstallsV1OrgsOrgIdPacksInstallsGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type InstallPacksV1OrgsOrgIdPacksInstallsPostResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON201                       *PackInstalls
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r InstallPacksV1OrgsOrgIdPacksInstallsPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r InstallPacksV1OrgsOrgIdPacksInstallsPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type BindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPostResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *PackBindings
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r BindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r BindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPostResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *PackInstallPreview
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r PreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePostResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *PackSetups
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r CompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ResumePackSetupsV1OrgsOrgIdPacksSetupsResumePostResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *PackSetups
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r ResumePackSetupsV1OrgsOrgIdPacksSetupsResumePostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ResumePackSetupsV1OrgsOrgIdPacksSetupsResumePostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type RunPackSetupsV1OrgsOrgIdPacksSetupsRunPostResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *PackSetups
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r RunPackSetupsV1OrgsOrgIdPacksSetupsRunPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r RunPackSetupsV1OrgsOrgIdPacksSetupsRunPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPostResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *PackUninstalls
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r PreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetPackVersionsV1OrgsOrgIdPacksVersionsGetResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *OrgPackVersions
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r GetPackVersionsV1OrgsOrgIdPacksVersionsGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetPackVersionsV1OrgsOrgIdPacksVersionsGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type ListSecretPoliciesV1OrgsOrgIdSecretPoliciesGetResponse struct {
 	Body                          []byte
 	HTTPResponse                  *http.Response
@@ -15131,6 +28302,52 @@ func (r PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostResponse) StatusCode
 	return 0
 }
 
+type CountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPostResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *SkillProviderCountsResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r CountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *SkillVersionSearchResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteResponse struct {
 	Body                          []byte
 	HTTPResponse                  *http.Response
@@ -15291,6 +28508,554 @@ func (r GetToolV1OrgsOrgIdToolsToolIdGetResponse) StatusCode() int {
 	return 0
 }
 
+type ListWorkforcesV1OrgsOrgIdWorkforcesGetResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *[]WorkforceListItem
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r ListWorkforcesV1OrgsOrgIdWorkforcesGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListWorkforcesV1OrgsOrgIdWorkforcesGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateWorkforceV1OrgsOrgIdWorkforcesPostResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON201                       *WorkforceResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateWorkforceV1OrgsOrgIdWorkforcesPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateWorkforceV1OrgsOrgIdWorkforcesPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetWorkforceTaskCountsV1OrgsOrgIdWorkforcesTaskCountsGetResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *WorkforceTaskCountsResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r GetWorkforceTaskCountsV1OrgsOrgIdWorkforcesTaskCountsGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetWorkforceTaskCountsV1OrgsOrgIdWorkforcesTaskCountsGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugDeleteResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugDeleteResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugDeleteResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugGetResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *WorkforceResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r GetWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatchResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *WorkforceResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatchResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatchResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListWorkforceBotsV1OrgsOrgIdWorkforcesWorkforceSlugBotsGetResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *[]WorkforceBotMemberResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r ListWorkforceBotsV1OrgsOrgIdWorkforcesWorkforceSlugBotsGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListWorkforceBotsV1OrgsOrgIdWorkforcesWorkforceSlugBotsGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type RemoveBotFromWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdDeleteResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r RemoveBotFromWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdDeleteResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r RemoveBotFromWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdDeleteResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type AddBotToWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdPostResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON201                       *interface{}
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r AddBotToWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r AddBotToWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPostResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *ReassignColumnTasksResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r ReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksGetResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *PaginatedResponseTaskResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r ListTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPostResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON201                       *TaskResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetTaskByNumberV1OrgsOrgIdWorkforcesWorkforceSlugTasksByNumberTaskNumberGetResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *TaskResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r GetTaskByNumberV1OrgsOrgIdWorkforcesWorkforceSlugTasksByNumberTaskNumberGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetTaskByNumberV1OrgsOrgIdWorkforcesWorkforceSlugTasksByNumberTaskNumberGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type SearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPostResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *PaginatedResponseTaskResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r SearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r SearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListTaskTagsV1OrgsOrgIdWorkforcesWorkforceSlugTasksTagsGetResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *[]string
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r ListTaskTagsV1OrgsOrgIdWorkforcesWorkforceSlugTasksTagsGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListTaskTagsV1OrgsOrgIdWorkforcesWorkforceSlugTasksTagsGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdDeleteResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdDeleteResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdDeleteResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdGetResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *TaskResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r GetTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatchResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *TaskResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatchResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatchResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPostResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON201                       *TaskResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePostResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *TaskResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListWorkforceViewsV1OrgsOrgIdWorkforcesWorkforceSlugViewsGetResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *[]WorkforceViewResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r ListWorkforceViewsV1OrgsOrgIdWorkforcesWorkforceSlugViewsGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListWorkforceViewsV1OrgsOrgIdWorkforcesWorkforceSlugViewsGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPostResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON201                       *WorkforceViewResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdDeleteResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdDeleteResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdDeleteResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatchResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *WorkforceViewResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatchResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatchResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 // ListBotTemplatesV1OrgsOrgIdBotTemplatesGetWithResponse request returning *ListBotTemplatesV1OrgsOrgIdBotTemplatesGetResponse
 func (c *ClientWithResponses) ListBotTemplatesV1OrgsOrgIdBotTemplatesGetWithResponse(ctx context.Context, orgId string, reqEditors ...RequestEditorFn) (*ListBotTemplatesV1OrgsOrgIdBotTemplatesGetResponse, error) {
 	rsp, err := c.ListBotTemplatesV1OrgsOrgIdBotTemplatesGet(ctx, orgId, reqEditors...)
@@ -15326,6 +29091,23 @@ func (c *ClientWithResponses) CreateBotV1OrgsOrgIdBotsPostWithResponse(ctx conte
 	return ParseCreateBotV1OrgsOrgIdBotsPostResponse(rsp)
 }
 
+// CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostWithBodyWithResponse request with arbitrary body returning *CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostResponse
+func (c *ClientWithResponses) CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostResponse, error) {
+	rsp, err := c.CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostWithBody(ctx, orgId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostWithResponse(ctx context.Context, orgId string, body CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostResponse, error) {
+	rsp, err := c.CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPost(ctx, orgId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostResponse(rsp)
+}
+
 // GetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGetWithResponse request returning *GetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGetResponse
 func (c *ClientWithResponses) GetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGetWithResponse(ctx context.Context, orgId string, reqEditors ...RequestEditorFn) (*GetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGetResponse, error) {
 	rsp, err := c.GetBotHostingOptionsV1OrgsOrgIdBotsHostingOptionsGet(ctx, orgId, reqEditors...)
@@ -15350,6 +29132,15 @@ func (c *ClientWithResponses) SearchBotsV1OrgsOrgIdBotsSearchPostWithResponse(ct
 		return nil, err
 	}
 	return ParseSearchBotsV1OrgsOrgIdBotsSearchPostResponse(rsp)
+}
+
+// ListBotWorkforcesV1OrgsOrgIdBotsBotIdWorkforcesGetWithResponse request returning *ListBotWorkforcesV1OrgsOrgIdBotsBotIdWorkforcesGetResponse
+func (c *ClientWithResponses) ListBotWorkforcesV1OrgsOrgIdBotsBotIdWorkforcesGetWithResponse(ctx context.Context, orgId string, botId string, reqEditors ...RequestEditorFn) (*ListBotWorkforcesV1OrgsOrgIdBotsBotIdWorkforcesGetResponse, error) {
+	rsp, err := c.ListBotWorkforcesV1OrgsOrgIdBotsBotIdWorkforcesGet(ctx, orgId, botId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListBotWorkforcesV1OrgsOrgIdBotsBotIdWorkforcesGetResponse(rsp)
 }
 
 // DeleteBotV1OrgsOrgIdBotsBotSlugDeleteWithResponse request returning *DeleteBotV1OrgsOrgIdBotsBotSlugDeleteResponse
@@ -15411,23 +29202,6 @@ func (c *ClientWithResponses) UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchWi
 		return nil, err
 	}
 	return ParseUpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchResponse(rsp)
-}
-
-// ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostWithBodyWithResponse request with arbitrary body returning *ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostResponse
-func (c *ClientWithResponses) ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostResponse, error) {
-	rsp, err := c.ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostWithBody(ctx, orgId, botSlug, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostResponse(rsp)
-}
-
-func (c *ClientWithResponses) ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostWithResponse(ctx context.Context, orgId string, botSlug string, body ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostJSONRequestBody, reqEditors ...RequestEditorFn) (*ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostResponse, error) {
-	rsp, err := c.ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePost(ctx, orgId, botSlug, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostResponse(rsp)
 }
 
 // CopyBotV1OrgsOrgIdBotsBotSlugCopyPostWithBodyWithResponse request with arbitrary body returning *CopyBotV1OrgsOrgIdBotsBotSlugCopyPostResponse
@@ -15578,6 +29352,23 @@ func (c *ClientWithResponses) DeployBotSkillsV1OrgsOrgIdBotsBotSlugSkillsDeployP
 	return ParseDeployBotSkillsV1OrgsOrgIdBotsBotSlugSkillsDeployPostResponse(rsp)
 }
 
+// SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutWithBodyWithResponse request with arbitrary body returning *SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutResponse
+func (c *ClientWithResponses) SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutResponse, error) {
+	rsp, err := c.SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutWithBody(ctx, orgId, botSlug, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutResponse(rsp)
+}
+
+func (c *ClientWithResponses) SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutWithResponse(ctx context.Context, orgId string, botSlug string, body SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutJSONRequestBody, reqEditors ...RequestEditorFn) (*SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutResponse, error) {
+	rsp, err := c.SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPut(ctx, orgId, botSlug, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutResponse(rsp)
+}
+
 // UnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDeleteWithResponse request returning *UnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDeleteResponse
 func (c *ClientWithResponses) UnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDeleteWithResponse(ctx context.Context, orgId string, botSlug string, skillSlug string, reqEditors ...RequestEditorFn) (*UnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDeleteResponse, error) {
 	rsp, err := c.UnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDelete(ctx, orgId, botSlug, skillSlug, reqEditors...)
@@ -15585,6 +29376,66 @@ func (c *ClientWithResponses) UnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlug
 		return nil, err
 	}
 	return ParseUnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDeleteResponse(rsp)
+}
+
+// GetSuggestionsV1OrgsOrgIdBotsBotSlugSuggestionsGetWithResponse request returning *GetSuggestionsV1OrgsOrgIdBotsBotSlugSuggestionsGetResponse
+func (c *ClientWithResponses) GetSuggestionsV1OrgsOrgIdBotsBotSlugSuggestionsGetWithResponse(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*GetSuggestionsV1OrgsOrgIdBotsBotSlugSuggestionsGetResponse, error) {
+	rsp, err := c.GetSuggestionsV1OrgsOrgIdBotsBotSlugSuggestionsGet(ctx, orgId, botSlug, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetSuggestionsV1OrgsOrgIdBotsBotSlugSuggestionsGetResponse(rsp)
+}
+
+// AcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPostWithBodyWithResponse request with arbitrary body returning *AcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPostResponse
+func (c *ClientWithResponses) AcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPostWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPostResponse, error) {
+	rsp, err := c.AcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPostWithBody(ctx, orgId, botSlug, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPostResponse(rsp)
+}
+
+func (c *ClientWithResponses) AcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPostWithResponse(ctx context.Context, orgId string, botSlug string, body AcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPostJSONRequestBody, reqEditors ...RequestEditorFn) (*AcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPostResponse, error) {
+	rsp, err := c.AcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPost(ctx, orgId, botSlug, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPostResponse(rsp)
+}
+
+// DismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPostWithBodyWithResponse request with arbitrary body returning *DismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPostResponse
+func (c *ClientWithResponses) DismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPostWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*DismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPostResponse, error) {
+	rsp, err := c.DismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPostWithBody(ctx, orgId, botSlug, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPostResponse(rsp)
+}
+
+func (c *ClientWithResponses) DismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPostWithResponse(ctx context.Context, orgId string, botSlug string, body DismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPostJSONRequestBody, reqEditors ...RequestEditorFn) (*DismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPostResponse, error) {
+	rsp, err := c.DismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPost(ctx, orgId, botSlug, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPostResponse(rsp)
+}
+
+// SetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPutWithBodyWithResponse request with arbitrary body returning *SetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPutResponse
+func (c *ClientWithResponses) SetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPutWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPutResponse, error) {
+	rsp, err := c.SetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPutWithBody(ctx, orgId, botSlug, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPutResponse(rsp)
+}
+
+func (c *ClientWithResponses) SetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPutWithResponse(ctx context.Context, orgId string, botSlug string, body SetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPutJSONRequestBody, reqEditors ...RequestEditorFn) (*SetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPutResponse, error) {
+	rsp, err := c.SetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPut(ctx, orgId, botSlug, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPutResponse(rsp)
 }
 
 // SuspendBotV1OrgsOrgIdBotsBotSlugSuspendPostWithResponse request returning *SuspendBotV1OrgsOrgIdBotsBotSlugSuspendPostResponse
@@ -15744,16 +29595,16 @@ func (c *ClientWithResponses) ListMcpServersV1OrgsOrgIdMcpServersGetWithResponse
 }
 
 // CreateMcpServerV1OrgsOrgIdMcpServersPostWithBodyWithResponse request with arbitrary body returning *CreateMcpServerV1OrgsOrgIdMcpServersPostResponse
-func (c *ClientWithResponses) CreateMcpServerV1OrgsOrgIdMcpServersPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateMcpServerV1OrgsOrgIdMcpServersPostResponse, error) {
-	rsp, err := c.CreateMcpServerV1OrgsOrgIdMcpServersPostWithBody(ctx, orgId, contentType, body, reqEditors...)
+func (c *ClientWithResponses) CreateMcpServerV1OrgsOrgIdMcpServersPostWithBodyWithResponse(ctx context.Context, orgId string, params *CreateMcpServerV1OrgsOrgIdMcpServersPostParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateMcpServerV1OrgsOrgIdMcpServersPostResponse, error) {
+	rsp, err := c.CreateMcpServerV1OrgsOrgIdMcpServersPostWithBody(ctx, orgId, params, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
 	return ParseCreateMcpServerV1OrgsOrgIdMcpServersPostResponse(rsp)
 }
 
-func (c *ClientWithResponses) CreateMcpServerV1OrgsOrgIdMcpServersPostWithResponse(ctx context.Context, orgId string, body CreateMcpServerV1OrgsOrgIdMcpServersPostJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateMcpServerV1OrgsOrgIdMcpServersPostResponse, error) {
-	rsp, err := c.CreateMcpServerV1OrgsOrgIdMcpServersPost(ctx, orgId, body, reqEditors...)
+func (c *ClientWithResponses) CreateMcpServerV1OrgsOrgIdMcpServersPostWithResponse(ctx context.Context, orgId string, params *CreateMcpServerV1OrgsOrgIdMcpServersPostParams, body CreateMcpServerV1OrgsOrgIdMcpServersPostJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateMcpServerV1OrgsOrgIdMcpServersPostResponse, error) {
+	rsp, err := c.CreateMcpServerV1OrgsOrgIdMcpServersPost(ctx, orgId, params, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -15854,6 +29705,15 @@ func (c *ClientWithResponses) GetComposioConnectionV1OrgsOrgIdMcpServersConnecti
 		return nil, err
 	}
 	return ParseGetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdGetResponse(rsp)
+}
+
+// ReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPostWithResponse request returning *ReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPostResponse
+func (c *ClientWithResponses) ReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPostWithResponse(ctx context.Context, orgId string, composioConnectionId string, reqEditors ...RequestEditorFn) (*ReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPostResponse, error) {
+	rsp, err := c.ReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPost(ctx, orgId, composioConnectionId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPostResponse(rsp)
 }
 
 // DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteWithResponse request returning *DeleteMcpServerV1OrgsOrgIdMcpServersMcpServerIdDeleteResponse
@@ -15994,6 +29854,178 @@ func (c *ClientWithResponses) RestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRe
 		return nil, err
 	}
 	return ParseRestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPostResponse(rsp)
+}
+
+// ListPacksV1OrgsOrgIdPacksGetWithResponse request returning *ListPacksV1OrgsOrgIdPacksGetResponse
+func (c *ClientWithResponses) ListPacksV1OrgsOrgIdPacksGetWithResponse(ctx context.Context, orgId string, params *ListPacksV1OrgsOrgIdPacksGetParams, reqEditors ...RequestEditorFn) (*ListPacksV1OrgsOrgIdPacksGetResponse, error) {
+	rsp, err := c.ListPacksV1OrgsOrgIdPacksGet(ctx, orgId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListPacksV1OrgsOrgIdPacksGetResponse(rsp)
+}
+
+// PreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPostWithBodyWithResponse request with arbitrary body returning *PreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPostResponse
+func (c *ClientWithResponses) PreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPostResponse, error) {
+	rsp, err := c.PreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPostWithBody(ctx, orgId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPostResponse(rsp)
+}
+
+func (c *ClientWithResponses) PreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPostWithResponse(ctx context.Context, orgId string, body PreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPostJSONRequestBody, reqEditors ...RequestEditorFn) (*PreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPostResponse, error) {
+	rsp, err := c.PreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPost(ctx, orgId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPostResponse(rsp)
+}
+
+// UninstallPacksV1OrgsOrgIdPacksInstallsDeleteWithResponse request returning *UninstallPacksV1OrgsOrgIdPacksInstallsDeleteResponse
+func (c *ClientWithResponses) UninstallPacksV1OrgsOrgIdPacksInstallsDeleteWithResponse(ctx context.Context, orgId string, params *UninstallPacksV1OrgsOrgIdPacksInstallsDeleteParams, reqEditors ...RequestEditorFn) (*UninstallPacksV1OrgsOrgIdPacksInstallsDeleteResponse, error) {
+	rsp, err := c.UninstallPacksV1OrgsOrgIdPacksInstallsDelete(ctx, orgId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUninstallPacksV1OrgsOrgIdPacksInstallsDeleteResponse(rsp)
+}
+
+// ListBotPackInstallsV1OrgsOrgIdPacksInstallsGetWithResponse request returning *ListBotPackInstallsV1OrgsOrgIdPacksInstallsGetResponse
+func (c *ClientWithResponses) ListBotPackInstallsV1OrgsOrgIdPacksInstallsGetWithResponse(ctx context.Context, orgId string, params *ListBotPackInstallsV1OrgsOrgIdPacksInstallsGetParams, reqEditors ...RequestEditorFn) (*ListBotPackInstallsV1OrgsOrgIdPacksInstallsGetResponse, error) {
+	rsp, err := c.ListBotPackInstallsV1OrgsOrgIdPacksInstallsGet(ctx, orgId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListBotPackInstallsV1OrgsOrgIdPacksInstallsGetResponse(rsp)
+}
+
+// InstallPacksV1OrgsOrgIdPacksInstallsPostWithBodyWithResponse request with arbitrary body returning *InstallPacksV1OrgsOrgIdPacksInstallsPostResponse
+func (c *ClientWithResponses) InstallPacksV1OrgsOrgIdPacksInstallsPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*InstallPacksV1OrgsOrgIdPacksInstallsPostResponse, error) {
+	rsp, err := c.InstallPacksV1OrgsOrgIdPacksInstallsPostWithBody(ctx, orgId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseInstallPacksV1OrgsOrgIdPacksInstallsPostResponse(rsp)
+}
+
+func (c *ClientWithResponses) InstallPacksV1OrgsOrgIdPacksInstallsPostWithResponse(ctx context.Context, orgId string, body InstallPacksV1OrgsOrgIdPacksInstallsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*InstallPacksV1OrgsOrgIdPacksInstallsPostResponse, error) {
+	rsp, err := c.InstallPacksV1OrgsOrgIdPacksInstallsPost(ctx, orgId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseInstallPacksV1OrgsOrgIdPacksInstallsPostResponse(rsp)
+}
+
+// BindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPostWithBodyWithResponse request with arbitrary body returning *BindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPostResponse
+func (c *ClientWithResponses) BindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*BindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPostResponse, error) {
+	rsp, err := c.BindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPostWithBody(ctx, orgId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseBindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPostResponse(rsp)
+}
+
+func (c *ClientWithResponses) BindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPostWithResponse(ctx context.Context, orgId string, body BindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*BindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPostResponse, error) {
+	rsp, err := c.BindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPost(ctx, orgId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseBindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPostResponse(rsp)
+}
+
+// PreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPostWithBodyWithResponse request with arbitrary body returning *PreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPostResponse
+func (c *ClientWithResponses) PreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPostResponse, error) {
+	rsp, err := c.PreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPostWithBody(ctx, orgId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPostResponse(rsp)
+}
+
+func (c *ClientWithResponses) PreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPostWithResponse(ctx context.Context, orgId string, body PreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPostJSONRequestBody, reqEditors ...RequestEditorFn) (*PreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPostResponse, error) {
+	rsp, err := c.PreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPost(ctx, orgId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPostResponse(rsp)
+}
+
+// CompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePostWithBodyWithResponse request with arbitrary body returning *CompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePostResponse
+func (c *ClientWithResponses) CompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePostResponse, error) {
+	rsp, err := c.CompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePostWithBody(ctx, orgId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePostResponse(rsp)
+}
+
+func (c *ClientWithResponses) CompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePostWithResponse(ctx context.Context, orgId string, body CompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePostJSONRequestBody, reqEditors ...RequestEditorFn) (*CompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePostResponse, error) {
+	rsp, err := c.CompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePost(ctx, orgId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePostResponse(rsp)
+}
+
+// ResumePackSetupsV1OrgsOrgIdPacksSetupsResumePostWithBodyWithResponse request with arbitrary body returning *ResumePackSetupsV1OrgsOrgIdPacksSetupsResumePostResponse
+func (c *ClientWithResponses) ResumePackSetupsV1OrgsOrgIdPacksSetupsResumePostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ResumePackSetupsV1OrgsOrgIdPacksSetupsResumePostResponse, error) {
+	rsp, err := c.ResumePackSetupsV1OrgsOrgIdPacksSetupsResumePostWithBody(ctx, orgId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseResumePackSetupsV1OrgsOrgIdPacksSetupsResumePostResponse(rsp)
+}
+
+func (c *ClientWithResponses) ResumePackSetupsV1OrgsOrgIdPacksSetupsResumePostWithResponse(ctx context.Context, orgId string, body ResumePackSetupsV1OrgsOrgIdPacksSetupsResumePostJSONRequestBody, reqEditors ...RequestEditorFn) (*ResumePackSetupsV1OrgsOrgIdPacksSetupsResumePostResponse, error) {
+	rsp, err := c.ResumePackSetupsV1OrgsOrgIdPacksSetupsResumePost(ctx, orgId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseResumePackSetupsV1OrgsOrgIdPacksSetupsResumePostResponse(rsp)
+}
+
+// RunPackSetupsV1OrgsOrgIdPacksSetupsRunPostWithBodyWithResponse request with arbitrary body returning *RunPackSetupsV1OrgsOrgIdPacksSetupsRunPostResponse
+func (c *ClientWithResponses) RunPackSetupsV1OrgsOrgIdPacksSetupsRunPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RunPackSetupsV1OrgsOrgIdPacksSetupsRunPostResponse, error) {
+	rsp, err := c.RunPackSetupsV1OrgsOrgIdPacksSetupsRunPostWithBody(ctx, orgId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRunPackSetupsV1OrgsOrgIdPacksSetupsRunPostResponse(rsp)
+}
+
+func (c *ClientWithResponses) RunPackSetupsV1OrgsOrgIdPacksSetupsRunPostWithResponse(ctx context.Context, orgId string, body RunPackSetupsV1OrgsOrgIdPacksSetupsRunPostJSONRequestBody, reqEditors ...RequestEditorFn) (*RunPackSetupsV1OrgsOrgIdPacksSetupsRunPostResponse, error) {
+	rsp, err := c.RunPackSetupsV1OrgsOrgIdPacksSetupsRunPost(ctx, orgId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRunPackSetupsV1OrgsOrgIdPacksSetupsRunPostResponse(rsp)
+}
+
+// PreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPostWithBodyWithResponse request with arbitrary body returning *PreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPostResponse
+func (c *ClientWithResponses) PreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPostResponse, error) {
+	rsp, err := c.PreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPostWithBody(ctx, orgId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPostResponse(rsp)
+}
+
+func (c *ClientWithResponses) PreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPostWithResponse(ctx context.Context, orgId string, body PreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPostJSONRequestBody, reqEditors ...RequestEditorFn) (*PreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPostResponse, error) {
+	rsp, err := c.PreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPost(ctx, orgId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPostResponse(rsp)
+}
+
+// GetPackVersionsV1OrgsOrgIdPacksVersionsGetWithResponse request returning *GetPackVersionsV1OrgsOrgIdPacksVersionsGetResponse
+func (c *ClientWithResponses) GetPackVersionsV1OrgsOrgIdPacksVersionsGetWithResponse(ctx context.Context, orgId string, params *GetPackVersionsV1OrgsOrgIdPacksVersionsGetParams, reqEditors ...RequestEditorFn) (*GetPackVersionsV1OrgsOrgIdPacksVersionsGetResponse, error) {
+	rsp, err := c.GetPackVersionsV1OrgsOrgIdPacksVersionsGet(ctx, orgId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetPackVersionsV1OrgsOrgIdPacksVersionsGetResponse(rsp)
 }
 
 // ListSecretPoliciesV1OrgsOrgIdSecretPoliciesGetWithResponse request returning *ListSecretPoliciesV1OrgsOrgIdSecretPoliciesGetResponse
@@ -16143,9 +30175,43 @@ func (c *ClientWithResponses) PreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPo
 	return ParsePreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostResponse(rsp)
 }
 
+// CountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPostWithBodyWithResponse request with arbitrary body returning *CountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPostResponse
+func (c *ClientWithResponses) CountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPostResponse, error) {
+	rsp, err := c.CountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPostWithBody(ctx, orgId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPostResponse(rsp)
+}
+
+func (c *ClientWithResponses) CountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPostWithResponse(ctx context.Context, orgId string, body CountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*CountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPostResponse, error) {
+	rsp, err := c.CountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPost(ctx, orgId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPostResponse(rsp)
+}
+
+// SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostWithBodyWithResponse request with arbitrary body returning *SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostResponse
+func (c *ClientWithResponses) SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostResponse, error) {
+	rsp, err := c.SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostWithBody(ctx, orgId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostResponse(rsp)
+}
+
+func (c *ClientWithResponses) SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostWithResponse(ctx context.Context, orgId string, body SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostJSONRequestBody, reqEditors ...RequestEditorFn) (*SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostResponse, error) {
+	rsp, err := c.SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPost(ctx, orgId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostResponse(rsp)
+}
+
 // DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteWithResponse request returning *DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteResponse
-func (c *ClientWithResponses) DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteWithResponse(ctx context.Context, orgId string, skillSlug string, reqEditors ...RequestEditorFn) (*DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteResponse, error) {
-	rsp, err := c.DeleteSkillV1OrgsOrgIdSkillsSkillSlugDelete(ctx, orgId, skillSlug, reqEditors...)
+func (c *ClientWithResponses) DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteWithResponse(ctx context.Context, orgId string, skillSlug string, params *DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteParams, reqEditors ...RequestEditorFn) (*DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteResponse, error) {
+	rsp, err := c.DeleteSkillV1OrgsOrgIdSkillsSkillSlugDelete(ctx, orgId, skillSlug, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -16220,6 +30286,302 @@ func (c *ClientWithResponses) GetToolV1OrgsOrgIdToolsToolIdGetWithResponse(ctx c
 		return nil, err
 	}
 	return ParseGetToolV1OrgsOrgIdToolsToolIdGetResponse(rsp)
+}
+
+// ListWorkforcesV1OrgsOrgIdWorkforcesGetWithResponse request returning *ListWorkforcesV1OrgsOrgIdWorkforcesGetResponse
+func (c *ClientWithResponses) ListWorkforcesV1OrgsOrgIdWorkforcesGetWithResponse(ctx context.Context, orgId string, reqEditors ...RequestEditorFn) (*ListWorkforcesV1OrgsOrgIdWorkforcesGetResponse, error) {
+	rsp, err := c.ListWorkforcesV1OrgsOrgIdWorkforcesGet(ctx, orgId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListWorkforcesV1OrgsOrgIdWorkforcesGetResponse(rsp)
+}
+
+// CreateWorkforceV1OrgsOrgIdWorkforcesPostWithBodyWithResponse request with arbitrary body returning *CreateWorkforceV1OrgsOrgIdWorkforcesPostResponse
+func (c *ClientWithResponses) CreateWorkforceV1OrgsOrgIdWorkforcesPostWithBodyWithResponse(ctx context.Context, orgId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateWorkforceV1OrgsOrgIdWorkforcesPostResponse, error) {
+	rsp, err := c.CreateWorkforceV1OrgsOrgIdWorkforcesPostWithBody(ctx, orgId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateWorkforceV1OrgsOrgIdWorkforcesPostResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateWorkforceV1OrgsOrgIdWorkforcesPostWithResponse(ctx context.Context, orgId string, body CreateWorkforceV1OrgsOrgIdWorkforcesPostJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateWorkforceV1OrgsOrgIdWorkforcesPostResponse, error) {
+	rsp, err := c.CreateWorkforceV1OrgsOrgIdWorkforcesPost(ctx, orgId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateWorkforceV1OrgsOrgIdWorkforcesPostResponse(rsp)
+}
+
+// GetWorkforceTaskCountsV1OrgsOrgIdWorkforcesTaskCountsGetWithResponse request returning *GetWorkforceTaskCountsV1OrgsOrgIdWorkforcesTaskCountsGetResponse
+func (c *ClientWithResponses) GetWorkforceTaskCountsV1OrgsOrgIdWorkforcesTaskCountsGetWithResponse(ctx context.Context, orgId string, reqEditors ...RequestEditorFn) (*GetWorkforceTaskCountsV1OrgsOrgIdWorkforcesTaskCountsGetResponse, error) {
+	rsp, err := c.GetWorkforceTaskCountsV1OrgsOrgIdWorkforcesTaskCountsGet(ctx, orgId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetWorkforceTaskCountsV1OrgsOrgIdWorkforcesTaskCountsGetResponse(rsp)
+}
+
+// DeleteWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugDeleteWithResponse request returning *DeleteWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugDeleteResponse
+func (c *ClientWithResponses) DeleteWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugDeleteWithResponse(ctx context.Context, orgId string, workforceSlug string, reqEditors ...RequestEditorFn) (*DeleteWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugDeleteResponse, error) {
+	rsp, err := c.DeleteWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugDelete(ctx, orgId, workforceSlug, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugDeleteResponse(rsp)
+}
+
+// GetWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugGetWithResponse request returning *GetWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugGetResponse
+func (c *ClientWithResponses) GetWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugGetWithResponse(ctx context.Context, orgId string, workforceSlug string, reqEditors ...RequestEditorFn) (*GetWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugGetResponse, error) {
+	rsp, err := c.GetWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugGet(ctx, orgId, workforceSlug, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugGetResponse(rsp)
+}
+
+// UpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatchWithBodyWithResponse request with arbitrary body returning *UpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatchResponse
+func (c *ClientWithResponses) UpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatchWithBodyWithResponse(ctx context.Context, orgId string, workforceSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatchResponse, error) {
+	rsp, err := c.UpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatchWithBody(ctx, orgId, workforceSlug, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatchResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatchWithResponse(ctx context.Context, orgId string, workforceSlug string, body UpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatchResponse, error) {
+	rsp, err := c.UpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatch(ctx, orgId, workforceSlug, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatchResponse(rsp)
+}
+
+// ListWorkforceBotsV1OrgsOrgIdWorkforcesWorkforceSlugBotsGetWithResponse request returning *ListWorkforceBotsV1OrgsOrgIdWorkforcesWorkforceSlugBotsGetResponse
+func (c *ClientWithResponses) ListWorkforceBotsV1OrgsOrgIdWorkforcesWorkforceSlugBotsGetWithResponse(ctx context.Context, orgId string, workforceSlug string, reqEditors ...RequestEditorFn) (*ListWorkforceBotsV1OrgsOrgIdWorkforcesWorkforceSlugBotsGetResponse, error) {
+	rsp, err := c.ListWorkforceBotsV1OrgsOrgIdWorkforcesWorkforceSlugBotsGet(ctx, orgId, workforceSlug, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListWorkforceBotsV1OrgsOrgIdWorkforcesWorkforceSlugBotsGetResponse(rsp)
+}
+
+// RemoveBotFromWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdDeleteWithResponse request returning *RemoveBotFromWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdDeleteResponse
+func (c *ClientWithResponses) RemoveBotFromWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdDeleteWithResponse(ctx context.Context, orgId string, workforceSlug string, botId string, reqEditors ...RequestEditorFn) (*RemoveBotFromWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdDeleteResponse, error) {
+	rsp, err := c.RemoveBotFromWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdDelete(ctx, orgId, workforceSlug, botId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRemoveBotFromWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdDeleteResponse(rsp)
+}
+
+// AddBotToWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdPostWithResponse request returning *AddBotToWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdPostResponse
+func (c *ClientWithResponses) AddBotToWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdPostWithResponse(ctx context.Context, orgId string, workforceSlug string, botId string, reqEditors ...RequestEditorFn) (*AddBotToWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdPostResponse, error) {
+	rsp, err := c.AddBotToWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdPost(ctx, orgId, workforceSlug, botId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAddBotToWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdPostResponse(rsp)
+}
+
+// ReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPostWithBodyWithResponse request with arbitrary body returning *ReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPostResponse
+func (c *ClientWithResponses) ReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPostWithBodyWithResponse(ctx context.Context, orgId string, workforceSlug string, columnId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPostResponse, error) {
+	rsp, err := c.ReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPostWithBody(ctx, orgId, workforceSlug, columnId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPostResponse(rsp)
+}
+
+func (c *ClientWithResponses) ReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPostWithResponse(ctx context.Context, orgId string, workforceSlug string, columnId string, body ReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPostJSONRequestBody, reqEditors ...RequestEditorFn) (*ReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPostResponse, error) {
+	rsp, err := c.ReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPost(ctx, orgId, workforceSlug, columnId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPostResponse(rsp)
+}
+
+// ListTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksGetWithResponse request returning *ListTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksGetResponse
+func (c *ClientWithResponses) ListTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksGetWithResponse(ctx context.Context, orgId string, workforceSlug string, params *ListTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksGetParams, reqEditors ...RequestEditorFn) (*ListTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksGetResponse, error) {
+	rsp, err := c.ListTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksGet(ctx, orgId, workforceSlug, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksGetResponse(rsp)
+}
+
+// CreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPostWithBodyWithResponse request with arbitrary body returning *CreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPostResponse
+func (c *ClientWithResponses) CreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPostWithBodyWithResponse(ctx context.Context, orgId string, workforceSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPostResponse, error) {
+	rsp, err := c.CreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPostWithBody(ctx, orgId, workforceSlug, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPostResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPostWithResponse(ctx context.Context, orgId string, workforceSlug string, body CreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPostJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPostResponse, error) {
+	rsp, err := c.CreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPost(ctx, orgId, workforceSlug, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPostResponse(rsp)
+}
+
+// GetTaskByNumberV1OrgsOrgIdWorkforcesWorkforceSlugTasksByNumberTaskNumberGetWithResponse request returning *GetTaskByNumberV1OrgsOrgIdWorkforcesWorkforceSlugTasksByNumberTaskNumberGetResponse
+func (c *ClientWithResponses) GetTaskByNumberV1OrgsOrgIdWorkforcesWorkforceSlugTasksByNumberTaskNumberGetWithResponse(ctx context.Context, orgId string, workforceSlug string, taskNumber int, reqEditors ...RequestEditorFn) (*GetTaskByNumberV1OrgsOrgIdWorkforcesWorkforceSlugTasksByNumberTaskNumberGetResponse, error) {
+	rsp, err := c.GetTaskByNumberV1OrgsOrgIdWorkforcesWorkforceSlugTasksByNumberTaskNumberGet(ctx, orgId, workforceSlug, taskNumber, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetTaskByNumberV1OrgsOrgIdWorkforcesWorkforceSlugTasksByNumberTaskNumberGetResponse(rsp)
+}
+
+// SearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPostWithBodyWithResponse request with arbitrary body returning *SearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPostResponse
+func (c *ClientWithResponses) SearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPostWithBodyWithResponse(ctx context.Context, orgId string, workforceSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPostResponse, error) {
+	rsp, err := c.SearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPostWithBody(ctx, orgId, workforceSlug, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPostResponse(rsp)
+}
+
+func (c *ClientWithResponses) SearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPostWithResponse(ctx context.Context, orgId string, workforceSlug string, body SearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPostJSONRequestBody, reqEditors ...RequestEditorFn) (*SearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPostResponse, error) {
+	rsp, err := c.SearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPost(ctx, orgId, workforceSlug, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPostResponse(rsp)
+}
+
+// ListTaskTagsV1OrgsOrgIdWorkforcesWorkforceSlugTasksTagsGetWithResponse request returning *ListTaskTagsV1OrgsOrgIdWorkforcesWorkforceSlugTasksTagsGetResponse
+func (c *ClientWithResponses) ListTaskTagsV1OrgsOrgIdWorkforcesWorkforceSlugTasksTagsGetWithResponse(ctx context.Context, orgId string, workforceSlug string, reqEditors ...RequestEditorFn) (*ListTaskTagsV1OrgsOrgIdWorkforcesWorkforceSlugTasksTagsGetResponse, error) {
+	rsp, err := c.ListTaskTagsV1OrgsOrgIdWorkforcesWorkforceSlugTasksTagsGet(ctx, orgId, workforceSlug, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListTaskTagsV1OrgsOrgIdWorkforcesWorkforceSlugTasksTagsGetResponse(rsp)
+}
+
+// DeleteTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdDeleteWithResponse request returning *DeleteTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdDeleteResponse
+func (c *ClientWithResponses) DeleteTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdDeleteWithResponse(ctx context.Context, orgId string, workforceSlug string, taskId string, reqEditors ...RequestEditorFn) (*DeleteTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdDeleteResponse, error) {
+	rsp, err := c.DeleteTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdDelete(ctx, orgId, workforceSlug, taskId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdDeleteResponse(rsp)
+}
+
+// GetTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdGetWithResponse request returning *GetTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdGetResponse
+func (c *ClientWithResponses) GetTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdGetWithResponse(ctx context.Context, orgId string, workforceSlug string, taskId string, reqEditors ...RequestEditorFn) (*GetTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdGetResponse, error) {
+	rsp, err := c.GetTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdGet(ctx, orgId, workforceSlug, taskId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdGetResponse(rsp)
+}
+
+// UpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatchWithBodyWithResponse request with arbitrary body returning *UpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatchResponse
+func (c *ClientWithResponses) UpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatchWithBodyWithResponse(ctx context.Context, orgId string, workforceSlug string, taskId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatchResponse, error) {
+	rsp, err := c.UpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatchWithBody(ctx, orgId, workforceSlug, taskId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatchResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatchWithResponse(ctx context.Context, orgId string, workforceSlug string, taskId string, body UpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatchResponse, error) {
+	rsp, err := c.UpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatch(ctx, orgId, workforceSlug, taskId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatchResponse(rsp)
+}
+
+// CreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPostWithBodyWithResponse request with arbitrary body returning *CreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPostResponse
+func (c *ClientWithResponses) CreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPostWithBodyWithResponse(ctx context.Context, orgId string, workforceSlug string, taskNumber int, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPostResponse, error) {
+	rsp, err := c.CreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPostWithBody(ctx, orgId, workforceSlug, taskNumber, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPostResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPostWithResponse(ctx context.Context, orgId string, workforceSlug string, taskNumber int, body CreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPostJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPostResponse, error) {
+	rsp, err := c.CreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPost(ctx, orgId, workforceSlug, taskNumber, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPostResponse(rsp)
+}
+
+// DeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePostWithBodyWithResponse request with arbitrary body returning *DeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePostResponse
+func (c *ClientWithResponses) DeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePostWithBodyWithResponse(ctx context.Context, orgId string, workforceSlug string, taskNumber int, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*DeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePostResponse, error) {
+	rsp, err := c.DeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePostWithBody(ctx, orgId, workforceSlug, taskNumber, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePostResponse(rsp)
+}
+
+func (c *ClientWithResponses) DeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePostWithResponse(ctx context.Context, orgId string, workforceSlug string, taskNumber int, body DeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePostJSONRequestBody, reqEditors ...RequestEditorFn) (*DeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePostResponse, error) {
+	rsp, err := c.DeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePost(ctx, orgId, workforceSlug, taskNumber, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePostResponse(rsp)
+}
+
+// ListWorkforceViewsV1OrgsOrgIdWorkforcesWorkforceSlugViewsGetWithResponse request returning *ListWorkforceViewsV1OrgsOrgIdWorkforcesWorkforceSlugViewsGetResponse
+func (c *ClientWithResponses) ListWorkforceViewsV1OrgsOrgIdWorkforcesWorkforceSlugViewsGetWithResponse(ctx context.Context, orgId string, workforceSlug string, reqEditors ...RequestEditorFn) (*ListWorkforceViewsV1OrgsOrgIdWorkforcesWorkforceSlugViewsGetResponse, error) {
+	rsp, err := c.ListWorkforceViewsV1OrgsOrgIdWorkforcesWorkforceSlugViewsGet(ctx, orgId, workforceSlug, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListWorkforceViewsV1OrgsOrgIdWorkforcesWorkforceSlugViewsGetResponse(rsp)
+}
+
+// CreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPostWithBodyWithResponse request with arbitrary body returning *CreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPostResponse
+func (c *ClientWithResponses) CreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPostWithBodyWithResponse(ctx context.Context, orgId string, workforceSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPostResponse, error) {
+	rsp, err := c.CreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPostWithBody(ctx, orgId, workforceSlug, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPostResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPostWithResponse(ctx context.Context, orgId string, workforceSlug string, body CreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPostResponse, error) {
+	rsp, err := c.CreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPost(ctx, orgId, workforceSlug, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPostResponse(rsp)
+}
+
+// DeleteWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdDeleteWithResponse request returning *DeleteWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdDeleteResponse
+func (c *ClientWithResponses) DeleteWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdDeleteWithResponse(ctx context.Context, orgId string, workforceSlug string, viewId string, reqEditors ...RequestEditorFn) (*DeleteWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdDeleteResponse, error) {
+	rsp, err := c.DeleteWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdDelete(ctx, orgId, workforceSlug, viewId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdDeleteResponse(rsp)
+}
+
+// UpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatchWithBodyWithResponse request with arbitrary body returning *UpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatchResponse
+func (c *ClientWithResponses) UpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatchWithBodyWithResponse(ctx context.Context, orgId string, workforceSlug string, viewId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatchResponse, error) {
+	rsp, err := c.UpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatchWithBody(ctx, orgId, workforceSlug, viewId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatchResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatchWithResponse(ctx context.Context, orgId string, workforceSlug string, viewId string, body UpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatchResponse, error) {
+	rsp, err := c.UpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatch(ctx, orgId, workforceSlug, viewId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatchResponse(rsp)
 }
 
 // ParseListBotTemplatesV1OrgsOrgIdBotTemplatesGetResponse parses an HTTP response from a ListBotTemplatesV1OrgsOrgIdBotTemplatesGetWithResponse call
@@ -16302,8 +30664,57 @@ func ParseCreateBotV1OrgsOrgIdBotsPostResponse(rsp *http.Response) (*CreateBotV1
 	}
 
 	switch {
+	case rsp.Header.Get("Content-Type") == "application/json" && rsp.StatusCode == 422:
+		var dest NativeLaneRefusedProblem
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	case rsp.Header.Get("Content-Type") == "application/problem+json" && rsp.StatusCode == 422:
+		var dest struct {
+			union json.RawMessage
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSON422 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
 		var dest BotResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostResponse parses an HTTP response from a CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostWithResponse call
+func ParseCreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostResponse(rsp *http.Response) (*CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateBotsFromPacksV1OrgsOrgIdBotsFromPackPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest BotsFromPacks
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -16370,6 +30781,39 @@ func ParseSearchBotsV1OrgsOrgIdBotsSearchPostResponse(rsp *http.Response) (*Sear
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest PaginatedResponseBotListItem
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListBotWorkforcesV1OrgsOrgIdBotsBotIdWorkforcesGetResponse parses an HTTP response from a ListBotWorkforcesV1OrgsOrgIdBotsBotIdWorkforcesGetWithResponse call
+func ParseListBotWorkforcesV1OrgsOrgIdBotsBotIdWorkforcesGetResponse(rsp *http.Response) (*ListBotWorkforcesV1OrgsOrgIdBotsBotIdWorkforcesGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListBotWorkforcesV1OrgsOrgIdBotsBotIdWorkforcesGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []WorkforceListItem
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -16552,39 +30996,6 @@ func ParseUpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchResponse(rsp *http.Res
 	return response, nil
 }
 
-// ParseConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostResponse parses an HTTP response from a ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostWithResponse call
-func ParseConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostResponse(rsp *http.Response) (*ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &ConvertNativeBotConfigV1OrgsOrgIdBotsBotSlugConfigConvertNativePostResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest BotResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
-		var dest ProblemDetails
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.ApplicationproblemJSONDefault = &dest
-
-	}
-
-	return response, nil
-}
-
 // ParseCopyBotV1OrgsOrgIdBotsBotSlugCopyPostResponse parses an HTTP response from a CopyBotV1OrgsOrgIdBotsBotSlugCopyPostWithResponse call
 func ParseCopyBotV1OrgsOrgIdBotsBotSlugCopyPostResponse(rsp *http.Response) (*CopyBotV1OrgsOrgIdBotsBotSlugCopyPostResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -16599,6 +31010,22 @@ func ParseCopyBotV1OrgsOrgIdBotsBotSlugCopyPostResponse(rsp *http.Response) (*Co
 	}
 
 	switch {
+	case rsp.Header.Get("Content-Type") == "application/json" && rsp.StatusCode == 422:
+		var dest NativeLaneRefusedProblem
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	case rsp.Header.Get("Content-Type") == "application/problem+json" && rsp.StatusCode == 422:
+		var dest struct {
+			union json.RawMessage
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSON422 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
 		var dest BotCopyResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -16665,6 +31092,22 @@ func ParseAssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutResponse(rsp *htt
 	}
 
 	switch {
+	case rsp.Header.Get("Content-Type") == "application/json" && rsp.StatusCode == 422:
+		var dest NativeLaneRefusedProblem
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	case rsp.Header.Get("Content-Type") == "application/problem+json" && rsp.StatusCode == 422:
+		var dest struct {
+			union json.RawMessage
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSON422 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
 		var dest []BotCredentialAssignmentResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -16698,6 +31141,22 @@ func ParseUnassignCredentialV1OrgsOrgIdBotsBotSlugCredentialsCredentialIdDeleteR
 	}
 
 	switch {
+	case rsp.Header.Get("Content-Type") == "application/json" && rsp.StatusCode == 422:
+		var dest NativeLaneRefusedProblem
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	case rsp.Header.Get("Content-Type") == "application/problem+json" && rsp.StatusCode == 422:
+		var dest struct {
+			union json.RawMessage
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSON422 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest ProblemDetails
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -16758,7 +31217,7 @@ func ParseGetBotResourcesV1OrgsOrgIdBotsBotSlugResourcesGetResponse(rsp *http.Re
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest ResourceMetricsResponse
+		var dest ResourceReport
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -16967,6 +31426,39 @@ func ParseDeployBotSkillsV1OrgsOrgIdBotsBotSlugSkillsDeployPostResponse(rsp *htt
 	return response, nil
 }
 
+// ParseSetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutResponse parses an HTTP response from a SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutWithResponse call
+func ParseSetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutResponse(rsp *http.Response) (*SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &SetBotSkillPinsV1OrgsOrgIdBotsBotSlugSkillsPinsPutResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []BotSkillAssignmentResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseUnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDeleteResponse parses an HTTP response from a UnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDeleteWithResponse call
 func ParseUnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDeleteResponse(rsp *http.Response) (*UnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDeleteResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -16981,6 +31473,131 @@ func ParseUnassignSkillV1OrgsOrgIdBotsBotSlugSkillsSkillSlugDeleteResponse(rsp *
 	}
 
 	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetSuggestionsV1OrgsOrgIdBotsBotSlugSuggestionsGetResponse parses an HTTP response from a GetSuggestionsV1OrgsOrgIdBotsBotSlugSuggestionsGetWithResponse call
+func ParseGetSuggestionsV1OrgsOrgIdBotsBotSlugSuggestionsGetResponse(rsp *http.Response) (*GetSuggestionsV1OrgsOrgIdBotsBotSlugSuggestionsGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetSuggestionsV1OrgsOrgIdBotsBotSlugSuggestionsGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SuggestionsResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseAcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPostResponse parses an HTTP response from a AcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPostWithResponse call
+func ParseAcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPostResponse(rsp *http.Response) (*AcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &AcceptV1OrgsOrgIdBotsBotSlugSuggestionsAcceptPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest AcceptSuggestionsResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPostResponse parses an HTTP response from a DismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPostWithResponse call
+func ParseDismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPostResponse(rsp *http.Response) (*DismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DismissV1OrgsOrgIdBotsBotSlugSuggestionsDismissPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseSetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPutResponse parses an HTTP response from a SetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPutWithResponse call
+func ParseSetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPutResponse(rsp *http.Response) (*SetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPutResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &SetOptOutV1OrgsOrgIdBotsBotSlugSuggestionsOptOutPutResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SuggestionsResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest ProblemDetails
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -17465,7 +32082,9 @@ func ParseGetMcpCatalogEntryV1OrgsOrgIdMcpServersCatalogMcpCatalogEntryIdGetResp
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest McpCatalogEntryDetail
+		var dest struct {
+			union json.RawMessage
+		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -17668,6 +32287,39 @@ func ParseGetComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectio
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPostResponse parses an HTTP response from a ReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPostWithResponse call
+func ParseReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPostResponse(rsp *http.Response) (*ReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ReconnectComposioConnectionV1OrgsOrgIdMcpServersConnectionsComposioConnectionIdReconnectPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest ComposioConnectionStart
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest ProblemDetails
@@ -18073,6 +32725,402 @@ func ParseRestartMcpServerV1OrgsOrgIdMcpServersMcpServerIdRestartPostResponse(rs
 	return response, nil
 }
 
+// ParseListPacksV1OrgsOrgIdPacksGetResponse parses an HTTP response from a ListPacksV1OrgsOrgIdPacksGetWithResponse call
+func ParseListPacksV1OrgsOrgIdPacksGetResponse(rsp *http.Response) (*ListPacksV1OrgsOrgIdPacksGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListPacksV1OrgsOrgIdPacksGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PackCataloguePage
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPostResponse parses an HTTP response from a PreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPostWithResponse call
+func ParsePreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPostResponse(rsp *http.Response) (*PreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PreviewPackConnectionsV1OrgsOrgIdPacksConnectionsPreviewPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PackConnectionPreviews
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUninstallPacksV1OrgsOrgIdPacksInstallsDeleteResponse parses an HTTP response from a UninstallPacksV1OrgsOrgIdPacksInstallsDeleteWithResponse call
+func ParseUninstallPacksV1OrgsOrgIdPacksInstallsDeleteResponse(rsp *http.Response) (*UninstallPacksV1OrgsOrgIdPacksInstallsDeleteResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UninstallPacksV1OrgsOrgIdPacksInstallsDeleteResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PackUninstalls
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListBotPackInstallsV1OrgsOrgIdPacksInstallsGetResponse parses an HTTP response from a ListBotPackInstallsV1OrgsOrgIdPacksInstallsGetWithResponse call
+func ParseListBotPackInstallsV1OrgsOrgIdPacksInstallsGetResponse(rsp *http.Response) (*ListBotPackInstallsV1OrgsOrgIdPacksInstallsGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListBotPackInstallsV1OrgsOrgIdPacksInstallsGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest OrgBotPackInstalls
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseInstallPacksV1OrgsOrgIdPacksInstallsPostResponse parses an HTTP response from a InstallPacksV1OrgsOrgIdPacksInstallsPostWithResponse call
+func ParseInstallPacksV1OrgsOrgIdPacksInstallsPostResponse(rsp *http.Response) (*InstallPacksV1OrgsOrgIdPacksInstallsPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &InstallPacksV1OrgsOrgIdPacksInstallsPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest PackInstalls
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseBindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPostResponse parses an HTTP response from a BindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPostWithResponse call
+func ParseBindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPostResponse(rsp *http.Response) (*BindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &BindPackConnectionsV1OrgsOrgIdPacksInstallsConnectionsPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PackBindings
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPostResponse parses an HTTP response from a PreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPostWithResponse call
+func ParsePreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPostResponse(rsp *http.Response) (*PreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PreviewPackInstallsV1OrgsOrgIdPacksInstallsPreviewPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PackInstallPreview
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePostResponse parses an HTTP response from a CompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePostWithResponse call
+func ParseCompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePostResponse(rsp *http.Response) (*CompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CompletePackSetupsV1OrgsOrgIdPacksSetupsCompletePostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PackSetups
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseResumePackSetupsV1OrgsOrgIdPacksSetupsResumePostResponse parses an HTTP response from a ResumePackSetupsV1OrgsOrgIdPacksSetupsResumePostWithResponse call
+func ParseResumePackSetupsV1OrgsOrgIdPacksSetupsResumePostResponse(rsp *http.Response) (*ResumePackSetupsV1OrgsOrgIdPacksSetupsResumePostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ResumePackSetupsV1OrgsOrgIdPacksSetupsResumePostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PackSetups
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseRunPackSetupsV1OrgsOrgIdPacksSetupsRunPostResponse parses an HTTP response from a RunPackSetupsV1OrgsOrgIdPacksSetupsRunPostWithResponse call
+func ParseRunPackSetupsV1OrgsOrgIdPacksSetupsRunPostResponse(rsp *http.Response) (*RunPackSetupsV1OrgsOrgIdPacksSetupsRunPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &RunPackSetupsV1OrgsOrgIdPacksSetupsRunPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PackSetups
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPostResponse parses an HTTP response from a PreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPostWithResponse call
+func ParsePreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPostResponse(rsp *http.Response) (*PreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PreviewPackUninstallsV1OrgsOrgIdPacksUninstallsPreviewPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PackUninstalls
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetPackVersionsV1OrgsOrgIdPacksVersionsGetResponse parses an HTTP response from a GetPackVersionsV1OrgsOrgIdPacksVersionsGetWithResponse call
+func ParseGetPackVersionsV1OrgsOrgIdPacksVersionsGetResponse(rsp *http.Response) (*GetPackVersionsV1OrgsOrgIdPacksVersionsGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetPackVersionsV1OrgsOrgIdPacksVersionsGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest OrgPackVersions
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseListSecretPoliciesV1OrgsOrgIdSecretPoliciesGetResponse parses an HTTP response from a ListSecretPoliciesV1OrgsOrgIdSecretPoliciesGetWithResponse call
 func ParseListSecretPoliciesV1OrgsOrgIdSecretPoliciesGetResponse(rsp *http.Response) (*ListSecretPoliciesV1OrgsOrgIdSecretPoliciesGetResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -18429,6 +33477,72 @@ func ParsePreviewSkillImportV1OrgsOrgIdSkillsImportPreviewPostResponse(rsp *http
 	return response, nil
 }
 
+// ParseCountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPostResponse parses an HTTP response from a CountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPostWithResponse call
+func ParseCountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPostResponse(rsp *http.Response) (*CountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CountSkillsByProviderV1OrgsOrgIdSkillsSearchProviderCountsPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SkillProviderCountsResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseSearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostResponse parses an HTTP response from a SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostWithResponse call
+func ParseSearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostResponse(rsp *http.Response) (*SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &SearchSkillVersionsV1OrgsOrgIdSkillsVersionsSearchPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SkillVersionSearchResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseDeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteResponse parses an HTTP response from a DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteWithResponse call
 func ParseDeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteResponse(rsp *http.Response) (*DeleteSkillV1OrgsOrgIdSkillsSkillSlugDeleteResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -18636,6 +33750,770 @@ func ParseGetToolV1OrgsOrgIdToolsToolIdGetResponse(rsp *http.Response) (*GetTool
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest ToolResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListWorkforcesV1OrgsOrgIdWorkforcesGetResponse parses an HTTP response from a ListWorkforcesV1OrgsOrgIdWorkforcesGetWithResponse call
+func ParseListWorkforcesV1OrgsOrgIdWorkforcesGetResponse(rsp *http.Response) (*ListWorkforcesV1OrgsOrgIdWorkforcesGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListWorkforcesV1OrgsOrgIdWorkforcesGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []WorkforceListItem
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateWorkforceV1OrgsOrgIdWorkforcesPostResponse parses an HTTP response from a CreateWorkforceV1OrgsOrgIdWorkforcesPostWithResponse call
+func ParseCreateWorkforceV1OrgsOrgIdWorkforcesPostResponse(rsp *http.Response) (*CreateWorkforceV1OrgsOrgIdWorkforcesPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateWorkforceV1OrgsOrgIdWorkforcesPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest WorkforceResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetWorkforceTaskCountsV1OrgsOrgIdWorkforcesTaskCountsGetResponse parses an HTTP response from a GetWorkforceTaskCountsV1OrgsOrgIdWorkforcesTaskCountsGetWithResponse call
+func ParseGetWorkforceTaskCountsV1OrgsOrgIdWorkforcesTaskCountsGetResponse(rsp *http.Response) (*GetWorkforceTaskCountsV1OrgsOrgIdWorkforcesTaskCountsGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetWorkforceTaskCountsV1OrgsOrgIdWorkforcesTaskCountsGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest WorkforceTaskCountsResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugDeleteResponse parses an HTTP response from a DeleteWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugDeleteWithResponse call
+func ParseDeleteWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugDeleteResponse(rsp *http.Response) (*DeleteWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugDeleteResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugDeleteResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugGetResponse parses an HTTP response from a GetWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugGetWithResponse call
+func ParseGetWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugGetResponse(rsp *http.Response) (*GetWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest WorkforceResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatchResponse parses an HTTP response from a UpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatchWithResponse call
+func ParseUpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatchResponse(rsp *http.Response) (*UpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatchResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugPatchResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest WorkforceResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListWorkforceBotsV1OrgsOrgIdWorkforcesWorkforceSlugBotsGetResponse parses an HTTP response from a ListWorkforceBotsV1OrgsOrgIdWorkforcesWorkforceSlugBotsGetWithResponse call
+func ParseListWorkforceBotsV1OrgsOrgIdWorkforcesWorkforceSlugBotsGetResponse(rsp *http.Response) (*ListWorkforceBotsV1OrgsOrgIdWorkforcesWorkforceSlugBotsGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListWorkforceBotsV1OrgsOrgIdWorkforcesWorkforceSlugBotsGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []WorkforceBotMemberResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseRemoveBotFromWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdDeleteResponse parses an HTTP response from a RemoveBotFromWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdDeleteWithResponse call
+func ParseRemoveBotFromWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdDeleteResponse(rsp *http.Response) (*RemoveBotFromWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdDeleteResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &RemoveBotFromWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdDeleteResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseAddBotToWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdPostResponse parses an HTTP response from a AddBotToWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdPostWithResponse call
+func ParseAddBotToWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdPostResponse(rsp *http.Response) (*AddBotToWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &AddBotToWorkforceV1OrgsOrgIdWorkforcesWorkforceSlugBotsBotIdPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest interface{}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPostResponse parses an HTTP response from a ReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPostWithResponse call
+func ParseReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPostResponse(rsp *http.Response) (*ReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ReassignColumnTasksResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksGetResponse parses an HTTP response from a ListTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksGetWithResponse call
+func ParseListTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksGetResponse(rsp *http.Response) (*ListTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PaginatedResponseTaskResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPostResponse parses an HTTP response from a CreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPostWithResponse call
+func ParseCreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPostResponse(rsp *http.Response) (*CreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest TaskResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetTaskByNumberV1OrgsOrgIdWorkforcesWorkforceSlugTasksByNumberTaskNumberGetResponse parses an HTTP response from a GetTaskByNumberV1OrgsOrgIdWorkforcesWorkforceSlugTasksByNumberTaskNumberGetWithResponse call
+func ParseGetTaskByNumberV1OrgsOrgIdWorkforcesWorkforceSlugTasksByNumberTaskNumberGetResponse(rsp *http.Response) (*GetTaskByNumberV1OrgsOrgIdWorkforcesWorkforceSlugTasksByNumberTaskNumberGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetTaskByNumberV1OrgsOrgIdWorkforcesWorkforceSlugTasksByNumberTaskNumberGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest TaskResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseSearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPostResponse parses an HTTP response from a SearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPostWithResponse call
+func ParseSearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPostResponse(rsp *http.Response) (*SearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &SearchTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksSearchPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PaginatedResponseTaskResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListTaskTagsV1OrgsOrgIdWorkforcesWorkforceSlugTasksTagsGetResponse parses an HTTP response from a ListTaskTagsV1OrgsOrgIdWorkforcesWorkforceSlugTasksTagsGetWithResponse call
+func ParseListTaskTagsV1OrgsOrgIdWorkforcesWorkforceSlugTasksTagsGetResponse(rsp *http.Response) (*ListTaskTagsV1OrgsOrgIdWorkforcesWorkforceSlugTasksTagsGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListTaskTagsV1OrgsOrgIdWorkforcesWorkforceSlugTasksTagsGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []string
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdDeleteResponse parses an HTTP response from a DeleteTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdDeleteWithResponse call
+func ParseDeleteTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdDeleteResponse(rsp *http.Response) (*DeleteTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdDeleteResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdDeleteResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdGetResponse parses an HTTP response from a GetTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdGetWithResponse call
+func ParseGetTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdGetResponse(rsp *http.Response) (*GetTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest TaskResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatchResponse parses an HTTP response from a UpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatchWithResponse call
+func ParseUpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatchResponse(rsp *http.Response) (*UpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatchResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateTaskV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskIdPatchResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest TaskResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPostResponse parses an HTTP response from a CreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPostWithResponse call
+func ParseCreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPostResponse(rsp *http.Response) (*CreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest TaskResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePostResponse parses an HTTP response from a DeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePostWithResponse call
+func ParseDeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePostResponse(rsp *http.Response) (*DeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteTaskLinksV1OrgsOrgIdWorkforcesWorkforceSlugTasksTaskNumberLinksDeletePostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest TaskResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListWorkforceViewsV1OrgsOrgIdWorkforcesWorkforceSlugViewsGetResponse parses an HTTP response from a ListWorkforceViewsV1OrgsOrgIdWorkforcesWorkforceSlugViewsGetWithResponse call
+func ParseListWorkforceViewsV1OrgsOrgIdWorkforcesWorkforceSlugViewsGetResponse(rsp *http.Response) (*ListWorkforceViewsV1OrgsOrgIdWorkforcesWorkforceSlugViewsGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListWorkforceViewsV1OrgsOrgIdWorkforcesWorkforceSlugViewsGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []WorkforceViewResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPostResponse parses an HTTP response from a CreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPostWithResponse call
+func ParseCreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPostResponse(rsp *http.Response) (*CreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest WorkforceViewResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdDeleteResponse parses an HTTP response from a DeleteWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdDeleteWithResponse call
+func ParseDeleteWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdDeleteResponse(rsp *http.Response) (*DeleteWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdDeleteResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdDeleteResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatchResponse parses an HTTP response from a UpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatchWithResponse call
+func ParseUpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatchResponse(rsp *http.Response) (*UpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatchResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateWorkforceViewV1OrgsOrgIdWorkforcesWorkforceSlugViewsViewIdPatchResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest WorkforceViewResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}

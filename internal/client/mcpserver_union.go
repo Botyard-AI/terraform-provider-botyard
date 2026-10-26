@@ -62,11 +62,15 @@ func DecodeMcpServerDetail(body []byte) (*McpServerDetail, error) {
 // ContainerImageMcpServerCreate or ManagedRemoteMcpServerCreate) and decodes the
 // created server on 201. A non-201 status returns a nil detail with the status
 // and raw body so callers can surface the error.
+//
+// The optional `mcp_connect_request_id` query parameter (which binds the create
+// to an in-chat connection ask) is not sent (nil params): it belongs to the
+// chat install card, not to declarative configuration.
 func (c *ClientWithResponses) CreateMcpServer(
 	ctx context.Context, orgID string, body []byte,
 ) (detail *McpServerDetail, status int, respBody []byte, err error) {
 	resp, err := c.CreateMcpServerV1OrgsOrgIdMcpServersPostWithBodyWithResponse(
-		ctx, orgID, "application/json", bytes.NewReader(body))
+		ctx, orgID, nil, "application/json", bytes.NewReader(body))
 	if err != nil {
 		return nil, 0, nil, err
 	}

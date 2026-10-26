@@ -46,8 +46,13 @@ func (c *ClientWithResponses) DeleteSecretPolicy(ctx context.Context, orgID, pol
 // raw body without body parsing (see the package note above on the empty-204
 // bug). The API refuses to delete non-custom skills, so a 400 here means the
 // skill is platform-provided rather than Terraform-managed.
+//
+// The optional `force` query parameter is deliberately not sent (nil params):
+// the API then refuses a skill still pinned by a bot with 409 skill_in_use,
+// which is the pre-existing behaviour. Opting into force-delete would be a
+// behaviour change for its own PR.
 func (c *ClientWithResponses) DeleteSkill(ctx context.Context, orgID, skillSlug string) (int, []byte, error) {
-	return deleteStatus(c.DeleteSkillV1OrgsOrgIdSkillsSkillSlugDelete(ctx, orgID, skillSlug))
+	return deleteStatus(c.DeleteSkillV1OrgsOrgIdSkillsSkillSlugDelete(ctx, orgID, skillSlug, nil))
 }
 
 // UnassignBotSkills removes the given skill assignments from a bot in one batch
