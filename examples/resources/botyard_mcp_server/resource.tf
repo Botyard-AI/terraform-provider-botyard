@@ -15,6 +15,16 @@ resource "botyard_mcp_server" "search" {
   env_secret_refs = {
     SEARCH_API_KEY = "search.api_key"
   }
+
+  # Pod compute. Omit the block to leave sizing to the platform default (or to
+  # whatever is set in the Botyard app). Quantities you leave out keep their
+  # current values. Every change restarts the pod, and compute is billed like
+  # bot compute, within your plan's per-MCP-server maximums.
+  resources = {
+    cpu_limit    = "2"
+    memory_limit = "2Gi"
+    storage      = "10Gi"
+  }
 }
 
 # A managed-remote MCP server: Botyard proxies to a vendor-hosted endpoint.

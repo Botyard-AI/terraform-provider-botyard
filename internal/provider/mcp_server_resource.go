@@ -53,6 +53,9 @@ type McpServerResourceModel struct {
 	EnvSecretRefs    types.Map    `tfsdk:"env_secret_refs"`
 	SecretFileMounts types.Map    `tfsdk:"secret_file_mounts"`
 	PodHostMode      types.String `tfsdk:"pod_host_mode"`
+	// Resources is the pod compute block; nil when undeclared (see
+	// mcp_server_resources.go for why an undeclared block is never managed).
+	Resources *mcpServerResourcesModel `tfsdk:"resources"`
 	// managed_remote variant
 	EndpointURL   types.String `tfsdk:"endpoint_url"`
 	StaticHeaders types.Map    `tfsdk:"static_headers"`
@@ -244,6 +247,7 @@ func (r *McpServerResource) Schema(_ context.Context, _ resource.SchemaRequest, 
 					"apply that creates the server or moves the endpoint, and leave it in place afterwards " +
 					"(harmless) or remove it (also harmless — removing it is not a change).",
 			},
+			"resources": mcpServerResourcesSchemaAttribute(),
 			"access": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
@@ -323,6 +327,7 @@ func validateMcpServerConfig(cfg McpServerResourceModel) diag.Diagnostics {
 		forbid("static_headers", !cfg.StaticHeaders.IsNull(), "managed_remote")
 		forbid("secret_headers", !cfg.SecretHeaders.IsNull(), "managed_remote")
 		forbid("acknowledged_credential_host", !cfg.AcknowledgedCredentialHost.IsNull(), "managed_remote")
+		diags.Append(validateMcpServerResources(cfg.Resources)...)
 	case client.McpRuntimeManagedRemote:
 		diags.Append(validateNoPlaintextAuthorizationHeader(cfg.StaticHeaders)...)
 		if cfg.EndpointURL.IsNull() {
@@ -337,6 +342,7 @@ func validateMcpServerConfig(cfg McpServerResourceModel) diag.Diagnostics {
 		forbid("env_secret_refs", !cfg.EnvSecretRefs.IsNull(), "container_image")
 		forbid("secret_file_mounts", !cfg.SecretFileMounts.IsNull(), "container_image")
 		forbid("pod_host_mode", !cfg.PodHostMode.IsNull(), "container_image")
+		forbid("resources", cfg.Resources != nil, "container_image")
 	case "":
 		// unknown/interpolated runtime_kind — validated at apply.
 	default:
@@ -506,7 +512,7 @@ func (r *McpServerResource) Update(ctx context.Context, req resource.UpdateReque
 	// narrower instance-owner gate. When access is the only thing that moved,
 	// skip the PATCH so an owner that is not an org owner can still apply it.
 	if !changeAccess || !onlyAccessChanged(plan, state) {
-		body, diags := buildUpdateJSON(ctx, plan, cfg, state.RuntimeKind.ValueString())
+		body, diags := buildUpdateJSON(ctx, plan, cfg, state.Resources, state.RuntimeKind.ValueString())
 		resp.Diagnostics.Append(diags...)
 		if resp.Diagnostics.HasError() {
 			return
@@ -557,7 +563,8 @@ func onlyAccessChanged(plan, state McpServerResourceModel) bool {
 		plan.PodHostMode.Equal(state.PodHostMode) &&
 		plan.EndpointURL.Equal(state.EndpointURL) &&
 		plan.StaticHeaders.Equal(state.StaticHeaders) &&
-		plan.SecretHeaders.Equal(state.SecretHeaders)
+		plan.SecretHeaders.Equal(state.SecretHeaders) &&
+		resourcesEqual(plan.Resources, state.Resources)
 }
 
 func (r *McpServerResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
@@ -634,6 +641,7 @@ func buildCreateJSON(ctx context.Context, plan McpServerResourceModel, ackHost t
 			EnvSecretRefs:    mapToStrMapPtr(ctx, plan.EnvSecretRefs, &diags),
 			SecretFileMounts: mapToStrMapPtr(ctx, plan.SecretFileMounts, &diags),
 			PodHostMode:      podHostModePtr(plan.PodHostMode),
+			Resources:        resourcesCreateBody(plan.Resources),
 		}
 		out, err := json.Marshal(body)
 		if err != nil {
@@ -663,7 +671,12 @@ func buildCreateJSON(ctx context.Context, plan McpServerResourceModel, ackHost t
 //
 // A declared-but-empty map (`static_headers = {}`) is a real instruction and is
 // sent as `{}`, which clears them.
-func buildUpdateJSON(ctx context.Context, plan, cfg McpServerResourceModel, kind string) ([]byte, diag.Diagnostics) {
+//
+// `resources` is keyed off plan vs state instead: see resourcesUpdatePatch. It
+// is sent only when a quantity moved or the block was removed, because every
+// resources change restarts the pod.
+func buildUpdateJSON(ctx context.Context, plan, cfg McpServerResourceModel, stateResources *mcpServerResourcesModel,
+	kind string) ([]byte, diag.Diagnostics) {
 	var diags diag.Diagnostics
 	body := map[string]json.RawMessage{
 		"name":                    rawString(plan.Name),
@@ -697,6 +710,9 @@ func buildUpdateJSON(ctx context.Context, plan, cfg McpServerResourceModel, kind
 		if !plan.PodHostMode.IsNull() {
 			body["pod_host_mode"] = rawString(plan.PodHostMode)
 		}
+		if patch, ok := resourcesUpdatePatch(plan.Resources, stateResources); ok {
+			body["resources"] = patch
+		}
 	}
 	out, err := json.Marshal(body)
 	if err != nil {
@@ -725,6 +741,7 @@ func mapDetail(ctx context.Context, d *client.McpServerDetail, m *McpServerResou
 		m.EnvSecretRefs = strMapToMap(ctx, c.EnvSecretRefs, diags)
 		m.SecretFileMounts = strMapToMap(ctx, c.SecretFileMounts, diags)
 		m.PodHostMode = podHostModeToStr(c.PodHostMode)
+		mapResources(c.Resources, m.Resources)
 		m.EndpointURL = types.StringNull()
 		m.StaticHeaders = types.MapNull(types.StringType)
 		m.SecretHeaders = types.MapNull(types.StringType)
@@ -763,6 +780,7 @@ func mapDetail(ctx context.Context, d *client.McpServerDetail, m *McpServerResou
 		m.EnvSecretRefs = types.MapNull(types.StringType)
 		m.SecretFileMounts = types.MapNull(types.StringType)
 		m.PodHostMode = types.StringNull()
+		m.Resources = nil
 		m.DesiredState = types.StringValue(string(c.DesiredState))
 		m.ObservedState = types.StringValue(string(c.ObservedState))
 		m.ToolCount = types.Int64Value(int64(c.ToolCount))

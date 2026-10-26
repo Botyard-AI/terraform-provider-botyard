@@ -176,7 +176,7 @@ func TestBuildCreateJSON_ManagedRemote(t *testing.T) {
 
 func TestBuildUpdateJSON_SparsePerKind(t *testing.T) {
 	// container update: no endpoint_url key (would be rejected by the API)
-	body, diags := buildUpdateJSON(context.Background(), containerModel(), containerModel(), client.McpRuntimeContainerImage)
+	body, diags := buildUpdateJSON(context.Background(), containerModel(), containerModel(), nil, client.McpRuntimeContainerImage)
 	if diags.HasError() {
 		t.Fatalf("diags: %v", diags)
 	}
@@ -189,7 +189,7 @@ func TestBuildUpdateJSON_SparsePerKind(t *testing.T) {
 	}
 
 	// managed update: no container-only keys
-	body, diags = buildUpdateJSON(context.Background(), managedModel(), managedModel(), client.McpRuntimeManagedRemote)
+	body, diags = buildUpdateJSON(context.Background(), managedModel(), managedModel(), nil, client.McpRuntimeManagedRemote)
 	if diags.HasError() {
 		t.Fatalf("diags: %v", diags)
 	}
@@ -400,7 +400,7 @@ func TestBuildUpdateJSON_OmitsUndeclaredHeaders(t *testing.T) {
 	plan.StaticHeaders = strMap(t, map[string]string{"X-Set-In-The-App": "1"})
 	plan.SecretHeaders = strMap(t, map[string]string{"Authorization": "mcp.posthog.authorization_header"})
 
-	body, diags := buildUpdateJSON(context.Background(), plan, cfg, client.McpRuntimeManagedRemote)
+	body, diags := buildUpdateJSON(context.Background(), plan, cfg, nil, client.McpRuntimeManagedRemote)
 	if diags.HasError() {
 		t.Fatalf("diags: %v", diags)
 	}
@@ -428,7 +428,7 @@ func TestBuildUpdateJSON_SendsDeclaredHeaders(t *testing.T) {
 	plan.StaticHeaders, cfg.StaticHeaders = empty, empty
 	cfg.AcknowledgedCredentialHost = types.StringValue("mcp.posthog.com")
 
-	body, diags := buildUpdateJSON(context.Background(), plan, cfg, client.McpRuntimeManagedRemote)
+	body, diags := buildUpdateJSON(context.Background(), plan, cfg, nil, client.McpRuntimeManagedRemote)
 	if diags.HasError() {
 		t.Fatalf("diags: %v", diags)
 	}
@@ -454,7 +454,7 @@ func TestBuildUpdateJSON_ContainerImageNeverSendsHeaders(t *testing.T) {
 	plan.SecretHeaders, cfg.SecretHeaders = headers, headers
 	cfg.AcknowledgedCredentialHost = types.StringValue("example.com")
 
-	body, diags := buildUpdateJSON(context.Background(), plan, cfg, client.McpRuntimeContainerImage)
+	body, diags := buildUpdateJSON(context.Background(), plan, cfg, nil, client.McpRuntimeContainerImage)
 	if diags.HasError() {
 		t.Fatalf("diags: %v", diags)
 	}
