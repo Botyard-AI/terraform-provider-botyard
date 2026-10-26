@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/datasourcevalidator"
@@ -182,22 +183,47 @@ func listPacks(ctx context.Context, data *providerData, slugs []string, diags *d
 	return all, notFound, true
 }
 
-// lookupPackBySlug resolves one catalogue pack, reporting not-found as an
-// error diagnostic on the given attribute.
+// lookupPackBySlug resolves the one catalogue pack with this slug. A slug is
+// unique per publisher, not across the catalogue: Botyard's pack and the
+// org's own pack may share it, and the API orders them by (slug, pack_id), not
+// by publisher. So a slug naming more than one pack is an error that lists
+// the candidates, never a silent pick. The caller then selects explicitly via
+// botyard_packs and an exact pack_version_id.
 func lookupPackBySlug(ctx context.Context, data *providerData, slug string, attr path.Path, diags *diag.Diagnostics) (client.CataloguePack, bool) {
 	packs, _, ok := listPacks(ctx, data, []string{slug}, diags)
 	if !ok {
 		return client.CataloguePack{}, false
 	}
+	var matches []client.CataloguePack
 	for _, p := range packs {
 		if p.Slug == slug {
-			return p, true
+			matches = append(matches, p)
 		}
 	}
-	diags.AddAttributeError(attr, "Pack not found", fmt.Sprintf(
-		"No pack with slug %q is in the organization's pack catalogue. The catalogue lists only packs this "+
-			"organization may see that have a published version and are not archived. An archived pack's "+
-			"versions can still be read by id with `botyard_pack_version`.", slug))
+	switch len(matches) {
+	case 1:
+		return matches[0], true
+	case 0:
+		diags.AddAttributeError(attr, "Pack not found", fmt.Sprintf(
+			"No pack with slug %q is in the organization's pack catalogue. The catalogue lists only packs this "+
+				"organization may see that have a published version and are not archived. An archived pack's "+
+				"versions can still be read by id with `botyard_pack_version`.", slug))
+	default:
+		candidates := make([]string, 0, len(matches))
+		for _, p := range matches {
+			publisher := "Botyard (platform)"
+			if p.PublisherOrgId != nil {
+				publisher = "organization " + *p.PublisherOrgId
+			}
+			candidates = append(candidates, fmt.Sprintf("pack_id %s (%s, %s, latest pack_version_id %s)",
+				p.PackId, publisher, p.Visibility, p.Latest.PackVersionId))
+		}
+		diags.AddAttributeError(attr, "Ambiguous pack slug", fmt.Sprintf(
+			"Slug %q names %d packs in the organization's catalogue: %s. Slugs are unique per publisher, not "+
+				"across the catalogue. List them with `botyard_packs` (slugs = [%q]), choose by `pack_id` or "+
+				"`publisher_org_id`, and read the version with `botyard_pack_version` using its exact `pack_version_id`.",
+			slug, len(matches), strings.Join(candidates, "; "), slug))
+	}
 	return client.CataloguePack{}, false
 }
 
@@ -226,7 +252,9 @@ func (d *PackDataSource) Metadata(_ context.Context, req datasource.MetadataRequ
 
 func (d *PackDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	attrs := cataloguePackIdentityAttributes()
-	attrs["slug"] = schema.StringAttribute{Required: true, MarkdownDescription: "Slug of the pack to look up."}
+	attrs["slug"] = schema.StringAttribute{Required: true, MarkdownDescription: "Slug of the pack to look up. " +
+		"Slugs are unique per publisher, so a Botyard pack and your organization's own pack may share one; " +
+		"if the slug names more than one pack the read fails and lists them. Select with `botyard_packs` instead."}
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "Looks up one pack in the organization's bot catalogue by slug and returns a summary of " +
 			"its latest published version. Read the version's contents (skills, tools, connections, settings) " +
@@ -367,16 +395,22 @@ type PackSkillModel struct {
 }
 
 // PackToolModel is one tool in a pack version. The API models a tool as a
-// union on `runtime`; Terraform has no union type, so the variant-specific
-// field (`mcp_server`, MCP tools only) is null on built-in tools.
+// union on `runtime`. Terraform has no union type, so, as for connections,
+// each variant's own data sits in its own nested block (`mcp`, set only for
+// MCP tools); built-in tools carry no variant-specific data.
 type PackToolModel struct {
-	ToolID    types.String `tfsdk:"tool_id"`
-	Slug      types.String `tfsdk:"slug"`
-	Name      types.String `tfsdk:"name"`
-	Title     types.String `tfsdk:"title"`
-	Runtime   types.String `tfsdk:"runtime"`
-	McpServer types.String `tfsdk:"mcp_server"`
-	Required  types.Bool   `tfsdk:"required"`
+	ToolID   types.String      `tfsdk:"tool_id"`
+	Slug     types.String      `tfsdk:"slug"`
+	Name     types.String      `tfsdk:"name"`
+	Title    types.String      `tfsdk:"title"`
+	Runtime  types.String      `tfsdk:"runtime"`
+	Mcp      *PackToolMcpModel `tfsdk:"mcp"`
+	Required types.Bool        `tfsdk:"required"`
+}
+
+// PackToolMcpModel is the variant body of an MCP tool.
+type PackToolMcpModel struct {
+	Server types.String `tfsdk:"server"`
 }
 
 // PackMcpCatalogEntryModel is the variant body of an `mcp_catalog_entry`
@@ -500,9 +534,10 @@ func (d *PackVersionDataSource) Schema(_ context.Context, _ datasource.SchemaReq
 				MarkdownDescription: "Id (UUID) of the version to read. Exactly one of `pack_version_id` and `slug` is required.",
 			},
 			"slug": schema.StringAttribute{
-				Optional:            true,
-				Computed:            true,
-				MarkdownDescription: "Slug of a catalogue pack whose latest published version to read. Exactly one of `pack_version_id` and `slug` is required.",
+				Optional: true,
+				Computed: true,
+				MarkdownDescription: "Slug of a catalogue pack whose latest published version to read. Exactly one of `pack_version_id` and `slug` is required. " +
+					"Fails, listing the candidates, if the slug names more than one pack (a Botyard pack and your organization's own may share a slug); use `pack_version_id` then.",
 			},
 			"pack_id":                  str("Id of the pack this version belongs to."),
 			"visibility":               str("Who may see the pack: `curated`, `org_private` or `public`."),
@@ -570,13 +605,19 @@ func (d *PackVersionDataSource) Schema(_ context.Context, _ datasource.SchemaReq
 				Computed:            true,
 				MarkdownDescription: "Tools the version includes.",
 				NestedObject: schema.NestedAttributeObject{Attributes: map[string]schema.Attribute{
-					"tool_id":    str("Tool id. Use with `botyard_bot_tool_assignment`."),
-					"slug":       str("Tool slug."),
-					"name":       str("Tool name."),
-					"title":      str("Tool title. Null when the tool has none."),
-					"runtime":    str("Where the tool runs: `mcp` (served over MCP), or `openclaw` / `native` (built into the bot's runtime)."),
-					"mcp_server": str("MCP server the tool comes from, as the tool catalogue names it. Set only when `runtime` is `mcp`."),
-					"required":   boolean("Whether the pack needs this tool."),
+					"tool_id": str("Tool id. Use with `botyard_bot_tool_assignment`."),
+					"slug":    str("Tool slug."),
+					"name":    str("Tool name."),
+					"title":   str("Tool title. Null when the tool has none."),
+					"runtime": str("Where the tool runs: `mcp` (served over MCP), or `openclaw` / `native` (built into the bot's runtime)."),
+					"mcp": schema.SingleNestedAttribute{
+						Computed:            true,
+						MarkdownDescription: "MCP details. Set only when `runtime` is `mcp`.",
+						Attributes: map[string]schema.Attribute{
+							"server": str("MCP server the tool comes from, as the tool catalogue names it (e.g. `botyard`)."),
+						},
+					},
+					"required": boolean("Whether the pack needs this tool."),
 				}},
 			},
 			"connections": schema.ListNestedAttribute{
@@ -781,29 +822,28 @@ func packToolToModel(t client.NamedPackTool) (PackToolModel, error) {
 	if err != nil {
 		return PackToolModel{}, err
 	}
-	switch {
-	case tool.Mcp != nil:
+	switch v := tool.(type) {
+	case *client.PackToolMcp:
 		return PackToolModel{
-			ToolID:    types.StringValue(tool.Mcp.ToolId),
-			Slug:      types.StringValue(tool.Mcp.Slug),
-			Name:      types.StringValue(tool.Mcp.Name),
-			Title:     types.StringPointerValue(tool.Mcp.Title),
-			Runtime:   types.StringValue(tool.Runtime),
-			McpServer: types.StringValue(tool.Mcp.McpServer),
-			Required:  types.BoolValue(t.Required),
+			ToolID:   types.StringValue(v.Ref.ToolId),
+			Slug:     types.StringValue(v.Ref.Slug),
+			Name:     types.StringValue(v.Ref.Name),
+			Title:    types.StringPointerValue(v.Ref.Title),
+			Runtime:  types.StringValue(v.Runtime()),
+			Mcp:      &PackToolMcpModel{Server: types.StringValue(v.Ref.McpServer)},
+			Required: types.BoolValue(t.Required),
 		}, nil
-	case tool.Builtin != nil:
+	case *client.PackToolBuiltin:
 		return PackToolModel{
-			ToolID:    types.StringValue(tool.Builtin.ToolId),
-			Slug:      types.StringValue(tool.Builtin.Slug),
-			Name:      types.StringValue(tool.Builtin.Name),
-			Title:     types.StringPointerValue(tool.Builtin.Title),
-			Runtime:   types.StringValue(tool.Runtime),
-			McpServer: types.StringNull(),
-			Required:  types.BoolValue(t.Required),
+			ToolID:   types.StringValue(v.Ref.ToolId),
+			Slug:     types.StringValue(v.Ref.Slug),
+			Name:     types.StringValue(v.Ref.Name),
+			Title:    types.StringPointerValue(v.Ref.Title),
+			Runtime:  types.StringValue(v.Runtime()),
+			Required: types.BoolValue(t.Required),
 		}, nil
 	default:
-		return PackToolModel{}, fmt.Errorf("decoded tool has no variant (runtime %q)", tool.Runtime)
+		return PackToolModel{}, fmt.Errorf("unhandled pack tool variant %T (runtime %q)", tool, tool.Runtime())
 	}
 }
 
@@ -812,21 +852,21 @@ func packConnectionToModel(c client.OrgPackVersion_Connections_Item) (PackConnec
 	if err != nil {
 		return PackConnectionModel{}, err
 	}
-	switch {
-	case conn.Mcp != nil:
+	switch v := conn.(type) {
+	case *client.PackConnectionMcp:
 		toolNames := types.ListNull(types.StringType)
-		if conn.Mcp.ToolNames != nil {
-			elems := make([]attr.Value, 0, len(*conn.Mcp.ToolNames))
-			for _, n := range *conn.Mcp.ToolNames {
+		if v.Conn.ToolNames != nil {
+			elems := make([]attr.Value, 0, len(*v.Conn.ToolNames))
+			for _, n := range *v.Conn.ToolNames {
 				elems = append(elems, types.StringValue(n))
 			}
 			toolNames = types.ListValueMust(types.StringType, elems)
 		}
-		e := conn.Mcp.McpCatalogEntry
+		e := v.Conn.McpCatalogEntry
 		return PackConnectionModel{
-			Kind:     types.StringValue(conn.Kind),
-			Required: types.BoolValue(conn.Mcp.Required),
-			Purpose:  types.StringPointerValue(conn.Mcp.Purpose),
+			Kind:     types.StringValue(v.Kind()),
+			Required: types.BoolValue(v.Conn.Required),
+			Purpose:  types.StringPointerValue(v.Conn.Purpose),
 			McpCatalogEntry: &PackMcpCatalogEntryModel{
 				McpCatalogEntryID: types.StringValue(e.McpCatalogEntryId),
 				Slug:              types.StringValue(e.Slug),
@@ -834,16 +874,16 @@ func packConnectionToModel(c client.OrgPackVersion_Connections_Item) (PackConnec
 				ToolNames:         toolNames,
 			},
 		}, nil
-	case conn.Vault != nil:
-		s := conn.Vault.SecretSpec
+	case *client.PackConnectionVault:
+		s := v.Conn.SecretSpec
 		sensitivity := types.StringNull()
 		if s.Sensitivity != nil {
 			sensitivity = types.StringValue(string(*s.Sensitivity))
 		}
 		return PackConnectionModel{
-			Kind:     types.StringValue(conn.Kind),
-			Required: types.BoolValue(conn.Vault.Required),
-			Purpose:  types.StringPointerValue(conn.Vault.Purpose),
+			Kind:     types.StringValue(v.Kind()),
+			Required: types.BoolValue(v.Conn.Required),
+			Purpose:  types.StringPointerValue(v.Conn.Purpose),
 			VaultSecret: &PackVaultSecretModel{
 				KeyPath:       types.StringValue(s.KeyPath),
 				DisplayName:   types.StringValue(s.DisplayName),
@@ -853,7 +893,7 @@ func packConnectionToModel(c client.OrgPackVersion_Connections_Item) (PackConnec
 			},
 		}, nil
 	default:
-		return PackConnectionModel{}, fmt.Errorf("decoded connection has no variant (kind %q)", conn.Kind)
+		return PackConnectionModel{}, fmt.Errorf("unhandled pack connection variant %T (kind %q)", conn, conn.Kind())
 	}
 }
 

@@ -31,7 +31,7 @@ output "crm_latest_version" {
 
 ### Required
 
-- `slug` (String) Slug of the pack to look up.
+- `slug` (String) Slug of the pack to look up. Slugs are unique per publisher, so a Botyard pack and your organization's own pack may share one; if the slug names more than one pack the read fails and lists them. Select with `botyard_packs` instead.
 
 ### Read-Only
 

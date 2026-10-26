@@ -39,10 +39,26 @@ func cataloguePackJSON(slug, packID, versionID string, versionNo int, publisher 
 }
 
 // The catalogue, in slug order as the API returns it.
-var fakeCatalogue = []struct{ slug, json string }{
-	{"crm", cataloguePackJSON("crm", "pk-crm", pvCRM, 3, "")},
-	{"empty", cataloguePackJSON("empty", "pk-empty", pvEmpty, 1, "")},
-	{"support", cataloguePackJSON("support", "pk-support", pvSupport, 1, "org-pub")},
+type fakePack struct{ slug, packID, json string }
+
+func fp(slug, packID, versionID string, versionNo int, publisher string) fakePack {
+	return fakePack{slug, packID, cataloguePackJSON(slug, packID, versionID, versionNo, publisher)}
+}
+
+// The catalogue, in the API's (slug, pack_id) order.
+var fakeCatalogue = []fakePack{
+	fp("crm", "pk-crm", pvCRM, 3, ""),
+	fp("empty", "pk-empty", pvEmpty, 1, ""),
+	fp("support", "pk-support", pvSupport, 1, "org-pub"),
+}
+
+// A catalogue where one slug names two packs: Botyard's and the org's own.
+// The server allows this (ux_packs_platform_slug vs ux_packs_org_slug) and
+// orders them by pack_id, not by publisher.
+var collidingCatalogue = []fakePack{
+	fp("crm", "pk-crm-a", pvCRM, 3, ""),
+	fp("crm", "pk-crm-b", pvCRMOld, 1, "org-1"),
+	fp("support", "pk-support", pvSupport, 1, "org-pub"),
 }
 
 func orgPackVersionJSON(id, slug string, versionNo int, archived, latest bool, skills, tools, connections, settings, model string) string {
@@ -86,8 +102,9 @@ var fakeVersions = map[string]string{
 
 type packsAPI struct {
 	mu        sync.Mutex
-	pageSize  int // packs per page; 0 means all on one page
-	failWith  int // when non-zero every request returns this status
+	catalogue []fakePack // nil means fakeCatalogue
+	pageSize  int        // packs per page; 0 means all on one page
+	failWith  int        // when non-zero every request returns this status
 	listCalls []string
 }
 
@@ -121,14 +138,23 @@ func (a *packsAPI) serve(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// servePacks mirrors GET /packs: keyset pages in (slug, pack_id) order with a
+// "slug|pack_id" cursor, and not_found computed over the whole catalogue.
 func (a *packsAPI) servePacks(w http.ResponseWriter, r *http.Request) {
+	catalogue := a.catalogue
+	if catalogue == nil {
+		catalogue = fakeCatalogue
+	}
 	q := r.URL.Query()
 	requested, filtered := q["slugs"]
-	var matched []string
-	var notFound []string
+	want := map[string]bool{}
+	for _, s := range requested {
+		want[s] = true
+	}
+	notFound := []string{}
 	if filtered {
 		have := map[string]bool{}
-		for _, p := range fakeCatalogue {
+		for _, p := range catalogue {
 			have[p.slug] = true
 		}
 		for _, s := range requested {
@@ -137,24 +163,29 @@ func (a *packsAPI) servePacks(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-	want := map[string]bool{}
-	for _, s := range requested {
-		want[s] = true
-	}
-	for _, p := range fakeCatalogue {
-		if (!filtered || want[p.slug]) && (q.Get("cursor") == "" || p.slug > q.Get("cursor")) {
-			matched = append(matched, p.json)
+	afterSlug, afterID, hasCursor := strings.Cut(q.Get("cursor"), "|")
+	var page []fakePack
+	for _, p := range catalogue {
+		if filtered && !want[p.slug] {
+			continue
 		}
+		if hasCursor && (p.slug < afterSlug || (p.slug == afterSlug && p.packID <= afterID)) {
+			continue
+		}
+		page = append(page, p)
 	}
 	next := "null"
-	if a.pageSize > 0 && len(matched) > a.pageSize {
-		matched = matched[:a.pageSize]
-		var last struct{ Slug string }
-		_ = json.Unmarshal([]byte(matched[len(matched)-1]), &last)
-		next = fmt.Sprintf("%q", last.Slug)
+	if a.pageSize > 0 && len(page) > a.pageSize {
+		page = page[:a.pageSize]
+		last := page[len(page)-1]
+		next = fmt.Sprintf("%q", last.slug+"|"+last.packID)
 	}
-	nf, _ := json.Marshal(append([]string{}, notFound...))
-	_, _ = fmt.Fprintf(w, `{"packs":[%s],"next_cursor":%s,"not_found":%s}`, strings.Join(matched, ","), next, nf)
+	items := make([]string, 0, len(page))
+	for _, p := range page {
+		items = append(items, p.json)
+	}
+	nf, _ := json.Marshal(notFound)
+	_, _ = fmt.Fprintf(w, `{"packs":[%s],"next_cursor":%s,"not_found":%s}`, strings.Join(items, ","), next, nf)
 }
 
 func (a *packsAPI) serveVersions(w http.ResponseWriter, r *http.Request) {
@@ -221,8 +252,8 @@ func TestPacksDataSource_WholeCatalogueAcrossPages(t *testing.T) {
 			func(*terraform.State) error {
 				// Two pages per read; the second carries the first's cursor.
 				calls := api.calls()
-				if len(calls) < 2 || !strings.Contains(calls[1], "cursor=empty") {
-					return fmt.Errorf("list calls = %v, want a second page with cursor=empty", calls)
+				if len(calls) < 2 || !strings.Contains(calls[1], "cursor=empty%7Cpk-empty") {
+					return fmt.Errorf("list calls = %v, want a second page with cursor=empty|pk-empty", calls)
 				}
 				if strings.Contains(calls[0], "slugs=") {
 					return fmt.Errorf("unfiltered read sent slugs: %q", calls[0])
@@ -357,11 +388,12 @@ func TestPackVersionDataSource_ByID(t *testing.T) {
 			// tools: every runtime variant dispatched.
 			resource.TestCheckResourceAttr(n, "tools.#", "3"),
 			resource.TestCheckResourceAttr(n, "tools.0.runtime", "mcp"),
-			resource.TestCheckResourceAttr(n, "tools.0.mcp_server", "hubspot"),
+			resource.TestCheckResourceAttr(n, "tools.0.mcp.server", "hubspot"),
 			resource.TestCheckNoResourceAttr(n, "tools.0.title"),
 			resource.TestCheckResourceAttr(n, "tools.1.runtime", "openclaw"),
 			resource.TestCheckResourceAttr(n, "tools.1.title", "Web fetch"),
-			resource.TestCheckNoResourceAttr(n, "tools.1.mcp_server"),
+			resource.TestCheckNoResourceAttr(n, "tools.1.mcp"),
+			resource.TestCheckNoResourceAttr(n, "tools.2.mcp"),
 			resource.TestCheckResourceAttr(n, "tools.2.runtime", "native"),
 			resource.TestCheckResourceAttr(n, "tools.2.tool_id", "t-nat"),
 			resource.TestCheckResourceAttr(n, "tool_ids.#", "3"),
@@ -514,8 +546,12 @@ func TestPackVersionDataSource_UnknownConnectionKind(t *testing.T) {
 
 // The fixtures must stay in the API's slug order for the pagination fake.
 func TestPackFixturesSorted(t *testing.T) {
-	if !sort.SliceIsSorted(fakeCatalogue, func(i, j int) bool { return fakeCatalogue[i].slug < fakeCatalogue[j].slug }) {
-		t.Fatal("fakeCatalogue must be in slug order")
+	for name, c := range map[string][]fakePack{"fakeCatalogue": fakeCatalogue, "collidingCatalogue": collidingCatalogue} {
+		if !sort.SliceIsSorted(c, func(i, j int) bool {
+			return c[i].slug < c[j].slug || (c[i].slug == c[j].slug && c[i].packID < c[j].packID)
+		}) {
+			t.Fatalf("%s must be in (slug, pack_id) order", name)
+		}
 	}
 }
 
@@ -529,5 +565,46 @@ func TestListPacks_StuckCursor(t *testing.T) {
 	packsUnitTest(t, resource.TestStep{
 		Config:      packsConfig(srv.URL, `data "botyard_packs" "all" {}`),
 		ExpectError: regexp.MustCompile(`cursor that does not advance`),
+	})
+}
+
+// --- same slug, two packs ---------------------------------------------------
+
+// A slug naming two packs must fail both singular lookups and list both
+// candidates. pageSize 1 puts the two packs on different pages, so a lookup
+// that stopped at the first match would pass silently.
+func TestPackDataSources_AmbiguousSlug(t *testing.T) {
+	for _, tc := range []struct{ name, hcl string }{
+		{"botyard_pack", `data "botyard_pack" "x" { slug = "crm" }`},
+		{"botyard_pack_version", `data "botyard_pack_version" "x" { slug = "crm" }`},
+	} {
+		for _, pageSize := range []int{0, 1} {
+			t.Run(fmt.Sprintf("%s/pageSize=%d", tc.name, pageSize), func(t *testing.T) {
+				api, srv := newPacksAPI(t)
+				api.set(func(a *packsAPI) { a.catalogue = collidingCatalogue; a.pageSize = pageSize })
+				packsUnitTest(t, resource.TestStep{
+					Config: packsConfig(srv.URL, tc.hcl),
+					ExpectError: regexp.MustCompile(`(?s)Ambiguous pack slug.*names 2 packs.*pk-crm-a.*Botyard \(platform\).*` +
+						pvCRM + `.*pk-crm-b.*organization org-1.*` + pvCRMOld),
+				})
+			})
+		}
+	}
+}
+
+// The plural lists both same-slug packs, across pages, so the practitioner
+// can choose one explicitly.
+func TestPacksDataSource_SameSlugAcrossPages(t *testing.T) {
+	api, srv := newPacksAPI(t)
+	api.set(func(a *packsAPI) { a.catalogue = collidingCatalogue; a.pageSize = 1 })
+	packsUnitTest(t, resource.TestStep{
+		Config: packsConfig(srv.URL, `data "botyard_packs" "crm" { slugs = ["crm"] }`),
+		Check: resource.ComposeAggregateTestCheckFunc(
+			resource.TestCheckResourceAttr("data.botyard_packs.crm", "packs.#", "2"),
+			resource.TestCheckResourceAttr("data.botyard_packs.crm", "packs.0.pack_id", "pk-crm-a"),
+			resource.TestCheckNoResourceAttr("data.botyard_packs.crm", "packs.0.publisher_org_id"),
+			resource.TestCheckResourceAttr("data.botyard_packs.crm", "packs.1.pack_id", "pk-crm-b"),
+			resource.TestCheckResourceAttr("data.botyard_packs.crm", "packs.1.publisher_org_id", "org-1"),
+		),
 	})
 }

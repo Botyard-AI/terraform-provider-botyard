@@ -25,15 +25,24 @@ func conn(t *testing.T, raw string) OrgPackVersion_Connections_Item {
 }
 
 func TestDecodePackTool(t *testing.T) {
-	mcp, err := DecodePackTool(tool(t, `{"runtime":"mcp","tool_id":"t1","slug":"s","name":"n","title":null,"mcp_server":"hubspot"}`))
-	if err != nil || mcp.Mcp == nil || mcp.Builtin != nil || mcp.Mcp.McpServer != "hubspot" || mcp.Runtime != "mcp" {
-		t.Fatalf("mcp: %+v err=%v", mcp, err)
+	got, err := DecodePackTool(tool(t, `{"runtime":"mcp","tool_id":"t1","slug":"s","name":"n","title":null,"mcp_server":"hubspot"}`))
+	if err != nil {
+		t.Fatal(err)
 	}
-	// Both builtin runtimes land on BuiltinToolRef, keeping their own runtime.
+	mcp, ok := got.(*PackToolMcp)
+	if !ok || mcp.Ref.McpServer != "hubspot" || mcp.Ref.ToolId != "t1" || got.Runtime() != "mcp" {
+		t.Fatalf("mcp: %#v", got)
+	}
+	// Both builtin runtimes land on PackToolBuiltin; the discriminator is
+	// derived from the variant's own typed field.
 	for _, rt := range []string{"native", "openclaw"} {
-		b, err := DecodePackTool(tool(t, `{"runtime":"`+rt+`","tool_id":"t2","slug":"s","name":"n","title":"T"}`))
-		if err != nil || b.Builtin == nil || b.Mcp != nil || b.Runtime != rt || string(b.Builtin.Runtime) != rt {
-			t.Fatalf("%s: %+v err=%v", rt, b, err)
+		got, err := DecodePackTool(tool(t, `{"runtime":"`+rt+`","tool_id":"t2","slug":"s","name":"n","title":"T"}`))
+		if err != nil {
+			t.Fatal(err)
+		}
+		b, ok := got.(*PackToolBuiltin)
+		if !ok || got.Runtime() != rt || b.Ref.ToolId != "t2" {
+			t.Fatalf("%s: %#v", rt, got)
 		}
 	}
 }
@@ -55,13 +64,19 @@ func TestDecodePackTool_Unknown(t *testing.T) {
 }
 
 func TestDecodePackConnection(t *testing.T) {
-	m, err := DecodePackConnection(conn(t, `{"kind":"mcp_catalog_entry","required":true,"purpose":null,"mcp_catalog_entry":{"mcp_catalog_entry_id":"ce","slug":"s","name":"n","logo_url":null,"logo_href":null},"tool_names":null}`))
-	if err != nil || m.Mcp == nil || m.Vault != nil || m.Mcp.McpCatalogEntry.McpCatalogEntryId != "ce" {
-		t.Fatalf("mcp: %+v err=%v", m, err)
+	got, err := DecodePackConnection(conn(t, `{"kind":"mcp_catalog_entry","required":true,"purpose":null,"mcp_catalog_entry":{"mcp_catalog_entry_id":"ce","slug":"s","name":"n","logo_url":null,"logo_href":null},"tool_names":null}`))
+	if err != nil {
+		t.Fatal(err)
 	}
-	v, err := DecodePackConnection(conn(t, `{"kind":"vault_secret","required":false,"purpose":"p","secret_spec":{"key_path":"a.b","display_name":"d","max_ttl_seconds":60}}`))
-	if err != nil || v.Vault == nil || v.Mcp != nil || v.Vault.SecretSpec.KeyPath != "a.b" {
-		t.Fatalf("vault: %+v err=%v", v, err)
+	if m, ok := got.(*PackConnectionMcp); !ok || m.Conn.McpCatalogEntry.McpCatalogEntryId != "ce" || got.Kind() != "mcp_catalog_entry" {
+		t.Fatalf("mcp: %#v", got)
+	}
+	got, err = DecodePackConnection(conn(t, `{"kind":"vault_secret","required":false,"purpose":"p","secret_spec":{"key_path":"a.b","display_name":"d","max_ttl_seconds":60}}`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if v, ok := got.(*PackConnectionVault); !ok || v.Conn.SecretSpec.KeyPath != "a.b" || got.Kind() != "vault_secret" {
+		t.Fatalf("vault: %#v", got)
 	}
 	_, err = DecodePackConnection(conn(t, `{"kind":"oauth_app"}`))
 	var u *UnknownDiscriminatorError

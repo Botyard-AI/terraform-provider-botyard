@@ -17,7 +17,7 @@ import (
 // a generated ValueByDiscriminator() exists. DecodePackConnection still reads
 // `kind` itself, because ValueByDiscriminator() returns an untyped interface{}
 // and an untyped error for an unknown value. This way callers get the same
-// exactly-one-of shape and UnknownDiscriminatorError from both unions.
+// sealed variant types and UnknownDiscriminatorError from both unions.
 //
 // An unknown discriminator value is an error, never a silent drop: a pack
 // item the provider cannot represent must not disappear from a list that HCL
@@ -54,89 +54,126 @@ func (e *UnknownDiscriminatorError) Error() string {
 	return fmt.Sprintf("%s has unknown %s %q (this provider knows %q)", e.Union, e.Field, e.Value, e.KnownValues)
 }
 
-// PackTool is a decoded NamedPackTool.tool. Exactly one of Mcp / Builtin is
-// non-nil; Runtime is the discriminator value that selected it.
-type PackTool struct {
-	Runtime string
-	Mcp     *McpToolRef
-	Builtin *BuiltinToolRef
+// PackTool is a decoded NamedPackTool.tool: a closed set of variants, each
+// wrapping its required generated payload. The interface is sealed by an
+// unexported method, so only this package can add a variant. Consumers
+// dispatch with a type switch on *PackToolMcp / *PackToolBuiltin, and the
+// discriminator comes from the variant, never from probing payload fields.
+type PackTool interface {
+	// Runtime is the `runtime` discriminator value of this variant.
+	Runtime() string
+	isPackTool()
 }
+
+// PackToolMcp is a tool served over MCP (`runtime: mcp`).
+type PackToolMcp struct {
+	Ref McpToolRef
+}
+
+// PackToolBuiltin is a tool built into the bot's runtime (`runtime: native`
+// or `openclaw`). Its runtime is carried by the payload's own typed field.
+type PackToolBuiltin struct {
+	Ref BuiltinToolRef
+}
+
+func (*PackToolMcp) Runtime() string       { return PackToolRuntimeMcp }
+func (t *PackToolBuiltin) Runtime() string { return string(t.Ref.Runtime) }
+func (*PackToolMcp) isPackTool()           {}
+func (*PackToolBuiltin) isPackTool()       {}
 
 // DecodePackTool dispatches a NamedPackTool.tool on its `runtime` field.
 func DecodePackTool(t NamedPackTool_Tool) (PackTool, error) {
 	raw, err := t.MarshalJSON()
 	if err != nil {
-		return PackTool{}, fmt.Errorf("reading NamedPackTool.tool: %w", err)
+		return nil, fmt.Errorf("reading NamedPackTool.tool: %w", err)
 	}
 	var disc struct {
 		Runtime *string `json:"runtime"`
 	}
 	if err := json.Unmarshal(raw, &disc); err != nil {
-		return PackTool{}, fmt.Errorf("decoding NamedPackTool.tool runtime: %w", err)
+		return nil, fmt.Errorf("decoding NamedPackTool.tool runtime: %w", err)
 	}
 	known := []string{PackToolRuntimeMcp, PackToolRuntimeNative, PackToolRuntimeOpenclaw}
 	if disc.Runtime == nil {
-		return PackTool{}, &UnknownDiscriminatorError{Union: "NamedPackTool.tool", Field: "runtime", KnownValues: known}
+		return nil, &UnknownDiscriminatorError{Union: "NamedPackTool.tool", Field: "runtime", KnownValues: known}
 	}
 	switch rt := *disc.Runtime; rt {
 	case PackToolRuntimeMcp:
 		v, err := t.AsMcpToolRef()
 		if err != nil {
-			return PackTool{}, fmt.Errorf("decoding mcp tool: %w", err)
+			return nil, fmt.Errorf("decoding mcp tool: %w", err)
 		}
-		return PackTool{Runtime: rt, Mcp: &v}, nil
+		return &PackToolMcp{Ref: v}, nil
 	case PackToolRuntimeNative, PackToolRuntimeOpenclaw:
 		v, err := t.AsBuiltinToolRef()
 		if err != nil {
-			return PackTool{}, fmt.Errorf("decoding %s tool: %w", rt, err)
+			return nil, fmt.Errorf("decoding %s tool: %w", rt, err)
 		}
-		return PackTool{Runtime: rt, Builtin: &v}, nil
+		return &PackToolBuiltin{Ref: v}, nil
 	default:
-		return PackTool{}, &UnknownDiscriminatorError{
+		return nil, &UnknownDiscriminatorError{
 			Union: "NamedPackTool.tool", Field: "runtime", Value: rt, KnownValues: known, PresentInJSON: true,
 		}
 	}
 }
 
-// PackConnection is a decoded OrgPackVersion.connections[] item. Exactly one
-// of Mcp / Vault is non-nil; Kind is the discriminator value that selected it.
-type PackConnection struct {
-	Kind  string
-	Mcp   *NamedPackMcpConnection
-	Vault *NamedPackVaultConnection
+// PackConnection is a decoded OrgPackVersion.connections[] item: a sealed set
+// of variants, like PackTool. Dispatch with a type switch on
+// *PackConnectionMcp / *PackConnectionVault.
+type PackConnection interface {
+	// Kind is the `kind` discriminator value of this variant.
+	Kind() string
+	isPackConnection()
 }
+
+// PackConnectionMcp is an MCP catalogue entry the pack connects
+// (`kind: mcp_catalog_entry`).
+type PackConnectionMcp struct {
+	Conn NamedPackMcpConnection
+}
+
+// PackConnectionVault is a Runtime Vault secret the installer supplies
+// (`kind: vault_secret`).
+type PackConnectionVault struct {
+	Conn NamedPackVaultConnection
+}
+
+func (*PackConnectionMcp) Kind() string        { return PackConnectionKindMcpCatalogEntry }
+func (*PackConnectionVault) Kind() string      { return PackConnectionKindVaultSecret }
+func (*PackConnectionMcp) isPackConnection()   {}
+func (*PackConnectionVault) isPackConnection() {}
 
 // DecodePackConnection dispatches a pack connection on its `kind` field.
 func DecodePackConnection(c OrgPackVersion_Connections_Item) (PackConnection, error) {
 	known := []string{PackConnectionKindMcpCatalogEntry, PackConnectionKindVaultSecret}
 	raw, err := c.MarshalJSON()
 	if err != nil {
-		return PackConnection{}, fmt.Errorf("reading pack connection: %w", err)
+		return nil, fmt.Errorf("reading pack connection: %w", err)
 	}
 	var disc struct {
 		Kind *string `json:"kind"`
 	}
 	if err := json.Unmarshal(raw, &disc); err != nil {
-		return PackConnection{}, fmt.Errorf("decoding pack connection kind: %w", err)
+		return nil, fmt.Errorf("decoding pack connection kind: %w", err)
 	}
 	if disc.Kind == nil {
-		return PackConnection{}, &UnknownDiscriminatorError{Union: "OrgPackVersion.connections", Field: "kind", KnownValues: known}
+		return nil, &UnknownDiscriminatorError{Union: "OrgPackVersion.connections", Field: "kind", KnownValues: known}
 	}
 	switch kind := *disc.Kind; kind {
 	case PackConnectionKindMcpCatalogEntry:
 		v, err := c.AsNamedPackMcpConnection()
 		if err != nil {
-			return PackConnection{}, fmt.Errorf("decoding mcp_catalog_entry connection: %w", err)
+			return nil, fmt.Errorf("decoding mcp_catalog_entry connection: %w", err)
 		}
-		return PackConnection{Kind: kind, Mcp: &v}, nil
+		return &PackConnectionMcp{Conn: v}, nil
 	case PackConnectionKindVaultSecret:
 		v, err := c.AsNamedPackVaultConnection()
 		if err != nil {
-			return PackConnection{}, fmt.Errorf("decoding vault_secret connection: %w", err)
+			return nil, fmt.Errorf("decoding vault_secret connection: %w", err)
 		}
-		return PackConnection{Kind: kind, Vault: &v}, nil
+		return &PackConnectionVault{Conn: v}, nil
 	default:
-		return PackConnection{}, &UnknownDiscriminatorError{
+		return nil, &UnknownDiscriminatorError{
 			Union: "OrgPackVersion.connections", Field: "kind", Value: kind, KnownValues: known, PresentInJSON: true,
 		}
 	}

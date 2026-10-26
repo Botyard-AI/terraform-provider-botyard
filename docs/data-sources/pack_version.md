@@ -46,7 +46,7 @@ resource "botyard_bot_skill_assignment" "example" {
 ### Optional
 
 - `pack_version_id` (String) Id (UUID) of the version to read. Exactly one of `pack_version_id` and `slug` is required.
-- `slug` (String) Slug of a catalogue pack whose latest published version to read. Exactly one of `pack_version_id` and `slug` is required.
+- `slug` (String) Slug of a catalogue pack whose latest published version to read. Exactly one of `pack_version_id` and `slug` is required. Fails, listing the candidates, if the slug names more than one pack (a Botyard pack and your organization's own may share a slug); use `pack_version_id` then.
 
 ### Read-Only
 
@@ -167,10 +167,17 @@ Read-Only:
 
 Read-Only:
 
-- `mcp_server` (String) MCP server the tool comes from, as the tool catalogue names it. Set only when `runtime` is `mcp`.
+- `mcp` (Attributes) MCP details. Set only when `runtime` is `mcp`. (see [below for nested schema](#nestedatt--tools--mcp))
 - `name` (String) Tool name.
 - `required` (Boolean) Whether the pack needs this tool.
 - `runtime` (String) Where the tool runs: `mcp` (served over MCP), or `openclaw` / `native` (built into the bot's runtime).
 - `slug` (String) Tool slug.
 - `title` (String) Tool title. Null when the tool has none.
 - `tool_id` (String) Tool id. Use with `botyard_bot_tool_assignment`.
+
+<a id="nestedatt--tools--mcp"></a>
+### Nested Schema for `tools.mcp`
+
+Read-Only:
+
+- `server` (String) MCP server the tool comes from, as the tool catalogue names it (e.g. `botyard`).
