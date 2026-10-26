@@ -25,6 +25,11 @@ Pipeline (in order):
 4. ``fix_discriminator_properties`` (after prune, so it only walks kept
    schemas): retype every discriminator property on a union member to a plain
    required string (see below).
+5. ``drop_ambiguous_discriminators`` (after 4, so the member properties it
+   leaves behind are already plain strings): remove the ``discriminator`` object
+   from any union whose ``mapping`` sends several values to one schema, because
+   oapi-codegen cannot represent that and emits a NON-DETERMINISTIC client for
+   it (see below).
 
 (A final ``openapi-down-convert`` pass in generate-client.sh handles the version
 bump and any remaining 3.0 cleanups.)
@@ -332,6 +337,61 @@ def fix_discriminator_properties(spec: dict[str, Any]) -> None:
         required.append(prop)
 
 
+def drop_ambiguous_discriminators(spec: dict[str, Any]) -> list[str]:
+    """Remove a union's ``discriminator`` when its mapping is not one-to-one.
+
+    *** THIS IS A CODEGEN BUG WORKAROUND, NOT A SPEC OPINION. *** FastAPI emits a
+    many-to-one mapping when one model serves several discriminator values, e.g.
+    ``BotPackInstallView.items[]`` maps ``avatar``, ``model`` and ``soul`` all
+    to ``BotPackSingletonProvenance``. oapi-codegen v2.4.1 inverts the mapping
+    into a schema -> value Go map, so exactly ONE of those values survives, and
+    which one is decided by map iteration order. Two consecutive ``make
+    generate`` runs on the same spec then produce different files (observed:
+    ``v.Kind = "soul"`` on one run, ``v.Kind = "model"`` on the next), and the
+    generated ``ValueByDiscriminator()`` rejects the values that lost with
+    "unknown discriminator value" — a valid server response the client cannot
+    dispatch.
+
+    Dropping the discriminator turns the wrapper into a plain union: ``As*``,
+    ``From*`` and ``Merge*`` are still generated, deterministically, but no
+    ``Discriminator()``/``ValueByDiscriminator()`` that would lie about the
+    mapping, and ``From*`` no longer stamps a value (the caller sets the
+    member's discriminator field, which pass 4 has already made a plain
+    required string). A one-to-one mapping is left alone.
+
+    Returns a sorted list of ``"<json-pointer> (<schema>: values...)"`` strings
+    describing what was dropped, for the generator log.
+    """
+    dropped: list[str] = []
+
+    def walk(node: Any, pointer: str) -> None:
+        if isinstance(node, dict):
+            disc = node.get("discriminator")
+            if isinstance(disc, dict) and isinstance(disc.get("mapping"), dict):
+                by_ref: dict[str, list[str]] = {}
+                for value, ref in disc["mapping"].items():
+                    by_ref.setdefault(str(ref), []).append(str(value))
+                shared = {
+                    _component_schema_name(ref) or ref: sorted(values)
+                    for ref, values in by_ref.items()
+                    if len(values) > 1
+                }
+                if shared:
+                    del node["discriminator"]
+                    detail = "; ".join(
+                        f"{name}: {', '.join(values)}" for name, values in sorted(shared.items())
+                    )
+                    dropped.append(f"{pointer} ({detail})")
+            for key, value in node.items():
+                walk(value, f"{pointer}/{key}")
+        elif isinstance(node, list):
+            for i, value in enumerate(node):
+                walk(value, f"{pointer}/{i}")
+
+    walk(spec, "")
+    return sorted(dropped)
+
+
 def normalize_spec(
     spec: dict[str, Any],
     keep_tags: set[str],
@@ -343,6 +403,8 @@ def normalize_spec(
     fix_scalars(spec)
     prune(spec, keep_tags, exclude_paths, exclude_operations)
     fix_discriminator_properties(spec)
+    for dropped in drop_ambiguous_discriminators(spec):
+        print(f"dropped many-to-one discriminator: {dropped}")
     return spec
 
 

@@ -300,5 +300,78 @@ class TestFixDiscriminatorProperties(unittest.TestCase):
         self.assertNotIn("required", shared)
 
 
+class TestDropAmbiguousDiscriminators(unittest.TestCase):
+    """oapi-codegen keeps only one value of a many-to-one discriminator mapping,
+    chosen by Go map order, so the generated client is non-deterministic. The
+    pass drops exactly those discriminators and leaves one-to-one ones alone."""
+
+    @staticmethod
+    def _union(mapping):
+        refs = sorted(set(mapping.values()))
+        return {
+            "oneOf": [{"$ref": r} for r in refs],
+            "discriminator": {"propertyName": "kind", "mapping": mapping},
+        }
+
+    def test_many_to_one_mapping_is_dropped(self):
+        single = "#/components/schemas/Singleton"
+        union = self._union({"avatar": single, "model": single, "soul": single,
+                             "skill": "#/components/schemas/Skill"})
+        spec = {"components": {"schemas": {"View": {
+            "type": "object",
+            "properties": {"items": {"type": "array", "items": union}},
+        }}}}
+        dropped = norm.drop_ambiguous_discriminators(spec)
+        self.assertNotIn("discriminator", union)
+        # The branches survive: the union is still generated, just undispatched.
+        self.assertEqual(len(union["oneOf"]), 2)
+        self.assertEqual(
+            dropped,
+            ["/components/schemas/View/properties/items/items "
+             "(Singleton: avatar, model, soul)"],
+        )
+
+    def test_one_to_one_mapping_is_kept(self):
+        union = self._union({"native": "#/components/schemas/Native",
+                             "openclaw": "#/components/schemas/OpenClaw"})
+        spec = {"components": {"schemas": {"Config": union}}}
+        self.assertEqual(norm.drop_ambiguous_discriminators(spec), [])
+        self.assertIn("discriminator", union)
+
+    def test_discriminator_without_mapping_is_kept(self):
+        union = {"oneOf": [{"$ref": "#/components/schemas/A"}],
+                 "discriminator": {"propertyName": "kind"}}
+        spec = {"components": {"schemas": {"U": union}}}
+        self.assertEqual(norm.drop_ambiguous_discriminators(spec), [])
+        self.assertIn("discriminator", union)
+
+    def test_member_property_still_retyped_by_normalize_spec(self):
+        """Pass 4 runs first, so a member reached only through the dropped
+        mapping still gets its discriminator retyped to a required string."""
+        single = "#/components/schemas/Singleton"
+        spec = {
+            "paths": {"/v": {"get": {"tags": ["t"], "responses": {"200": {
+                "description": "ok",
+                "content": {"application/json": {"schema": {
+                    "$ref": "#/components/schemas/View"}}},
+            }}}}},
+            "components": {"schemas": {
+                "View": {"type": "object", "properties": {"items": {
+                    "type": "array",
+                    "items": self._union({"avatar": single, "soul": single}),
+                }}},
+                "Singleton": {"type": "object", "properties": {
+                    "kind": {"type": "string", "enum": ["avatar", "soul"]},
+                }},
+            }},
+        }
+        norm.normalize_spec(spec, {"t"})
+        member = spec["components"]["schemas"]["Singleton"]
+        self.assertEqual(member["properties"]["kind"], {"type": "string"})
+        self.assertIn("kind", member["required"])
+        items = spec["components"]["schemas"]["View"]["properties"]["items"]["items"]
+        self.assertNotIn("discriminator", items)
+
+
 if __name__ == "__main__":
     unittest.main()
