@@ -129,27 +129,19 @@ jobs:
           echo "Releasing $next from ${GITHUB_SHA:0:7} (resume=$resume)"
 
       # Runs BEFORE tagging: a release whose CHANGELOG.md section is missing or
-      # empty fails here and never gets a tag. The section is read from the
-      # dispatched commit, so a resumed run publishes the same notes. The file
-      # is written outside the checkout so GoReleaser's dirty-tree check passes.
+      # empty fails here and never gets a tag. Everything, including the
+      # "Full changes" footer (the version's committed link reference), is read
+      # from CHANGELOG.md at the dispatched commit and never from the current
+      # tag list, so a resumed run publishes byte-identical notes. The file is
+      # written outside the checkout so GoReleaser's dirty-tree check passes.
       - name: Extract release notes from CHANGELOG.md
         id: notes
         env:
           VERSION: ${{ steps.version.outputs.version }}
-          REPO_URL: ${{ github.server_url }}/${{ github.repository }}
         run: |
           set -euo pipefail
           notes="$RUNNER_TEMP/release-notes.md"
-          scripts/changelog-section.sh "$VERSION" CHANGELOG.md > "$notes"
-
-          # Footer: compare link from the previous released version.
-          semver='^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$'
-          others="$(git tag -l | grep -E "$semver" | grep -vxF "$VERSION" || true)"
-          prev="$(printf '%s\n%s\n' "$others" "$VERSION" | sed '/^$/d' | sort -V | grep -B1 -xF "$VERSION" | head -n1)"
-          if [ "$prev" != "$VERSION" ]; then
-            printf '\n**Full changes:** %s/compare/%s...%s\n' "$REPO_URL" "$prev" "$VERSION" >> "$notes"
-          fi
-
+          scripts/changelog-section.sh --footer "$VERSION" CHANGELOG.md > "$notes"
           echo "file=$notes" >> "$GITHUB_OUTPUT"
           echo "Release notes for $VERSION:"
           cat "$notes"

@@ -45,14 +45,14 @@ Releases are produced by the **Release** workflow
      zeros, no pre-release/build metadata),
    - extracts that version's `CHANGELOG.md` section with
      `scripts/changelog-section.sh` and **fails, before tagging,** if it is
-     missing, undated, duplicated or empty,
+     missing, undated, duplicated or empty, or has no link reference,
    - creates and pushes the annotated tag,
    - imports the GPG key from the `public` Environment,
    - runs **GoReleaser**, which cross-compiles the binaries, packages them as the
      Registry-expected zips, GPG-signs `SHA256SUMS`, and publishes the GitHub
      release with `terraform-registry-manifest.json` attached. The release body
-     is the changelog section plus a **Full changes** compare link
-     (`--release-notes`).
+     is the changelog section plus a **Full changes** footer taken from the
+     version's link reference in `CHANGELOG.md` (`--release-notes`).
 5. The repo's `release` webhook notifies the Registry, which ingests the new
    version (see [Verify a release ingested](#verify-a-release-ingested)).
 
@@ -70,13 +70,15 @@ release notes; nobody pastes notes into the GitHub release by hand.
   refactors and test-only changes can ignore the warning.
 - **Before a release**, a PR renames `## [Unreleased]` to
   `## [X.Y.Z] - YYYY-MM-DD` (no `v`; the date of the planned release), adds a
-  fresh empty `## [Unreleased]` above it, and updates the link references at the
-  bottom of the file. Review it as the release notes, then merge it and dispatch
+  fresh empty `## [Unreleased]` above it, and adds the version's link reference
+  at the bottom of the file (`[X.Y.Z]: .../compare/vPREV...vX.Y.Z`, and point
+  `[Unreleased]` at `vX.Y.Z...HEAD`). The link reference becomes the release's
+  **Full changes** footer, and the release fails without it. Review it as the release notes, then merge it and dispatch
   the release from that commit.
 - Check the section locally before dispatching:
 
   ```sh
-  scripts/changelog-section.sh v0.6.1   # prints the release body, or fails
+  scripts/changelog-section.sh --footer v0.6.1   # prints the release body, or fails
   bash scripts/changelog_section_test.sh
   ```
 
