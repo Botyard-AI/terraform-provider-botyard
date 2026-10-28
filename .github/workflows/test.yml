@@ -41,6 +41,8 @@ jobs:
         env:
           TERRAFORM_VERSION: 1.15.8
         run: |
+          # hc-install extracts into -path but does not create it.
+          mkdir -p "$RUNNER_TEMP/terraform"
           go run github.com/hashicorp/hc-install/cmd/hc-install@v0.9.4 \
             install -version "$TERRAFORM_VERSION" -path "$RUNNER_TEMP/terraform" terraform
           echo "$RUNNER_TEMP/terraform" >> "$GITHUB_PATH"
