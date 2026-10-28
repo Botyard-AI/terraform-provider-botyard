@@ -24,6 +24,7 @@ var (
 	_ resource.ResourceWithConfigure      = (*BotResource)(nil)
 	_ resource.ResourceWithImportState    = (*BotResource)(nil)
 	_ resource.ResourceWithValidateConfig = (*BotResource)(nil)
+	_ resource.ResourceWithModifyPlan     = (*BotResource)(nil)
 )
 
 // BotResource manages a Botyard bot's desired-state record.
@@ -63,6 +64,9 @@ type BotResourceModel struct {
 	// create POST and PATCH /config.
 	Config       *botConfigModel       `tfsdk:"config"`
 	NativeConfig *botNativeConfigModel `tfsdk:"native_config"`
+
+	// The Bot Pack the bot was created from; nil without one (see bot_pack.go).
+	Pack *botPackModel `tfsdk:"pack"`
 
 	// Server-owned identity (computed).
 	ID        types.String `tfsdk:"id"`
@@ -185,6 +189,7 @@ func (r *BotResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *
 
 			"config":        botConfigSchemaAttribute(),
 			"native_config": botNativeConfigSchemaAttribute(),
+			"pack":          botPackSchemaAttribute(),
 
 			"id":        stableComputedString("Unique bot identifier (UUID)."),
 			"slug":      stableComputedString("URL-friendly bot identifier, derived from the name at creation. Used as the import ID."),
@@ -229,6 +234,8 @@ func (r *BotResource) ValidateConfig(ctx context.Context, req resource.ValidateC
 	if resp.Diagnostics.HasError() {
 		return
 	}
+
+	validatePackConfig(cfg.Pack, &resp.Diagnostics)
 
 	if cfg.Config != nil && cfg.NativeConfig != nil {
 		resp.Diagnostics.AddAttributeError(path.Root("native_config"),
@@ -290,6 +297,11 @@ func (r *BotResource) Create(ctx context.Context, req resource.CreateRequest, re
 		return
 	}
 
+	if plan.Pack != nil {
+		r.createFromPack(ctx, plan, resp)
+		return
+	}
+
 	body, diags := buildBotCreateBody(plan)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -336,8 +348,15 @@ func (r *BotResource) Read(ctx context.Context, req resource.ReadRequest, resp *
 		resp.Diagnostics.AddError("Unexpected response reading bot",
 			fmt.Sprintf("Read returned HTTP %d: %s", apiResp.StatusCode(), describeAPIError(apiResp.Body)))
 	case botReadOK:
+		// Import starts from a slug alone: no id has been read yet.
+		importing := state.ID.IsNull() || state.ID.IsUnknown()
+		declaredAvatar := state.AvatarURL
 		mapBotResource(apiResp.JSON200, &state)
 		mapBotDesiredConfig(apiResp.JSON200.Harness, &apiResp.JSON200.DesiredConfig, state.Config, state.NativeConfig, &resp.Diagnostics)
+		if !r.refreshPack(ctx, &state, importing, &resp.Diagnostics) {
+			return
+		}
+		keepPackAvatar(&state, declaredAvatar)
 		resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 	}
 }
@@ -348,6 +367,13 @@ func (r *BotResource) Update(ctx context.Context, req resource.UpdateRequest, re
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 	if resp.Diagnostics.HasError() {
 		return
+	}
+
+	// Removing the `pack` block uninstalls the pack and keeps the bot.
+	if plan.Pack == nil && state.Pack != nil {
+		if !r.uninstallPack(ctx, state.Pack.BotPackInstallID.ValueString(), &resp.Diagnostics) {
+			return
+		}
 	}
 
 	body, err := buildBotUpdateBody(plan)
@@ -380,8 +406,19 @@ func (r *BotResource) Update(ctx context.Context, req resource.UpdateRequest, re
 		final = cfgResp
 	}
 
+	declaredAvatar := plan.AvatarURL
 	mapBotResource(final, &plan)
 	mapBotDesiredConfig(final.Harness, &final.DesiredConfig, plan.Config, plan.NativeConfig, &resp.Diagnostics)
+	if plan.Pack != nil {
+		// Carry the install ids over from state, then refresh the live parts.
+		if state.Pack != nil {
+			plan.Pack.BotPackInstallID = state.Pack.BotPackInstallID
+		}
+		if !r.refreshPack(ctx, &plan, false, &resp.Diagnostics) {
+			return
+		}
+	}
+	keepPackAvatar(&plan, declaredAvatar)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
@@ -494,6 +531,10 @@ func buildBotUpdateBody(plan BotResourceModel) ([]byte, error) {
 	body := map[string]json.RawMessage{
 		"description": rawString(plan.Description),
 		"avatar_url":  rawString(plan.AvatarURL),
+	}
+	// With a pack, an unset avatar_url means "the pack's avatar": leave it.
+	if plan.Pack != nil && plan.AvatarURL.IsNull() {
+		delete(body, "avatar_url")
 	}
 	return json.Marshal(body)
 }
