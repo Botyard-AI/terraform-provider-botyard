@@ -7,10 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	"github.com/Botyard-AI/terraform-provider-botyard/internal/client"
@@ -121,7 +118,7 @@ func botConfigSchemaAttribute() schema.SingleNestedAttribute {
 			Optional:            true,
 			Computed:            true,
 			MarkdownDescription: desc,
-			PlanModifiers:       []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
+			PlanModifiers:       []planmodifier.String{nestedUseStateForUnknownString()},
 		}
 	}
 	optCompInt := func(desc string) schema.Int64Attribute {
@@ -129,7 +126,7 @@ func botConfigSchemaAttribute() schema.SingleNestedAttribute {
 			Optional:            true,
 			Computed:            true,
 			MarkdownDescription: desc,
-			PlanModifiers:       []planmodifier.Int64{int64planmodifier.UseStateForUnknown()},
+			PlanModifiers:       []planmodifier.Int64{nestedUseStateForUnknownInt64()},
 		}
 	}
 	optCompBool := func(desc string) schema.BoolAttribute {
@@ -137,7 +134,7 @@ func botConfigSchemaAttribute() schema.SingleNestedAttribute {
 			Optional:            true,
 			Computed:            true,
 			MarkdownDescription: desc,
-			PlanModifiers:       []planmodifier.Bool{boolplanmodifier.UseStateForUnknown()},
+			PlanModifiers:       []planmodifier.Bool{nestedUseStateForUnknownBool()},
 		}
 	}
 	reqStr := func(desc string) schema.StringAttribute {
