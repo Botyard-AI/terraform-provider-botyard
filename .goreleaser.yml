@@ -62,5 +62,8 @@ release:
     - glob: terraform-registry-manifest.json
       name_template: "{{ .ProjectName }}_{{ .Version }}_manifest.json"
 
-changelog:
-  disable: true
+# The release body comes from CHANGELOG.md: release.yml extracts this version's
+# section and passes it with --release-notes. Do NOT set `changelog.disable`:
+# it skips the whole changelog pipe, which also drops --release-notes and
+# publishes an empty body (what happened up to v0.6.0). When --release-notes is
+# given, GoReleaser uses the file as-is and does not generate a git changelog.

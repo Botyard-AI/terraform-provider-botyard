@@ -141,6 +141,15 @@ prunes the spec to the covered operation tags, down-converts 3.1 → 3.0, and ru
 oapi-codegen. Client coverage grows by widening `KEEP_TAGS` in that script as
 resources are added.
 
+### Changelog
+
+User-visible changes are recorded in [`CHANGELOG.md`](./CHANGELOG.md)
+([Keep a Changelog](https://keepachangelog.com/en/1.1.0/) format). A PR that
+changes provider behaviour adds an entry under `## [Unreleased]` (CI warns, but
+does not fail, when a PR changes `internal/` without one). The release workflow
+publishes each version's section as the GitHub release notes; see
+[`RELEASING.md`](./RELEASING.md#changelog).
+
 ### Acceptance tests
 
 Acceptance tests (`TF_ACC=1`) run real `terraform apply/plan/destroy` against a
@@ -150,8 +159,8 @@ full harness lands in a follow-up task.
 
 ## Releasing
 
-The provider is published to the Terraform Registry as `Botyard-AI/botyard`
-(`v0.1.0` is live). Releases are cut manually. See [`RELEASING.md`](./RELEASING.md)
+The provider is published to the Terraform Registry as `Botyard-AI/botyard`.
+Releases are cut manually, and the release notes come from `CHANGELOG.md`. See [`RELEASING.md`](./RELEASING.md)
 for how to cut the next (bump-based) release, plus the one-time Registry
 onboarding — already complete — retained for verification and recovery.
 

@@ -1,0 +1,173 @@
+# Changelog
+
+All notable changes to the Botyard Terraform provider are recorded here.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+The release workflow publishes each version's section below as the body of its
+GitHub release, and fails before tagging if the section is missing or empty. See
+[RELEASING.md](RELEASING.md#changelog) for how entries move from `Unreleased` into
+a version.
+
+## [Unreleased]
+
+## [0.6.0] - 2026-10-26
+
+### Added
+
+- **`botyard_mcp_server`: new `resources` block** for `container_image` servers, to manage the pod's compute: `cpu_request`, `cpu_limit`, `memory_request`, `memory_limit` and `storage`. (#32)
+  - Only the quantities you set are applied. The rest keep their current server value.
+  - Changing unrelated attributes (for example `description`) sends no `resources` key, so **the pod is not restarted**.
+  - Removing the whole block resets the server to the platform default. Leaving it out entirely means Terraform doesn't manage compute, and a size set in the Botyard app is left alone.
+  - The API's normalised spellings (`2` → `2000m`, `2048Mi` → `2Gi`) are treated as equal, so plans stay clean.
+  - Checked at plan time: the quantity format, request ≤ limit, and that the server is not `managed_remote`.
+  - Plan maximums and billing limits are enforced by the API.
+- **Bot catalogue packs: three new data sources.** (#35)
+  - `botyard_packs` reads the pack catalogue, paginated, with an optional `slugs` filter.
+  - `botyard_pack` reads one pack by slug, with a summary of its latest version.
+  - `botyard_pack_version` reads one version's full contents: skills (with their pinned versions), tools, connections, settings and soul.
+    - Look a version up by `pack_version_id`, or by `slug` for the latest.
+    - It exposes `skill_ids` and `tool_ids` for use with `setunion` in `botyard_bot_skill_assignment` and `botyard_bot_tool_assignment`. Those resources are exclusive and would otherwise remove a pack's items from a bot.
+
+  ```terraform
+  data "botyard_pack_version" "crm" {
+    slug = "crm-assistant"
+  }
+
+  resource "botyard_bot_skill_assignment" "example" {
+    bot_slug  = botyard_bot.example.slug
+    skill_ids = setunion(data.botyard_pack_version.crm.skill_ids, [data.botyard_skill.extra.id])
+  }
+  ```
+
+### Notes
+
+- **Slugs can be ambiguous.** A Botyard pack and one of your organization's own packs can share a slug. A slug lookup that matches more than one pack fails and lists the candidates. Use `botyard_packs` to find the one you want, then pin it with `pack_version_id`.
+- An older pack version can only be pinned by `pack_version_id`. The API can't look one up by version number.
+- Managing a bot's pack itself (create from a pack, uninstall) is coming in a later release.
+- No breaking changes.
+
+## [0.5.1] - 2026-10-26
+
+### Fixed
+
+- **`botyard_bot` with a `native_config` block failed on every create and update with a 422** (`NativeConfigPatch/prompt_ref: Extra inputs are not permitted`). The Botyard API removed the native `prompt_template` and `prompt_ref` fields. v0.5.0 still sent `prompt_ref`. (#33)
+  - The provider no longer sends either field.
+  - Existing v0.5.0 state that holds the old server value plans as a no-op, so you don't need to change your config unless you set these fields yourself.
+
+### Deprecated
+
+- `botyard_bot` `native_config.prompt_template` and `native_config.prompt_ref`. Setting either one is now a **plan-time error**. A native bot's instructions (its soul) live in its bot files. (#33)
+
+### Changed
+
+- **`botyard_bot` reads its config by `harness` instead of the retired `bot_type` key.** Reads of bots that declare a `config` or `native_config` block keep working after the Botyard API stops returning `bot_type`. This release works against API versions from both before and after that change. **Upgrade before the API change rolls out.** (#29)
+- **Generated API client re-synced** to a current Botyard API spec. Provider behaviour is unchanged. (#34)
+  - `botyard_mcp_server` (container image) create now sends `"resources": null` when no `resources` block is declared. The Botyard API has treated this the same as leaving the field out since v1.7.1990.
+- Built with **Go 1.26**. **Building the provider from source now requires Go 1.26.** (#30)
+
+### Security
+
+- Go 1.26.10 and `golang.org/x/net` v0.60.0 resolve 10 Go standard-library and `x/net` advisories that have no Go 1.25 fix. (#30)
+
+## [0.5.0] - 2026-10-08
+
+### Added
+
+- **`botyard_mcp_server_member` resource** manages one member (bot or user) of an MCP server and its role. It is non-authoritative: members added in the app, the creator's owner row and members derived from tool assignments are left alone. An existing membership is adopted on create. (#27)
+- **`access` attribute on `botyard_mcp_server`** (`open` or `restricted`). When omitted, the provider adopts the server's current value. (#27)
+- README: what Botyard is, links to the Botyard docs, and a quickstart. (#28)
+
+## [0.4.0] - 2026-09-23
+
+### Added
+
+- **Native bots on `botyard_bot`.** New `hosting_type` and `harness` attributes (immutable) and a `native_config` block, so hosted native (`botyard_native`) bots can be declared on the existing resource. A block that does not match the bot's harness fails at plan time. `model` and `host_policy` are exposed read-only. (#24)
+
+### Changed
+
+- Generated API client re-synced to a current, native-aware Botyard API spec. (#23)
+
+## [0.3.0] - 2026-09-07
+
+### Added
+
+- **Request headers on managed-remote `botyard_mcp_server`:** `static_headers`, `secret_headers` (Runtime Vault key paths, not secret values) and `acknowledged_credential_host`. A remote MCP server that needs a token can now be declared in Terraform. (#21)
+
+### Changed
+
+- Generated API client re-synced to a current Botyard API spec. (#21)
+
+## [0.2.3] - 2026-09-01
+
+### Added
+
+- **`botyard_skill` resource** to manage an organization skill. (#20)
+
+## [0.2.2] - 2026-08-04
+
+### Fixed
+
+- Bot template data sources preserve the template's raw config instead of reshaping it. (#19)
+
+### Security
+
+- Bumped `google.golang.org/grpc` for GO-2026-6061. (#19)
+
+## [0.2.1] - 2026-08-04
+
+### Added
+
+- **Discovery data sources** over the organization's catalogues: `botyard_bot_template`, `botyard_bot_templates`, `botyard_credentials`, `botyard_mcp_servers`, `botyard_skill`, `botyard_skills`, `botyard_tool` and `botyard_tools`. (#18)
+
+## [0.2.0] - 2026-07-22
+
+### Added
+
+- **`botyard_bot` resource** with create, read, update, delete and import. (#12)
+- **`config` block on `botyard_bot`** for the OpenClaw bot configuration. (#14)
+- **Assignment resources** that manage a bot's full set of skills, tools and credentials: `botyard_bot_skill_assignment` (#15), `botyard_bot_tool_assignment` (#16) and `botyard_bot_credential_assignment` (#17).
+- `RELEASING.md` release runbook and Registry submission checklist. (#10)
+
+## [0.1.2] - 2026-07-21
+
+### Fixed
+
+- Deleting a `botyard_mcp_server` or `botyard_vault_secret` no longer reports a false failure (the API's empty 204 response was parsed as JSON), which had broken destroy and replace. (#13)
+- Editing a `botyard_mcp_server` no longer forces a replacement, and in-place updates no longer send `"slug": null`. Unconfigured computed attributes keep their prior value. (#13)
+
+## [0.1.1] - 2026-07-21
+
+### Removed
+
+- The deprecated `tier` and the internal `cluster_id` attributes from the `botyard_bot` data source. (#11)
+
+## [0.1.0] - 2026-07-21
+
+### Added
+
+- Initial release: provider configuration (`endpoint`, `api_key`, `org_id`, with `BOTYARD_*` environment fallbacks) and a generated Botyard API client. (#1, #2)
+- **`botyard_bot` data source.** (#1)
+- **`botyard_mcp_server` resource** for `container_image` and `managed_remote` servers. (#4)
+- **`botyard_vault_secret` resource** with a write-only `secret_value` (never stored in state) and `bot_ids`. (#8)
+- Registry documentation and examples. (#9)
+- GPG-signed releases published to the Terraform Registry. (#3, #5)
+
+### Security
+
+- Bumped `google.golang.org/grpc` (GO-2026-4762) and `golang.org/x/net` (GO-2026-5026), and pinned a patched Go toolchain. (#6)
+
+[Unreleased]: https://github.com/Botyard-AI/terraform-provider-botyard/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/Botyard-AI/terraform-provider-botyard/compare/v0.5.1...v0.6.0
+[0.5.1]: https://github.com/Botyard-AI/terraform-provider-botyard/compare/v0.5.0...v0.5.1
+[0.5.0]: https://github.com/Botyard-AI/terraform-provider-botyard/compare/v0.4.0...v0.5.0
+[0.4.0]: https://github.com/Botyard-AI/terraform-provider-botyard/compare/v0.3.0...v0.4.0
+[0.3.0]: https://github.com/Botyard-AI/terraform-provider-botyard/compare/v0.2.3...v0.3.0
+[0.2.3]: https://github.com/Botyard-AI/terraform-provider-botyard/compare/v0.2.2...v0.2.3
+[0.2.2]: https://github.com/Botyard-AI/terraform-provider-botyard/compare/v0.2.1...v0.2.2
+[0.2.1]: https://github.com/Botyard-AI/terraform-provider-botyard/compare/v0.2.0...v0.2.1
+[0.2.0]: https://github.com/Botyard-AI/terraform-provider-botyard/compare/v0.1.2...v0.2.0
+[0.1.2]: https://github.com/Botyard-AI/terraform-provider-botyard/compare/v0.1.1...v0.1.2
+[0.1.1]: https://github.com/Botyard-AI/terraform-provider-botyard/compare/v0.1.0...v0.1.1
+[0.1.0]: https://github.com/Botyard-AI/terraform-provider-botyard/releases/tag/v0.1.0
