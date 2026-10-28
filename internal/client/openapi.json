@@ -1978,7 +1978,7 @@
           "bots"
         ],
         "summary": "Create Bots From Packs",
-        "description": "Create bots, each with a pack installed: every one, or none.\n\nEach bot takes the pack's name (unless `name` is given) and its avatar, and\nstarts on the pack's recommended model when one of the org's LLM credentials\ncan run it; otherwise it keeps the default model and `model` says why. The\npack is then installed exactly as `POST \u2026/packs/installs` would, and what\nthe install could not bind by itself is reported in `setups`.\n\nOne transaction: if any bot or install is refused, no bot is created.\nNeeds `bot:bot.create` plus what installing a pack needs.",
+        "description": "Create bots, each with a pack installed: every one, or none.\n\nEach bot takes the pack's name (unless `name` is given) and its avatar, and\nstarts on the pack's recommended model when one of the org's LLM credentials\ncan run it; otherwise it keeps the default model and `model` says why. The\npack is then installed exactly as `POST \u2026/packs/installs` would, and what\nthe install could not bind by itself is reported in `setups`.\n\nOne transaction: if any bot or install is refused, no bot is created.\nNeeds `bot:bot.create` plus what installing a pack needs.\n\n**Connecting new accounts** (`create` connection choices, #4386): checked\nwith everything else before anything is written, then carried out after the\nbots and installs commit, one connection at a time, by the setup engine. A\nstep that needs a human (an approval) comes back pending in `setups`; a\nfailed one comes back `failed` with its detail, and\nthe bot is created regardless. Every secret is a Runtime Vault reference.\nA connection that needs a vendor sign-in (OAuth) can't be created here\n(`oauth_create_not_supported`): connect the account in the app under MCP\nservers first, then choose it with `use_server` (or leave it pending).\nNeeds `mcp_server.create`, and `secret:secret_policy.update` to name vault\nsecrets as an integration's credentials.",
         "operationId": "create_bots_from_packs_v1_orgs__org_id__bots_from_pack_post",
         "parameters": [
           {
@@ -3058,6 +3058,136 @@
                     "$ref": "#/components/schemas/BotPendingMemberResponse"
                   },
                   "title": "Response List Bot Pending Members V1 Orgs  Org Id  Bots  Bot Slug  Members Pending Get"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "RFC 9457 Problem Details error response",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/orgs/{org_id}/bots/{bot_slug}/member-bots": {
+      "get": {
+        "tags": [
+          "bot-access"
+        ],
+        "summary": "List Bot Member Bots",
+        "description": "List the bots that are members of this bot (platform-development #4409).\n\nSame audience as the human member list: bot members and org owners.",
+        "operationId": "list_bot_member_bots_v1_orgs__org_id__bots__bot_slug__member_bots_get",
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Org Id"
+            }
+          },
+          {
+            "name": "bot_slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Bot Slug"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BotMemberBotResponse"
+                  },
+                  "title": "Response List Bot Member Bots V1 Orgs  Org Id  Bots  Bot Slug  Member Bots Get"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "RFC 9457 Problem Details error response",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "bot-access"
+        ],
+        "summary": "Set Bot Member Bots",
+        "description": "Replace the list of bots that are members of this bot. Bot owners only.\n\nSame authority as editing the human member list: a bot owner, or an org\nowner when the bot has no owner left. All or nothing, in one transaction.\n\nGated by the declared ``require_bot_owner`` dependency rather than the\nin-handler check ``PUT /members`` still uses, so the route-coverage\ninvariant can see the gate (``test_authz_org_route_coverage``).",
+        "operationId": "set_bot_member_bots_v1_orgs__org_id__bots__bot_slug__member_bots_put",
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Org Id"
+            }
+          },
+          {
+            "name": "bot_slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Bot Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BotMemberBotsUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BotMemberBotResponse"
+                  },
+                  "title": "Response Set Bot Member Bots V1 Orgs  Org Id  Bots  Bot Slug  Member Bots Put"
                 }
               }
             }
@@ -13840,7 +13970,7 @@
           "packs"
         ],
         "summary": "Install Packs",
-        "description": "Install pack versions on bots: every one, or none.\n\nRe-installing the version a bot already runs is `unchanged`. What the\ninstall could not bind by itself is reported in `setups`, each with the\naction it asks next (run it, a connect link, a secret to store, a server to\nchoose); carry them on with the setups routes.\n\n**Turned off for now:** installing onto an existing bot would replace its\nsoul, so every batch is refused with a 409 `pack_install_existing_bot_disabled`\nand nothing is written, until multi-pack installs and soul merging land.\nCreate a bot from the pack instead (`POST /bots/from-pack`). Uninstalling,\nbinding connections and the setup steps still work.",
+        "description": "Install pack versions on bots: every one, or none.\n\nRe-installing the version a bot already runs is `unchanged`. What the\ninstall could not bind by itself is reported in `setups`, each with the\naction it asks next (run it, a connect link, a secret to store, a server to\nchoose); carry them on with the setups routes.\n\n**Turned off for now:** installing onto an existing bot would replace its\nsoul, so every batch is refused with a 409 `pack_install_existing_bot_disabled`\nand nothing is written, until multi-pack installs and soul merging land.\nCreate a bot from the pack instead (`POST /bots/from-pack`). Uninstalling,\nbinding connections and the setup steps still work.\n\nA `create` connection choice connects a new account after the install\ncommits, as `POST /bots/from-pack` does; it needs `mcp_server.create`.",
         "operationId": "install_packs_v1_orgs__org_id__packs_installs_post",
         "parameters": [
           {
@@ -14309,7 +14439,7 @@
           "packs"
         ],
         "summary": "Complete Pack Setups",
-        "description": "Apply what a human supplied (form answers, vendor credentials, a server choice).\n\nEach completion must be of the kind its setup asks for, or nothing is done.\nCredential values go to the vendor and are never stored or logged here;\nnaming vault entries instead needs `secret:secret_policy.update`. Each\nsetup commits on its own.\n\nA form or credential completion carries the setup on into creating the\nserver or starting its sign-in, so it needs `mcp_server.create`; without it\nthe whole batch is refused (403) before anything is done. A server choice\nonly binds an existing server and needs no more than the pack write gates.",
+        "description": "Apply what a human supplied (form answers, vendor credentials, a server choice).\n\nEach completion must be of the kind its setup asks for, or nothing is done.\nCredential values go to the vendor and are never stored or logged here;\nnaming vault entries instead needs `secret:secret_policy.update`. Each\nsetup commits on its own.\n\nA form, credential or `create` completion carries the setup on into creating\nthe server or starting its sign-in, so it needs `mcp_server.create`; without\nit the whole batch is refused (403) before anything is done.\n\n`create` (#4386) connects a new account for a connection, even where\nexisting servers fit, from Runtime Vault references only; later steps never\nfall back to choosing an existing server unless a `server_choice` says so.\nA connection that needs a vendor sign-in (OAuth) can't be created here\n(`oauth_create_not_supported`): connect the account in the app under MCP\nservers first, then choose it with a `server_choice`. A server choice\nonly binds an existing server and needs no more than the pack write gates.",
         "operationId": "complete_pack_setups_v1_orgs__org_id__packs_setups_complete_post",
         "parameters": [
           {
@@ -34478,6 +34608,108 @@
         "title": "BotListItem",
         "description": "Bot list item response."
       },
+      "BotMemberBotEntry": {
+        "properties": {
+          "bot_id": {
+            "type": "string",
+            "title": "Bot Id",
+            "description": "Member bot ID"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "owner",
+              "member"
+            ],
+            "title": "Role",
+            "description": "Role the bot holds",
+            "default": "member"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "bot_id"
+        ],
+        "title": "BotMemberBotEntry",
+        "description": "One bot on a bot's member-bot list, with the role it holds."
+      },
+      "BotMemberBotResponse": {
+        "properties": {
+          "bot_id": {
+            "type": "string",
+            "title": "Bot Id",
+            "description": "Member bot ID"
+          },
+          "slug": {
+            "type": "string",
+            "title": "Slug",
+            "description": "Member bot slug"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Member bot display name"
+          },
+          "avatar_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avatar Url",
+            "description": "Member bot avatar URL"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "owner",
+              "member"
+            ],
+            "title": "Role",
+            "description": "Role the bot holds on this bot. Stored only: neither role confers any permission yet"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "When the membership was created"
+          }
+        },
+        "type": "object",
+        "required": [
+          "bot_id",
+          "slug",
+          "name",
+          "role",
+          "created_at"
+        ],
+        "title": "BotMemberBotResponse",
+        "description": "A bot that is a member of another bot (platform-development #4409)."
+      },
+      "BotMemberBotsUpdate": {
+        "properties": {
+          "members": {
+            "items": {
+              "$ref": "#/components/schemas/BotMemberBotEntry"
+            },
+            "type": "array",
+            "maxItems": 200,
+            "title": "Members",
+            "description": "Complete list of member bots with roles \u2014 replaces the existing list. Duplicate bot IDs are rejected. An empty list removes every member bot"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "members"
+        ],
+        "title": "BotMemberBotsUpdate",
+        "description": "Full-replacement update of the bots that are members of a bot.\n\nAll or nothing: every id must name a live bot in this organization other than\nthe bot itself, and no id may repeat; otherwise nothing changes and the\nresponse lists every problem. An empty list removes every member bot."
+      },
       "BotMemberEntry": {
         "properties": {
           "user_id": {
@@ -40685,6 +40917,14 @@
             "title": "Exit Codes",
             "description": "Exit code ('0'..'255' or '*') to success|failure|deferred. Codes not listed and without a '*' entry classify as failure. 'deferred' (\"not ready yet, check again\") needs a window, and a window needs at least one deferred code."
           },
+          "exit_code_labels": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Exit Code Labels",
+            "description": "Optional display label per exit_codes key ('0'..'255' or '*'), e.g. {\"75\": \"Waiting for input\", \"76\": \"Job running\"}. Every key must also be an exit_codes key; each label is 1..40 characters after trimming, single line. Run history saves the label that applied with each attempt, so later edits never relabel past runs. Unlabeled codes show their outcome's wording."
+          },
           "window": {
             "anyOf": [
               {
@@ -40918,6 +41158,18 @@
             "title": "Exit Code",
             "description": "Process exit code, when one was observed."
           },
+          "exit_code_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exit Code Label",
+            "description": "The schedule's exit_code_labels entry for exit_code, saved when the attempt resolved; null when the code had no label. Display the outcome's own wording when null."
+          },
           "started_at": {
             "anyOf": [
               {
@@ -41006,6 +41258,7 @@
           "state",
           "outcome",
           "exit_code",
+          "exit_code_label",
           "started_at",
           "resolved_at",
           "not_before",
@@ -44991,6 +45244,9 @@
                       "$ref": "#/components/schemas/MaintenanceRestartMessageError"
                     },
                     {
+                      "$ref": "#/components/schemas/TransportExpiredMessageError"
+                    },
+                    {
                       "$ref": "#/components/schemas/GenericMessageError"
                     }
                   ],
@@ -45001,7 +45257,8 @@
                       "generic": "#/components/schemas/GenericMessageError",
                       "maintenance_restart": "#/components/schemas/MaintenanceRestartMessageError",
                       "provider_error": "#/components/schemas/ProviderMessageError",
-                      "rate_limit": "#/components/schemas/RateLimitMessageError"
+                      "rate_limit": "#/components/schemas/RateLimitMessageError",
+                      "transport_expired": "#/components/schemas/TransportExpiredMessageError"
                     }
                   }
                 },
@@ -46121,6 +46378,72 @@
         "type": "object",
         "title": "CpuMetrics"
       },
+      "CreateCompletion": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "create",
+            "title": "Kind"
+          },
+          "bot_pack_connection_setup_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Bot Pack Connection Setup Id"
+          },
+          "setup": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/PackCreateNone"
+              },
+              {
+                "$ref": "#/components/schemas/PackCreateSetupForm"
+              },
+              {
+                "$ref": "#/components/schemas/PackCreateCredentialForm"
+              }
+            ],
+            "title": "Setup",
+            "description": "What the new account needs, by the connection preview's setup.kind.",
+            "discriminator": {
+              "propertyName": "kind",
+              "mapping": {
+                "credential_form": "#/components/schemas/PackCreateCredentialForm",
+                "none": "#/components/schemas/PackCreateNone",
+                "setup_form": "#/components/schemas/PackCreateSetupForm"
+              }
+            }
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name",
+            "description": "The new server's name; default the entry's. Not stored."
+          },
+          "accept_metered": {
+            "type": "boolean",
+            "title": "Accept Metered",
+            "description": "Must be true when the new server is billed as a hosted MCP server.",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "kind",
+          "bot_pack_connection_setup_id",
+          "setup"
+        ],
+        "title": "CreateCompletion",
+        "description": "Connect a new account: create a new server for this connection and bind it (#4386).\n\nThe same inputs as the install's ``create`` choice\n(:mod:`~botyard_core.services.api.pack_connection_create`): every secret a\nRuntime Vault reference. Records that this connection gets a new account, so\nlater steps never fall back to choosing an existing server."
+      },
       "CredentialBackedModelConfig": {
         "properties": {
           "id": {
@@ -46904,6 +47227,30 @@
             ],
             "title": "Desired Artifact Source"
           },
+          "applied_artifact": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Applied Artifact",
+            "description": "Sidecar image the provisioner last rendered into the pod spec. For platform_default servers this is the resolved default, which the reconciler rolls forward when the platform default changes. Null when no sidecar was rendered or the server has not been rendered since applied tracking began."
+          },
+          "roll_target": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Roll Target",
+            "description": "Platform-default image the automatic sidecar roll last moved this server toward, if any. A roll_target different from applied_artifact means a roll is in flight or failed."
+          },
           "observed_artifact": {
             "anyOf": [
               {
@@ -47520,7 +47867,7 @@
           "gateway_url": {
             "type": "string",
             "title": "Gateway Url",
-            "description": "Origin of the runtime gateway this session should be used against, e.g. 'wss://runtime.botyard.io'. An ORIGIN, not a full URL: the daemon appends the runtime route itself, so an operator cannot point a fleet at the wrong path. Returned on every exchange rather than configured on the device, so a hostname change reaches the fleet on its next assertion exchange \u2014 which is not the same as its next reconnect, because a live session handle is reused for its lifetime even across a dropped socket"
+            "description": "Origin of the runtime gateway this session should be used against, e.g. 'wss://runtime.botyard.io'. An ORIGIN, not a full URL: the daemon appends the runtime route itself, so an operator cannot point a fleet at the wrong path. Returned on every exchange rather than configured on the device, so a hostname change reaches the fleet on its next assertion exchange \u2014 which is not the same as its next reconnect, because a live session handle is reused for its lifetime even across a dropped socket. Pod sessions (svid-exchange) for bots in the deployment's in-cluster rollout get the cluster-local origin instead, e.g. 'ws://runtime-gateway.botyard-system.svc.cluster.local:8080'; device sessions always get the public origin"
           },
           "spiffe_id": {
             "type": "string",
@@ -54218,6 +54565,9 @@
                       "$ref": "#/components/schemas/MaintenanceRestartMessageError"
                     },
                     {
+                      "$ref": "#/components/schemas/TransportExpiredMessageError"
+                    },
+                    {
                       "$ref": "#/components/schemas/GenericMessageError"
                     }
                   ],
@@ -54228,7 +54578,8 @@
                       "generic": "#/components/schemas/GenericMessageError",
                       "maintenance_restart": "#/components/schemas/MaintenanceRestartMessageError",
                       "provider_error": "#/components/schemas/ProviderMessageError",
-                      "rate_limit": "#/components/schemas/RateLimitMessageError"
+                      "rate_limit": "#/components/schemas/RateLimitMessageError",
+                      "transport_expired": "#/components/schemas/TransportExpiredMessageError"
                     }
                   }
                 },
@@ -58187,6 +58538,48 @@
         ],
         "title": "McpPodHostMode",
         "description": "How Botyard sets the HTTP ``Host`` when connecting to an in-cluster MCP pod.\n\nThis is a fixed property of the server's HTTP framework, declared as\nconfiguration (like ``port``) rather than discovered at runtime:\n\n* ``natural`` \u2014 send the pod's in-cluster Service FQDN as ``Host`` (httpx's\n  default). Correct for the MCP Python SDK / uvx, Node/npx, and every\n  first-party ``ghcr.io/botyard-ai/*`` wrapper image. The default.\n* ``pod_localhost`` \u2014 send ``Host: localhost:<port>``. Required by servers\n  that enforce DNS-rebinding host allowlists (``mark3labs/mcp-go``, e.g.\n  ``grafana/mcp-grafana``), which reject the Service FQDN with\n  ``403 forbidden: host not allowed``. Sending it to a server that does not\n  want it (Python SDK) instead breaks the handshake with ``Session\n  terminated`` (the server's ``307`` echoes the forged Host back to the\n  client's own localhost).\n\nOnly meaningful for ``runtime_kind=container_image``; ignored for\n``managed_remote`` (the vendor host is always preserved)."
+      },
+      "McpResultFileStored": {
+        "properties": {
+          "mcp_result_file_id": {
+            "type": "string",
+            "title": "Mcp Result File Id",
+            "description": "Opaque id the bot downloads the file by."
+          },
+          "filename": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Filename",
+            "description": "Sanitized filename the file is stored under."
+          },
+          "content_type": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Content Type",
+            "description": "MIME type the file was uploaded with."
+          },
+          "size_bytes": {
+            "type": "integer",
+            "title": "Size Bytes",
+            "description": "Stored size in bytes.",
+            "default": 0
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expires At",
+            "description": "After this instant the file can no longer be downloaded."
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "mcp_result_file_id",
+          "filename",
+          "content_type",
+          "expires_at"
+        ],
+        "title": "McpResultFileStored"
       },
       "McpServerAccess": {
         "type": "string",
@@ -64969,11 +65362,15 @@
                 },
                 {
                   "$ref": "#/components/schemas/PackLeavePendingChoice"
+                },
+                {
+                  "$ref": "#/components/schemas/PackCreateServerChoice"
                 }
               ],
               "discriminator": {
                 "propertyName": "choice",
                 "mapping": {
+                  "create": "#/components/schemas/PackCreateServerChoice",
                   "leave_pending": "#/components/schemas/PackLeavePendingChoice",
                   "use_server": "#/components/schemas/PackUseServerChoice"
                 }
@@ -64981,7 +65378,7 @@
             },
             "type": "array",
             "title": "Connections",
-            "description": "Per mcp_catalog_entry connection: 'use_server' binds the named org server; 'leave_pending' binds nothing, now or by later setup, until bound explicitly. A connection left out binds as before: the one visible server from its entry. Vault connections take no choice."
+            "description": "Per mcp_catalog_entry connection: 'use_server' binds the named org server; 'leave_pending' binds nothing, now or by later setup, until bound explicitly; 'create' connects a new account, created and bound after the install commits (needs mcp_server.create). A connection left out binds as before: the one visible server from its entry. Vault connections take no choice."
           },
           "pack_version_id": {
             "type": "string",
@@ -65373,6 +65770,142 @@
         "title": "PackCreate",
         "description": "A new pack identity. Content arrives with its first published version."
       },
+      "PackCreateCredentialForm": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "credential_form",
+            "title": "Kind"
+          },
+          "vault_entry_refs": {
+            "additionalProperties": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+            },
+            "type": "object",
+            "maxProperties": 16,
+            "minProperties": 1,
+            "title": "Vault Entry Refs",
+            "description": "Credential field name to the id of an existing org Runtime Vault secret holding its value. Needs `secret:secret_policy.update`."
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "kind",
+          "vault_entry_refs"
+        ],
+        "title": "PackCreateCredentialForm",
+        "description": "The vendor's credentials, as Runtime Vault entries. Typed values are not accepted."
+      },
+      "PackCreateNone": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "none",
+            "title": "Kind"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "kind"
+        ],
+        "title": "PackCreateNone",
+        "description": "Nothing to supply: the server is created from the entry and what the org has."
+      },
+      "PackCreateServerChoice": {
+        "properties": {
+          "pack_version_connection_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Pack Version Connection Id",
+            "description": "A connection of the pack version being installed."
+          },
+          "choice": {
+            "type": "string",
+            "const": "create",
+            "title": "Choice"
+          },
+          "setup": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/PackCreateNone"
+              },
+              {
+                "$ref": "#/components/schemas/PackCreateSetupForm"
+              },
+              {
+                "$ref": "#/components/schemas/PackCreateCredentialForm"
+              }
+            ],
+            "title": "Setup",
+            "description": "What the new account needs, by the connection preview's setup.kind.",
+            "discriminator": {
+              "propertyName": "kind",
+              "mapping": {
+                "credential_form": "#/components/schemas/PackCreateCredentialForm",
+                "none": "#/components/schemas/PackCreateNone",
+                "setup_form": "#/components/schemas/PackCreateSetupForm"
+              }
+            }
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name",
+            "description": "The new server's name; default the entry's. Suffixed with the bot's name once on a conflict. Not stored: a retry uses the default."
+          },
+          "accept_metered": {
+            "type": "boolean",
+            "title": "Accept Metered",
+            "description": "Must be true when the connection preview says `metered`: the new server is billed as a hosted MCP server.",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "pack_version_connection_id",
+          "choice",
+          "setup"
+        ],
+        "title": "PackCreateServerChoice",
+        "description": "Connect a new account: create a new org MCP server for this connection (#4386).\n\nNothing is created until the install commits. Then the setup engine creates\nthe server as the installer and binds it, in the same request; a step that\nneeds a human (an approval) comes back pending in ``setups``, and a\nfailure leaves that connection ``failed`` with the bot installed. Only *that* a new account was chosen is stored, never the input.\nEvery secret is a Runtime Vault reference (:mod:`~botyard_core.services.api.pack_connection_create`).\nAn MCP catalogue entry connection only; needs ``mcp_server:mcp_server.create``.\nNot for an entry that needs a vendor sign-in (OAuth): that is refused\n``oauth_create_not_supported``; connect the account in the app under MCP\nservers first, then choose it with ``use_server`` (or leave it pending)."
+      },
+      "PackCreateSetupForm": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "setup_form",
+            "title": "Kind"
+          },
+          "catalog_form_answers": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/McpCatalogFormFieldValue-Input"
+            },
+            "type": "object",
+            "maxProperties": 64,
+            "title": "Catalog Form Answers",
+            "description": "Field id to answer; wins over what the org already answers. A field that can take a vault reference must be answered `secret_ref` with the key path of an existing Runtime Vault secret: typed secrets are refused."
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "kind"
+        ],
+        "title": "PackCreateSetupForm",
+        "description": "Answers to the entry's setup form. Secret fields take a vault path (``secret_ref``)."
+      },
       "PackInstallPreview": {
         "properties": {
           "installs": {
@@ -65427,11 +65960,15 @@
                 },
                 {
                   "$ref": "#/components/schemas/PackLeavePendingChoice"
+                },
+                {
+                  "$ref": "#/components/schemas/PackCreateServerChoice"
                 }
               ],
               "discriminator": {
                 "propertyName": "choice",
                 "mapping": {
+                  "create": "#/components/schemas/PackCreateServerChoice",
                   "leave_pending": "#/components/schemas/PackLeavePendingChoice",
                   "use_server": "#/components/schemas/PackUseServerChoice"
                 }
@@ -65439,7 +65976,7 @@
             },
             "type": "array",
             "title": "Connections",
-            "description": "Per mcp_catalog_entry connection: 'use_server' binds the named org server; 'leave_pending' binds nothing, now or by later setup, until bound explicitly. A connection left out binds as before: the one visible server from its entry. Vault connections take no choice."
+            "description": "Per mcp_catalog_entry connection: 'use_server' binds the named org server; 'leave_pending' binds nothing, now or by later setup, until bound explicitly; 'create' connects a new account, created and bound after the install commits (needs mcp_server.create). A connection left out binds as before: the one visible server from its entry. Vault connections take no choice."
           },
           "bot_id": {
             "type": "string",
@@ -65903,11 +66440,15 @@
                 },
                 {
                   "$ref": "#/components/schemas/ServerChoiceCompletion"
+                },
+                {
+                  "$ref": "#/components/schemas/CreateCompletion"
                 }
               ],
               "discriminator": {
                 "propertyName": "kind",
                 "mapping": {
+                  "create": "#/components/schemas/CreateCompletion",
                   "credential_form": "#/components/schemas/CredentialFormCompletion",
                   "server_choice": "#/components/schemas/ServerChoiceCompletion",
                   "setup_form": "#/components/schemas/SetupFormCompletion"
@@ -72585,6 +73126,18 @@
             "title": "Exit Code",
             "description": "Process exit code when one was observed; null for timeout/lost/missed/skipped."
           },
+          "exit_code_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exit Code Label",
+            "description": "The schedule's exit_code_labels entry that classified this exit code, saved when the attempt resolved (later edits to the schedule never change it). Null when the code had no label or no exit code was observed."
+          },
           "started_at": {
             "anyOf": [
               {
@@ -72668,6 +73221,7 @@
           "state",
           "outcome",
           "exit_code",
+          "exit_code_label",
           "started_at",
           "resolved_at",
           "log_tail",
@@ -74261,7 +74815,8 @@
             "type": "string",
             "enum": [
               "remove",
-              "kept_adopted"
+              "kept_adopted",
+              "kept_shared"
             ],
             "title": "Action"
           },
@@ -74396,6 +74951,12 @@
             "type": "array",
             "title": "Bot Ids",
             "description": "Bot IDs to link to this variable on creation. Ignored when allow_all_bots is true. Defaults to no explicit links."
+          },
+          "create_only": {
+            "type": "boolean",
+            "title": "Create Only",
+            "description": "When true, the request only ever inserts: an entry already at key_path is a 409 and is left untouched. When false (the default), an existing entry at key_path is overwritten with this value and metadata.",
+            "default": false
           }
         },
         "additionalProperties": false,
@@ -76297,7 +76858,8 @@
             "type": "string",
             "enum": [
               "remove",
-              "kept_adopted"
+              "kept_adopted",
+              "kept_shared"
             ],
             "title": "Action"
           },
@@ -80325,7 +80887,8 @@
             "type": "string",
             "enum": [
               "remove",
-              "kept_adopted"
+              "kept_adopted",
+              "kept_shared"
             ],
             "title": "Action"
           },
@@ -81550,6 +82113,68 @@
         ],
         "title": "TranscriptMutationsResponse",
         "description": "Every command applied, in request order. All or nothing: a refusal changes nothing."
+      },
+      "TransportExpiredMessageError": {
+        "description": "The runtime's connection was lost for good while the turn's model stream ran.\n\nA native turn's resumable transport session expired (``TurnFailureKind``\n``TRANSPORT_EXPIRED``, PlatDev #4337, decision #4333). Tools may already\nhave run, so unlike a maintenance restart this is NOT safe to re-send\nblindly: the user is told some actions may or may not have completed and\ndecides for themselves. ``message`` is fixed by chat-proxy, never the\nruntime's own diagnostic.",
+        "properties": {
+          "source": {
+            "const": "assistant",
+            "default": "assistant",
+            "description": "Subsystem that produced the error. Currently assistant turn errors only.",
+            "title": "Source",
+            "type": "string"
+          },
+          "message": {
+            "description": "User-facing error message.",
+            "title": "Message",
+            "type": "string"
+          },
+          "code": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional transport/provider status code when available.",
+            "title": "Code"
+          },
+          "request_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "chat-proxy request id of the turn that produced the error.",
+            "title": "Request Id"
+          },
+          "created_at": {
+            "description": "When the error was observed or classified.",
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "kind": {
+            "const": "transport_expired",
+            "default": "transport_expired",
+            "description": "Discriminator for a turn lost to an expired runtime connection.",
+            "title": "Kind",
+            "type": "string"
+          }
+        },
+        "required": [
+          "message",
+          "created_at"
+        ],
+        "title": "TransportExpiredMessageError",
+        "type": "object"
       },
       "TurnStatus": {
         "type": "string",
@@ -83343,6 +83968,12 @@
             "type": "array",
             "title": "Bot Ids",
             "description": "Bot IDs to link to this variable on creation. Ignored when allow_all_bots is true. Defaults to no explicit links."
+          },
+          "create_only": {
+            "type": "boolean",
+            "title": "Create Only",
+            "description": "When true, the request only ever inserts: an entry already at key_path is a 409 and is left untouched. When false (the default), an existing entry at key_path is overwritten with this value and metadata.",
+            "default": false
           }
         },
         "additionalProperties": false,
@@ -83987,7 +84618,7 @@
             "maxLength": 4000,
             "minLength": 1,
             "title": "Message",
-            "description": "Wake message. May use {outcome}, {exit_code}, {attempt}, {log_tail}, {output_path} and {window_end} (the occurrence's window end in the schedule's timezone; empty without a window); write a literal brace as {{ or }}."
+            "description": "Wake message. May use {outcome}, {exit_code}, {label} (the exit_code_labels entry that classified the exit; empty when none applies), {attempt}, {log_tail}, {output_path} and {window_end} (the occurrence's window end in the schedule's timezone; empty without a window); write a literal brace as {{ or }}."
           },
           "include_log_tail": {
             "type": "integer",
@@ -85081,7 +85712,8 @@
                     "generic": "#/components/schemas/GenericMessageError",
                     "maintenance_restart": "#/components/schemas/MaintenanceRestartMessageError",
                     "provider_error": "#/components/schemas/ProviderMessageError",
-                    "rate_limit": "#/components/schemas/RateLimitMessageError"
+                    "rate_limit": "#/components/schemas/RateLimitMessageError",
+                    "transport_expired": "#/components/schemas/TransportExpiredMessageError"
                   },
                   "propertyName": "kind"
                 },
@@ -85097,6 +85729,9 @@
                   },
                   {
                     "$ref": "#/components/schemas/MaintenanceRestartMessageError"
+                  },
+                  {
+                    "$ref": "#/components/schemas/TransportExpiredMessageError"
                   },
                   {
                     "$ref": "#/components/schemas/GenericMessageError"
@@ -85202,6 +85837,49 @@
           "queued_behind_request_id"
         ],
         "title": "AssistantQueuedEvent",
+        "type": "object"
+      },
+      "AssistantRuntimeConnectionEvent": {
+        "description": "The running turn's runtime connection is down, or back (PlatDev #4341, D3 #4333).\n\nNative turns only. Published by chat-proxy when the runtime gateway is\nholding the turn's transport session for a resume (``reconnecting``), and\nagain when the turn is no longer waiting on it (``resumed``): the session\nresumed, the runtime produced output again, or the turn ended.\n\n``reconnecting`` is already debounced. chat-proxy publishes it only once\nthe reconnect has lasted about 5 s, so clients render it immediately as\na subtle inline status on the turn and clear it silently on ``resumed``\nor on the turn's terminal. It is a status, not an error. A session that\nexpires does not end in ``resumed``: the turn's own outcome follows, which\nis a ``transport_expired`` error card if the model stream was lost.\n\n``request_id`` identifies the running turn.",
+        "properties": {
+          "conversation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "ID of the conversation channel this event was published to. Lets a client verify a realtime frame belongs to the channel it subscribed for and drop cross-channel misdeliveries. Optional so the field can roll out ahead of every publisher and consumer without a lockstep deploy; real publishers always set it.",
+            "title": "Conversation Id"
+          },
+          "type": {
+            "const": "assistant.runtime_connection",
+            "default": "assistant.runtime_connection",
+            "title": "Type",
+            "type": "string"
+          },
+          "request_id": {
+            "title": "Request Id",
+            "type": "string"
+          },
+          "state": {
+            "description": "``reconnecting``: the runtime has been unreachable for about 5 s and the platform is waiting for it to reconnect. ``resumed``: the turn is no longer waiting on the connection; clear the status.",
+            "enum": [
+              "reconnecting",
+              "resumed"
+            ],
+            "title": "State",
+            "type": "string"
+          }
+        },
+        "required": [
+          "request_id",
+          "state"
+        ],
+        "title": "AssistantRuntimeConnectionEvent",
         "type": "object"
       },
       "AssistantStartEvent": {
@@ -85718,6 +86396,7 @@
             "assistant.error": "#/components/schemas/AssistantErrorEvent",
             "assistant.picked_up": "#/components/schemas/AssistantPickedUpEvent",
             "assistant.queued": "#/components/schemas/AssistantQueuedEvent",
+            "assistant.runtime_connection": "#/components/schemas/AssistantRuntimeConnectionEvent",
             "assistant.start": "#/components/schemas/AssistantStartEvent",
             "assistant.steer_picked_up": "#/components/schemas/AssistantSteerPickedUpEvent",
             "assistant.steered": "#/components/schemas/AssistantSteeredEvent",
@@ -85772,6 +86451,9 @@
           },
           {
             "$ref": "#/components/schemas/AssistantAbortedEvent"
+          },
+          {
+            "$ref": "#/components/schemas/AssistantRuntimeConnectionEvent"
           }
         ]
       },
