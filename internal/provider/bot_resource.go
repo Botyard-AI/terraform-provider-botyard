@@ -239,25 +239,6 @@ func (r *BotResource) ValidateConfig(ctx context.Context, req resource.ValidateC
 		return
 	}
 
-	// The removed prompt fields are refused whenever they are written at all,
-	// including as an unknown value from another resource: the API would 422
-	// the write, and silently dropping a declared prompt is worse.
-	if cfg.NativeConfig != nil {
-		for _, attr := range []struct {
-			name string
-			v    types.String
-		}{
-			{"prompt_template", cfg.NativeConfig.PromptTemplate},
-			{"prompt_ref", cfg.NativeConfig.PromptRef},
-		} {
-			if !attr.v.IsNull() {
-				resp.Diagnostics.AddAttributeError(path.Root("native_config").AtName(attr.name),
-					"Attribute removed by the Botyard API",
-					fmt.Sprintf("`native_config.%s`: %s", attr.name, removedNativePromptDetail))
-			}
-		}
-	}
-
 	// An unknown harness cannot be checked; a null one means the API default,
 	// `openclaw`, which is exactly what a bare `config` block wants.
 	harness := cfg.Harness

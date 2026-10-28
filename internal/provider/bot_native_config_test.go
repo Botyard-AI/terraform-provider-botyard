@@ -44,7 +44,6 @@ func TestBuildNativeConfigPatch_AlwaysEmitsDiscriminator(t *testing.T) {
 // Platform-owned fields must never be sent, however they got into state.
 func TestBuildNativeConfigPatch_OmitsPlatformOwnedFields(t *testing.T) {
 	raw := buildNativeConfigPatch(&botNativeConfigModel{
-		PromptTemplate: types.StringValue("x"),
 		ModelProvider:  types.StringValue("botyard"),
 		ModelName:      types.StringValue("gpt-5.4"),
 		HostPolicyJSON: types.StringValue(`{"service_owner":"native"}`),
@@ -109,11 +108,6 @@ func TestMapNativeBotConfig(t *testing.T) {
 	cfg := &botNativeConfigModel{ToolSearch: &botToolSearchModel{}}
 	mapNativeBotConfig(nc, cfg)
 
-	// An API from before PR 4045 still returns the removed fields. They must
-	// not leak into state: the provider can never send them back.
-	if !cfg.PromptTemplate.IsNull() || !cfg.PromptRef.IsNull() {
-		t.Errorf("removed prompt fields must read back as null, got %s / %s", cfg.PromptTemplate, cfg.PromptRef)
-	}
 	if cfg.ModelProvider.ValueString() != "botyard" || cfg.ModelName.ValueString() != "gpt-5.4" {
 		t.Errorf("model = %q/%q", cfg.ModelProvider.ValueString(), cfg.ModelName.ValueString())
 	}
@@ -305,19 +299,6 @@ func TestValidateConfig(t *testing.T) {
 			m.Harness = types.StringValue(harnessNative)
 			m.Config = openclawCfg
 		}, true},
-		// PlatDev #4034: the API removed both prompt fields and 422s them.
-		{"native block sets removed prompt_template", func(m *BotResourceModel) {
-			m.Harness = types.StringValue(harnessNative)
-			m.NativeConfig = &botNativeConfigModel{PromptTemplate: types.StringValue("x")}
-		}, true},
-		{"native block sets removed prompt_ref", func(m *BotResourceModel) {
-			m.Harness = types.StringValue(harnessNative)
-			m.NativeConfig = &botNativeConfigModel{PromptRef: types.StringValue("prompts/x@1")}
-		}, true},
-		{"native block sets removed prompt_template from an unknown value", func(m *BotResourceModel) {
-			m.Harness = types.StringValue(harnessNative)
-			m.NativeConfig = &botNativeConfigModel{PromptTemplate: types.StringUnknown()}
-		}, true},
 	}
 
 	for _, tc := range cases {
@@ -332,69 +313,32 @@ func TestValidateConfig(t *testing.T) {
 	}
 }
 
-// --- removed prompt fields (PlatDev #4034) ---------------------------------
+// --- removed prompt fields (PlatDev #4034, removed from the schema in v0.7.0)
 
-// REGRESSION: botyard PR 4045 removed prompt_template and prompt_ref from
-// NativeConfigPatch, which is extra="forbid", so sending either key, EVEN AS
-// NULL, makes the write a 422. v0.5.0 always sent `"prompt_ref": null`, which
-// broke every native config create and update. A plan can still hold values
-// for both: prompt_template is Optional+Computed, so it keeps state written by
-// v0.5.0. Whatever the plan holds, neither key may reach the wire.
+// The API 422s either prompt key, even as null (NativeConfigPatch is
+// extra="forbid"). The fields are gone from the model, so this pins the wire
+// shape against a future reintroduction through some other path, such as a
+// pack-settings merge writing into the same patch map.
 func TestBuildNativeConfigPatch_NeverEmitsRemovedPromptFields(t *testing.T) {
-	values := map[string]types.String{
-		"set":     types.StringValue("legacy"),
-		"null":    types.StringNull(),
-		"unknown": types.StringUnknown(),
-	}
-	for tName, tv := range values {
-		for rName, rv := range values {
-			t.Run("template "+tName+", ref "+rName, func(t *testing.T) {
-				got := decodeSub(t, buildNativeConfigPatch(&botNativeConfigModel{
-					PromptTemplate: tv,
-					PromptRef:      rv,
-					ToolSearch:     &botToolSearchModel{Mode: types.StringValue("auto")},
-				}))
-				for _, k := range []string{"prompt_template", "prompt_ref"} {
-					if v, sent := got[k]; sent {
-						t.Errorf("patch carries removed key %q = %s; the API 422s it", k, v)
-					}
-				}
-			})
-		}
-	}
-}
-
-// The create body embeds the same patch, so the same rule holds there.
-func TestBuildBotCreateBody_NativeNeverEmitsRemovedPromptFields(t *testing.T) {
-	plan := botResourceModel()
-	plan.Harness = types.StringValue(harnessNative)
-	plan.NativeConfig = &botNativeConfigModel{
-		PromptTemplate: types.StringValue("legacy"),
-		PromptRef:      types.StringNull(),
-	}
-	body, diags := buildBotCreateBody(plan)
-	if diags.HasError() {
-		t.Fatalf("diags: %v", diags)
-	}
-	cfg := decodeSub(t, decodeObj(t, body)["config"])
+	got := decodeSub(t, buildNativeConfigPatch(&botNativeConfigModel{
+		ToolSearch: &botToolSearchModel{Mode: types.StringValue("auto")},
+		ToolImages: &botToolImagesModel{Enabled: types.BoolValue(true)},
+	}))
 	for _, k := range []string{"prompt_template", "prompt_ref"} {
-		if v, sent := cfg[k]; sent {
-			t.Errorf("create config carries removed key %q = %s", k, v)
+		if v, sent := got[k]; sent {
+			t.Errorf("patch carries removed key %q = %s; the API 422s it", k, v)
 		}
 	}
 }
 
-// A post-PR-4045 API omits prompt_template, which the generated non-pointer
-// field decodes as "". That must map to null, not "", or a refreshed state
-// would hold a value the provider never wrote.
-func TestMapNativeBotConfig_RemovedPromptFieldsAbsentReadAsNull(t *testing.T) {
-	nc := nativeBotConfig(t, `{"bot_type":"native","model":{"model":"m"}}`)
-	cfg := &botNativeConfigModel{
-		PromptTemplate: types.StringValue("legacy"),
-		PromptRef:      types.StringValue("prompts/x@1"),
-	}
+// An older API can still return the removed fields. Decoding must not fail on
+// them, and there is no longer anywhere in state for them to land.
+func TestMapNativeBotConfig_LegacyPromptFieldsInResponseAreIgnored(t *testing.T) {
+	nc := nativeBotConfig(t, `{"bot_type":"native","model":{"model":"m"},
+		"prompt_template":"legacy","prompt_ref":"prompts/x@1"}`)
+	cfg := &botNativeConfigModel{}
 	mapNativeBotConfig(nc, cfg)
-	if !cfg.PromptTemplate.IsNull() || !cfg.PromptRef.IsNull() {
-		t.Fatalf("removed prompt fields must read back as null, got %s / %s", cfg.PromptTemplate, cfg.PromptRef)
+	if cfg.ModelName.ValueString() != "m" {
+		t.Fatalf("model_name = %s", cfg.ModelName)
 	}
 }

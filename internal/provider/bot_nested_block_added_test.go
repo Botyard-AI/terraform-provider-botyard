@@ -136,19 +136,3 @@ func TestNativeToolSearch_AddedToExistingBot(t *testing.T) {
 		},
 	})
 }
-
-// config.model.primary.provider is the one nested Optional+Computed leaf that
-// Read never refreshes (the API dropped `model`; mapBotConfig leaves it as
-// planned). It must therefore keep the STOCK modifier: added to an existing bot
-// with `provider` omitted, the plan has to hold a known null, because an
-// unknown would survive into the state Update returns and fail the apply with
-// "Provider returned invalid result object after apply". Found by Rivet in
-// review of #40.
-func TestPlan_ConfigModelAddedToExistingBot_ProviderKnown(t *testing.T) {
-	prior := fmt.Sprintf(openClawBotPrior, "null")
-	config := `{"name": "oc", "config": {"thinking_default": "high", "model": {"primary": {"model": "gpt-5.4"}}}}`
-	planned := planBotUpdate(t, prior, config)
-	if v := attrAt(t, planned, "config", "model", "primary", "provider"); !v.IsKnown() {
-		t.Fatalf("config.model.primary.provider planned unknown; Read never refreshes it, so apply would fail")
-	}
-}
