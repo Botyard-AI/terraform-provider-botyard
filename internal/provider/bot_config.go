@@ -8,6 +8,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	"github.com/Botyard-AI/terraform-provider-botyard/internal/client"
@@ -159,8 +160,20 @@ func botConfigSchemaAttribute() schema.SingleNestedAttribute {
 						Optional:            true,
 						MarkdownDescription: "Primary model reference.",
 						Attributes: map[string]schema.Attribute{
-							"provider": optCompStr("Provider key within `models.providers` (e.g. `botyard`). Defaults to `botyard` when omitted."),
-							"model":    reqStr("Model ID within the provider (e.g. `gpt-5.4`)."),
+							// STOCK UseStateForUnknown, deliberately: Read never
+							// refreshes `model` (the API dropped it), so this leaf
+							// must plan a KNOWN value. nestedUseStateForUnknown
+							// would leave it unknown when `model` is added to an
+							// existing bot, and that unknown would reach the
+							// state Update returns. See
+							// TestPlan_ConfigModelAddedToExistingBot_ProviderKnown.
+							"provider": schema.StringAttribute{
+								Optional:            true,
+								Computed:            true,
+								MarkdownDescription: "Provider key within `models.providers` (e.g. `botyard`). Defaults to `botyard` when omitted.",
+								PlanModifiers:       []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
+							},
+							"model": reqStr("Model ID within the provider (e.g. `gpt-5.4`)."),
 						},
 					},
 				},
