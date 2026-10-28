@@ -75,7 +75,7 @@ resource "botyard_bot" "crm" {
     pack_version_id = data.botyard_pack_version.crm.pack_version_id
 
     settings = [
-      { path = "tool_search", choice = "custom", value = jsonencode({ mode = "auto" }) },
+      { path = "tool_search", choice = "custom", custom = { value = jsonencode({ mode = "auto" }) } },
     ]
 
     connections = [
@@ -83,7 +83,7 @@ resource "botyard_bot" "crm" {
       {
         pack_version_connection_id = "00000000-0000-0000-0000-000000000001"
         choice                     = "use_server"
-        mcp_server_id              = botyard_mcp_server.crm.id
+        use_server                 = { mcp_server_id = botyard_mcp_server.crm.id }
       },
       # ...connect a new account with Runtime Vault references (not OAuth:
       # connect those in the app first, then use `use_server`)...
@@ -93,8 +93,8 @@ resource "botyard_bot" "crm" {
         create = {
           accept_metered = true
           setup = {
-            kind             = "credential_form"
-            vault_entry_refs = { api_key = "00000000-0000-0000-0000-0000000000aa" }
+            kind            = "credential_form"
+            credential_form = { vault_entry_refs = { api_key = "00000000-0000-0000-0000-0000000000aa" } }
           }
         }
       },

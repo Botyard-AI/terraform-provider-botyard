@@ -93,7 +93,7 @@ resource "botyard_bot" "crm" {
     pack_version_id = data.botyard_pack_version.crm.pack_version_id
 
     settings = [
-      { path = "tool_search", choice = "custom", value = jsonencode({ mode = "auto" }) },
+      { path = "tool_search", choice = "custom", custom = { value = jsonencode({ mode = "auto" }) } },
     ]
 
     connections = [
@@ -101,7 +101,7 @@ resource "botyard_bot" "crm" {
       {
         pack_version_connection_id = "00000000-0000-0000-0000-000000000001"
         choice                     = "use_server"
-        mcp_server_id              = botyard_mcp_server.crm.id
+        use_server                 = { mcp_server_id = botyard_mcp_server.crm.id }
       },
       # ...connect a new account with Runtime Vault references (not OAuth:
       # connect those in the app first, then use `use_server`)...
@@ -111,8 +111,8 @@ resource "botyard_bot" "crm" {
         create = {
           accept_metered = true
           setup = {
-            kind             = "credential_form"
-            vault_entry_refs = { api_key = "00000000-0000-0000-0000-0000000000aa" }
+            kind            = "credential_form"
+            credential_form = { vault_entry_refs = { api_key = "00000000-0000-0000-0000-0000000000aa" } }
           }
         }
       },
@@ -357,7 +357,7 @@ Required:
 Optional:
 
 - `connections` (Attributes List) Per MCP connection of the pack version: `use_server` binds an org MCP server, `leave_pending` binds nothing, and `create` connects a new account with Runtime Vault references. A connection left out binds the one visible server from its catalogue entry, as in the app. Applied at creation only. A connection that needs a vendor sign-in (OAuth) cannot be created here: connect it in the app first, then use `use_server` or `leave_pending`. (see [below for nested schema](#nestedatt--pack--connections))
-- `settings` (Attributes List) Per pack setting: `pack` (the default for a setting left out), `keep` the bot's own value, or `custom` with `value`. Applied at creation only. (see [below for nested schema](#nestedatt--pack--settings))
+- `settings` (Attributes List) Per pack setting: `pack` (the default for a setting left out), `keep` the bot's own value, or `custom` with a `custom = { value }` payload. Applied at creation only. (see [below for nested schema](#nestedatt--pack--settings))
 
 Read-Only:
 
@@ -373,12 +373,12 @@ Read-Only:
 Required:
 
 - `choice` (String) `use_server`, `leave_pending` or `create`.
-- `pack_version_connection_id` (String) A connection of the pack version, from `data.botyard_pack_version`.
+- `pack_version_connection_id` (String) A connection of the pack version.
 
 Optional:
 
-- `create` (Attributes) `create` only: the new account. (see [below for nested schema](#nestedatt--pack--connections--create))
-- `mcp_server_id` (String) `use_server` only: the org MCP server to bind, e.g. `botyard_mcp_server.crm.id`.
+- `create` (Attributes) `choice = "create"` only, and required for it: the new account. (see [below for nested schema](#nestedatt--pack--connections--create))
+- `use_server` (Attributes) `choice = "use_server"` only, and required for it. (see [below for nested schema](#nestedatt--pack--connections--use_server))
 
 <a id="nestedatt--pack--connections--create"></a>
 ### Nested Schema for `pack.connections.create`
@@ -401,11 +401,26 @@ Required:
 
 Optional:
 
-- `catalog_form_answers` (Attributes Map) `setup_form` only: field id to answer. A secret field must be `mode = "secret_ref"` with a Runtime Vault key path. (see [below for nested schema](#nestedatt--pack--connections--create--setup--catalog_form_answers))
-- `vault_entry_refs` (Map of String) `credential_form` only: credential field name to the id of an org Runtime Vault secret holding its value.
+- `credential_form` (Attributes) `kind = "credential_form"` only, and required for it. (see [below for nested schema](#nestedatt--pack--connections--create--setup--credential_form))
+- `setup_form` (Attributes) `kind = "setup_form"` only, and required for it. (see [below for nested schema](#nestedatt--pack--connections--create--setup--setup_form))
 
-<a id="nestedatt--pack--connections--create--setup--catalog_form_answers"></a>
-### Nested Schema for `pack.connections.create.setup.catalog_form_answers`
+<a id="nestedatt--pack--connections--create--setup--credential_form"></a>
+### Nested Schema for `pack.connections.create.setup.credential_form`
+
+Required:
+
+- `vault_entry_refs` (Map of String) Credential field name to the id of an org Runtime Vault secret holding its value. At least one.
+
+
+<a id="nestedatt--pack--connections--create--setup--setup_form"></a>
+### Nested Schema for `pack.connections.create.setup.setup_form`
+
+Required:
+
+- `catalog_form_answers` (Attributes Map) Field id to answer. A secret field must be `mode = "secret_ref"` with a Runtime Vault key path. (see [below for nested schema](#nestedatt--pack--connections--create--setup--setup_form--catalog_form_answers))
+
+<a id="nestedatt--pack--connections--create--setup--setup_form--catalog_form_answers"></a>
+### Nested Schema for `pack.connections.create.setup.setup_form.catalog_form_answers`
 
 Required:
 
@@ -413,6 +428,15 @@ Required:
 - `value` (String) The plaintext value, or the vault key path for `secret_ref`.
 
 
+
+
+
+<a id="nestedatt--pack--connections--use_server"></a>
+### Nested Schema for `pack.connections.use_server`
+
+Required:
+
+- `mcp_server_id` (String) The org MCP server to bind, e.g. `botyard_mcp_server.crm.id`.
 
 
 
@@ -426,7 +450,15 @@ Required:
 
 Optional:
 
-- `value` (String) `custom` only: the value as JSON, in the setting's own shape, e.g. `jsonencode({ mode = "auto" })` for `tool_search`.
+- `custom` (Attributes) `choice = "custom"` only, and required for it. (see [below for nested schema](#nestedatt--pack--settings--custom))
+
+<a id="nestedatt--pack--settings--custom"></a>
+### Nested Schema for `pack.settings.custom`
+
+Required:
+
+- `value` (String) The value as JSON, in the setting's own shape, e.g. `jsonencode({ mode = "auto" })` for `tool_search`.
+
 
 
 <a id="nestedatt--pack--pending_connections"></a>

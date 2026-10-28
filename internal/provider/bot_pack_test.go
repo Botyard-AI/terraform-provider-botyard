@@ -1,6 +1,7 @@
 package provider
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -17,6 +18,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/plancheck"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
+
+	"github.com/Botyard-AI/terraform-provider-botyard/internal/client"
 )
 
 // PlatDev #4383: the `pack` block on botyard_bot, driven through real
@@ -32,21 +35,27 @@ const (
 	fpServerID  = "55555555-5555-4555-8555-555555555555"
 	fpSetupID   = "66666666-6666-4666-8666-666666666666"
 	fpPackAvURL = "https://example.test/pack-avatar.png"
+
+	fpExtraInstallPrefix = "77777777-7777-4777-8777-77777777777"
 )
 
 // fakePackBotAPI models one native bot plus the packs routes P2 uses.
 type fakePackBotAPI struct {
 	t *testing.T
 
-	mu         sync.Mutex
-	exists     bool
-	installed  bool
-	foreign    bool // the bot was not created by this key: uninstall is 403
-	mode       string
-	avatar     string
-	calls      []string
-	fromPack   []byte
-	configPats [][]byte
+	mu        sync.Mutex
+	exists    bool
+	installed bool
+	foreign   bool // the bot was not created by this key: uninstall is 403
+	extra     int  // further installs added in the app (P5.1 multi-pack)
+
+	failConfig   bool // PATCH /config answers 500
+	failInstalls bool // GET /packs/installs answers 500
+	mode         string
+	avatar       string
+	calls        []string
+	fromPack     []byte
+	configPats   [][]byte
 }
 
 func newFakePackBotAPI(t *testing.T) (*fakePackBotAPI, *httptest.Server) {
@@ -119,6 +128,12 @@ func (a *fakePackBotAPI) serve(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 		_, _ = w.Write([]byte(a.botJSON()))
+	case r.Method == http.MethodPatch && r.URL.Path == bot+"/config" && a.failConfig:
+		w.WriteHeader(http.StatusInternalServerError)
+		_, _ = w.Write([]byte(`{"title":"injected config failure","status":500}`))
+	case r.Method == http.MethodGet && r.URL.Path == base+"/packs/installs" && a.failInstalls:
+		w.WriteHeader(http.StatusInternalServerError)
+		_, _ = w.Write([]byte(`{"title":"injected installs failure","status":500}`))
 	case r.Method == http.MethodPatch && r.URL.Path == bot+"/config" && a.exists:
 		a.configPats = append(a.configPats, raw)
 		a.applyToolSearch(raw)
@@ -131,10 +146,14 @@ func (a *fakePackBotAPI) serve(w http.ResponseWriter, r *http.Request) {
 		if got := r.URL.Query().Get("bot_ids"); got != fpBotID {
 			a.t.Errorf("installs read bot_ids=%q, want %q", got, fpBotID)
 		}
-		installs := ""
+		var parts []string
 		if a.installed {
-			installs = a.installJSON()
+			parts = append(parts, a.installJSON())
 		}
+		for i := 0; i < a.extra; i++ {
+			parts = append(parts, extraInstallJSON(i))
+		}
+		installs := strings.Join(parts, ",")
 		_, _ = fmt.Fprintf(w, `{"bots":[{"bot_id":%q,"installs":[%s]}],"not_found":[]}`, fpBotID, installs)
 	case r.Method == http.MethodDelete && r.URL.Path == base+"/packs/installs":
 		if got := r.URL.Query().Get("bot_pack_install_ids"); got != fpInstallID {
@@ -187,6 +206,15 @@ func (a *fakePackBotAPI) installJSON() string {
 		fpInstallID, fpPV1, fpConnCRM, fpSetupID)
 }
 
+// extraInstallJSON is an install added in the app: the "crm" pack, ids
+// fpExtraInstallPrefix + i.
+func extraInstallJSON(i int) string {
+	return fmt.Sprintf(`{"bot_pack_install_id":"%s%d","connections":[],"installed_at":"2026-10-27T10:00:00Z",`+
+		`"installed_by_bot_id":null,"installed_by_user_id":"u-1","items":[],"name":"CRM","pack_id":"pk-crm",`+
+		`"pack_slug":"crm","pack_version_id":%q,"pending_connections":[],"updated_at":"2026-10-27T10:00:00Z","version_no":1}`,
+		fpExtraInstallPrefix, i, fpPV2)
+}
+
 func (a *fakePackBotAPI) botJSON() string {
 	avatar := "null"
 	if a.avatar != "" {
@@ -202,6 +230,10 @@ func (a *fakePackBotAPI) botJSON() string {
 }
 
 func packBotConfig(endpoint, extra string) string {
+	return packBotConfigMode(endpoint, "auto", extra)
+}
+
+func packBotConfigMode(endpoint, mode, extra string) string {
 	return fmt.Sprintf(`
 provider "botyard" {
   endpoint = %q
@@ -213,11 +245,11 @@ resource "botyard_bot" "p" {
   name    = "pack-probe"
   harness = "botyard_native"
   native_config = {
-    tool_search = { mode = "auto" }
+    tool_search = { mode = %q }
   }
 %s
 }
-`, endpoint, extra)
+`, endpoint, mode, extra)
 }
 
 func packBlock(pv, connections string) string {
@@ -229,7 +261,7 @@ func packBlock(pv, connections string) string {
   }`, pv, connections)
 }
 
-const useServerConn = `{ pack_version_connection_id = "` + fpConnCRM + `", choice = "use_server", mcp_server_id = "` + fpServerID + `" }`
+const useServerConn = `{ pack_version_connection_id = "` + fpConnCRM + `", choice = "use_server", use_server = { mcp_server_id = "` + fpServerID + `" } }`
 
 const addr = "botyard_bot.p"
 
@@ -405,7 +437,7 @@ func TestBotPack_CreateWithVaultRefsSendsCredentialForm(t *testing.T) {
       choice = "create"
       create = {
         accept_metered = true
-        setup = { kind = "credential_form", vault_entry_refs = { api_key = "` + fpServerID + `" } }
+        setup = { kind = "credential_form", credential_form = { vault_entry_refs = { api_key = "` + fpServerID + `" } } }
       }
     }`
 	resource.UnitTest(t, resource.TestCase{
@@ -437,7 +469,7 @@ func TestBotPack_CreateWithVaultRefsSendsCredentialForm(t *testing.T) {
 
 func TestBotPack_MeteredCreateNeedsAcceptance(t *testing.T) {
 	_, srv := newFakePackBotAPI(t)
-	conn := `{ pack_version_connection_id = "` + fpConnCRM + `", choice = "create", create = { setup = { kind = "credential_form", vault_entry_refs = { api_key = "x" } } } }`
+	conn := `{ pack_version_connection_id = "` + fpConnCRM + `", choice = "create", create = { setup = { kind = "credential_form", credential_form = { vault_entry_refs = { api_key = "x" } } } } }`
 	resource.UnitTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{{
@@ -449,50 +481,51 @@ func TestBotPack_MeteredCreateNeedsAcceptance(t *testing.T) {
 
 func TestValidatePackConfig(t *testing.T) {
 	str := types.StringValue
+	custom := func(v string) *botPackSettingCustomModel { return &botPackSettingCustomModel{Value: str(v)} }
+	conn := func(choice string) botPackConnectionModel {
+		return botPackConnectionModel{PackVersionConnectionID: str("c1"), Choice: str(choice)}
+	}
+	create := func(kind string, sf *botPackSetupFormModel, cf *botPackCredentialFormModel) botPackConnectionModel {
+		c := conn("create")
+		c.Create = &botPackCreateModel{Setup: botPackCreateSetupModel{Kind: str(kind), SetupForm: sf, CredentialForm: cf}}
+		return c
+	}
+	withServer := conn("use_server")
+	withServer.UseServer = &botPackUseServerModel{McpServerID: str("s")}
+	pendingWithServer := conn("leave_pending")
+	pendingWithServer.UseServer = &botPackUseServerModel{McpServerID: str("s")}
 	cases := []struct {
 		name string
 		pack botPackModel
 		want string // substring of the single expected error summary; "" = valid
 	}{
 		{"valid", botPackModel{
-			Settings:    []botPackSettingModel{{Path: str("tool_search"), Choice: str("custom"), Value: str(`{"mode":"auto"}`)}},
-			Connections: []botPackConnectionModel{{PackVersionConnectionID: str("c1"), Choice: str("leave_pending"), McpServerID: types.StringNull()}},
+			Settings:    []botPackSettingModel{{Path: str("tool_search"), Choice: str("custom"), Custom: custom(`{"mode":"auto"}`)}},
+			Connections: []botPackConnectionModel{conn("leave_pending"), func() botPackConnectionModel { c := withServer; c.PackVersionConnectionID = str("c2"); return c }()},
 		}, ""},
-		{"custom without value", botPackModel{
-			Settings: []botPackSettingModel{{Path: str("tool_search"), Choice: str("custom"), Value: types.StringNull()}},
-		}, "Missing setting value"},
-		{"value on pack choice", botPackModel{
-			Settings: []botPackSettingModel{{Path: str("tool_search"), Choice: str("pack"), Value: str("1")}},
-		}, "Unexpected setting value"},
+		{"custom without payload", botPackModel{
+			Settings: []botPackSettingModel{{Path: str("tool_search"), Choice: str("custom")}},
+		}, "Missing variant payload"},
+		{"payload on pack choice", botPackModel{
+			Settings: []botPackSettingModel{{Path: str("tool_search"), Choice: str("pack"), Custom: custom("1")}},
+		}, "does not match its discriminator"},
 		{"invalid json", botPackModel{
-			Settings: []botPackSettingModel{{Path: str("tool_search"), Choice: str("custom"), Value: str("{")}},
+			Settings: []botPackSettingModel{{Path: str("tool_search"), Choice: str("custom"), Custom: custom("{")}},
 		}, "not JSON"},
 		{"duplicate path", botPackModel{
-			Settings: []botPackSettingModel{
-				{Path: str("tool_search"), Choice: str("pack"), Value: types.StringNull()},
-				{Path: str("tool_search"), Choice: str("keep"), Value: types.StringNull()},
-			},
+			Settings: []botPackSettingModel{{Path: str("tool_search"), Choice: str("pack")}, {Path: str("tool_search"), Choice: str("keep")}},
 		}, "Duplicate pack setting"},
-		{"use_server without id", botPackModel{
-			Connections: []botPackConnectionModel{{PackVersionConnectionID: str("c1"), Choice: str("use_server"), McpServerID: types.StringNull()}},
-		}, "do not match its choice"},
-		{"id on leave_pending", botPackModel{
-			Connections: []botPackConnectionModel{{PackVersionConnectionID: str("c1"), Choice: str("leave_pending"), McpServerID: str("s")}},
-		}, "do not match its choice"},
-		{"duplicate connection", botPackModel{
-			Connections: []botPackConnectionModel{
-				{PackVersionConnectionID: str("c1"), Choice: str("leave_pending"), McpServerID: types.StringNull()},
-				{PackVersionConnectionID: str("c1"), Choice: str("leave_pending"), McpServerID: types.StringNull()},
-			},
-		}, "Duplicate pack connection"},
-		{"credential_form without refs", botPackModel{
-			Connections: []botPackConnectionModel{{PackVersionConnectionID: str("c1"), Choice: str("create"), McpServerID: types.StringNull(),
-				Create: &botPackCreateModel{Setup: botPackCreateSetupModel{Kind: str("credential_form")}}}},
-		}, "Missing vault references"},
-		{"refs on none", botPackModel{
-			Connections: []botPackConnectionModel{{PackVersionConnectionID: str("c1"), Choice: str("create"), McpServerID: types.StringNull(),
-				Create: &botPackCreateModel{Setup: botPackCreateSetupModel{Kind: str("none"), VaultEntryRefs: map[string]types.String{"k": str("v")}}}}},
-		}, "Setup fields do not match its kind"},
+		{"use_server without payload", botPackModel{Connections: []botPackConnectionModel{conn("use_server")}}, "Missing variant payload"},
+		{"use_server payload on leave_pending", botPackModel{Connections: []botPackConnectionModel{pendingWithServer}}, "does not match its discriminator"},
+		{"create without payload", botPackModel{Connections: []botPackConnectionModel{conn("create")}}, "Missing variant payload"},
+		{"duplicate connection", botPackModel{Connections: []botPackConnectionModel{conn("leave_pending"), conn("leave_pending")}}, "Duplicate pack connection"},
+		{"credential_form without payload", botPackModel{Connections: []botPackConnectionModel{create("credential_form", nil, nil)}}, "Missing variant payload"},
+		{"credential_form empty refs", botPackModel{Connections: []botPackConnectionModel{
+			create("credential_form", nil, &botPackCredentialFormModel{VaultEntryRefs: map[string]types.String{}})}}, "Missing vault references"},
+		{"setup_form payload on none", botPackModel{Connections: []botPackConnectionModel{
+			create("none", &botPackSetupFormModel{}, nil)}}, "does not match its discriminator"},
+		{"unknown choice skipped", botPackModel{Connections: []botPackConnectionModel{
+			{PackVersionConnectionID: str("c1"), Choice: types.StringUnknown()}}}, ""},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
@@ -508,6 +541,60 @@ func TestValidatePackConfig(t *testing.T) {
 				t.Fatalf("errors = %v, want one containing %q", diags, c.want)
 			}
 		})
+	}
+}
+
+// decodePackChoices yields exactly one sealed variant per DTO and refuses a
+// payload that does not match its discriminator.
+func TestDecodePackChoices(t *testing.T) {
+	str := types.StringValue
+	p := &botPackModel{
+		Settings: []botPackSettingModel{
+			{Path: str("a"), Choice: str("pack")},
+			{Path: str("b"), Choice: str("keep")},
+			{Path: str("c"), Choice: str("custom"), Custom: &botPackSettingCustomModel{Value: str(`{"x":1}`)}},
+		},
+		Connections: []botPackConnectionModel{
+			{PackVersionConnectionID: str("u"), Choice: str("use_server"), UseServer: &botPackUseServerModel{McpServerID: str("s")}},
+			{PackVersionConnectionID: str("l"), Choice: str("leave_pending")},
+			{PackVersionConnectionID: str("n"), Choice: str("create"), Create: &botPackCreateModel{Setup: botPackCreateSetupModel{Kind: str("none")}}},
+			{PackVersionConnectionID: str("f"), Choice: str("create"), Create: &botPackCreateModel{Setup: botPackCreateSetupModel{Kind: str("setup_form"),
+				SetupForm: &botPackSetupFormModel{CatalogFormAnswers: map[string]botPackFormAnswerModel{"k": {Mode: str("secret_ref"), Value: str("v.p")}}}}}},
+			{PackVersionConnectionID: str("v"), Choice: str("create"), Create: &botPackCreateModel{Setup: botPackCreateSetupModel{Kind: str("credential_form"),
+				CredentialForm: &botPackCredentialFormModel{VaultEntryRefs: map[string]types.String{"api_key": str("id")}}}}},
+		},
+	}
+	settings, conns, err := decodePackChoices(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, ok := settings[0].(*settingPack); !ok {
+		t.Errorf("settings[0] = %T", settings[0])
+	}
+	if _, ok := settings[1].(*settingKeep); !ok {
+		t.Errorf("settings[1] = %T", settings[1])
+	}
+	if v, ok := settings[2].(*settingCustom); !ok || string(v.value) != `{"x":1}` {
+		t.Errorf("settings[2] = %#v", settings[2])
+	}
+	if v, ok := conns[0].(*connUseServer); !ok || v.mcpServerID != "s" {
+		t.Errorf("conns[0] = %#v", conns[0])
+	}
+	if _, ok := conns[1].(*connLeavePending); !ok {
+		t.Errorf("conns[1] = %T", conns[1])
+	}
+	for i, want := range []string{"*provider.setupNone", "*provider.setupForm", "*provider.setupVaultRefs"} {
+		cc, ok := conns[2+i].(*connCreate)
+		if !ok || fmt.Sprintf("%T", cc.setup) != want {
+			t.Errorf("conns[%d] = %#v, want create with %s", 2+i, conns[2+i], want)
+		}
+	}
+
+	bad := &botPackModel{Connections: []botPackConnectionModel{
+		{PackVersionConnectionID: str("x"), Choice: str("leave_pending"), UseServer: &botPackUseServerModel{McpServerID: str("s")}},
+	}}
+	if _, _, err := decodePackChoices(bad); err == nil {
+		t.Error("mismatched payload decoded without error")
 	}
 }
 
@@ -581,6 +668,276 @@ terraform {
 								if strings.Contains(c, "/packs/") {
 									return fmt.Errorf("a bot without a pack read pack installs: %v", api.callLog())
 								}
+							}
+							return nil
+						},
+					},
+				},
+			})
+		})
+	}
+}
+
+// Rivet, PR 38: the config PATCH after from-pack must send the config as
+// declared, not the pack's values mapped over it. The pack sets `auto`.
+func TestBotPack_ConfigPatchSendsDeclaredNotPackValue(t *testing.T) {
+	api, srv := newFakePackBotAPI(t)
+	cfg := packBotConfigMode(srv.URL, "off", packBlock(fpPV1, ""))
+	resource.UnitTest(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: cfg,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(addr, "native_config.tool_search.mode", "off"),
+					func(*terraform.State) error {
+						api.mu.Lock()
+						defer api.mu.Unlock()
+						if len(api.configPats) != 1 || !strings.Contains(string(api.configPats[0]), `"mode":"off"`) {
+							return fmt.Errorf("config PATCHes = %q, want one sending mode off", api.configPats)
+						}
+						return nil
+					},
+				),
+			},
+			{
+				Config:           cfg,
+				ConfigPlanChecks: resource.ConfigPlanChecks{PreApply: []plancheck.PlanCheck{plancheck.ExpectEmptyPlan()}},
+			},
+		},
+	})
+}
+
+// Rivet, PR 38: removing a custom avatar_url from a pack bot clears it rather
+// than leaving the custom avatar in place behind a null in state.
+func TestBotPack_RemovingCustomAvatarClearsIt(t *testing.T) {
+	api, srv := newFakePackBotAPI(t)
+	custom := `avatar_url = "https://example.test/custom.png"` + packBlock(fpPV1, "")
+	resource.UnitTest(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: packBotConfig(srv.URL, custom),
+				Check:  resource.TestCheckResourceAttr(addr, "avatar_url", "https://example.test/custom.png"),
+			},
+			{
+				Config: packBotConfig(srv.URL, packBlock(fpPV1, "")),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckNoResourceAttr(addr, "avatar_url"),
+					func(*terraform.State) error {
+						api.mu.Lock()
+						defer api.mu.Unlock()
+						if api.avatar != "" {
+							return fmt.Errorf("remote avatar is still %q after removing avatar_url", api.avatar)
+						}
+						return nil
+					},
+				),
+			},
+		},
+	})
+}
+
+// Import is strict about which install it adopts (P5.1: several per bot).
+func TestBotPack_ImportSelectsInstall(t *testing.T) {
+	api, srv := newFakePackBotAPI(t)
+	cfg := packBotConfig(srv.URL, packBlock(fpPV1, ""))
+	importStep := func(id string) resource.TestStep {
+		return resource.TestStep{
+			ResourceName:                         addr,
+			ImportState:                          true,
+			ImportStateId:                        id,
+			ImportStateVerify:                    true,
+			ImportStateVerifyIgnore:              []string{"pack.settings", "pack.connections", "native_config"},
+			ImportStateVerifyIdentifierAttribute: "slug",
+		}
+	}
+	addExtra := func() { api.set(func(a *fakePackBotAPI) { a.extra = 1 }) }
+	byID := importStep("pack-probe:" + fpInstallID)
+	byID.PreConfig = addExtra
+	ambiguous := importStep("pack-probe")
+	ambiguous.ExpectError = regexp.MustCompile(`(?s)Bot has several pack installs.*` + fpInstallID + `.*support.*crm`)
+	resource.UnitTest(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{Config: cfg},
+			importStep("pack-probe"), // exactly one install: adopted
+			byID,                     // two installs, named by id
+			importStep("pack-probe:support"),
+			ambiguous,
+		},
+	})
+}
+
+// A bot with no install imports with no `pack`.
+func TestBotPack_ImportWithoutInstalls(t *testing.T) {
+	_, srv := newFakePackBotAPI(t)
+	resource.UnitTest(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{Config: packBotConfig(srv.URL, "")},
+			{
+				ResourceName:                         addr,
+				ImportState:                          true,
+				ImportStateId:                        "pack-probe",
+				ImportStateVerify:                    true,
+				ImportStateVerifyIgnore:              []string{"native_config"},
+				ImportStateVerifyIdentifierAttribute: "slug",
+			},
+		},
+	})
+}
+
+// A tracked install deleted out-of-band is never swapped for another one the
+// bot still has.
+func TestBotPack_TrackedInstallGoneDoesNotAdoptAnother(t *testing.T) {
+	api, srv := newFakePackBotAPI(t)
+	cfg := packBotConfig(srv.URL, packBlock(fpPV1, ""))
+	resource.UnitTest(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{Config: cfg},
+			{
+				PreConfig:   func() { api.set(func(a *fakePackBotAPI) { a.installed, a.extra = false, 1 }) },
+				Config:      cfg,
+				ExpectError: regexp.MustCompile(`Cannot add a pack to an existing bot`),
+			},
+		},
+	})
+}
+
+func TestSelectImportInstall(t *testing.T) {
+	in := func(id, slug string) client.BotPackInstallView {
+		return client.BotPackInstallView{BotPackInstallId: id, PackSlug: slug}
+	}
+	two := []client.BotPackInstallView{in("i-1", "support"), in("i-2", "crm")}
+	dup := []client.BotPackInstallView{in("i-1", "crm"), in("i-2", "crm")}
+	cases := []struct {
+		name, selector string
+		installs       []client.BotPackInstallView
+		wantID, errSub string
+	}{
+		{"none", "", nil, "", ""},
+		{"one", "", two[:1], "i-1", ""},
+		{"many, no selector", "", two, "", "several pack installs"},
+		{"by id", "i-2", two, "i-2", ""},
+		{"by slug", "crm", two, "i-2", ""},
+		{"ambiguous slug", "crm", dup, "", "ambiguous"},
+		{"ambiguous slug, by id", "i-2", dup, "i-2", ""},
+		{"unknown", "nope", two, "", "No such pack install"},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			got, d := selectImportInstall(c.installs, "bot", c.selector)
+			if c.errSub != "" {
+				if !d.HasError() || !strings.Contains(d.Errors()[0].Summary(), c.errSub) {
+					t.Fatalf("diags = %v, want error %q", d, c.errSub)
+				}
+				return
+			}
+			if d.HasError() {
+				t.Fatalf("unexpected: %v", d)
+			}
+			gotID := ""
+			if got != nil {
+				gotID = got.BotPackInstallId
+			}
+			if gotID != c.wantID {
+				t.Fatalf("got %q, want %q", gotID, c.wantID)
+			}
+		})
+	}
+}
+
+func TestSplitBotImportID(t *testing.T) {
+	for id, want := range map[string][2]string{
+		"bot": {"bot", ""}, "bot:i-1": {"bot", "i-1"}, "bot:crm": {"bot", "crm"},
+	} {
+		slug, sel, err := splitBotImportID(id)
+		if err != nil || slug != want[0] || sel != want[1] {
+			t.Errorf("%q -> %q %q %v", id, slug, sel, err)
+		}
+	}
+	for _, bad := range []string{"", ":x", "a:b:c"} {
+		if _, _, err := splitBotImportID(bad); err == nil {
+			t.Errorf("%q: want error", bad)
+		}
+	}
+}
+
+// priorStateHas asserts, on the plan that follows a failed create, what the
+// failed create saved: the bot and its install, with no unknown values.
+type priorStateHas struct{ want map[string]string }
+
+func (c priorStateHas) CheckPlan(_ context.Context, req plancheck.CheckPlanRequest, resp *plancheck.CheckPlanResponse) {
+	if req.Plan.PriorState == nil || req.Plan.PriorState.Values == nil {
+		resp.Error = fmt.Errorf("no prior state: the failed create saved nothing")
+		return
+	}
+	for _, r := range req.Plan.PriorState.Values.RootModule.Resources {
+		if r.Address != addr {
+			continue
+		}
+		got := map[string]string{"id": fmt.Sprint(r.AttributeValues["id"])}
+		if p, ok := r.AttributeValues["pack"].(map[string]any); ok {
+			got["pack.bot_pack_install_id"] = fmt.Sprint(p["bot_pack_install_id"])
+		}
+		for k, v := range c.want {
+			if got[k] != v {
+				resp.Error = fmt.Errorf("prior state %s = %q, want %q", k, got[k], v)
+				return
+			}
+		}
+		return
+	}
+	resp.Error = fmt.Errorf("%s not in prior state", addr)
+}
+
+// A create that fails after from-pack saves the bot (tainted) with its
+// install id, so the next apply replaces that one bot: it is deleted before
+// a new one is made, never orphaned or duplicated.
+func TestBotPack_PartialCreateIsTaintedNotOrphaned(t *testing.T) {
+	for _, tc := range []struct {
+		name   string
+		inject func(a *fakePackBotAPI, on bool)
+		errRe  string
+	}{
+		{"config patch fails", func(a *fakePackBotAPI, on bool) { a.failConfig = on }, `Unexpected response updating bot config`},
+		{"installs read fails", func(a *fakePackBotAPI, on bool) { a.failInstalls = on }, `Unexpected response reading bot pack installs`},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			api, srv := newFakePackBotAPI(t)
+			cfg := packBotConfig(srv.URL, packBlock(fpPV1, ""))
+			countCalls := func(call string) int {
+				n := 0
+				for _, c := range api.callLog() {
+					if c == call {
+						n++
+					}
+				}
+				return n
+			}
+			resource.UnitTest(t, resource.TestCase{
+				ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+				Steps: []resource.TestStep{
+					{
+						PreConfig:   func() { api.set(func(a *fakePackBotAPI) { tc.inject(a, true) }) },
+						Config:      cfg,
+						ExpectError: regexp.MustCompile(tc.errRe),
+					},
+					{
+						PreConfig: func() { api.set(func(a *fakePackBotAPI) { tc.inject(a, false) }) },
+						Config:    cfg,
+						ConfigPlanChecks: resource.ConfigPlanChecks{PreApply: []plancheck.PlanCheck{
+							plancheck.ExpectResourceAction(addr, plancheck.ResourceActionDestroyBeforeCreate),
+							priorStateHas{want: map[string]string{"id": fpBotID, "pack.bot_pack_install_id": fpInstallID}},
+						}},
+						Check: func(*terraform.State) error {
+							if n := countCalls("POST /v1/orgs/org-1/bots/from-pack"); n != 2 {
+								return fmt.Errorf("from-pack calls = %d, want 2 (failed create, then the replacement)", n)
+							}
+							if n := countCalls("DELETE /v1/orgs/org-1/bots/pack-probe"); n != 1 {
+								return fmt.Errorf("bot deletes = %d, want 1: the tainted bot removed before its replacement", n)
 							}
 							return nil
 						},

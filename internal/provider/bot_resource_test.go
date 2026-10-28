@@ -107,7 +107,7 @@ func TestBuildBotUpdateBody_OnlyMetadataFields(t *testing.T) {
 	model.Description = types.StringValue("new desc")
 	model.AvatarURL = types.StringValue("https://ex/a.png")
 
-	body, err := buildBotUpdateBody(model)
+	body, err := buildBotUpdateBody(model, types.StringNull())
 	if err != nil {
 		t.Fatalf("build: %v", err)
 	}
@@ -135,7 +135,7 @@ func TestBuildBotUpdateBody_OnlyMetadataFields(t *testing.T) {
 // UseStateForUnknown that would restore the old value.)
 func TestBuildBotUpdateBody_ClearsWithNull(t *testing.T) {
 	model := botResourceModel() // description + avatar_url both null
-	body, err := buildBotUpdateBody(model)
+	body, err := buildBotUpdateBody(model, types.StringNull())
 	if err != nil {
 		t.Fatalf("build: %v", err)
 	}
@@ -344,7 +344,7 @@ func TestBotResource_UpdateRoundTrip(t *testing.T) {
 	c := newBotClient(t, srv.URL, "byk_test")
 	model := botResourceModel()
 	model.Description = types.StringValue("updated")
-	body, err := buildBotUpdateBody(model)
+	body, err := buildBotUpdateBody(model, types.StringNull())
 	if err != nil {
 		t.Fatalf("build: %v", err)
 	}

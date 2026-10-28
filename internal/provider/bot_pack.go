@@ -22,10 +22,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"sort"
 	"strings"
 
-	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -34,28 +32,14 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 
 	"github.com/Botyard-AI/terraform-provider-botyard/internal/client"
 )
 
-// Wire values of the per-setting and per-connection choices.
+// Connection preview setup kinds that `create` cannot satisfy.
 const (
-	packSettingChoicePack   = "pack"
-	packSettingChoiceKeep   = "keep"
-	packSettingChoiceCustom = "custom"
-
-	packConnChoiceUseServer    = "use_server"
-	packConnChoiceLeavePending = "leave_pending"
-	packConnChoiceCreate       = "create"
-
-	packCreateSetupNone      = "none"
-	packCreateSetupForm      = "setup_form"
-	packCreateSetupVaultRefs = "credential_form"
-
-	// Connection preview setup kinds that `create` cannot satisfy.
 	connectionSetupOAuth       = "oauth"
 	connectionSetupUnavailable = "unavailable"
 )
@@ -76,41 +60,6 @@ type botPackModel struct {
 	PackSlug           types.String `tfsdk:"pack_slug"`
 	VersionNo          types.Int64  `tfsdk:"version_no"`
 	PendingConnections types.List   `tfsdk:"pending_connections"`
-}
-
-type botPackSettingModel struct {
-	Path   types.String `tfsdk:"path"`
-	Choice types.String `tfsdk:"choice"`
-	Value  types.String `tfsdk:"value"`
-}
-
-// botPackConnectionModel is one connection choice. `choice` is the
-// discriminator; the other attributes belong to exactly one choice each and
-// ValidateConfig refuses any that do not match it.
-type botPackConnectionModel struct {
-	PackVersionConnectionID types.String        `tfsdk:"pack_version_connection_id"`
-	Choice                  types.String        `tfsdk:"choice"`
-	McpServerID             types.String        `tfsdk:"mcp_server_id"`
-	Create                  *botPackCreateModel `tfsdk:"create"`
-}
-
-type botPackCreateModel struct {
-	Name          types.String            `tfsdk:"name"`
-	AcceptMetered types.Bool              `tfsdk:"accept_metered"`
-	Setup         botPackCreateSetupModel `tfsdk:"setup"`
-}
-
-// botPackCreateSetupModel mirrors PackCreateServerChoice.setup, a union on
-// `kind`. Secrets are Runtime Vault references only, as the API requires.
-type botPackCreateSetupModel struct {
-	Kind               types.String                      `tfsdk:"kind"`
-	CatalogFormAnswers map[string]botPackFormAnswerModel `tfsdk:"catalog_form_answers"`
-	VaultEntryRefs     map[string]types.String           `tfsdk:"vault_entry_refs"`
-}
-
-type botPackFormAnswerModel struct {
-	Mode  types.String `tfsdk:"mode"`
-	Value types.String `tfsdk:"value"`
 }
 
 var pendingConnectionAttrTypes = map[string]attr.Type{
@@ -144,102 +93,8 @@ func botPackSchemaAttribute() schema.SingleNestedAttribute {
 					"`data.botyard_pack.support.latest.pack_version_id`. Changing it is a plan-time error " +
 					"until the API offers in-place upgrades.",
 			},
-			"settings": schema.ListNestedAttribute{
-				Optional: true,
-				MarkdownDescription: "Per pack setting: `pack` (the default for a setting left out), `keep` " +
-					"the bot's own value, or `custom` with `value`. Applied at creation only.",
-				NestedObject: schema.NestedAttributeObject{Attributes: map[string]schema.Attribute{
-					"path": schema.StringAttribute{
-						Required:            true,
-						MarkdownDescription: "The pack setting, e.g. `tool_search`.",
-					},
-					"choice": schema.StringAttribute{
-						Required:            true,
-						MarkdownDescription: "`pack`, `keep` or `custom`.",
-						Validators: []validator.String{stringvalidator.OneOf(
-							packSettingChoicePack, packSettingChoiceKeep, packSettingChoiceCustom)},
-					},
-					"value": schema.StringAttribute{
-						Optional: true,
-						MarkdownDescription: "`custom` only: the value as JSON, in the setting's own shape, " +
-							"e.g. `jsonencode({ mode = \"auto\" })` for `tool_search`.",
-					},
-				}},
-			},
-			"connections": schema.ListNestedAttribute{
-				Optional: true,
-				MarkdownDescription: "Per MCP connection of the pack version: `use_server` binds an org MCP " +
-					"server, `leave_pending` binds nothing, and `create` connects a new account with Runtime " +
-					"Vault references. A connection left out binds the one visible server from its catalogue " +
-					"entry, as in the app. Applied at creation only. A connection that needs a vendor sign-in " +
-					"(OAuth) cannot be created here: connect it in the app first, then use `use_server` or " +
-					"`leave_pending`.",
-				NestedObject: schema.NestedAttributeObject{Attributes: map[string]schema.Attribute{
-					"pack_version_connection_id": schema.StringAttribute{
-						Required:            true,
-						MarkdownDescription: "A connection of the pack version, from `data.botyard_pack_version`.",
-					},
-					"choice": schema.StringAttribute{
-						Required:            true,
-						MarkdownDescription: "`use_server`, `leave_pending` or `create`.",
-						Validators: []validator.String{stringvalidator.OneOf(
-							packConnChoiceUseServer, packConnChoiceLeavePending, packConnChoiceCreate)},
-					},
-					"mcp_server_id": schema.StringAttribute{
-						Optional:            true,
-						MarkdownDescription: "`use_server` only: the org MCP server to bind, e.g. `botyard_mcp_server.crm.id`.",
-					},
-					"create": schema.SingleNestedAttribute{
-						Optional:            true,
-						MarkdownDescription: "`create` only: the new account.",
-						Attributes: map[string]schema.Attribute{
-							"name": schema.StringAttribute{
-								Optional:            true,
-								MarkdownDescription: "The new server's name. Defaults to the catalogue entry's.",
-							},
-							"accept_metered": schema.BoolAttribute{
-								Optional: true,
-								MarkdownDescription: "Must be `true` when the connection is metered: the new server " +
-									"is billed as a hosted MCP server.",
-							},
-							"setup": schema.SingleNestedAttribute{
-								Required:            true,
-								MarkdownDescription: "What the new account needs, matching the connection's setup kind.",
-								Attributes: map[string]schema.Attribute{
-									"kind": schema.StringAttribute{
-										Required:            true,
-										MarkdownDescription: "`none`, `setup_form` or `credential_form`.",
-										Validators: []validator.String{stringvalidator.OneOf(
-											packCreateSetupNone, packCreateSetupForm, packCreateSetupVaultRefs)},
-									},
-									"catalog_form_answers": schema.MapNestedAttribute{
-										Optional: true,
-										MarkdownDescription: "`setup_form` only: field id to answer. A secret field " +
-											"must be `mode = \"secret_ref\"` with a Runtime Vault key path.",
-										NestedObject: schema.NestedAttributeObject{Attributes: map[string]schema.Attribute{
-											"mode": schema.StringAttribute{
-												Required:            true,
-												MarkdownDescription: "`plaintext` or `secret_ref`.",
-												Validators:          []validator.String{stringvalidator.OneOf("plaintext", "secret_ref")},
-											},
-											"value": schema.StringAttribute{
-												Required:            true,
-												MarkdownDescription: "The plaintext value, or the vault key path for `secret_ref`.",
-											},
-										}},
-									},
-									"vault_entry_refs": schema.MapAttribute{
-										Optional:    true,
-										ElementType: types.StringType,
-										MarkdownDescription: "`credential_form` only: credential field name to the id " +
-											"of an org Runtime Vault secret holding its value.",
-									},
-								},
-							},
-						},
-					},
-				}},
-			},
+			"settings":    packSettingsSchemaAttribute(),
+			"connections": packConnectionsSchemaAttribute(),
 
 			"bot_pack_install_id": stable("The install's id."),
 			"pack_id":             stable("The installed pack's id."),
@@ -260,90 +115,6 @@ func botPackSchemaAttribute() schema.SingleNestedAttribute {
 				}},
 			},
 		},
-	}
-}
-
-// validatePackConfig checks the `pack` block's internal consistency at plan
-// time, without calling the API. Unknown values are skipped.
-func validatePackConfig(p *botPackModel, diags *diag.Diagnostics) {
-	if p == nil {
-		return
-	}
-	root := path.Root("pack")
-
-	seenPaths := map[string]bool{}
-	for i, s := range p.Settings {
-		at := root.AtName("settings").AtListIndex(i)
-		if !s.Path.IsUnknown() && !s.Path.IsNull() {
-			if seenPaths[s.Path.ValueString()] {
-				diags.AddAttributeError(at.AtName("path"), "Duplicate pack setting",
-					fmt.Sprintf("Setting %q is listed more than once; each path may appear at most once.", s.Path.ValueString()))
-			}
-			seenPaths[s.Path.ValueString()] = true
-		}
-		if s.Choice.IsUnknown() {
-			continue
-		}
-		isCustom := s.Choice.ValueString() == packSettingChoiceCustom
-		switch {
-		case isCustom && s.Value.IsNull():
-			diags.AddAttributeError(at.AtName("value"), "Missing setting value",
-				"`choice = \"custom\"` needs a `value` (JSON, e.g. `jsonencode({ mode = \"auto\" })`).")
-		case !isCustom && !s.Value.IsNull():
-			diags.AddAttributeError(at.AtName("value"), "Unexpected setting value",
-				fmt.Sprintf("`value` is only for `choice = \"custom\"`, not %q.", s.Choice.ValueString()))
-		case isCustom && !s.Value.IsUnknown() && !json.Valid([]byte(s.Value.ValueString())):
-			diags.AddAttributeError(at.AtName("value"), "Setting value is not JSON",
-				"`value` must be JSON. Use `jsonencode(...)`.")
-		}
-	}
-
-	seenConns := map[string]bool{}
-	for i, c := range p.Connections {
-		at := root.AtName("connections").AtListIndex(i)
-		if !c.PackVersionConnectionID.IsUnknown() && !c.PackVersionConnectionID.IsNull() {
-			id := c.PackVersionConnectionID.ValueString()
-			if seenConns[id] {
-				diags.AddAttributeError(at.AtName("pack_version_connection_id"), "Duplicate pack connection",
-					fmt.Sprintf("Connection %q is listed more than once; each connection may appear at most once.", id))
-			}
-			seenConns[id] = true
-		}
-		if c.Choice.IsUnknown() {
-			continue
-		}
-		choice := c.Choice.ValueString()
-		hasServer, hasCreate := !c.McpServerID.IsNull(), c.Create != nil
-		if (choice == packConnChoiceUseServer) != hasServer {
-			diags.AddAttributeError(at.AtName("mcp_server_id"), "Connection fields do not match its choice",
-				fmt.Sprintf("`mcp_server_id` is required for `use_server` and not allowed otherwise; this connection's choice is %q.", choice))
-		}
-		if (choice == packConnChoiceCreate) != hasCreate {
-			diags.AddAttributeError(at.AtName("create"), "Connection fields do not match its choice",
-				fmt.Sprintf("`create` is required for `choice = \"create\"` and not allowed otherwise; this connection's choice is %q.", choice))
-		}
-		if hasCreate {
-			validateCreateSetup(c.Create.Setup, at.AtName("create").AtName("setup"), diags)
-		}
-	}
-}
-
-func validateCreateSetup(s botPackCreateSetupModel, at path.Path, diags *diag.Diagnostics) {
-	if s.Kind.IsUnknown() {
-		return
-	}
-	kind := s.Kind.ValueString()
-	if kind != packCreateSetupForm && s.CatalogFormAnswers != nil {
-		diags.AddAttributeError(at.AtName("catalog_form_answers"), "Setup fields do not match its kind",
-			fmt.Sprintf("`catalog_form_answers` is only for `kind = \"setup_form\"`, not %q.", kind))
-	}
-	switch {
-	case kind == packCreateSetupVaultRefs && len(s.VaultEntryRefs) == 0:
-		diags.AddAttributeError(at.AtName("vault_entry_refs"), "Missing vault references",
-			"`kind = \"credential_form\"` needs at least one `vault_entry_refs` entry.")
-	case kind != packCreateSetupVaultRefs && s.VaultEntryRefs != nil:
-		diags.AddAttributeError(at.AtName("vault_entry_refs"), "Setup fields do not match its kind",
-			fmt.Sprintf("`vault_entry_refs` is only for `kind = \"credential_form\"`, not %q.", kind))
 	}
 }
 
@@ -502,54 +273,6 @@ func decodeConnectionPreviews(v client.PackVersionConnectionPreview, diags *diag
 	return out, true
 }
 
-// packChoicesEqual reports whether two blocks declare the same create-time
-// choices. Only used to decide whether to warn.
-func packChoicesEqual(a, b *botPackModel) bool {
-	if len(a.Settings) != len(b.Settings) || len(a.Connections) != len(b.Connections) {
-		return false
-	}
-	for i := range a.Settings {
-		x, y := a.Settings[i], b.Settings[i]
-		if !x.Path.Equal(y.Path) || !x.Choice.Equal(y.Choice) || !x.Value.Equal(y.Value) {
-			return false
-		}
-	}
-	for i := range a.Connections {
-		if !connectionChoiceEqual(a.Connections[i], b.Connections[i]) {
-			return false
-		}
-	}
-	return true
-}
-
-func connectionChoiceEqual(x, y botPackConnectionModel) bool {
-	if !x.PackVersionConnectionID.Equal(y.PackVersionConnectionID) || !x.Choice.Equal(y.Choice) ||
-		!x.McpServerID.Equal(y.McpServerID) || (x.Create == nil) != (y.Create == nil) {
-		return false
-	}
-	if x.Create == nil {
-		return true
-	}
-	xc, yc := x.Create, y.Create
-	if !xc.Name.Equal(yc.Name) || !xc.AcceptMetered.Equal(yc.AcceptMetered) || !xc.Setup.Kind.Equal(yc.Setup.Kind) ||
-		len(xc.Setup.CatalogFormAnswers) != len(yc.Setup.CatalogFormAnswers) ||
-		len(xc.Setup.VaultEntryRefs) != len(yc.Setup.VaultEntryRefs) {
-		return false
-	}
-	for k, xa := range xc.Setup.CatalogFormAnswers {
-		ya, ok := yc.Setup.CatalogFormAnswers[k]
-		if !ok || !xa.Mode.Equal(ya.Mode) || !xa.Value.Equal(ya.Value) {
-			return false
-		}
-	}
-	for k, xv := range xc.Setup.VaultEntryRefs {
-		if yv, ok := yc.Setup.VaultEntryRefs[k]; !ok || !xv.Equal(yv) {
-			return false
-		}
-	}
-	return true
-}
-
 // buildFromPackBody renders POST /bots/from-pack for one bot from the
 // generated request types, so the strict PackBotRequest (no unknown keys)
 // and its unions are the compiler's problem, not a hand-written shape.
@@ -577,113 +300,33 @@ func buildFromPackBody(plan BotResourceModel) ([]byte, error) {
 		}
 		req.Avatar = &av
 	}
-	if len(p.Settings) > 0 {
-		settings := make([]client.PackBotRequest_Settings_Item, 0, len(p.Settings))
-		for _, s := range p.Settings {
-			item, err := buildSettingChoice(s)
+	settings, conns, err := decodePackChoices(p)
+	if err != nil {
+		return nil, err
+	}
+	if len(settings) > 0 {
+		items := make([]client.PackBotRequest_Settings_Item, 0, len(settings))
+		for _, c := range settings {
+			item, err := buildSettingChoice(c)
 			if err != nil {
 				return nil, err
 			}
-			settings = append(settings, item)
+			items = append(items, item)
 		}
-		req.Settings = &settings
+		req.Settings = &items
 	}
-	if len(p.Connections) > 0 {
-		conns := make([]client.PackBotRequest_Connections_Item, 0, len(p.Connections))
-		for _, c := range p.Connections {
+	if len(conns) > 0 {
+		items := make([]client.PackBotRequest_Connections_Item, 0, len(conns))
+		for _, c := range conns {
 			item, err := buildConnectionChoice(c)
 			if err != nil {
 				return nil, err
 			}
-			conns = append(conns, item)
+			items = append(items, item)
 		}
-		req.Connections = &conns
+		req.Connections = &items
 	}
 	return json.Marshal(client.BotsFromPacksBody{Bots: []client.PackBotRequest{req}})
-}
-
-func buildSettingChoice(s botPackSettingModel) (client.PackBotRequest_Settings_Item, error) {
-	var item client.PackBotRequest_Settings_Item
-	settingPath := client.PackSettingPath(s.Path.ValueString())
-	switch choice := s.Choice.ValueString(); choice {
-	case packSettingChoicePack:
-		return item, item.FromPackSettingPackChoice(client.PackSettingPackChoice{
-			Choice: client.PackSettingPackChoiceChoicePack, Path: settingPath,
-		})
-	case packSettingChoiceKeep:
-		return item, item.FromPackSettingKeepChoice(client.PackSettingKeepChoice{
-			Choice: client.PackSettingKeepChoiceChoiceKeep, Path: settingPath,
-		})
-	case packSettingChoiceCustom:
-		var v client.JsonValueInput
-		if err := json.Unmarshal([]byte(s.Value.ValueString()), &v); err != nil {
-			return item, fmt.Errorf("setting %q: value is not JSON: %w", s.Path.ValueString(), err)
-		}
-		return item, item.FromPackSettingCustomChoice(client.PackSettingCustomChoice{
-			Choice: client.PackSettingCustomChoiceChoiceCustom, Path: settingPath, Value: &v,
-		})
-	default:
-		return item, fmt.Errorf("unknown setting choice %q", choice)
-	}
-}
-
-// buildConnectionChoice renders one connection choice, dispatched on `choice`.
-func buildConnectionChoice(c botPackConnectionModel) (client.PackBotRequest_Connections_Item, error) {
-	var item client.PackBotRequest_Connections_Item
-	id := c.PackVersionConnectionID.ValueString()
-	switch choice := c.Choice.ValueString(); choice {
-	case packConnChoiceUseServer:
-		return item, item.FromPackUseServerChoice(client.PackUseServerChoice{
-			Choice: client.PackUseServerChoiceChoiceUseServer, PackVersionConnectionId: id, McpServerId: c.McpServerID.ValueString(),
-		})
-	case packConnChoiceLeavePending:
-		return item, item.FromPackLeavePendingChoice(client.PackLeavePendingChoice{
-			Choice: client.PackLeavePendingChoiceChoiceLeavePending, PackVersionConnectionId: id,
-		})
-	case packConnChoiceCreate:
-		setup, err := buildCreateSetup(c.Create.Setup)
-		if err != nil {
-			return item, err
-		}
-		return item, item.FromPackCreateServerChoice(client.PackCreateServerChoice{
-			Choice:                  client.PackCreateServerChoiceChoiceCreate,
-			PackVersionConnectionId: id,
-			Name:                    c.Create.Name.ValueStringPointer(),
-			AcceptMetered:           c.Create.AcceptMetered.ValueBoolPointer(),
-			Setup:                   setup,
-		})
-	default:
-		return item, fmt.Errorf("unknown connection choice %q", choice)
-	}
-}
-
-func buildCreateSetup(s botPackCreateSetupModel) (client.PackCreateServerChoice_Setup, error) {
-	var setup client.PackCreateServerChoice_Setup
-	switch kind := s.Kind.ValueString(); kind {
-	case packCreateSetupNone:
-		return setup, setup.FromPackCreateNone(client.PackCreateNone{Kind: client.PackCreateNoneKindNone})
-	case packCreateSetupForm:
-		form := client.PackCreateSetupForm{Kind: client.PackCreateSetupFormKindSetupForm}
-		if s.CatalogFormAnswers != nil {
-			answers := make(map[string]client.McpCatalogFormFieldValueInput, len(s.CatalogFormAnswers))
-			for id, a := range s.CatalogFormAnswers {
-				mode := client.McpCatalogFormValueMode(a.Mode.ValueString())
-				answers[id] = client.McpCatalogFormFieldValueInput{Mode: &mode, Value: a.Value.ValueStringPointer()}
-			}
-			form.CatalogFormAnswers = &answers
-		}
-		return setup, setup.FromPackCreateSetupForm(form)
-	case packCreateSetupVaultRefs:
-		refs := make(map[string]string, len(s.VaultEntryRefs))
-		for k, v := range s.VaultEntryRefs {
-			refs[k] = v.ValueString()
-		}
-		return setup, setup.FromPackCreateCredentialForm(client.PackCreateCredentialForm{
-			Kind: client.PackCreateCredentialFormKindCredentialForm, VaultEntryRefs: refs,
-		})
-	default:
-		return setup, fmt.Errorf("unknown create setup kind %q", kind)
-	}
 }
 
 // createBotFromPack runs POST /bots/from-pack and returns the new bot and its
@@ -709,57 +352,100 @@ func (r *BotResource) createBotFromPack(ctx context.Context, plan BotResourceMod
 	return &created.Bot, created.Install.BotPackInstallId, true
 }
 
-// packReadResult is what reading a bot's installs found for the `pack` block.
-type packReadResult struct {
-	install *client.BotPackInstallView
-}
-
-// readPackInstall reads GET /packs/installs for one bot and picks the install
-// the `pack` block tracks: the one with wantInstallID, or on import (no id
-// yet) the bot's first install, which is the one from-pack created. Since
-// P5.1 a bot can carry other packs installed in the app; those are left
-// alone. Returns a nil install when the bot has none to track.
-func (r *BotResource) readPackInstall(ctx context.Context, botID, wantInstallID string, diags *diag.Diagnostics) (packReadResult, bool) {
+// readBotInstalls reads GET /packs/installs for one bot and returns its
+// installs. Since P5.1 (#4533) a bot can carry several; the callers pick.
+func (r *BotResource) readBotInstalls(ctx context.Context, botID string, diags *diag.Diagnostics) ([]client.BotPackInstallView, bool) {
 	uid, err := parseUUID(botID)
 	if err != nil {
 		diags.AddError("Error reading bot pack installs", err.Error())
-		return packReadResult{}, false
+		return nil, false
 	}
 	resp, err := r.data.client.ListBotPackInstallsV1OrgsOrgIdPacksInstallsGetWithResponse(ctx, r.data.orgID,
 		&client.ListBotPackInstallsV1OrgsOrgIdPacksInstallsGetParams{BotIds: []openapi_types.UUID{uid}})
 	if err != nil {
 		diags.AddError("Error reading bot pack installs", err.Error())
-		return packReadResult{}, false
+		return nil, false
 	}
 	if resp.StatusCode() == 404 {
-		return packReadResult{}, true
+		return nil, true
 	}
 	if resp.JSON200 == nil {
 		diags.AddError("Unexpected response reading bot pack installs",
 			fmt.Sprintf("Reading installs returned HTTP %d: %s", resp.StatusCode(), describeAPIError(resp.Body)))
-		return packReadResult{}, false
+		return nil, false
 	}
-	return packReadResult{install: selectPackInstall(resp.JSON200, botID, wantInstallID)}, true
+	for _, b := range resp.JSON200.Bots {
+		if b.BotId == botID {
+			return b.Installs, true
+		}
+	}
+	return nil, true
 }
 
-func selectPackInstall(view *client.OrgBotPackInstalls, botID, wantInstallID string) *client.BotPackInstallView {
-	for _, b := range view.Bots {
-		if b.BotId != botID || len(b.Installs) == 0 {
-			continue
+// findInstall returns the install with this id, or nil. A tracked install
+// that is gone is never swapped for another one on the bot.
+func findInstall(installs []client.BotPackInstallView, id string) *client.BotPackInstallView {
+	for i := range installs {
+		if installs[i].BotPackInstallId == id {
+			return &installs[i]
 		}
-		if wantInstallID != "" {
-			for i := range b.Installs {
-				if b.Installs[i].BotPackInstallId == wantInstallID {
-					return &b.Installs[i]
-				}
-			}
-			return nil
-		}
-		installs := append([]client.BotPackInstallView(nil), b.Installs...)
-		sort.SliceStable(installs, func(i, j int) bool { return installs[i].InstalledAt.Before(installs[j].InstalledAt) })
-		return &installs[0]
 	}
 	return nil
+}
+
+// selectImportInstall picks the install an import adopts.
+//
+// With no selector: none for a bot without installs, the only one for a bot
+// with one, and an error listing them for a bot with several, since "the
+// first" would be a guess. A selector is an install id, or a pack slug that
+// is unique on the bot (the same rule as P1: an ambiguous slug is an error).
+func selectImportInstall(installs []client.BotPackInstallView, slug, selector string) (*client.BotPackInstallView, diag.Diagnostics) {
+	var diags diag.Diagnostics
+	if selector == "" {
+		switch len(installs) {
+		case 0:
+			return nil, diags
+		case 1:
+			return &installs[0], diags
+		}
+		diags.AddError("Bot has several pack installs",
+			fmt.Sprintf("Bot %q has %d pack installs, so the import must name the one this resource manages: "+
+				"`terraform import <address> %s:<install_id>`, or `%s:<pack_slug>` when the slug is unique on the bot. "+
+				"Installs:\n%s", slug, len(installs), slug, slug, listInstalls(installs)))
+		return nil, diags
+	}
+	if in := findInstall(installs, selector); in != nil {
+		return in, diags
+	}
+	var bySlug []*client.BotPackInstallView
+	for i := range installs {
+		if installs[i].PackSlug == selector {
+			bySlug = append(bySlug, &installs[i])
+		}
+	}
+	switch len(bySlug) {
+	case 1:
+		return bySlug[0], diags
+	case 0:
+		diags.AddError("No such pack install",
+			fmt.Sprintf("Bot %q has no pack install with id or pack slug %q. Installs:\n%s", slug, selector, listInstalls(installs)))
+	default:
+		diags.AddError("Pack slug is ambiguous",
+			fmt.Sprintf("Bot %q has %d installs of pack %q; import with the install id instead: `%s:<install_id>`. Installs:\n%s",
+				slug, len(bySlug), selector, slug, listInstalls(installs)))
+	}
+	return nil, diags
+}
+
+func listInstalls(installs []client.BotPackInstallView) string {
+	if len(installs) == 0 {
+		return "  (none)"
+	}
+	lines := make([]string, 0, len(installs))
+	for _, in := range installs {
+		lines = append(lines, fmt.Sprintf("  - %s  %s v%d", in.BotPackInstallId, in.PackSlug, in.VersionNo))
+	}
+	return strings.Join(lines, "\n")
 }
 
 // mapPackInstall writes an install into the `pack` block, keeping the
@@ -874,18 +560,22 @@ func (r *BotResource) createFromPack(ctx context.Context, plan BotResourceModel,
 	// an orphan Terraform would try to create again.
 	declaredAvatar := plan.AvatarURL
 	mapBotResource(bot, &plan)
-	mapBotDesiredConfig(bot.Harness, &bot.DesiredConfig, plan.Config, plan.NativeConfig, &resp.Diagnostics)
 	plan.Pack.BotPackInstallID = types.StringValue(installID)
 	if plan.Config != nil || plan.NativeConfig != nil {
+		// The PATCH sends the config as declared. Mapping the from-pack
+		// response into plan.Config first would overwrite declared leaves
+		// with the pack's values (e.g. tool_search `off` -> the pack's
+		// `auto`) and send those instead.
 		final, ok := r.updateBotConfig(ctx, bot.Slug, plan, &resp.Diagnostics)
 		if !ok {
+			mapBotDesiredConfig(bot.Harness, &bot.DesiredConfig, plan.Config, plan.NativeConfig, &resp.Diagnostics)
 			r.savePartialPackBot(ctx, plan, declaredAvatar, resp)
 			return
 		}
 		mapBotResource(final, &plan)
 		mapBotDesiredConfig(final.Harness, &final.DesiredConfig, plan.Config, plan.NativeConfig, &resp.Diagnostics)
 	}
-	if !r.refreshPack(ctx, &plan, false, &resp.Diagnostics) {
+	if !r.refreshPack(ctx, &plan, &resp.Diagnostics) {
 		r.savePartialPackBot(ctx, plan, declaredAvatar, resp)
 		return
 	}
@@ -912,23 +602,47 @@ func (r *BotResource) savePartialPackBot(ctx context.Context, plan BotResourceMo
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
-// refreshPack re-reads the tracked install into m.Pack. On import (no pack
-// in state, no install id) it adopts the bot's first install, so importing a
-// bot made from a pack fills in `pack`. A tracked bot without a pack stays
-// without one: a pack installed in the app is not adopted into config. An install gone remotely clears the
-// block, which the next plan reports through modifyPackPlan.
-func (r *BotResource) refreshPack(ctx context.Context, m *BotResourceModel, importing bool, diags *diag.Diagnostics) bool {
-	if m.Pack == nil && !importing {
-		return true // no pack to track: no extra API call per refresh
+// refreshPack re-reads the tracked install into m.Pack. A bot without a
+// tracked pack makes no call, and a pack installed in the app is never
+// adopted into config. A tracked install that is gone clears the block
+// (never falling back to another install); the next plan then reports it
+// through modifyPackPlan.
+func (r *BotResource) refreshPack(ctx context.Context, m *BotResourceModel, diags *diag.Diagnostics) bool {
+	if m.Pack == nil {
+		return true
 	}
-	want := ""
-	if m.Pack != nil {
-		want = m.Pack.BotPackInstallID.ValueString()
-	}
-	got, ok := r.readPackInstall(ctx, m.ID.ValueString(), want, diags)
+	installs, ok := r.readBotInstalls(ctx, m.ID.ValueString(), diags)
 	if !ok {
 		return false
 	}
-	m.Pack = mapPackInstall(got.install, m.Pack)
+	m.Pack = mapPackInstall(findInstall(installs, m.Pack.BotPackInstallID.ValueString()), m.Pack)
 	return true
+}
+
+// importPack fills m.Pack on import, by selectImportInstall.
+func (r *BotResource) importPack(ctx context.Context, m *BotResourceModel, selector string, diags *diag.Diagnostics) bool {
+	installs, ok := r.readBotInstalls(ctx, m.ID.ValueString(), diags)
+	if !ok {
+		return false
+	}
+	in, d := selectImportInstall(installs, m.Slug.ValueString(), selector)
+	diags.Append(d...)
+	if d.HasError() {
+		return false
+	}
+	m.Pack = mapPackInstall(in, nil)
+	return true
+}
+
+// packImportSelectorKey is the private-state key carrying the `:<selector>`
+// part of an import id from ImportState to the Read that follows it.
+const packImportSelectorKey = "pack_import_selector"
+
+// splitBotImportID splits `<slug>` or `<slug>:<install_id|pack_slug>`.
+func splitBotImportID(id string) (slug, selector string, err error) {
+	slug, selector, _ = strings.Cut(id, ":")
+	if slug == "" || strings.Contains(selector, ":") {
+		return "", "", fmt.Errorf("import id %q: expected `<bot_slug>` or `<bot_slug>:<install_id|pack_slug>`", id)
+	}
+	return slug, selector, nil
 }

@@ -353,7 +353,20 @@ func (r *BotResource) Read(ctx context.Context, req resource.ReadRequest, resp *
 		declaredAvatar := state.AvatarURL
 		mapBotResource(apiResp.JSON200, &state)
 		mapBotDesiredConfig(apiResp.JSON200.Harness, &apiResp.JSON200.DesiredConfig, state.Config, state.NativeConfig, &resp.Diagnostics)
-		if !r.refreshPack(ctx, &state, importing, &resp.Diagnostics) {
+		if importing {
+			var selector string
+			raw, d := req.Private.GetKey(ctx, packImportSelectorKey)
+			resp.Diagnostics.Append(d...)
+			if len(raw) > 0 {
+				if err := json.Unmarshal(raw, &selector); err != nil {
+					resp.Diagnostics.AddError("Error reading import selector", err.Error())
+				}
+			}
+			if resp.Diagnostics.HasError() || !r.importPack(ctx, &state, selector, &resp.Diagnostics) {
+				return
+			}
+			resp.Diagnostics.Append(resp.Private.SetKey(ctx, packImportSelectorKey, nil)...)
+		} else if !r.refreshPack(ctx, &state, &resp.Diagnostics) {
 			return
 		}
 		keepPackAvatar(&state, declaredAvatar)
@@ -376,7 +389,7 @@ func (r *BotResource) Update(ctx context.Context, req resource.UpdateRequest, re
 		}
 	}
 
-	body, err := buildBotUpdateBody(plan)
+	body, err := buildBotUpdateBody(plan, state.AvatarURL)
 	if err != nil {
 		resp.Diagnostics.AddError("Error encoding bot update", err.Error())
 		return
@@ -414,7 +427,7 @@ func (r *BotResource) Update(ctx context.Context, req resource.UpdateRequest, re
 		if state.Pack != nil {
 			plan.Pack.BotPackInstallID = state.Pack.BotPackInstallID
 		}
-		if !r.refreshPack(ctx, &plan, false, &resp.Diagnostics) {
+		if !r.refreshPack(ctx, &plan, &resp.Diagnostics) {
 			return
 		}
 	}
@@ -465,8 +478,23 @@ func (r *BotResource) Delete(ctx context.Context, req resource.DeleteRequest, re
 }
 
 // ImportState imports an existing bot by its slug (the API's URL identifier).
+// `<slug>:<install_id|pack_slug>` names which pack install the `pack` block
+// manages; it is required when the bot has several (see selectImportInstall).
 func (r *BotResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	resource.ImportStatePassthroughID(ctx, path.Root("slug"), req, resp)
+	slug, selector, err := splitBotImportID(req.ID)
+	if err != nil {
+		resp.Diagnostics.AddError("Invalid import id", err.Error())
+		return
+	}
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("slug"), slug)...)
+	if selector != "" {
+		raw, err := json.Marshal(selector)
+		if err != nil {
+			resp.Diagnostics.AddError("Error encoding import selector", err.Error())
+			return
+		}
+		resp.Diagnostics.Append(resp.Private.SetKey(ctx, packImportSelectorKey, raw)...)
+	}
 }
 
 // buildBotCreateBody builds the POST /bots body as a sparse
@@ -527,13 +555,15 @@ func buildCreateConfig(plan BotResourceModel) json.RawMessage {
 // tier/resources/runtime_privilege_mode are out of Phase A scope. Terraform
 // config is the source of truth, so each managed field is sent every update
 // (a value sets it; JSON null clears it).
-func buildBotUpdateBody(plan BotResourceModel) ([]byte, error) {
+func buildBotUpdateBody(plan BotResourceModel, priorAvatar types.String) ([]byte, error) {
 	body := map[string]json.RawMessage{
 		"description": rawString(plan.Description),
 		"avatar_url":  rawString(plan.AvatarURL),
 	}
-	// With a pack, an unset avatar_url means "the pack's avatar": leave it.
-	if plan.Pack != nil && plan.AvatarURL.IsNull() {
+	// With a pack, an avatar_url that was never set means "the pack's
+	// avatar": leave it alone. Removing one that was set still clears it,
+	// as on any bot, so a custom avatar is never left behind unseen.
+	if plan.Pack != nil && plan.AvatarURL.IsNull() && priorAvatar.IsNull() {
 		delete(body, "avatar_url")
 	}
 	return json.Marshal(body)
