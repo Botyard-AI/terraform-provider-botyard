@@ -24,7 +24,8 @@ import (
 //
 //   - responses echo every command-action default (overlap_policy, exit_codes,
 //     empty lists and maps, routing defaults), as the API's model_dump does;
-//   - an interval anchor is echoed in Python isoformat (`+00:00`, never `Z`);
+//   - an interval anchor is echoed in Python isoformat (`+00:00`, never `Z`;
+//     truncated to microseconds, with `.ffffff` only when nonzero);
 //   - `timezone` defaults to UTC and moves to the top level of the response;
 //   - a command action without the schedule_command permission is refused with
 //     the API's 403 text;
@@ -49,10 +50,25 @@ type fakeSchedule struct {
 	enabled, skipBusy  bool
 	catchup            string
 	maxFailures        int
-	specKind           string
-	spec               json.RawMessage
-	timezone           string
-	action             json.RawMessage // normalized, as the API echoes it
+	// The timing as the API persists it: spec_kind, an untyped spec object and
+	// the timezone beside them. Untyped because the response contract is
+	// (`spec` is an object), and because a kind this provider cannot model
+	// (`event`) must still round-trip through the list endpoint.
+	specKind client.ScheduleSpecKind
+	spec     map[string]any
+	timezone string
+	// The action as the API echoes it, every default filled in.
+	actionKind string
+	action     client.ScheduleResponse_Action
+}
+
+// specJSON renders the persisted spec with sorted keys, for assertions.
+func (s *fakeSchedule) specJSON() string {
+	raw, err := json.Marshal(s.spec)
+	if err != nil {
+		return "<" + err.Error() + ">"
+	}
+	return string(raw)
 }
 
 const (
@@ -181,7 +197,7 @@ func (a *fakeScheduleAPI) create(w http.ResponseWriter, r *http.Request) {
 	}
 	a.nextID++
 	s := &fakeSchedule{
-		id: fmt.Sprintf("sch-%d", a.nextID), enabled: true, catchup: "skip", action: action,
+		id: fmt.Sprintf("sch-%d", a.nextID), enabled: true, catchup: "skip", actionKind: kind, action: action,
 		conversationID: fmt.Sprintf("conv-auto-%d", a.nextID),
 	}
 	if err := s.setSpec(body["schedule"]); err != nil {
@@ -223,7 +239,7 @@ func (a *fakeScheduleAPI) patch(w http.ResponseWriter, r *http.Request, id strin
 			writeJSON(w, http.StatusForbidden, `{"detail":"Configuring a command schedule requires the 'schedule:schedule_command.update' permission."}`)
 			return
 		}
-		next.action = action
+		next.actionKind, next.action = kind, action
 	}
 	if raw, ok := body["schedule"]; ok {
 		if err := next.setSpec(raw); err != nil {
@@ -277,78 +293,102 @@ func (s *fakeSchedule) apply(body map[string]json.RawMessage) error {
 	return nil
 }
 
-// setSpec persists a request timing as the API does: kind to spec_kind, the
-// kind's fields to spec, and timezone (default UTC) beside them.
-func (s *fakeSchedule) setSpec(raw json.RawMessage) error {
-	var in struct {
-		Kind            string     `json:"kind"`
-		Cron            *string    `json:"cron"`
-		IntervalSeconds *int       `json:"interval_seconds"`
-		Anchor          *time.Time `json:"anchor"`
-		Rrule           *string    `json:"rrule"`
-		Timezone        *string    `json:"timezone"`
+// pythonISOFormat renders a timestamp the way the API echoes an anchor: a
+// Python datetime holds microseconds, so anything finer is truncated, and
+// isoformat writes `.ffffff` only when the microseconds are nonzero and the
+// offset as `+00:00`, never `Z`.
+func pythonISOFormat(t time.Time) string {
+	t = t.Truncate(time.Microsecond)
+	if t.Nanosecond() == 0 {
+		return t.Format("2006-01-02T15:04:05-07:00")
 	}
-	dec := json.NewDecoder(bytes.NewReader(raw))
-	dec.DisallowUnknownFields()
-	if err := dec.Decode(&in); err != nil {
+	return t.Format("2006-01-02T15:04:05.000000-07:00")
+}
+
+// setSpec persists a request timing as the API does: kind to spec_kind, the
+// kind's fields to spec, and timezone (default UTC) beside them. The body is
+// decoded strictly into the generated variant its discriminator names.
+func (s *fakeSchedule) setSpec(raw json.RawMessage) error {
+	var u client.ScheduleUpdateInput_Schedule
+	if err := u.UnmarshalJSON(raw); err != nil {
 		return fmt.Errorf("schedule: %w", err)
 	}
-	var spec any
-	switch in.Kind {
-	case "cron":
-		spec = map[string]string{"cron": *in.Cron}
-	case "interval":
-		if *in.IntervalSeconds <= 0 {
+	kind, err := u.Discriminator()
+	if err != nil {
+		return fmt.Errorf("schedule: %w", err)
+	}
+	var tz *string
+	switch client.ScheduleSpecKind(kind) {
+	case client.ScheduleSpecKindCron:
+		var v client.CronScheduleSpec
+		if err := strictDecode(raw, &v); err != nil {
+			return fmt.Errorf("schedule: %w", err)
+		}
+		s.spec, tz = map[string]any{"cron": v.Cron}, v.Timezone
+	case client.ScheduleSpecKindInterval:
+		var v client.IntervalScheduleSpec
+		if err := strictDecode(raw, &v); err != nil {
+			return fmt.Errorf("schedule: %w", err)
+		}
+		if v.IntervalSeconds <= 0 {
 			return fmt.Errorf("interval_seconds must be > 0")
 		}
-		m := map[string]any{"interval_seconds": *in.IntervalSeconds}
-		if in.Anchor != nil {
-			m["anchor"] = in.Anchor.Format("2006-01-02T15:04:05-07:00") // Python isoformat
+		s.spec, tz = map[string]any{"interval_seconds": v.IntervalSeconds}, v.Timezone
+		if v.Anchor != nil {
+			s.spec["anchor"] = pythonISOFormat(*v.Anchor)
 		}
-		spec = m
-	case "rrule":
-		spec = map[string]string{"rrule": *in.Rrule}
+	case client.ScheduleSpecKindRrule:
+		var v client.RRuleScheduleSpec
+		if err := strictDecode(raw, &v); err != nil {
+			return fmt.Errorf("schedule: %w", err)
+		}
+		s.spec, tz = map[string]any{"rrule": v.Rrule}, v.Timezone
 	default:
-		return fmt.Errorf("unknown schedule kind %q", in.Kind)
+		return fmt.Errorf("unknown schedule kind %q", kind)
 	}
-	s.specKind = in.Kind
-	s.spec, _ = json.Marshal(spec)
+	s.specKind = client.ScheduleSpecKind(kind)
 	s.timezone = "UTC"
-	if in.Timezone != nil {
-		s.timezone = *in.Timezone
+	if tz != nil {
+		s.timezone = *tz
 	}
 	return nil
 }
 
-// normalizeFakeAction validates a request action strictly and returns it as
-// the API echoes it, with every default filled in.
-func normalizeFakeAction(raw json.RawMessage) (json.RawMessage, string, error) {
-	var disc struct {
-		Kind string `json:"kind"`
-	}
-	if err := json.Unmarshal(raw, &disc); err != nil {
-		return nil, "", err
-	}
+func strictDecode(raw json.RawMessage, v any) error {
 	dec := json.NewDecoder(bytes.NewReader(raw))
 	dec.DisallowUnknownFields()
-	switch disc.Kind {
+	return dec.Decode(v)
+}
+
+// normalizeFakeAction decodes a request action strictly into the generated
+// variant its discriminator names, and returns it as the API echoes it, with
+// every default filled in.
+func normalizeFakeAction(raw json.RawMessage) (client.ScheduleResponse_Action, string, error) {
+	var out client.ScheduleResponse_Action
+	var u client.ScheduleUpdateInput_Action
+	if err := u.UnmarshalJSON(raw); err != nil {
+		return out, "", err
+	}
+	kind, err := u.Discriminator()
+	if err != nil {
+		return out, "", err
+	}
+	switch kind {
 	case client.ScheduleActionKindPrompt:
 		var p client.PromptScheduleAction
-		if err := dec.Decode(&p); err != nil {
-			return nil, "", err
+		if err := strictDecode(raw, &p); err != nil {
+			return out, "", err
 		}
-		out, err := json.Marshal(p)
-		return out, disc.Kind, err
+		return out, kind, out.FromPromptScheduleAction(p)
 	case client.ScheduleActionKindCommand:
 		var c client.CommandScheduleAction
-		if err := dec.Decode(&c); err != nil {
-			return nil, "", err
+		if err := strictDecode(raw, &c); err != nil {
+			return out, "", err
 		}
 		fillCommandDefaults(&c)
-		out, err := json.Marshal(c)
-		return out, disc.Kind, err
+		return out, kind, out.FromCommandScheduleAction(c)
 	default:
-		return nil, "", fmt.Errorf("unknown action kind %q", disc.Kind)
+		return out, "", fmt.Errorf("unknown action kind %q", kind)
 	}
 }
 
@@ -404,24 +444,29 @@ func fillCommandDefaults(c *client.CommandScheduleAction) {
 	}
 }
 
+// render builds the generated ScheduleResponse for a schedule. Like the API,
+// it fills the deprecated `prompt` mirror for a prompt action and derives
+// next_fire_at, which is null while paused.
 func (a *fakeScheduleAPI) render(s *fakeSchedule) json.RawMessage {
-	var prompt *string
-	var p client.PromptScheduleAction
-	if json.Unmarshal(s.action, &p) == nil && p.Kind == client.PromptScheduleActionKindPrompt {
-		prompt = &p.Prompt
+	created := time.Date(2026, 10, 29, 10, 0, 0, 0, time.UTC)
+	resp := client.ScheduleResponse{
+		ScheduleId: s.id, OrgId: "org-1", BotId: "bot-1", ConversationId: s.conversationID,
+		Title: s.title, Action: s.action, SpecKind: s.specKind, Spec: s.spec, Timezone: s.timezone,
+		Enabled: s.enabled, SkipIfBusy: s.skipBusy, CatchupPolicy: client.ScheduleCatchupPolicy(s.catchup),
+		MaxConsecutiveFailures: s.maxFailures, CreatedAt: created, UpdatedAt: created,
 	}
-	var next *string
+	if s.actionKind == client.ScheduleActionKindPrompt {
+		p, err := s.action.AsPromptScheduleAction()
+		if err != nil {
+			a.t.Fatalf("render: %v", err)
+		}
+		resp.Prompt = &p.Prompt
+	}
 	if s.enabled {
-		n := "2026-11-02T09:00:00Z"
-		next = &n
+		next := time.Date(2026, 11, 2, 9, 0, 0, 0, time.UTC)
+		resp.NextFireAt = &next
 	}
-	out, err := json.Marshal(map[string]any{
-		"schedule_id": s.id, "org_id": "org-1", "bot_id": "bot-1", "conversation_id": s.conversationID,
-		"title": s.title, "action": s.action, "prompt": prompt, "spec_kind": s.specKind, "spec": s.spec,
-		"timezone": s.timezone, "enabled": s.enabled, "skip_if_busy": s.skipBusy,
-		"catchup_policy": s.catchup, "max_consecutive_failures": s.maxFailures,
-		"created_at": "2026-10-29T10:00:00Z", "updated_at": "2026-10-29T10:00:00Z", "next_fire_at": next,
-	})
+	out, err := json.Marshal(resp)
 	if err != nil {
 		a.t.Fatalf("render: %v", err)
 	}

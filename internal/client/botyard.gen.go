@@ -15,6 +15,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/oapi-codegen/nullable"
 	"github.com/oapi-codegen/runtime"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
@@ -9249,7 +9250,7 @@ type ScheduleUpdateInput struct {
 	SkipIfBusy *bool `json:"skip_if_busy,omitempty"`
 
 	// Title New label. Send null to clear; omit to leave unchanged.
-	Title *string `json:"title"`
+	Title *nullable.Nullable[string] `json:"title,omitempty"`
 }
 
 // ScheduleUpdateInput_Action New action: {kind:'prompt', prompt} or {kind:'command', ...}. Switching to a command needs the schedule_command permission. Omit to leave unchanged; cannot be combined with “prompt“.

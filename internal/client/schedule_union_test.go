@@ -3,6 +3,7 @@ package client
 import (
 	"encoding/json"
 	"errors"
+	"github.com/oapi-codegen/nullable"
 	"strings"
 	"testing"
 )
@@ -77,26 +78,46 @@ func TestNewScheduleCreate(t *testing.T) {
 	}
 }
 
-// A patch sends only the keys set on it, and a cleared title is an explicit null.
-func TestSchedulePatchSparse(t *testing.T) {
+// The generated update body sends only the keys set on it: an unset title is
+// omitted, a cleared one is an explicit null, and the deprecated prompt alias
+// never appears unless set.
+func TestScheduleUpdateSparse(t *testing.T) {
 	enabled := true
+	cleared := nullable.NewNullNullable[string]()
+	named := nullable.NewNullableWithValue("daily")
 	for name, tc := range map[string]struct {
-		p    SchedulePatch
+		in   ScheduleUpdateInput
 		want string
 	}{
-		"empty":       {SchedulePatch{}, `{}`},
-		"enable only": {SchedulePatch{Enabled: &enabled}, `{"enabled":true}`},
-		"clear title": {SchedulePatch{Title: &NullableString{}}, `{"title":null}`},
+		"empty":       {ScheduleUpdateInput{}, `{}`},
+		"enable only": {ScheduleUpdateInput{Enabled: &enabled}, `{"enabled":true}`},
+		"clear title": {ScheduleUpdateInput{Title: &cleared}, `{"title":null}`},
+		"set title":   {ScheduleUpdateInput{Title: &named}, `{"title":"daily"}`},
 	} {
-		raw, err := json.Marshal(tc.p)
+		raw, err := json.Marshal(tc.in)
 		if err != nil {
 			t.Fatal(err)
 		}
 		if string(raw) != tc.want {
 			t.Errorf("%s: %s, want %s", name, raw, tc.want)
 		}
-		if (name == "empty") != tc.p.IsEmpty() {
-			t.Errorf("%s: IsEmpty = %v", name, tc.p.IsEmpty())
+		if (name == "empty") != IsEmptyScheduleUpdate(tc.in) {
+			t.Errorf("%s: IsEmptyScheduleUpdate = %v", name, IsEmptyScheduleUpdate(tc.in))
 		}
+	}
+}
+
+// SetScheduleUpdateAction never routes a prompt through the deprecated alias.
+func TestScheduleUpdateActionNotAlias(t *testing.T) {
+	var in ScheduleUpdateInput
+	if err := SetScheduleUpdateAction(&in, &ScheduleActionPrompt{Action: PromptScheduleAction{Kind: "prompt", Prompt: "hi"}}); err != nil {
+		t.Fatal(err)
+	}
+	raw, err := json.Marshal(in)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(raw) != `{"action":{"kind":"prompt","prompt":"hi"}}` {
+		t.Fatalf("got %s", raw)
 	}
 }

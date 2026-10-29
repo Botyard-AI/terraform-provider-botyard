@@ -2,7 +2,6 @@ package client
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"fmt"
 )
@@ -201,8 +200,9 @@ func DecodeScheduleAction(a ScheduleResponse_Action) (ScheduleAction, error) {
 }
 
 // NewScheduleCreate builds a create body from decoded variants. It sets
-// `action` and never the deprecated `prompt` alias, which the generated struct
-// serializes as null (the API treats null as absent).
+// `action` and leaves the deprecated `prompt` alias unset. The generated struct
+// still writes that key, as `"prompt": null`, which the API treats as absent;
+// the key is present on the wire, but never with a value.
 func NewScheduleCreate(spec ScheduleSpec, action ScheduleAction) (ScheduleCreate, error) {
 	s, err := spec.createUnion()
 	if err != nil {
@@ -215,63 +215,34 @@ func NewScheduleCreate(spec ScheduleSpec, action ScheduleAction) (ScheduleCreate
 	return ScheduleCreate{Schedule: s, Action: &a}, nil
 }
 
-// NullableString is a PATCH field that can be omitted, set, or cleared. The
-// zero value is never marshalled: hold it behind a pointer with omitempty, so
-// a nil pointer omits the key and a non-nil one sends the string or null.
-type NullableString struct{ Value *string }
+// The sparse PATCH body is the generated ScheduleUpdateInput. Every field is a
+// pointer with omitempty; `title` is generated as *nullable.Nullable[string]
+// (scripts/generate-client.sh TRISTATE_FIELDS), so it can be omitted, set, or
+// cleared with null. Never set its deprecated `Prompt` alias: actions go in
+// `Action`, through SetScheduleUpdateAction.
 
-// MarshalJSON writes the string, or null when Value is nil.
-func (n NullableString) MarshalJSON() ([]byte, error) { return json.Marshal(n.Value) }
-
-// SchedulePatch is the sparse PATCH body for a schedule. Every key is omitted
-// unless set, so a PATCH changes only what the plan changed.
-//
-// It replaces the generated ScheduleUpdateInput, whose `title` lacks
-// omitempty: sending that struct would clear the title on every update. It
-// also has no `prompt` field, so the deprecated alias cannot be sent.
-type SchedulePatch struct {
-	Title                  *NullableString               `json:"title,omitempty"`
-	ConversationID         *string                       `json:"conversation_id,omitempty"`
-	Enabled                *bool                         `json:"enabled,omitempty"`
-	SkipIfBusy             *bool                         `json:"skip_if_busy,omitempty"`
-	CatchupPolicy          *ScheduleCatchupPolicy        `json:"catchup_policy,omitempty"`
-	MaxConsecutiveFailures *int                          `json:"max_consecutive_failures,omitempty"`
-	Schedule               *ScheduleUpdateInput_Schedule `json:"schedule,omitempty"`
-	Action                 *ScheduleUpdateInput_Action   `json:"action,omitempty"`
-}
-
-// SetSchedule puts a new timing into the patch.
-func (p *SchedulePatch) SetSchedule(spec ScheduleSpec) error {
+// SetScheduleUpdateSpec puts a new timing into an update body.
+func SetScheduleUpdateSpec(in *ScheduleUpdateInput, spec ScheduleSpec) error {
 	u, err := spec.updateUnion()
 	if err != nil {
 		return fmt.Errorf("encoding schedule %s: %w", spec.Kind(), err)
 	}
-	p.Schedule = &u
+	in.Schedule = &u
 	return nil
 }
 
-// SetAction puts a new action into the patch.
-func (p *SchedulePatch) SetAction(action ScheduleAction) error {
+// SetScheduleUpdateAction puts a new action into an update body.
+func SetScheduleUpdateAction(in *ScheduleUpdateInput, action ScheduleAction) error {
 	u, err := action.updateUnion()
 	if err != nil {
 		return fmt.Errorf("encoding %s action: %w", action.Kind(), err)
 	}
-	p.Action = &u
+	in.Action = &u
 	return nil
 }
 
-// IsEmpty reports whether the patch would change nothing.
-func (p SchedulePatch) IsEmpty() bool { return p == SchedulePatch{} }
-
-// PatchSchedule sends a sparse schedule PATCH.
-func (c *ClientWithResponses) PatchSchedule(ctx context.Context, orgID, botSlug, scheduleID string, p SchedulePatch) (*UpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatchResponse, error) {
-	body, err := json.Marshal(p)
-	if err != nil {
-		return nil, fmt.Errorf("encoding schedule patch: %w", err)
-	}
-	return c.UpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatchWithBodyWithResponse(
-		ctx, orgID, botSlug, scheduleID, "application/json", bytes.NewReader(body))
-}
+// IsEmptyScheduleUpdate reports whether an update body would change nothing.
+func IsEmptyScheduleUpdate(in ScheduleUpdateInput) bool { return in == ScheduleUpdateInput{} }
 
 // SameScheduleSpec reports whether two timings encode to the same request
 // body, so a PATCH can leave an unchanged timing out.

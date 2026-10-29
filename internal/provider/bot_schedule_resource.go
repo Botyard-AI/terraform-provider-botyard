@@ -26,6 +26,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/oapi-codegen/nullable"
 
 	"github.com/Botyard-AI/terraform-provider-botyard/internal/client"
 )
@@ -572,7 +573,7 @@ func (r *BotScheduleResource) Update(ctx context.Context, req resource.UpdateReq
 
 	slug, id := plan.BotSlug.ValueString(), state.ID.ValueString()
 	var got *client.ScheduleResponse
-	if patch.IsEmpty() {
+	if client.IsEmptyScheduleUpdate(patch) {
 		out, err := r.data.client.GetScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdGetWithResponse(ctx, r.data.orgID, slug, id)
 		if err != nil {
 			resp.Diagnostics.AddError("Error reading bot schedule", err.Error())
@@ -585,7 +586,7 @@ func (r *BotScheduleResource) Update(ctx context.Context, req resource.UpdateReq
 		}
 		got = out.JSON200
 	} else {
-		out, err := r.data.client.PatchSchedule(ctx, r.data.orgID, slug, id, patch)
+		out, err := r.data.client.UpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatchWithResponse(ctx, r.data.orgID, slug, id, patch)
 		if err != nil {
 			resp.Diagnostics.AddError("Error updating bot schedule", err.Error())
 			return
@@ -605,14 +606,18 @@ func (r *BotScheduleResource) Update(ctx context.Context, req resource.UpdateReq
 
 // buildSchedulePatch returns the PATCH for plan-vs-state, plus the action it
 // sends (nil when the action is unchanged), for the permission diagnostic.
-func buildSchedulePatch(plan, state *botScheduleModel) (client.SchedulePatch, client.ScheduleAction, diag.Diagnostics) {
-	var p client.SchedulePatch
+func buildSchedulePatch(plan, state *botScheduleModel) (client.ScheduleUpdateInput, client.ScheduleAction, diag.Diagnostics) {
+	var p client.ScheduleUpdateInput
 	var diags diag.Diagnostics
 	if !plan.Title.Equal(state.Title) {
-		p.Title = &client.NullableString{Value: plan.Title.ValueStringPointer()}
+		title := nullable.NewNullNullable[string]()
+		if !plan.Title.IsNull() {
+			title.Set(plan.Title.ValueString())
+		}
+		p.Title = &title
 	}
 	if !plan.ConversationID.IsUnknown() && !plan.ConversationID.IsNull() && !plan.ConversationID.Equal(state.ConversationID) {
-		p.ConversationID = plan.ConversationID.ValueStringPointer()
+		p.ConversationId = plan.ConversationID.ValueStringPointer()
 	}
 	if !plan.Enabled.Equal(state.Enabled) {
 		p.Enabled = plan.Enabled.ValueBoolPointer()
@@ -642,7 +647,7 @@ func buildSchedulePatch(plan, state *botScheduleModel) (client.SchedulePatch, cl
 	if same, err := client.SameScheduleSpec(planSpec, stateSpec); err != nil {
 		diags.AddError("Error encoding schedule", err.Error())
 	} else if !same {
-		if err := p.SetSchedule(planSpec); err != nil {
+		if err := client.SetScheduleUpdateSpec(&p, planSpec); err != nil {
 			diags.AddError("Error encoding schedule", err.Error())
 		}
 	}
@@ -650,7 +655,7 @@ func buildSchedulePatch(plan, state *botScheduleModel) (client.SchedulePatch, cl
 	if same, err := client.SameScheduleAction(planAction, stateAction); err != nil {
 		diags.AddError("Error encoding schedule action", err.Error())
 	} else if !same {
-		if err := p.SetAction(planAction); err != nil {
+		if err := client.SetScheduleUpdateAction(&p, planAction); err != nil {
 			diags.AddError("Error encoding schedule action", err.Error())
 		}
 		sent = planAction

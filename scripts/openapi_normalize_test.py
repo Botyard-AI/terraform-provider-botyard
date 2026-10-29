@@ -373,5 +373,48 @@ class TestDropAmbiguousDiscriminators(unittest.TestCase):
         self.assertNotIn("discriminator", items)
 
 
+class TestMarkTristate(unittest.TestCase):
+    def spec(self, title: dict[str, Any], required: list[str] | None = None) -> dict:
+        schema: dict[str, Any] = {"type": "object", "properties": {"title": title}}
+        if required is not None:
+            schema["required"] = required
+        return {"components": {"schemas": {"Update": schema}}}
+
+    def test_optional_nullable_scalar_is_marked(self):
+        spec = self.spec({"type": "string", "nullable": True})
+        norm.mark_tristate(spec, ("Update.title",))
+        prop = spec["components"]["schemas"]["Update"]["properties"]["title"]
+        self.assertEqual(prop["x-go-type"], "nullable.Nullable[string]")
+        self.assertEqual(prop["x-go-type-import"], {"path": "github.com/oapi-codegen/nullable"})
+        self.assertIs(prop["x-omitempty"], True)
+
+    def test_after_full_normalization(self):
+        # A 3.1 `anyOf: [string, null]` is collapsed first, then marked.
+        spec = {
+            "openapi": "3.1.0",
+            "paths": {"/x": {"patch": {"tags": ["t"], "requestBody": {"content": {
+                "application/json": {"schema": {"$ref": "#/components/schemas/Update"}}}}}}},
+            "components": {"schemas": {"Update": {"type": "object", "properties": {
+                "title": {"anyOf": [{"type": "string"}, {"type": "null"}]},
+            }}}},
+        }
+        norm.normalize_spec(spec, {"t"}, tristate_fields=("Update.title",))
+        prop = spec["components"]["schemas"]["Update"]["properties"]["title"]
+        self.assertEqual(prop["x-go-type"], "nullable.Nullable[string]")
+
+    def test_fails_closed(self):
+        cases = {
+            "required": (self.spec({"type": "string", "nullable": True}, ["title"]), "Update.title"),
+            "not nullable": (self.spec({"type": "string"}), "Update.title"),
+            "not scalar": (self.spec({"type": "object", "nullable": True}), "Update.title"),
+            "no such schema": (self.spec({"type": "string", "nullable": True}), "Missing.title"),
+            "no such property": (self.spec({"type": "string", "nullable": True}), "Update.name"),
+            "malformed": (self.spec({"type": "string", "nullable": True}), "Update"),
+        }
+        for name, (spec, field) in cases.items():
+            with self.subTest(name), self.assertRaises(SystemExit):
+                norm.mark_tristate(spec, (field,))
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -79,6 +79,16 @@ EXCLUDE_OPERATIONS=(
   "create_credentials_v1_orgs__org_id__credentials_post"
 )
 
+# Optional nullable request fields generated as nullable.Nullable[T], so a
+# sparse PATCH can omit them, set them, or clear them with null. oapi-codegen
+# otherwise renders them as *T without omitempty, which sends null whenever the
+# field is left unset. The normalizer fails if a listed field stops being
+# optional and nullable.
+#   - ScheduleUpdateInput.title: "send null to clear; omit to leave unchanged".
+TRISTATE_FIELDS=(
+  "ScheduleUpdateInput.title"
+)
+
 OAPI_CODEGEN_VERSION="v2.4.1"
 DOWN_CONVERT_VERSION="0.14.1"
 
@@ -90,7 +100,8 @@ echo ">> normalize + prune (tags: ${KEEP_TAGS[*]}; exclude paths: ${EXCLUDE_PATH
 python3 "$ROOT/scripts/openapi-normalize.py" "$SPEC" "$tmp_norm" \
   --keep-tags "${KEEP_TAGS[@]}" \
   --exclude-paths "${EXCLUDE_PATHS[@]}" \
-  --exclude-operations "${EXCLUDE_OPERATIONS[@]}"
+  --exclude-operations "${EXCLUDE_OPERATIONS[@]}" \
+  --tristate-fields "${TRISTATE_FIELDS[@]}"
 
 echo ">> down-convert 3.1 -> 3.0"
 npx --yes "@apiture/openapi-down-convert@${DOWN_CONVERT_VERSION}" --input "$tmp_norm" --output "$tmp_30"

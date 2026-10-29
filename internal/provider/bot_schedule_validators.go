@@ -18,6 +18,10 @@ import (
 // no leading zero (the API compares str(int(key)) == key), or `*`.
 var exitCodeKeyPattern = regexp.MustCompile(`^(\*|[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$`)
 
+// fractionalSeconds captures the fractional-second digits of an RFC 3339
+// timestamp, as written.
+var fractionalSeconds = regexp.MustCompile(`T\d{2}:\d{2}:\d{2}\.(\d+)`)
+
 // stringCheck adapts a plain check function to validator.String. The check
 // returns "" for a valid value, or the reason it is invalid.
 type stringCheck struct {
@@ -56,13 +60,23 @@ func ianaTimezone() validator.String {
 }
 
 // rfc3339Instant requires an RFC 3339 timestamp with an offset, so the anchor
-// names one instant rather than a wall-clock time.
+// names one instant rather than a wall-clock time. It also refuses precision
+// finer than a microsecond: the API stores a Python datetime, which truncates
+// it, so the stored instant would differ from the configured one and apply
+// would fail with an inconsistent result.
 func rfc3339Instant() validator.String {
 	return stringCheck{
-		desc: "value must be an RFC 3339 timestamp with an offset, e.g. `2026-01-01T09:00:00Z`",
+		desc: "value must be an RFC 3339 timestamp with an offset and at most microsecond precision, e.g. `2026-01-01T09:00:00Z`",
 		check: func(s string) string {
 			if _, err := time.Parse(time.RFC3339, s); err != nil {
 				return fmt.Sprintf("%q is not an RFC 3339 timestamp with an offset, e.g. \"2026-01-01T09:00:00Z\".", s)
+			}
+			// Check the digits as written, not the parsed time: Go keeps only
+			// nine fractional digits and drops the rest, so a parsed check
+			// would pass .1234560001.
+			if m := fractionalSeconds.FindStringSubmatch(s); m != nil && len(m[1]) > 6 &&
+				strings.Trim(m[1][6:], "0") != "" {
+				return fmt.Sprintf("%q is more precise than a microsecond, which the API cannot store; use at most 6 fractional digits.", s)
 			}
 			return ""
 		},

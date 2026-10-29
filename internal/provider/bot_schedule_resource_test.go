@@ -125,7 +125,7 @@ func TestBotSchedule_PromptLifecycle(t *testing.T) {
 					resource.TestCheckResourceAttr(scheduleAddr, "id", "sch-1"),
 					api.wantPatchKeys([]string{"title"}, []string{"title"}, []string{"conversation_id"}, []string{"schedule"}),
 					func(*terraform.State) error {
-						if got := string(api.only().spec); got != `{"anchor":"2026-01-01T09:00:00+00:00","interval_seconds":3600}` {
+						if got := api.only().specJSON(); got != `{"anchor":"2026-01-01T09:00:00+00:00","interval_seconds":3600}` {
 							return fmt.Errorf("fake stored spec %s; the echo must differ in spelling for this test to mean anything", got)
 						}
 						return nil
@@ -200,7 +200,7 @@ const commandSchedule = `
     overridable_env   = ["SYNC_SINCE"]
     exit_codes        = { "0" = "success", "75" = "deferred", "*" = "failure" }
     exit_code_labels  = { "75" = "Waiting for upstream" }
-    window            = { duration_seconds = 3600, recheck_seconds = 300 }
+    window            = { duration_seconds = 900, recheck_seconds = 300 }
     on_outcome = {
       failure = {
         retry = { max = 2 }
@@ -338,7 +338,7 @@ func TestBotSchedule_CommandPermission(t *testing.T) {
 // one action, the enums, a positive interval, a real IANA timezone, an RFC 3339
 // anchor, exit-code keys and labels the API would accept unchanged.
 func TestBotSchedule_PlanValidation(t *testing.T) {
-	_, srv := newFakeScheduleAPI(t)
+	api, srv := newFakeScheduleAPI(t)
 	cases := map[string]struct{ body, want string }{
 		"two timings": {`
   cron   = { cron = "0 9 * * *" }
@@ -371,6 +371,14 @@ func TestBotSchedule_PlanValidation(t *testing.T) {
 		"naive anchor": {`
   interval = { interval_seconds = 60, anchor = "2026-01-01T09:00:00" }
   prompt   = "x"`, `is not an RFC 3339 timestamp`},
+		"sub-microsecond anchor": {`
+  interval = { interval_seconds = 60, anchor = "2026-01-01T09:00:00.123456789Z" }
+  prompt   = "x"`, `more precise than a microsecond`},
+		// Go keeps nine fractional digits and drops the rest, so this parses to
+		// exactly .123456: only the digits as written show the extra precision.
+		"sub-microsecond past nine digits": {`
+  interval = { interval_seconds = 60, anchor = "2026-01-01T09:00:00.1234560001Z" }
+  prompt   = "x"`, `more precise than a microsecond`},
 		"exit code key": {`
   cron    = { cron = "0 9 * * *" }
   command = { command = "./x", exit_codes = { "07" = "success" } }`, `must be an exit code from`},
@@ -396,6 +404,55 @@ func TestBotSchedule_PlanValidation(t *testing.T) {
 			})
 		})
 	}
+	// Every case is refused at plan time, before anything reaches the API.
+	if n := len(api.creates) + len(api.patches); n != 0 {
+		t.Fatalf("invalid configuration reached the API: %d writes", n)
+	}
+}
+
+// TestBotSchedule_AnchorPrecision covers fractional anchors, which the API
+// echoes in Python isoformat at microsecond precision. A microsecond anchor and
+// a 7-digit one with a trailing zero both name an instant the API stores
+// exactly: create and update keep the configured spelling, and the harness's
+// post-apply plan check proves each re-plans clean.
+func TestBotSchedule_AnchorPrecision(t *testing.T) {
+	api, srv := newFakeScheduleAPI(t)
+	anchored := func(anchor string) string {
+		return scheduleConfig(srv.URL, fmt.Sprintf(`
+  interval = { interval_seconds = 3600, anchor = %q }
+  prompt   = "x"
+`, anchor))
+	}
+	resource.UnitTest(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: anchored("2026-01-01T09:00:00.123456Z"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(scheduleAddr, "interval.anchor", "2026-01-01T09:00:00.123456Z"),
+					func(*terraform.State) error {
+						if got := api.only().specJSON(); got != `{"anchor":"2026-01-01T09:00:00.123456+00:00","interval_seconds":3600}` {
+							return fmt.Errorf("stored spec = %s", got)
+						}
+						return nil
+					},
+				),
+			},
+			{
+				Config: anchored("2026-01-01T09:00:00.1234570Z"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(scheduleAddr, "interval.anchor", "2026-01-01T09:00:00.1234570Z"),
+					api.wantPatchKeys([]string{"schedule"}),
+					func(*terraform.State) error {
+						if got := api.only().specJSON(); got != `{"anchor":"2026-01-01T09:00:00.123457+00:00","interval_seconds":3600}` {
+							return fmt.Errorf("stored spec = %s", got)
+						}
+						return nil
+					},
+				),
+			},
+		},
+	})
 }
 
 // TestBotSchedule_ImportInvalidID rejects an import ID without both parts.

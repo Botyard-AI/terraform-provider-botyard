@@ -6,6 +6,8 @@ import (
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+
+	"github.com/Botyard-AI/terraform-provider-botyard/internal/client"
 )
 
 // TestBotSchedulesDataSource lists every schedule on the bot, including ones
@@ -16,13 +18,18 @@ import (
 func TestBotSchedulesDataSource(t *testing.T) {
 	api, srv := newFakeScheduleAPI(t)
 	seed := func(id, kind, spec, action string, enabled bool) {
-		norm, _, err := normalizeFakeAction(json.RawMessage(action))
+		norm, actionKind, err := normalizeFakeAction(json.RawMessage(action))
 		if err != nil {
+			t.Fatal(err)
+		}
+		var persisted map[string]any
+		if err := json.Unmarshal([]byte(spec), &persisted); err != nil {
 			t.Fatal(err)
 		}
 		api.schedules[id] = &fakeSchedule{
 			id: id, conversationID: "conv-" + id, enabled: enabled, catchup: "skip",
-			specKind: kind, spec: json.RawMessage(spec), timezone: "Europe/Copenhagen", action: norm,
+			specKind: client.ScheduleSpecKind(kind), spec: persisted, timezone: "Europe/Copenhagen",
+			actionKind: actionKind, action: norm,
 		}
 		api.order = append(api.order, id)
 	}
