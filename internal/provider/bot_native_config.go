@@ -3,9 +3,10 @@ package provider
 import (
 	"encoding/json"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	"github.com/Botyard-AI/terraform-provider-botyard/internal/client"
@@ -45,17 +46,17 @@ import (
 // decided (and reference it in outputs) without being able to break it.
 
 // botNativeConfigModel maps the `native_config` block.
+//
+// `prompt_template` and `prompt_ref` were removed in v0.7.0 (PlatDev #4376).
+// The API dropped both (PlatDev #3684) and NativeConfigPatch is extra="forbid",
+// so v0.5.1 and v0.6.0 already refused them at plan time and read them back as
+// null. The schema version stays 0: state written by an earlier version is
+// decoded with the framework's IgnoreUndefinedAttributes, which drops the
+// stale keys (see TestBotState_RemovedNativePromptFieldsDroppedOnUpgrade).
 type botNativeConfigModel struct {
-	// Removed by the API (PlatDev #3684), kept in the schema only so existing
-	// configurations and state still decode. Deprecated, refused at plan time
-	// when set (BotResource.ValidateConfig), never sent, and always read back
-	// as null. NativeConfigPatch is extra="forbid" (botyard PR 4045), so
-	// sending either key, even as null, makes every native write a 422.
-	PromptTemplate types.String `tfsdk:"prompt_template"`
-	PromptRef      types.String `tfsdk:"prompt_ref"`
-
 	// Practitioner-owned.
 	ToolSearch *botToolSearchModel `tfsdk:"tool_search"`
+	ToolImages *botToolImagesModel `tfsdk:"tool_images"`
 
 	// Platform-owned, read-only (see the block comment above).
 	ModelProvider  types.String `tfsdk:"model_provider"`
@@ -63,16 +64,19 @@ type botNativeConfigModel struct {
 	HostPolicyJSON types.String `tfsdk:"host_policy_json"`
 }
 
-// removedNativePromptDetail is the practitioner-facing explanation shared by
-// the deprecation notice and the plan-time error.
-const removedNativePromptDetail = "Removed by the Botyard API; the native bot's soul is its bot files. " +
-	"The API refuses this field (HTTP 422), so the provider never sends it and always reads it back as " +
-	"null. Remove it from your configuration; it will be deleted from the schema in v0.6.0."
-
-// botToolSearchModel mirrors ToolSearchConfigPatch.
-type botToolSearchModel struct {
-	Mode                 types.String `tfsdk:"mode"`
-	AutoThresholdPercent types.Int64  `tfsdk:"auto_threshold_percent"`
+// botToolImagesModel mirrors ToolImageConfigPatch.
+//
+// Unlike tool_search, every target field is nullable, null MEANS "platform
+// default" on the API side, and an explicit null in a patch resets the field.
+// So the leaves are Optional but NOT Computed: once the block is declared it
+// is authoritative for all three leaves. A leaf left out is sent as null and
+// reads back as null, so a re-plan is a clean no-op, and removing a leaf
+// really returns it to the default instead of silently keeping the last
+// applied value the way an Optional+Computed leaf would.
+type botToolImagesModel struct {
+	Enabled        types.Bool   `tfsdk:"enabled"`
+	MaxDimensionPx types.Int64  `tfsdk:"max_dimension_px"`
+	DefaultDetail  types.String `tfsdk:"default_detail"`
 }
 
 // botNativeConfigSchemaAttribute builds the `native_config` nested attribute.
@@ -88,42 +92,32 @@ func botNativeConfigSchemaAttribute() schema.SingleNestedAttribute {
 			"`harness = \"botyard_native\"`, and conflicts with `config`, which models the OpenClaw shape. " +
 			"Only the fields you set are applied over the platform's defaults.",
 		Attributes: map[string]schema.Attribute{
-			// Computed stays so that state written by v0.5.0 and earlier, which
-			// may carry a server value here, plans as a no-op rather than as an
-			// update to null.
-			"prompt_template": schema.StringAttribute{
-				Optional:            true,
-				Computed:            true,
-				DeprecationMessage:  removedNativePromptDetail,
-				MarkdownDescription: "**Deprecated; setting it is an error.** " + removedNativePromptDetail,
-				PlanModifiers:       []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
-			},
-			"prompt_ref": schema.StringAttribute{
-				Optional:            true,
-				DeprecationMessage:  removedNativePromptDetail,
-				MarkdownDescription: "**Deprecated; setting it is an error.** " + removedNativePromptDetail,
-			},
-			"tool_search": schema.SingleNestedAttribute{
+			"tool_search": toolSearchSchemaAttribute(),
+			"tool_images": schema.SingleNestedAttribute{
 				Optional: true,
-				MarkdownDescription: "Defer tool schemas out of the prompt behind a search surface — the same " +
-					"owner-facing setting OpenClaw bots carry. Note that REMOVING this block does not reset " +
-					"the setting: the API's target field is non-nullable with a default, so a patch omitting " +
-					"it (or sending null) means \"no change\" and the last applied values persist. Set the " +
-					"fields explicitly to change them.",
+				MarkdownDescription: "How images returned by the bot's tools are shown to the model. Once this " +
+					"block is declared it owns all three fields: a field you leave out is sent as null, which " +
+					"resets it to the platform default. Removing the whole block leaves the last applied values " +
+					"in place, because the API treats an omitted `tool_images` as \"no change\". To return to " +
+					"the defaults, apply an empty block, `tool_images = {}`, first.",
 				Attributes: map[string]schema.Attribute{
-					"mode": schema.StringAttribute{
+					"enabled": schema.BoolAttribute{
 						Optional: true,
-						Computed: true,
-						MarkdownDescription: "`always` (defer every turn), `auto` (defer above the threshold), or " +
-							"`off` (never defer).",
-						PlanModifiers: []planmodifier.String{nestedUseStateForUnknownString()},
+						MarkdownDescription: "Show images returned by tools to the model. `false` replaces each " +
+							"image with a short text notice. Unset means enabled.",
 					},
-					"auto_threshold_percent": schema.Int64Attribute{
+					"max_dimension_px": schema.Int64Attribute{
 						Optional: true,
-						Computed: true,
-						MarkdownDescription: "Percentage of the context window the tool schemas must exceed before " +
-							"`auto` defers them. Ignored unless `mode` is `auto`.",
-						PlanModifiers: []planmodifier.Int64{nestedUseStateForUnknownInt64()},
+						MarkdownDescription: "Longest edge, in pixels, a tool image is downscaled to before the " +
+							"model sees it, from 1 to 8000. Unset means the platform default (2000). Values above " +
+							"2000 only take effect while a request holds 20 images or fewer.",
+						Validators: []validator.Int64{int64validator.Between(1, 8000)},
+					},
+					"default_detail": schema.StringAttribute{
+						Optional: true,
+						MarkdownDescription: "Detail level for a tool image whose MCP server does not request one: " +
+							"`auto`, `low`, `high` or `original`. Unset leaves it to the model provider's default.",
+						Validators: []validator.String{stringvalidator.OneOf("auto", "low", "high", "original")},
 					},
 				},
 			},
@@ -176,28 +170,31 @@ func buildNativeConfigPatch(cfg *botNativeConfigModel) json.RawMessage {
 	m := map[string]json.RawMessage{
 		"bot_type": json.RawMessage(`"` + botTypeNative + `"`),
 	}
-	// prompt_template and prompt_ref are NEVER emitted, whatever the plan
-	// holds. The API removed both and NativeConfigPatch is extra="forbid", so
-	// either key, even as null, is a 422. A plan can still carry a value
-	// without the practitioner setting one: Optional+Computed keeps prior
-	// state, and state written by v0.5.0 can hold the server's old template.
 	if v, ok := buildToolSearchPatch(cfg.ToolSearch); ok {
 		m["tool_search"] = v
+	}
+	if v, ok := buildToolImagesPatch(cfg.ToolImages); ok {
+		m["tool_images"] = v
 	}
 	// `model` and `host_policy` are never emitted — they are platform-owned.
 	return marshalObj(m)
 }
 
-func buildToolSearchPatch(ts *botToolSearchModel) (json.RawMessage, bool) {
-	if ts == nil {
+// buildToolImagesPatch renders a declared tool_images block with all three
+// keys present. An unset leaf is sent as an explicit null, which the API reads
+// as "reset to the platform default" (see botToolImagesModel). An unknown leaf
+// is omitted, leaving that field unchanged, and is never nulled. These leaves
+// are Optional-only, so by apply time a configured value is known; the branch
+// only guards a defensive caller. (Apply can still carry unknown COMPUTED
+// values elsewhere; this reasoning is specific to configured leaves.)
+func buildToolImagesPatch(ti *botToolImagesModel) (json.RawMessage, bool) {
+	if ti == nil {
 		return nil, false
 	}
 	inner := map[string]json.RawMessage{}
-	putStr(inner, "mode", ts.Mode)
-	putInt64(inner, "auto_threshold_percent", ts.AutoThresholdPercent)
-	if len(inner) == 0 {
-		return nil, false
-	}
+	putBoolOrNull(inner, "enabled", ti.Enabled)
+	putInt64OrNull(inner, "max_dimension_px", ti.MaxDimensionPx)
+	putStrOrNull(inner, "default_detail", ti.DefaultDetail)
 	return marshalObj(inner), true
 }
 
@@ -209,13 +206,6 @@ func mapNativeBotConfig(nc *client.NativeBotConfig, cfg *botNativeConfigModel) {
 	if cfg == nil {
 		return
 	}
-	// Removed fields read back as null regardless of the response. A
-	// post-PR-4045 API omits them, which would otherwise decode as "" for the
-	// non-pointer PromptTemplate, and an older API's value must not leak into
-	// state for an attribute the provider will never send.
-	cfg.PromptTemplate = types.StringNull()
-	cfg.PromptRef = types.StringNull()
-
 	// Read-only projections. Always set, so they are never unknown in state.
 	// `provider` is optional on the wire (it defaults to "botyard" server-side),
 	// so it arrives as a pointer.
@@ -227,9 +217,19 @@ func mapNativeBotConfig(nc *client.NativeBotConfig, cfg *botNativeConfigModel) {
 	// nested block stays nil rather than materializing server defaults. The
 	// server side is a pointer too (the field is optional in the response), so
 	// both halves are guarded.
-	if cfg.ToolSearch != nil && nc.ToolSearch != nil {
-		cfg.ToolSearch.Mode = enumPtrToStr(nc.ToolSearch.Mode)
-		cfg.ToolSearch.AutoThresholdPercent = intPtrToInt64(nc.ToolSearch.AutoThresholdPercent)
+	mapToolSearch(nc.ToolSearch, cfg.ToolSearch)
+
+	// tool_images leaves are not Computed, so a declared block takes the
+	// server's values as they are, nulls included. A response without
+	// tool_images means every field is at its default.
+	if cfg.ToolImages != nil {
+		var ti client.ToolImageConfig
+		if nc.ToolImages != nil {
+			ti = *nc.ToolImages
+		}
+		cfg.ToolImages.Enabled = boolPtrToBool(ti.Enabled)
+		cfg.ToolImages.MaxDimensionPx = intPtrToInt64(ti.MaxDimensionPx)
+		cfg.ToolImages.DefaultDetail = enumPtrToStr(ti.DefaultDetail)
 	}
 }
 

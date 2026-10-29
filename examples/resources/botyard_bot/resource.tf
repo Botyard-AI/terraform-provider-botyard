@@ -9,6 +9,10 @@ resource "botyard_bot" "support" {
 # A bot with OpenClaw config overrides. `config` is a nested attribute, so it
 # uses object syntax (`config = { ... }`). Only the fields you set are applied
 # over OpenClaw's defaults; omitted fields keep their server default.
+#
+# The model a bot runs on is not part of `config`: it is derived from the bot's
+# LLM credential links. Set it with `botyard_bot_credential_assignment`
+# (`scope = "llm"`, ordered by `ordinal`, with an optional `default_model`).
 resource "botyard_bot" "researcher" {
   name        = "Research Assistant"
   description = "Runs deep research tasks."
@@ -17,13 +21,6 @@ resource "botyard_bot" "researcher" {
     system_prompt_mode = "botyard"
     thinking_default   = "high"
     reasoning_default  = "stream"
-
-    model = {
-      primary = {
-        provider = "botyard"
-        model    = "gpt-5.4"
-      }
-    }
 
     identity = {
       emoji = "🔬"
@@ -49,6 +46,11 @@ resource "botyard_bot" "researcher" {
 
     session = {
       write_lock_max_hold_ms = 300000
+    }
+
+    # Defer tool schemas behind a search surface instead of inlining them.
+    tool_search = {
+      mode = "auto"
     }
   }
 }
@@ -81,6 +83,13 @@ resource "botyard_bot" "triage" {
     tool_search = {
       mode                   = "auto"
       auto_threshold_percent = 40
+    }
+
+    # Declared, this block owns all three fields: one you leave out is reset
+    # to the platform default.
+    tool_images = {
+      max_dimension_px = 1568
+      default_detail   = "high"
     }
   }
 }

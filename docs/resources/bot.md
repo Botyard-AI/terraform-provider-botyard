@@ -27,6 +27,10 @@ resource "botyard_bot" "support" {
 # A bot with OpenClaw config overrides. `config` is a nested attribute, so it
 # uses object syntax (`config = { ... }`). Only the fields you set are applied
 # over OpenClaw's defaults; omitted fields keep their server default.
+#
+# The model a bot runs on is not part of `config`: it is derived from the bot's
+# LLM credential links. Set it with `botyard_bot_credential_assignment`
+# (`scope = "llm"`, ordered by `ordinal`, with an optional `default_model`).
 resource "botyard_bot" "researcher" {
   name        = "Research Assistant"
   description = "Runs deep research tasks."
@@ -35,13 +39,6 @@ resource "botyard_bot" "researcher" {
     system_prompt_mode = "botyard"
     thinking_default   = "high"
     reasoning_default  = "stream"
-
-    model = {
-      primary = {
-        provider = "botyard"
-        model    = "gpt-5.4"
-      }
-    }
 
     identity = {
       emoji = "🔬"
@@ -67,6 +64,11 @@ resource "botyard_bot" "researcher" {
 
     session = {
       write_lock_max_hold_ms = 300000
+    }
+
+    # Defer tool schemas behind a search surface instead of inlining them.
+    tool_search = {
+      mode = "auto"
     }
   }
 }
@@ -99,6 +101,13 @@ resource "botyard_bot" "triage" {
     tool_search = {
       mode                   = "auto"
       auto_threshold_percent = 40
+    }
+
+    # Declared, this block owns all three fields: one you leave out is reset
+    # to the platform default.
+    tool_images = {
+      max_dimension_px = 1568
+      default_detail   = "high"
     }
   }
 }
@@ -148,7 +157,7 @@ output "triage_host_policy" {
 ### Optional
 
 - `avatar_url` (String) Avatar image URL (a DiceBear data URI or a custom URL). Optional — the API stores no avatar when omitted. Removing it from the config clears the stored value (sends JSON null).
-- `config` (Attributes) OpenClaw configuration overrides for the bot, applied via the config endpoint (embedded in the create request and sent to `PATCH /config` on update). Only the fields you set are applied over OpenClaw's defaults; omitted fields keep their server default. This block models the patchable config surface incrementally — `addons` and `bot_type` are not yet modeled. (see [below for nested schema](#nestedatt--config))
+- `config` (Attributes) OpenClaw configuration overrides for the bot, applied via the config endpoint (embedded in the create request and sent to `PATCH /config` on update). Only the fields you set are applied over OpenClaw's defaults; omitted fields keep their server default. This block models the patchable config surface incrementally — `addons` and `bot_type` are not yet modeled. The model a bot runs on is not set here: it is derived from the bot's LLM credential links, managed with `botyard_bot_credential_assignment` (`scope = "llm"`, ordered by `ordinal`, with an optional `default_model`). (see [below for nested schema](#nestedatt--config))
 - `description` (String) Short human-facing description / role for the bot (max 500 chars). Display metadata only — not injected into the bot's system prompt. Omit to leave unset.
 - `harness` (String) Which agent software this bot runs: `openclaw` (default), `botyard_native`, or `claude_code`. Immutable — changing it forces replacement. Declare `config` for `openclaw` and `native_config` for `botyard_native`. The permitted pairs with `hosting_type` are `(hosted, openclaw)`, `(hosted, botyard_native)` and `(self_hosted, claude_code)`.
 - `hosting_type` (String) Who runs this bot's runtime: `hosted` (default) or `self_hosted`. Immutable — changing it forces replacement. Must form a permitted pair with `harness`; the API enforces the allowlist behind `GET /orgs/{org_id}/bots/hosting-options`.
@@ -180,11 +189,11 @@ Optional:
 - `compaction` (Attributes) Context-compaction safeguards. (see [below for nested schema](#nestedatt--config--compaction))
 - `heartbeat` (Attributes) Heartbeat scheduling and behavior. (see [below for nested schema](#nestedatt--config--heartbeat))
 - `identity` (Attributes) Bot identity overrides. (see [below for nested schema](#nestedatt--config--identity))
-- `model` (Attributes) LLM model configuration. (see [below for nested schema](#nestedatt--config--model))
 - `reasoning_default` (String) Default reasoning mode: `off`, `on`, or `stream`.
 - `session` (Attributes) Session-reliability settings. (see [below for nested schema](#nestedatt--config--session))
 - `system_prompt_mode` (String) System prompt source: `botyard` (lean, default) or `openclaw`.
 - `thinking_default` (String) Default thinking budget: one of `off`, `minimal`, `low`, `medium`, `high`, `xhigh`, `adaptive`.
+- `tool_search` (Attributes) Tool Search: defer tool schemas out of the prompt behind a search surface instead of inlining every schema on every turn. Removing this block does NOT reset the setting: the API's target field is non-nullable with a default, so a patch that omits it means "no change" and the last applied values persist. Set the fields explicitly to change them. (see [below for nested schema](#nestedatt--config--tool_search))
 
 <a id="nestedatt--config--compaction"></a>
 ### Nested Schema for `config.compaction`
@@ -233,26 +242,6 @@ Optional:
 - `theme` (String) Bot identity theme.
 
 
-<a id="nestedatt--config--model"></a>
-### Nested Schema for `config.model`
-
-Optional:
-
-- `primary` (Attributes) Primary model reference. (see [below for nested schema](#nestedatt--config--model--primary))
-
-<a id="nestedatt--config--model--primary"></a>
-### Nested Schema for `config.model.primary`
-
-Required:
-
-- `model` (String) Model ID within the provider (e.g. `gpt-5.4`).
-
-Optional:
-
-- `provider` (String) Provider key within `models.providers` (e.g. `botyard`). Defaults to `botyard` when omitted.
-
-
-
 <a id="nestedatt--config--session"></a>
 ### Nested Schema for `config.session`
 
@@ -261,15 +250,23 @@ Optional:
 - `write_lock_max_hold_ms` (Number) Watchdog force-release threshold for the session write-lock (ms).
 
 
+<a id="nestedatt--config--tool_search"></a>
+### Nested Schema for `config.tool_search`
+
+Optional:
+
+- `auto_threshold_percent` (Number) Percentage (0 to 100) of the context window the tool schemas must exceed before `auto` defers them. Ignored unless `mode` is `auto`, and read only by the Claude Code runtime; OpenClaw's embedded Tool Search has no threshold, so `auto` behaves like `always` there.
+- `mode` (String) `always` (defer every turn), `auto` (defer above the threshold), or `off` (never defer). The platform default is `auto`.
+
+
 
 <a id="nestedatt--native_config"></a>
 ### Nested Schema for `native_config`
 
 Optional:
 
-- `prompt_ref` (String, Deprecated) **Deprecated; setting it is an error.** Removed by the Botyard API; the native bot's soul is its bot files. The API refuses this field (HTTP 422), so the provider never sends it and always reads it back as null. Remove it from your configuration; it will be deleted from the schema in v0.6.0.
-- `prompt_template` (String, Deprecated) **Deprecated; setting it is an error.** Removed by the Botyard API; the native bot's soul is its bot files. The API refuses this field (HTTP 422), so the provider never sends it and always reads it back as null. Remove it from your configuration; it will be deleted from the schema in v0.6.0.
-- `tool_search` (Attributes) Defer tool schemas out of the prompt behind a search surface — the same owner-facing setting OpenClaw bots carry. Note that REMOVING this block does not reset the setting: the API's target field is non-nullable with a default, so a patch omitting it (or sending null) means "no change" and the last applied values persist. Set the fields explicitly to change them. (see [below for nested schema](#nestedatt--native_config--tool_search))
+- `tool_images` (Attributes) How images returned by the bot's tools are shown to the model. Once this block is declared it owns all three fields: a field you leave out is sent as null, which resets it to the platform default. Removing the whole block leaves the last applied values in place, because the API treats an omitted `tool_images` as "no change". To return to the defaults, apply an empty block, `tool_images = {}`, first. (see [below for nested schema](#nestedatt--native_config--tool_images))
+- `tool_search` (Attributes) Tool Search: defer tool schemas out of the prompt behind a search surface instead of inlining every schema on every turn. Removing this block does NOT reset the setting: the API's target field is non-nullable with a default, so a patch that omits it means "no change" and the last applied values persist. Set the fields explicitly to change them. (see [below for nested schema](#nestedatt--native_config--tool_search))
 
 Read-Only:
 
@@ -277,13 +274,23 @@ Read-Only:
 - `model_name` (String) Model the broker routes this bot to. **Read-only** — derived from the bot's LLM credential links (chain position 0), not from this resource.
 - `model_provider` (String) Provider of the model the broker routes this bot to. **Read-only** — the platform derives it from the bot's LLM credential links; manage it with `botyard_bot_credential_assignment`.
 
+<a id="nestedatt--native_config--tool_images"></a>
+### Nested Schema for `native_config.tool_images`
+
+Optional:
+
+- `default_detail` (String) Detail level for a tool image whose MCP server does not request one: `auto`, `low`, `high` or `original`. Unset leaves it to the model provider's default.
+- `enabled` (Boolean) Show images returned by tools to the model. `false` replaces each image with a short text notice. Unset means enabled.
+- `max_dimension_px` (Number) Longest edge, in pixels, a tool image is downscaled to before the model sees it, from 1 to 8000. Unset means the platform default (2000). Values above 2000 only take effect while a request holds 20 images or fewer.
+
+
 <a id="nestedatt--native_config--tool_search"></a>
 ### Nested Schema for `native_config.tool_search`
 
 Optional:
 
-- `auto_threshold_percent` (Number) Percentage of the context window the tool schemas must exceed before `auto` defers them. Ignored unless `mode` is `auto`.
-- `mode` (String) `always` (defer every turn), `auto` (defer above the threshold), or `off` (never defer).
+- `auto_threshold_percent` (Number) Percentage (0 to 100) of the context window the tool schemas must exceed before `auto` defers them. Ignored unless `mode` is `auto`, and read only by the Claude Code runtime; OpenClaw's embedded Tool Search has no threshold, so `auto` behaves like `always` there.
+- `mode` (String) `always` (defer every turn), `auto` (defer above the threshold), or `off` (never defer). The platform default is `auto`.
 
 ## Import
 
