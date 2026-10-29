@@ -4975,6 +4975,29 @@ type JsonValueInput4 = []JsonValueInput
 // JsonValueInput5 defines model for .
 type JsonValueInput5 map[string]*JsonValueInput
 
+// JsonValueOutput defines model for JsonValue-Output.
+type JsonValueOutput struct {
+	union json.RawMessage
+}
+
+// JsonValueOutput0 defines model for .
+type JsonValueOutput0 = string
+
+// JsonValueOutput1 defines model for .
+type JsonValueOutput1 = int
+
+// JsonValueOutput2 defines model for .
+type JsonValueOutput2 = float32
+
+// JsonValueOutput3 defines model for .
+type JsonValueOutput3 = bool
+
+// JsonValueOutput4 defines model for .
+type JsonValueOutput4 = []JsonValueOutput
+
+// JsonValueOutput5 defines model for .
+type JsonValueOutput5 map[string]*JsonValueOutput
+
 // LinkedConversationSummary Safe metadata for a conversation linked to a task.
 type LinkedConversationSummary struct {
 	// BotAvatarUrl Bot avatar URL
@@ -8403,8 +8426,8 @@ type PlannedSettingItem struct {
 	Path string `json:"path"`
 
 	// Reason Why, when it is not obvious.
-	Reason *string                          `json:"reason"`
-	Value  *BotyardCoreTypesJsonValueOutput `json:"value"`
+	Reason *string          `json:"reason"`
+	Value  *JsonValueOutput `json:"value"`
 }
 
 // PlannedSettingItemKind defines model for PlannedSettingItem.Kind.
@@ -10597,29 +10620,6 @@ type WorkspaceStorageMetrics struct {
 	TotalBytes *int    `json:"total_bytes"`
 	UsedBytes  *int    `json:"used_bytes"`
 }
-
-// BotyardCoreTypesJsonValueOutput defines model for botyard_core__types__JsonValue-Output.
-type BotyardCoreTypesJsonValueOutput struct {
-	union json.RawMessage
-}
-
-// BotyardCoreTypesJsonValueOutput0 defines model for .
-type BotyardCoreTypesJsonValueOutput0 = string
-
-// BotyardCoreTypesJsonValueOutput1 defines model for .
-type BotyardCoreTypesJsonValueOutput1 = int
-
-// BotyardCoreTypesJsonValueOutput2 defines model for .
-type BotyardCoreTypesJsonValueOutput2 = float32
-
-// BotyardCoreTypesJsonValueOutput3 defines model for .
-type BotyardCoreTypesJsonValueOutput3 = bool
-
-// BotyardCoreTypesJsonValueOutput4 defines model for .
-type BotyardCoreTypesJsonValueOutput4 = []BotyardCoreTypesJsonValueOutput
-
-// BotyardCoreTypesJsonValueOutput5 defines model for .
-type BotyardCoreTypesJsonValueOutput5 map[string]*BotyardCoreTypesJsonValueOutput
 
 // ListBotsV1OrgsOrgIdBotsGetParams defines parameters for ListBotsV1OrgsOrgIdBotsGet.
 type ListBotsV1OrgsOrgIdBotsGetParams struct {
@@ -13550,6 +13550,172 @@ func (t JsonValueInput) MarshalJSON() ([]byte, error) {
 }
 
 func (t *JsonValueInput) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsJsonValueOutput0 returns the union data inside the JsonValueOutput as a JsonValueOutput0
+func (t JsonValueOutput) AsJsonValueOutput0() (JsonValueOutput0, error) {
+	var body JsonValueOutput0
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromJsonValueOutput0 overwrites any union data inside the JsonValueOutput as the provided JsonValueOutput0
+func (t *JsonValueOutput) FromJsonValueOutput0(v JsonValueOutput0) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeJsonValueOutput0 performs a merge with any union data inside the JsonValueOutput, using the provided JsonValueOutput0
+func (t *JsonValueOutput) MergeJsonValueOutput0(v JsonValueOutput0) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsJsonValueOutput1 returns the union data inside the JsonValueOutput as a JsonValueOutput1
+func (t JsonValueOutput) AsJsonValueOutput1() (JsonValueOutput1, error) {
+	var body JsonValueOutput1
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromJsonValueOutput1 overwrites any union data inside the JsonValueOutput as the provided JsonValueOutput1
+func (t *JsonValueOutput) FromJsonValueOutput1(v JsonValueOutput1) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeJsonValueOutput1 performs a merge with any union data inside the JsonValueOutput, using the provided JsonValueOutput1
+func (t *JsonValueOutput) MergeJsonValueOutput1(v JsonValueOutput1) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsJsonValueOutput2 returns the union data inside the JsonValueOutput as a JsonValueOutput2
+func (t JsonValueOutput) AsJsonValueOutput2() (JsonValueOutput2, error) {
+	var body JsonValueOutput2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromJsonValueOutput2 overwrites any union data inside the JsonValueOutput as the provided JsonValueOutput2
+func (t *JsonValueOutput) FromJsonValueOutput2(v JsonValueOutput2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeJsonValueOutput2 performs a merge with any union data inside the JsonValueOutput, using the provided JsonValueOutput2
+func (t *JsonValueOutput) MergeJsonValueOutput2(v JsonValueOutput2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsJsonValueOutput3 returns the union data inside the JsonValueOutput as a JsonValueOutput3
+func (t JsonValueOutput) AsJsonValueOutput3() (JsonValueOutput3, error) {
+	var body JsonValueOutput3
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromJsonValueOutput3 overwrites any union data inside the JsonValueOutput as the provided JsonValueOutput3
+func (t *JsonValueOutput) FromJsonValueOutput3(v JsonValueOutput3) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeJsonValueOutput3 performs a merge with any union data inside the JsonValueOutput, using the provided JsonValueOutput3
+func (t *JsonValueOutput) MergeJsonValueOutput3(v JsonValueOutput3) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsJsonValueOutput4 returns the union data inside the JsonValueOutput as a JsonValueOutput4
+func (t JsonValueOutput) AsJsonValueOutput4() (JsonValueOutput4, error) {
+	var body JsonValueOutput4
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromJsonValueOutput4 overwrites any union data inside the JsonValueOutput as the provided JsonValueOutput4
+func (t *JsonValueOutput) FromJsonValueOutput4(v JsonValueOutput4) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeJsonValueOutput4 performs a merge with any union data inside the JsonValueOutput, using the provided JsonValueOutput4
+func (t *JsonValueOutput) MergeJsonValueOutput4(v JsonValueOutput4) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsJsonValueOutput5 returns the union data inside the JsonValueOutput as a JsonValueOutput5
+func (t JsonValueOutput) AsJsonValueOutput5() (JsonValueOutput5, error) {
+	var body JsonValueOutput5
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromJsonValueOutput5 overwrites any union data inside the JsonValueOutput as the provided JsonValueOutput5
+func (t *JsonValueOutput) FromJsonValueOutput5(v JsonValueOutput5) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeJsonValueOutput5 performs a merge with any union data inside the JsonValueOutput, using the provided JsonValueOutput5
+func (t *JsonValueOutput) MergeJsonValueOutput5(v JsonValueOutput5) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t JsonValueOutput) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *JsonValueOutput) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }
@@ -17391,172 +17557,6 @@ func (t ToolsConfig_ElevatedAllowFrom_Item) MarshalJSON() ([]byte, error) {
 }
 
 func (t *ToolsConfig_ElevatedAllowFrom_Item) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsBotyardCoreTypesJsonValueOutput0 returns the union data inside the BotyardCoreTypesJsonValueOutput as a BotyardCoreTypesJsonValueOutput0
-func (t BotyardCoreTypesJsonValueOutput) AsBotyardCoreTypesJsonValueOutput0() (BotyardCoreTypesJsonValueOutput0, error) {
-	var body BotyardCoreTypesJsonValueOutput0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromBotyardCoreTypesJsonValueOutput0 overwrites any union data inside the BotyardCoreTypesJsonValueOutput as the provided BotyardCoreTypesJsonValueOutput0
-func (t *BotyardCoreTypesJsonValueOutput) FromBotyardCoreTypesJsonValueOutput0(v BotyardCoreTypesJsonValueOutput0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeBotyardCoreTypesJsonValueOutput0 performs a merge with any union data inside the BotyardCoreTypesJsonValueOutput, using the provided BotyardCoreTypesJsonValueOutput0
-func (t *BotyardCoreTypesJsonValueOutput) MergeBotyardCoreTypesJsonValueOutput0(v BotyardCoreTypesJsonValueOutput0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsBotyardCoreTypesJsonValueOutput1 returns the union data inside the BotyardCoreTypesJsonValueOutput as a BotyardCoreTypesJsonValueOutput1
-func (t BotyardCoreTypesJsonValueOutput) AsBotyardCoreTypesJsonValueOutput1() (BotyardCoreTypesJsonValueOutput1, error) {
-	var body BotyardCoreTypesJsonValueOutput1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromBotyardCoreTypesJsonValueOutput1 overwrites any union data inside the BotyardCoreTypesJsonValueOutput as the provided BotyardCoreTypesJsonValueOutput1
-func (t *BotyardCoreTypesJsonValueOutput) FromBotyardCoreTypesJsonValueOutput1(v BotyardCoreTypesJsonValueOutput1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeBotyardCoreTypesJsonValueOutput1 performs a merge with any union data inside the BotyardCoreTypesJsonValueOutput, using the provided BotyardCoreTypesJsonValueOutput1
-func (t *BotyardCoreTypesJsonValueOutput) MergeBotyardCoreTypesJsonValueOutput1(v BotyardCoreTypesJsonValueOutput1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsBotyardCoreTypesJsonValueOutput2 returns the union data inside the BotyardCoreTypesJsonValueOutput as a BotyardCoreTypesJsonValueOutput2
-func (t BotyardCoreTypesJsonValueOutput) AsBotyardCoreTypesJsonValueOutput2() (BotyardCoreTypesJsonValueOutput2, error) {
-	var body BotyardCoreTypesJsonValueOutput2
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromBotyardCoreTypesJsonValueOutput2 overwrites any union data inside the BotyardCoreTypesJsonValueOutput as the provided BotyardCoreTypesJsonValueOutput2
-func (t *BotyardCoreTypesJsonValueOutput) FromBotyardCoreTypesJsonValueOutput2(v BotyardCoreTypesJsonValueOutput2) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeBotyardCoreTypesJsonValueOutput2 performs a merge with any union data inside the BotyardCoreTypesJsonValueOutput, using the provided BotyardCoreTypesJsonValueOutput2
-func (t *BotyardCoreTypesJsonValueOutput) MergeBotyardCoreTypesJsonValueOutput2(v BotyardCoreTypesJsonValueOutput2) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsBotyardCoreTypesJsonValueOutput3 returns the union data inside the BotyardCoreTypesJsonValueOutput as a BotyardCoreTypesJsonValueOutput3
-func (t BotyardCoreTypesJsonValueOutput) AsBotyardCoreTypesJsonValueOutput3() (BotyardCoreTypesJsonValueOutput3, error) {
-	var body BotyardCoreTypesJsonValueOutput3
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromBotyardCoreTypesJsonValueOutput3 overwrites any union data inside the BotyardCoreTypesJsonValueOutput as the provided BotyardCoreTypesJsonValueOutput3
-func (t *BotyardCoreTypesJsonValueOutput) FromBotyardCoreTypesJsonValueOutput3(v BotyardCoreTypesJsonValueOutput3) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeBotyardCoreTypesJsonValueOutput3 performs a merge with any union data inside the BotyardCoreTypesJsonValueOutput, using the provided BotyardCoreTypesJsonValueOutput3
-func (t *BotyardCoreTypesJsonValueOutput) MergeBotyardCoreTypesJsonValueOutput3(v BotyardCoreTypesJsonValueOutput3) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsBotyardCoreTypesJsonValueOutput4 returns the union data inside the BotyardCoreTypesJsonValueOutput as a BotyardCoreTypesJsonValueOutput4
-func (t BotyardCoreTypesJsonValueOutput) AsBotyardCoreTypesJsonValueOutput4() (BotyardCoreTypesJsonValueOutput4, error) {
-	var body BotyardCoreTypesJsonValueOutput4
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromBotyardCoreTypesJsonValueOutput4 overwrites any union data inside the BotyardCoreTypesJsonValueOutput as the provided BotyardCoreTypesJsonValueOutput4
-func (t *BotyardCoreTypesJsonValueOutput) FromBotyardCoreTypesJsonValueOutput4(v BotyardCoreTypesJsonValueOutput4) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeBotyardCoreTypesJsonValueOutput4 performs a merge with any union data inside the BotyardCoreTypesJsonValueOutput, using the provided BotyardCoreTypesJsonValueOutput4
-func (t *BotyardCoreTypesJsonValueOutput) MergeBotyardCoreTypesJsonValueOutput4(v BotyardCoreTypesJsonValueOutput4) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsBotyardCoreTypesJsonValueOutput5 returns the union data inside the BotyardCoreTypesJsonValueOutput as a BotyardCoreTypesJsonValueOutput5
-func (t BotyardCoreTypesJsonValueOutput) AsBotyardCoreTypesJsonValueOutput5() (BotyardCoreTypesJsonValueOutput5, error) {
-	var body BotyardCoreTypesJsonValueOutput5
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromBotyardCoreTypesJsonValueOutput5 overwrites any union data inside the BotyardCoreTypesJsonValueOutput as the provided BotyardCoreTypesJsonValueOutput5
-func (t *BotyardCoreTypesJsonValueOutput) FromBotyardCoreTypesJsonValueOutput5(v BotyardCoreTypesJsonValueOutput5) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeBotyardCoreTypesJsonValueOutput5 performs a merge with any union data inside the BotyardCoreTypesJsonValueOutput, using the provided BotyardCoreTypesJsonValueOutput5
-func (t *BotyardCoreTypesJsonValueOutput) MergeBotyardCoreTypesJsonValueOutput5(v BotyardCoreTypesJsonValueOutput5) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t BotyardCoreTypesJsonValueOutput) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *BotyardCoreTypesJsonValueOutput) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }
