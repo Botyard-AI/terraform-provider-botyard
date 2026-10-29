@@ -401,12 +401,24 @@ func (r *BotResource) Update(ctx context.Context, req resource.UpdateRequest, re
 	// is the only one with an owner-specific diagnostic, so on a bot this key
 	// does not own (D6 #4379) the practitioner sees "Not the bot's owner" for
 	// the setting they changed, not a generic 403 from the metadata PATCH,
-	// which is sent on every update. If it fails, nothing else has been
-	// written: record the prior state explicitly (the framework would
-	// otherwise keep the planned values) and stop.
+	// which is sent on every update.
+	//
+	// The framework seeds resp.State with the PRIOR state (fwserver
+	// server_updateresource.go: "Require explicit provider updates for
+	// tracking successful updates"), so every early return below records only
+	// what has been explicitly set. If the opt-out fails, nothing has been
+	// written and the prior state is right as it is. If it succeeds, checkpoint
+	// it at once: prior state plus the applied flag, and nothing from the plan
+	// that has not been written yet. A later failure then keeps the flag
+	// instead of reverting it to a value the server no longer holds.
 	optOut, ok := r.applySuggestionsOptOutOnUpdate(ctx, state.Slug.ValueString(), plan.SuggestionsOptOut, state.SuggestionsOptOut, &resp.Diagnostics)
 	if !ok {
-		resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
+		return
+	}
+	checkpoint := state
+	checkpoint.SuggestionsOptOut = optOut
+	resp.Diagnostics.Append(resp.State.Set(ctx, &checkpoint)...)
+	if resp.Diagnostics.HasError() {
 		return
 	}
 

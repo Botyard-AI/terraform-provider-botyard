@@ -1,6 +1,7 @@
 package provider
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -10,6 +11,9 @@ import (
 	"sync"
 	"testing"
 
+	fwresource "github.com/hashicorp/terraform-plugin-framework/resource"
+	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 )
@@ -30,7 +34,9 @@ type fakeSuggestionsBotAPI struct {
 	desc    *string
 	puts    []bool
 	patches int // bot PATCH attempts, refused or not
-	gets    int
+	// failPatch makes the bot PATCH, or PATCH /config, answer 500.
+	failPatch, failConfig bool
+	gets                  int
 }
 
 const suggestionsBotPath = "/v1/orgs/org-1/bots/opt-probe"
@@ -80,6 +86,12 @@ func (a *fakeSuggestionsBotAPI) serve(w http.ResponseWriter, r *http.Request) {
 		if a.forbid(w) {
 			return
 		}
+		if a.failPatch {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusInternalServerError)
+			_, _ = w.Write([]byte(`{"title":"injected PATCH failure","status":500}`))
+			return
+		}
 		var body struct {
 			Description *string `json:"description"`
 		}
@@ -95,6 +107,10 @@ func (a *fakeSuggestionsBotAPI) serve(w http.ResponseWriter, r *http.Request) {
 		}
 		a.exists = false
 		w.WriteHeader(http.StatusNoContent)
+	case r.Method == http.MethodPatch && r.URL.Path == suggestionsBotPath+"/config" && a.exists && a.failConfig:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		_, _ = w.Write([]byte(`{"title":"injected config failure","status":500}`))
 	case r.Method == http.MethodGet && r.URL.Path == "/v1/orgs/org-1/packs/installs":
 		// Import looks for Bot Pack installs (#38); this bot has none.
 		w.Header().Set("Content-Type", "application/json")
@@ -342,4 +358,130 @@ func TestSuggestionsOptOut_ImportNotOwned(t *testing.T) {
 			},
 		},
 	})
+}
+
+// TestSuggestionsOptOut_UpdateCheckpointsAppliedFlag pins Update's partial
+// state when the opt-out PUT succeeds and a later write fails. It calls Update
+// the way the framework does (resp.State seeded with the PRIOR state) and
+// inspects the returned state directly: through Terraform core, the next
+// plan's refresh would re-read the flag and mask a lost update.
+func TestSuggestionsOptOut_UpdateCheckpointsAppliedFlag(t *testing.T) {
+	for _, tc := range []struct {
+		name       string
+		inject     func(a *fakeSuggestionsBotAPI)
+		withConfig bool
+		errSummary string
+	}{
+		{"metadata PATCH fails", func(a *fakeSuggestionsBotAPI) { a.failPatch = true }, false, "Unexpected response updating bot"},
+		{"config PATCH fails", func(a *fakeSuggestionsBotAPI) { a.failConfig = true }, true, "Unexpected response updating bot config"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx := context.Background()
+			api, srv := newFakeSuggestionsBotAPI(t)
+			api.exists = true
+			tc.inject(api)
+
+			r := &BotResource{data: &providerData{client: newBotClient(t, srv.URL, "byk_test"), orgID: "org-1"}}
+			sch := botSchema(t)
+
+			prior := BotResourceModel{
+				Name:              types.StringValue("opt-probe"),
+				Slug:              types.StringValue("opt-probe"),
+				ID:                types.StringValue("8a1b2c3d-0000-4000-8000-000000000001"),
+				Description:       types.StringNull(),
+				SuggestionsOptOut: types.BoolValue(false),
+			}
+			plan := prior
+			plan.Description = types.StringValue("pending")
+			plan.SuggestionsOptOut = types.BoolValue(true)
+			if tc.withConfig {
+				plan.Config = &botConfigModel{}
+			}
+
+			priorState := tfsdk.State{Schema: sch}
+			if d := priorState.Set(ctx, &prior); d.HasError() {
+				t.Fatalf("prior state: %v", d)
+			}
+			planned := tfsdk.Plan{Schema: sch}
+			if d := planned.Set(ctx, &plan); d.HasError() {
+				t.Fatalf("plan: %v", d)
+			}
+			resp := fwresource.UpdateResponse{State: priorState}
+			r.Update(ctx, fwresource.UpdateRequest{Plan: planned, State: priorState}, &resp)
+
+			if !resp.Diagnostics.HasError() {
+				t.Fatal("Update succeeded; want the injected failure")
+			}
+			found := false
+			for _, d := range resp.Diagnostics.Errors() {
+				found = found || d.Summary() == tc.errSummary
+			}
+			if !found {
+				t.Fatalf("diagnostics %v lack %q", resp.Diagnostics.Errors(), tc.errSummary)
+			}
+
+			var got BotResourceModel
+			if d := resp.State.Get(ctx, &got); d.HasError() {
+				t.Fatalf("returned state: %v", d)
+			}
+			if !got.SuggestionsOptOut.Equal(types.BoolValue(true)) {
+				t.Errorf("returned suggestions_opt_out = %s, want true: the PUT succeeded", got.SuggestionsOptOut)
+			}
+			if !got.Description.IsNull() {
+				t.Errorf("returned description = %s, want the prior null: the plan's value was never recorded as applied", got.Description)
+			}
+			if err := api.wantPuts(true)(nil); err != nil {
+				t.Error(err)
+			}
+		})
+	}
+}
+
+// TestSuggestionsOptOut_UpdateFailedOptOutReturnsPrior: when the opt-out PUT
+// itself is refused (a bot the key does not own), Update returns the prior
+// state untouched, so the flag keeps its known value rather than being
+// nulled, and nothing else is written. Refresh-free, like the test above: a
+// 403 refresh keeps whatever was saved, so through core a lost value would
+// stay lost without any visible diff.
+func TestSuggestionsOptOut_UpdateFailedOptOutReturnsPrior(t *testing.T) {
+	ctx := context.Background()
+	api, srv := newFakeSuggestionsBotAPI(t)
+	api.exists, api.owned = true, false
+
+	r := &BotResource{data: &providerData{client: newBotClient(t, srv.URL, "byk_test"), orgID: "org-1"}}
+	sch := botSchema(t)
+	prior := BotResourceModel{
+		Name:              types.StringValue("opt-probe"),
+		Slug:              types.StringValue("opt-probe"),
+		ID:                types.StringValue("8a1b2c3d-0000-4000-8000-000000000001"),
+		Description:       types.StringNull(),
+		SuggestionsOptOut: types.BoolValue(false),
+	}
+	plan := prior
+	plan.SuggestionsOptOut = types.BoolValue(true)
+
+	priorState := tfsdk.State{Schema: sch}
+	if d := priorState.Set(ctx, &prior); d.HasError() {
+		t.Fatalf("prior state: %v", d)
+	}
+	planned := tfsdk.Plan{Schema: sch}
+	if d := planned.Set(ctx, &plan); d.HasError() {
+		t.Fatalf("plan: %v", d)
+	}
+	resp := fwresource.UpdateResponse{State: priorState}
+	r.Update(ctx, fwresource.UpdateRequest{Plan: planned, State: priorState}, &resp)
+
+	if !resp.Diagnostics.HasError() || resp.Diagnostics.Errors()[0].Summary() != "Not the bot's owner" {
+		t.Fatalf("diagnostics = %v, want the owner error first", resp.Diagnostics.Errors())
+	}
+	var got BotResourceModel
+	if d := resp.State.Get(ctx, &got); d.HasError() {
+		t.Fatalf("returned state: %v", d)
+	}
+	if !got.SuggestionsOptOut.Equal(types.BoolValue(false)) {
+		t.Errorf("returned suggestions_opt_out = %s, want the prior false", got.SuggestionsOptOut)
+	}
+	if api.patches != 0 {
+		t.Errorf("bot PATCH attempts = %d, want 0", api.patches)
+	}
 }

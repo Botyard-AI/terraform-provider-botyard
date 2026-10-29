@@ -14,6 +14,8 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
+	fwresource "github.com/hashicorp/terraform-plugin-framework/resource"
+	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/plancheck"
@@ -1020,6 +1022,53 @@ func TestBotPack_SuggestionsOptOut(t *testing.T) {
 					{Config: cfg, PlanOnly: true},
 				},
 			})
+		})
+	}
+}
+
+// savePartialPackBot runs when a pack create fails after from-pack, before the
+// opt-out was read or written. It must record suggestions_opt_out as null,
+// never the configured value the server does not hold. Asserted on the state
+// it returns, with no refresh: TestBotPack_PartialCreateIsTaintedNotOrphaned
+// goes through Terraform core, whose next plan re-reads the flag first.
+func TestBotPack_PartialCreateSavesNullOptOut(t *testing.T) {
+	for _, tc := range []struct {
+		name    string
+		planned types.Bool
+	}{
+		{"configured true", types.BoolValue(true)},
+		{"configured false", types.BoolValue(false)},
+		{"omitted (unknown)", types.BoolUnknown()},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx := context.Background()
+			sch := botSchema(t)
+			plan := BotResourceModel{
+				Name:              types.StringValue("pack-probe"),
+				Slug:              types.StringValue("pack-probe"),
+				ID:                types.StringValue(fpBotID),
+				SuggestionsOptOut: tc.planned,
+				Pack: &botPackModel{
+					PackVersionID:      types.StringValue(fpPV1),
+					BotPackInstallID:   types.StringValue(fpInstallID),
+					PackID:             types.StringUnknown(),
+					PackSlug:           types.StringUnknown(),
+					VersionNo:          types.Int64Unknown(),
+					PendingConnections: types.ListUnknown(pendingConnectionObjectType),
+				},
+			}
+			resp := fwresource.CreateResponse{State: tfsdk.State{Schema: sch}}
+			(&BotResource{}).savePartialPackBot(ctx, plan, types.StringNull(), &resp)
+			if resp.Diagnostics.HasError() {
+				t.Fatalf("diags: %v", resp.Diagnostics)
+			}
+			var got BotResourceModel
+			if d := resp.State.Get(ctx, &got); d.HasError() {
+				t.Fatalf("saved state: %v", d)
+			}
+			if !got.SuggestionsOptOut.IsNull() {
+				t.Errorf("saved suggestions_opt_out = %s, want null", got.SuggestionsOptOut)
+			}
 		})
 	}
 }
