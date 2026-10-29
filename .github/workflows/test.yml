@@ -31,6 +31,22 @@ jobs:
         run: go vet ./...
       - name: build
         run: go build ./...
+      # terraform-plugin-testing runs a real terraform binary for every
+      # resource.UnitTest. With none on PATH it downloads one per test via
+      # hc-install (~190 downloads per run), which pushed this job past
+      # go test's 10m default. Install one pinned, signature-verified copy up
+      # front; plugintest discovers it on PATH. hc-install is already a module
+      # dependency (go.mod), so no new third-party action.
+      - name: install terraform
+        env:
+          TERRAFORM_VERSION: 1.15.8
+        run: |
+          # hc-install extracts into -path but does not create it.
+          mkdir -p "$RUNNER_TEMP/terraform"
+          go run github.com/hashicorp/hc-install/cmd/hc-install@v0.9.4 \
+            install -version "$TERRAFORM_VERSION" -path "$RUNNER_TEMP/terraform" terraform
+          echo "$RUNNER_TEMP/terraform" >> "$GITHUB_PATH"
+          "$RUNNER_TEMP/terraform/terraform" version
       - name: unit tests (race detector)
         run: go test ./... -race -count=1
 
