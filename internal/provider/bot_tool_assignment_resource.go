@@ -22,6 +22,7 @@ var (
 	_ resource.Resource                = (*BotToolAssignmentResource)(nil)
 	_ resource.ResourceWithConfigure   = (*BotToolAssignmentResource)(nil)
 	_ resource.ResourceWithImportState = (*BotToolAssignmentResource)(nil)
+	_ resource.ResourceWithModifyPlan  = (*BotToolAssignmentResource)(nil)
 )
 
 // BotToolAssignmentResource manages the complete set of tools assigned to a bot.
@@ -57,7 +58,13 @@ func (r *BotToolAssignmentResource) Schema(_ context.Context, _ resource.SchemaR
 			"**exclusive** ownership of the bot's tool assignments: any tool assigned outside Terraform is " +
 			"removed on the next apply so the bot's assigned tools converge on `tool_ids`. Use at most one " +
 			"`botyard_bot_tool_assignment` per bot. Per-tool-domain settings (e.g. sessions visibility) are " +
-			"configured on the `botyard_bot` `config` block, not here.",
+			"configured on the `botyard_bot` `config` block, not here. " +
+			"\n\n**Bots with a pack.** A pack installed on the bot (`botyard_bot` `pack`) assigns its own tools, " +
+			"and they count toward this exclusive set: leaving them out of `tool_ids` unassigns them on apply, and the " +
+			"pack does not re-grant them. Include them with " +
+			"`setunion(data.botyard_pack_version.<name>.tool_ids, [...])`. The plan warns, naming each pack-installed " +
+			"tool, when a change or destroy would remove one; checking costs two reads (the bot, then its pack " +
+			"installs) and only runs when `tool_ids` changes or the resource is destroyed.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
@@ -173,6 +180,30 @@ func (r *BotToolAssignmentResource) Delete(ctx context.Context, req resource.Del
 		resp.Diagnostics.AddError("Unexpected response deleting bot tool assignments",
 			fmt.Sprintf("Delete returned HTTP %d: %s", status, describeAPIError(body)))
 	}
+}
+
+// ModifyPlan warns when the plan would unassign tools a pack installed on the
+// bot. It never changes the plan.
+func (r *BotToolAssignmentResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	var state BotToolAssignmentResourceModel
+	if !req.State.Raw.IsNull() {
+		resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+	}
+	if req.Plan.Raw.IsNull() {
+		warnPackAssignmentPlan(ctx, r.data, packAssignmentTools, state.BotSlug, state.ToolIDs, types.SetNull(types.StringType),
+			true, &resp.Diagnostics)
+		return
+	}
+	var plan BotToolAssignmentResourceModel
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	prior := types.SetNull(types.StringType)
+	if !req.State.Raw.IsNull() && state.BotSlug.Equal(plan.BotSlug) {
+		prior = state.ToolIDs
+	}
+	warnPackAssignmentPlan(ctx, r.data, packAssignmentTools, plan.BotSlug, prior, plan.ToolIDs, false, &resp.Diagnostics)
 }
 
 // ImportState imports the assignment by the bot slug it manages.

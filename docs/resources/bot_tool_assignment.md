@@ -4,11 +4,14 @@ page_title: "botyard_bot_tool_assignment Resource - Botyard"
 subcategory: ""
 description: |-
   Manages the complete set of tools assigned to a Botyard bot. This resource takes exclusive ownership of the bot's tool assignments: any tool assigned outside Terraform is removed on the next apply so the bot's assigned tools converge on tool_ids. Use at most one botyard_bot_tool_assignment per bot. Per-tool-domain settings (e.g. sessions visibility) are configured on the botyard_bot config block, not here.
+  Bots with a pack. A pack installed on the bot (botyard_bot pack) assigns its own tools, and they count toward this exclusive set: leaving them out of tool_ids unassigns them on apply, and the pack does not re-grant them. Include them with setunion(data.botyard_pack_version.<name>.tool_ids, [...]). The plan warns, naming each pack-installed tool, when a change or destroy would remove one; checking costs two reads (the bot, then its pack installs) and only runs when tool_ids changes or the resource is destroyed.
 ---
 
 # botyard_bot_tool_assignment (Resource)
 
-Manages the complete set of tools assigned to a Botyard bot. This resource takes **exclusive** ownership of the bot's tool assignments: any tool assigned outside Terraform is removed on the next apply so the bot's assigned tools converge on `tool_ids`. Use at most one `botyard_bot_tool_assignment` per bot. Per-tool-domain settings (e.g. sessions visibility) are configured on the `botyard_bot` `config` block, not here.
+Manages the complete set of tools assigned to a Botyard bot. This resource takes **exclusive** ownership of the bot's tool assignments: any tool assigned outside Terraform is removed on the next apply so the bot's assigned tools converge on `tool_ids`. Use at most one `botyard_bot_tool_assignment` per bot. Per-tool-domain settings (e.g. sessions visibility) are configured on the `botyard_bot` `config` block, not here. 
+
+**Bots with a pack.** A pack installed on the bot (`botyard_bot` `pack`) assigns its own tools, and they count toward this exclusive set: leaving them out of `tool_ids` unassigns them on apply, and the pack does not re-grant them. Include them with `setunion(data.botyard_pack_version.<name>.tool_ids, [...])`. The plan warns, naming each pack-installed tool, when a change or destroy would remove one; checking costs two reads (the bot, then its pack installs) and only runs when `tool_ids` changes or the resource is destroyed.
 
 ## Example Usage
 
@@ -25,6 +28,21 @@ resource "botyard_bot_tool_assignment" "assistant_tools" {
     "c0a70011-0000-4000-8000-000000000001",
     "c0a70011-0000-4000-8000-000000000002",
   ]
+}
+
+# On a bot created from a pack, the pack's tools are part of the exclusive set.
+# Keep them by adding the pack version's tool_ids; otherwise the plan warns and
+# the apply unassigns them.
+data "botyard_pack_version" "crm" {
+  slug = "crm-assistant"
+}
+
+resource "botyard_bot_tool_assignment" "crm_bot_tools" {
+  bot_slug = botyard_bot.crm.slug
+
+  tool_ids = setunion(data.botyard_pack_version.crm.tool_ids, [
+    "c0a70011-0000-4000-8000-000000000001",
+  ])
 }
 ```
 

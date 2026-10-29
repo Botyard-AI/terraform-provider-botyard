@@ -85,7 +85,13 @@ func botPackSchemaAttribute() schema.SingleNestedAttribute {
 			"uninstalls the pack and keeps the bot. Adding it to an existing bot, or changing " +
 			"`pack_version_id`, is refused at plan time: the API has no install-on-existing-bot or upgrade " +
 			"path yet, and the provider never replaces a bot (that would lose its conversations and memory). " +
-			"`avatar_url` left unset means the pack's avatar is kept.",
+			"`avatar_url` left unset means the pack's avatar is kept. The pack's config is applied first and " +
+			"the bot's declared `config` / `native_config` values win. A declared `native_config.tool_images` " +
+			"owns all its fields, so a partial block resets the fields it leaves out to the platform " +
+			"defaults, not to the pack's values: declare every `tool_images` field, or leave the block out. " +
+			"The pack's skills and tools count toward `botyard_bot_skill_assignment` / " +
+			"`botyard_bot_tool_assignment`, which own the bot's complete sets: include them with " +
+			"`setunion(data.botyard_pack_version.<name>.skill_ids, [...])`.",
 		Attributes: map[string]schema.Attribute{
 			"pack_version_id": schema.StringAttribute{
 				Required: true,
