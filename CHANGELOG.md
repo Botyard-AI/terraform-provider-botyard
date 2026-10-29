@@ -43,6 +43,15 @@ a version.
   - The plan names each pack-installed skill or tool that a change, a destroy, or a `bot_slug` change (which replaces the resource and unassigns everything from the previous bot) would remove. It is a warning only; the plan and apply still go ahead.
   - Keep them with `setunion(data.botyard_pack_version.<name>.skill_ids, [...])`, or `tool_ids` for tools. The docs and examples have a "Bots with a pack" section.
   - The check reads the bot and its pack installs. It runs only when `skill_ids` / `tool_ids` changes or the resource is destroyed, so an unchanged plan makes no extra calls. If the read fails, the plan says the check was skipped.
+- **`botyard_bot`: runtime settings `auto_suspend_enabled`, `runtime_privilege_mode` (now writable) and a `resources` block.** Works the same for bots created with `pack`. (#46)
+  - Each is sent only when the plan changes it: changing `runtime_privilege_mode` or `resources` restarts the bot, so an unrelated apply never resends them.
+  - Leaving `auto_suspend_enabled` or `runtime_privilege_mode` out reads the current value and never changes it, so existing configurations plan clean after upgrading.
+  - `resources` (`cpu_request`, `cpu_limit`, `memory_request`, `memory_limit`, `storage`) behaves like `botyard_mcp_server.resources`: an omitted block is never managed, a declared block applies only the quantities you set, and removing it resets the bot to the plan defaults. `storage` can only grow.
+  - `auto_suspend_enabled = false` and `runtime_privilege_mode = "privileged"` need a plan that includes them; otherwise the API refuses the change with the plan's upgrade message.
+
+### Changed
+
+- **`botyard_bot`: updating or deleting a bot the API key does not own now fails with a "Not the bot's owner" error** that says why and what to do, instead of a generic HTTP 403. An API key owns only the bots it created. A 403 for a missing plan feature keeps the API's own message. (#46)
 
 ### Fixed
 

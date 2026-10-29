@@ -76,7 +76,8 @@ func (m *mcpServerResourcesModel) lineItems() []struct {
 }
 
 // resourceQuantityLeaf is one Optional+Computed line-item of a `resources`
-// block: set means managed, unset adopts the current value.
+// block (shared by botyard_mcp_server and botyard_bot): set means managed,
+// unset adopts the current value.
 //
 // The modifier must be the nested variant: with the stock UseStateForUnknown,
 // declaring the block on an existing resource planned every unset line-item

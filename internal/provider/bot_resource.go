@@ -43,8 +43,8 @@ type BotResource struct {
 //
 // Deliberately omitted per the epic-59 decision (task #825): `tier` (deprecated
 // platform-wide) and `cluster_id` (internal provisioner placement). Also omitted
-// from this resource: files/skills/tools/resources/access — those belong to
-// later phases. The nested `config` block is added in Phase B (see botConfigModel).
+// from this resource: files/skills/tools/access — those belong to dedicated
+// resources or later phases. The nested `config` block is added in Phase B (see botConfigModel).
 type BotResourceModel struct {
 	// Writable identity.
 	Name        types.String `tfsdk:"name"`
@@ -72,15 +72,20 @@ type BotResourceModel struct {
 	// written through the bot's suggestions endpoint (see bot_suggestions.go).
 	SuggestionsOptOut types.Bool `tfsdk:"suggestions_opt_out"`
 
+	// Runtime settings (see bot_runtime_settings.go), written through PATCH
+	// /bots/{slug} and sent only when the plan moves them.
+	AutoSuspendEnabled types.Bool               `tfsdk:"auto_suspend_enabled"`
+	Resources          *mcpServerResourcesModel `tfsdk:"resources"`
+
 	// Server-owned identity (computed).
 	ID        types.String `tfsdk:"id"`
 	Slug      types.String `tfsdk:"slug"`
 	OrgID     types.String `tfsdk:"org_id"`
 	Namespace types.String `tfsdk:"namespace"`
 
-	// Runtime placement (computed — not settable via create or the metadata
-	// PATCH). `runtime_privilege_mode` is mutable via a dedicated PATCH but is
-	// surfaced read-only in Phase A; making it writable is a planned follow-up.
+	// Runtime placement. runtime_class/storage_class/durable_root_owns_home are
+	// platform-owned (computed); runtime_privilege_mode is Optional+Computed and
+	// written through PATCH /bots/{slug} (see bot_runtime_settings.go).
 	RuntimeClass         types.String `tfsdk:"runtime_class"`
 	StorageClass         types.String `tfsdk:"storage_class"`
 	RuntimePrivilegeMode types.String `tfsdk:"runtime_privilege_mode"`
@@ -127,12 +132,14 @@ func (r *BotResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "Manages a Botyard bot's desired-state record within the configured organization. " +
 			"Creating the resource persists the bot and triggers provisioner reconciliation best-effort. " +
-			"It manages the bot's core identity (name, description, avatar) and its OpenClaw `config` " +
-			"overrides, and exposes runtime placement and control-plane state as read-only attributes; " +
+			"It manages the bot's core identity (name, description, avatar), its OpenClaw `config` " +
+			"overrides and its runtime settings (`auto_suspend_enabled`, `runtime_privilege_mode`, " +
+			"`resources`), and exposes runtime placement and control-plane state as read-only attributes; " +
 			"the bot's skill/tool/credential assignments are managed separately.\n\n" +
 			"**Bot ownership.** An API key owns only the bots it created, even when its organization role is " +
 			"owner. For a bot created in the Botyard app or with another key, import, refresh and planning are " +
-			"supported, but updates and deletion require the API key that created the bot.\n\n" +
+			"supported, but updates and deletion require the API key that created the bot, and fail with a " +
+			"\"Not the bot's owner\" error.\n\n" +
 			"`suggestions_opt_out` is also unreadable on such a bot: Terraform keeps the last value it knew " +
 			"(none after an import), and changing it fails with a \"Not the bot's owner\" error.\n\n" +
 			"See [Getting started](https://docs.botyard.io/docs/getting-started) in the Botyard docs.",
@@ -200,16 +207,18 @@ func (r *BotResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *
 			"native_config": botNativeConfigSchemaAttribute(),
 			"pack":          botPackSchemaAttribute(),
 
-			suggestionsOptOutAttr: suggestionsOptOutSchemaAttribute(),
+			suggestionsOptOutAttr:    suggestionsOptOutSchemaAttribute(),
+			autoSuspendEnabledAttr:   autoSuspendEnabledSchemaAttribute(),
+			runtimePrivilegeModeAttr: runtimePrivilegeModeSchemaAttribute(),
+			botResourcesAttr:         botResourcesSchemaAttribute(),
 
 			"id":        stableComputedString("Unique bot identifier (UUID)."),
 			"slug":      stableComputedString("URL-friendly bot identifier, derived from the name at creation. Used as the import ID."),
 			"org_id":    stableComputedString("Organization ID that owns the bot."),
 			"namespace": stableComputedString("Kubernetes namespace for the bot runtime."),
 
-			"runtime_class":          stableComputedString("Container runtime class for the bot pod (e.g. `kata_qemu`, `runc`, or a cluster default). Set by the platform; not user-configurable."),
-			"storage_class":          stableComputedString("Storage class for the bot's workspace PVC. Set by the platform; not user-configurable."),
-			"runtime_privilege_mode": stableComputedString("Privilege level of the bot runtime pod. Read-only in this provider version."),
+			"runtime_class": stableComputedString("Container runtime class for the bot pod (e.g. `kata_qemu`, `runc`, or a cluster default). Set by the platform; not user-configurable. Switching `runtime_privilege_mode` to `privileged` can change it."),
+			"storage_class": stableComputedString("Storage class for the bot's workspace PVC. Set by the platform; not user-configurable."),
 			"durable_root_owns_home": schema.BoolAttribute{
 				Computed:            true,
 				MarkdownDescription: "Operator rollout flag for the single-block durable root layout. When true, `/home/openclaw` lives inside the durable root overlay.",
@@ -247,6 +256,7 @@ func (r *BotResource) ValidateConfig(ctx context.Context, req resource.ValidateC
 	}
 
 	validatePackConfig(cfg.Pack, &resp.Diagnostics)
+	resp.Diagnostics.Append(validateMcpServerResources(cfg.Resources)...)
 
 	if cfg.Config != nil && cfg.NativeConfig != nil {
 		resp.Diagnostics.AddAttributeError(path.Root("native_config"),
@@ -313,6 +323,7 @@ func (r *BotResource) Create(ctx context.Context, req resource.CreateRequest, re
 		return
 	}
 
+	want := plannedRuntimeSettings(plan)
 	body, diags := buildBotCreateBody(plan)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -334,8 +345,18 @@ func (r *BotResource) Create(ctx context.Context, req resource.CreateRequest, re
 	// The create POST embeds the config, so the 201 already reflects the merged
 	// desired_config — refresh the declared config leaves from it.
 	mapBotDesiredConfig(apiResp.JSON201.Harness, &apiResp.JSON201.DesiredConfig, plan.Config, plan.NativeConfig, &resp.Diagnostics)
-	// The bot exists from here on, so state is set even if the opt-out call
-	// fails: Terraform then taints the bot rather than orphaning it.
+	// The bot exists from here on, so state is set even if a follow-up call
+	// fails: Terraform then taints the bot rather than orphaning it. The POST
+	// carried `resources`; the PATCH settles what it cannot carry.
+	settled, ok := r.applyRuntimeSettingsAfterCreate(ctx, want, apiResp.JSON201, false, &resp.Diagnostics)
+	mapBotResource(settled, &plan)
+	mapBotResources(settled, plan.Resources)
+	if !ok {
+		plan.SuggestionsOptOut = types.BoolNull()
+		nullUnknownResources(plan.Resources)
+		resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
+		return
+	}
 	plan.SuggestionsOptOut = r.applySuggestionsOptOutOnCreate(ctx, plan.Slug.ValueString(), plan.SuggestionsOptOut, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
@@ -366,6 +387,7 @@ func (r *BotResource) Read(ctx context.Context, req resource.ReadRequest, resp *
 		importing := state.ID.IsNull() || state.ID.IsUnknown()
 		declaredAvatar := state.AvatarURL
 		mapBotResource(apiResp.JSON200, &state)
+		mapBotResources(apiResp.JSON200, state.Resources)
 		mapBotDesiredConfig(apiResp.JSON200.Harness, &apiResp.JSON200.DesiredConfig, state.Config, state.NativeConfig, &resp.Diagnostics)
 		if importing {
 			var selector string
@@ -429,28 +451,39 @@ func (r *BotResource) Update(ctx context.Context, req resource.UpdateRequest, re
 		}
 	}
 
-	body, err := buildBotUpdateBody(plan, state.AvatarURL)
+	// A `resources` block declared for the first time (typically after an
+	// import) is compared with the bot's live resources, so restating the
+	// current size sends nothing and does not restart the bot.
+	baseline := state
+	if plan.Resources != nil && state.Resources == nil {
+		cur, ok := r.liveResources(ctx, state.Slug.ValueString(), &resp.Diagnostics)
+		if !ok {
+			return
+		}
+		baseline.Resources = cur
+	}
+	body, err := buildBotUpdateBody(plan, baseline)
 	if err != nil {
 		resp.Diagnostics.AddError("Error encoding bot update", err.Error())
 		return
 	}
 
-	apiResp, err := r.data.client.UpdateBotV1OrgsOrgIdBotsBotSlugPatchWithBodyWithResponse(
-		ctx, r.data.orgID, state.Slug.ValueString(), "application/json", bytes.NewReader(body))
-	if err != nil {
-		resp.Diagnostics.AddError("Error updating bot", err.Error())
+	patched, ok := r.patchBot(ctx, state.Slug.ValueString(), body, &resp.Diagnostics)
+	if !ok {
 		return
 	}
-	if apiResp.JSON200 == nil {
-		resp.Diagnostics.AddError("Unexpected response updating bot",
-			fmt.Sprintf("Update returned HTTP %d: %s", apiResp.StatusCode(), describeAPIError(apiResp.Body)))
+	// Checkpoint the runtime settings the PATCH applied before the config
+	// PATCH can fail (see checkpointRuntimeSettings).
+	checkpoint = checkpointRuntimeSettings(checkpoint, plan, patched)
+	resp.Diagnostics.Append(resp.State.Set(ctx, &checkpoint)...)
+	if resp.Diagnostics.HasError() {
 		return
 	}
 	// The bot's config lives behind a dedicated PATCH /config endpoint (BotUpdate
 	// carries no config), so apply it separately when a config block is declared.
 	// The config PATCH returns the full, freshly-merged bot, so prefer its
 	// response for the final state mapping.
-	final := apiResp.JSON200
+	final := patched
 	if plan.Config != nil || plan.NativeConfig != nil {
 		cfgResp, ok := r.updateBotConfig(ctx, state.Slug.ValueString(), plan, &resp.Diagnostics)
 		if !ok {
@@ -461,6 +494,7 @@ func (r *BotResource) Update(ctx context.Context, req resource.UpdateRequest, re
 
 	declaredAvatar := plan.AvatarURL
 	mapBotResource(final, &plan)
+	mapBotResources(final, plan.Resources)
 	mapBotDesiredConfig(final.Harness, &final.DesiredConfig, plan.Config, plan.NativeConfig, &resp.Diagnostics)
 	if plan.Pack != nil {
 		// Carry the install ids over from state, then refresh the live parts.
@@ -494,6 +528,10 @@ func (r *BotResource) updateBotConfig(ctx context.Context, slug string, plan Bot
 		return nil, false
 	}
 	if cfgResp.JSON200 == nil {
+		if isBotOwnerForbidden(cfgResp.StatusCode(), cfgResp.Body) {
+			addBotOwnerWriteForbiddenError(diags, "update the config of", slug, cfgResp.Body)
+			return nil, false
+		}
 		diags.AddError("Unexpected response updating bot config",
 			fmt.Sprintf("Config update returned HTTP %d: %s", cfgResp.StatusCode(), describeAPIError(cfgResp.Body)))
 		return nil, false
@@ -510,6 +548,10 @@ func (r *BotResource) Delete(ctx context.Context, req resource.DeleteRequest, re
 	apiResp, err := r.data.client.DeleteBotV1OrgsOrgIdBotsBotSlugDeleteWithResponse(ctx, r.data.orgID, state.Slug.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError("Error deleting bot", err.Error())
+		return
+	}
+	if isBotOwnerForbidden(apiResp.StatusCode(), apiResp.Body) {
+		addBotOwnerWriteForbiddenError(&resp.Diagnostics, "delete", state.Slug.ValueString(), apiResp.Body)
 		return
 	}
 	if !botDeleteStatusAccepted(apiResp.StatusCode()) {
@@ -560,6 +602,14 @@ func buildBotCreateBody(plan BotResourceModel) ([]byte, diag.Diagnostics) {
 	// an explicit null would fail validation, since neither field is nullable.
 	putStr(body, "hosting_type", plan.HostingType)
 	putStr(body, "harness", plan.Harness)
+	if rq := resourcesCreateBody(plan.Resources); rq != nil {
+		raw, err := json.Marshal(rq)
+		if err != nil {
+			diags.AddError("Error encoding bot resources", err.Error())
+			return nil, diags
+		}
+		body[botResourcesAttr] = raw
+	}
 	out, err := json.Marshal(body)
 	if err != nil {
 		diags.AddError("Error encoding bot", err.Error())
@@ -591,12 +641,12 @@ func buildCreateConfig(plan BotResourceModel) json.RawMessage {
 }
 
 // buildBotUpdateBody builds the PATCH /bots/{slug} body as a sparse
-// map[string]json.RawMessage limited to the Phase A metadata fields the API
-// accepts on update. The bot's config is updated via a separate endpoint, and
-// tier/resources/runtime_privilege_mode are out of Phase A scope. Terraform
-// config is the source of truth, so each managed field is sent every update
-// (a value sets it; JSON null clears it).
-func buildBotUpdateBody(plan BotResourceModel, priorAvatar types.String) ([]byte, error) {
+// map[string]json.RawMessage. The bot's config is updated via a separate
+// endpoint, and `tier` is not modelled. The metadata fields are sent every
+// update (a value sets it; JSON null clears it); the runtime settings only
+// when the plan moves them, since they restart the bot.
+func buildBotUpdateBody(plan, state BotResourceModel) ([]byte, error) {
+	priorAvatar := state.AvatarURL
 	body := map[string]json.RawMessage{
 		"description": rawString(plan.Description),
 		"avatar_url":  rawString(plan.AvatarURL),
@@ -607,6 +657,7 @@ func buildBotUpdateBody(plan BotResourceModel, priorAvatar types.String) ([]byte
 	if plan.Pack != nil && plan.AvatarURL.IsNull() && priorAvatar.IsNull() {
 		delete(body, "avatar_url")
 	}
+	putRuntimeSettingsUpdate(body, plan, state)
 	return json.Marshal(body)
 }
 
@@ -668,6 +719,7 @@ func mapBotResource(b *client.BotResponse, m *BotResourceModel) {
 	m.RuntimeClass = types.StringValue(string(b.RuntimeClass))
 	m.StorageClass = types.StringValue(string(b.StorageClass))
 	m.RuntimePrivilegeMode = types.StringValue(string(b.RuntimePrivilegeMode))
+	m.AutoSuspendEnabled = types.BoolValue(b.AutoSuspendEnabled)
 	m.DurableRootOwnsHome = types.BoolValue(b.DurableRootOwnsHome)
 
 	m.HostingType = types.StringValue(string(b.HostingType))
