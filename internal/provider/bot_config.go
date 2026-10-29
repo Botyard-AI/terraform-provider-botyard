@@ -7,8 +7,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -121,7 +119,7 @@ func botConfigSchemaAttribute() schema.SingleNestedAttribute {
 			Optional:            true,
 			Computed:            true,
 			MarkdownDescription: desc,
-			PlanModifiers:       []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
+			PlanModifiers:       []planmodifier.String{nestedUseStateForUnknownString()},
 		}
 	}
 	optCompInt := func(desc string) schema.Int64Attribute {
@@ -129,7 +127,7 @@ func botConfigSchemaAttribute() schema.SingleNestedAttribute {
 			Optional:            true,
 			Computed:            true,
 			MarkdownDescription: desc,
-			PlanModifiers:       []planmodifier.Int64{int64planmodifier.UseStateForUnknown()},
+			PlanModifiers:       []planmodifier.Int64{nestedUseStateForUnknownInt64()},
 		}
 	}
 	optCompBool := func(desc string) schema.BoolAttribute {
@@ -137,7 +135,7 @@ func botConfigSchemaAttribute() schema.SingleNestedAttribute {
 			Optional:            true,
 			Computed:            true,
 			MarkdownDescription: desc,
-			PlanModifiers:       []planmodifier.Bool{boolplanmodifier.UseStateForUnknown()},
+			PlanModifiers:       []planmodifier.Bool{nestedUseStateForUnknownBool()},
 		}
 	}
 	reqStr := func(desc string) schema.StringAttribute {
@@ -162,8 +160,20 @@ func botConfigSchemaAttribute() schema.SingleNestedAttribute {
 						Optional:            true,
 						MarkdownDescription: "Primary model reference.",
 						Attributes: map[string]schema.Attribute{
-							"provider": optCompStr("Provider key within `models.providers` (e.g. `botyard`). Defaults to `botyard` when omitted."),
-							"model":    reqStr("Model ID within the provider (e.g. `gpt-5.4`)."),
+							// STOCK UseStateForUnknown, deliberately: Read never
+							// refreshes `model` (the API dropped it), so this leaf
+							// must plan a KNOWN value. nestedUseStateForUnknown
+							// would leave it unknown when `model` is added to an
+							// existing bot, and that unknown would reach the
+							// state Update returns. See
+							// TestPlan_ConfigModelAddedToExistingBot_ProviderKnown.
+							"provider": schema.StringAttribute{
+								Optional:            true,
+								Computed:            true,
+								MarkdownDescription: "Provider key within `models.providers` (e.g. `botyard`). Defaults to `botyard` when omitted.",
+								PlanModifiers:       []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
+							},
+							"model": reqStr("Model ID within the provider (e.g. `gpt-5.4`)."),
 						},
 					},
 				},

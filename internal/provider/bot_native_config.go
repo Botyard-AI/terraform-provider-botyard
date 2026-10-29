@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -117,14 +116,14 @@ func botNativeConfigSchemaAttribute() schema.SingleNestedAttribute {
 						Computed: true,
 						MarkdownDescription: "`always` (defer every turn), `auto` (defer above the threshold), or " +
 							"`off` (never defer).",
-						PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
+						PlanModifiers: []planmodifier.String{nestedUseStateForUnknownString()},
 					},
 					"auto_threshold_percent": schema.Int64Attribute{
 						Optional: true,
 						Computed: true,
 						MarkdownDescription: "Percentage of the context window the tool schemas must exceed before " +
 							"`auto` defers them. Ignored unless `mode` is `auto`.",
-						PlanModifiers: []planmodifier.Int64{int64planmodifier.UseStateForUnknown()},
+						PlanModifiers: []planmodifier.Int64{nestedUseStateForUnknownInt64()},
 					},
 				},
 			},
