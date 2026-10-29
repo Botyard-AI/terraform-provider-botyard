@@ -18,9 +18,11 @@ import (
 // no leading zero (the API compares str(int(key)) == key), or `*`.
 var exitCodeKeyPattern = regexp.MustCompile(`^(\*|[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$`)
 
-// fractionalSeconds captures the fractional-second digits of an RFC 3339
-// timestamp, as written.
-var fractionalSeconds = regexp.MustCompile(`T\d{2}:\d{2}:\d{2}\.(\d+)`)
+// rfc3339Grammar is the strict RFC 3339 date-time grammar, with the
+// fractional-second digits captured as written. Go's time.Parse is more
+// lenient than RFC 3339 (it accepts a comma before the fraction and a
+// single-digit hour), so the grammar is checked here, not left to it.
+var rfc3339Grammar = regexp.MustCompile(`^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\.([0-9]+))?(?:Z|[+-][0-9]{2}:[0-9]{2})$`)
 
 // stringCheck adapts a plain check function to validator.String. The check
 // returns "" for a valid value, or the reason it is invalid.
@@ -68,14 +70,19 @@ func rfc3339Instant() validator.String {
 	return stringCheck{
 		desc: "value must be an RFC 3339 timestamp with an offset and at most microsecond precision, e.g. `2026-01-01T09:00:00Z`",
 		check: func(s string) string {
+			// The grammar match proves the shape; time.Parse then checks the
+			// ranges (month 13, hour 25, ...).
+			m := rfc3339Grammar.FindStringSubmatch(s)
+			if m == nil {
+				return fmt.Sprintf("%q is not an RFC 3339 timestamp with an offset, e.g. \"2026-01-01T09:00:00Z\".", s)
+			}
 			if _, err := time.Parse(time.RFC3339, s); err != nil {
 				return fmt.Sprintf("%q is not an RFC 3339 timestamp with an offset, e.g. \"2026-01-01T09:00:00Z\".", s)
 			}
 			// Check the digits as written, not the parsed time: Go keeps only
 			// nine fractional digits and drops the rest, so a parsed check
 			// would pass .1234560001.
-			if m := fractionalSeconds.FindStringSubmatch(s); m != nil && len(m[1]) > 6 &&
-				strings.Trim(m[1][6:], "0") != "" {
+			if frac := m[1]; len(frac) > 6 && strings.Trim(frac[6:], "0") != "" {
 				return fmt.Sprintf("%q is more precise than a microsecond, which the API cannot store; use at most 6 fractional digits.", s)
 			}
 			return ""

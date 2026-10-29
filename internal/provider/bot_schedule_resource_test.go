@@ -379,6 +379,19 @@ func TestBotSchedule_PlanValidation(t *testing.T) {
 		"sub-microsecond past nine digits": {`
   interval = { interval_seconds = 60, anchor = "2026-01-01T09:00:00.1234560001Z" }
   prompt   = "x"`, `more precise than a microsecond`},
+		// Go's time.Parse accepts all of these; RFC 3339 does not.
+		"comma fraction": {`
+  interval = { interval_seconds = 60, anchor = "2026-01-01T09:00:00,123456789Z" }
+  prompt   = "x"`, `is not an RFC 3339 timestamp`},
+		"single-digit hour": {`
+  interval = { interval_seconds = 60, anchor = "2026-01-01T9:00:00.123456789Z" }
+  prompt   = "x"`, `is not an RFC 3339 timestamp`},
+		"single-digit hour, whole second": {`
+  interval = { interval_seconds = 60, anchor = "2026-01-01T9:00:00Z" }
+  prompt   = "x"`, `is not an RFC 3339 timestamp`},
+		"out-of-range month": {`
+  interval = { interval_seconds = 60, anchor = "2026-13-01T09:00:00Z" }
+  prompt   = "x"`, `is not an RFC 3339 timestamp`},
 		"exit code key": {`
   cron    = { cron = "0 9 * * *" }
   command = { command = "./x", exit_codes = { "07" = "success" } }`, `must be an exit code from`},

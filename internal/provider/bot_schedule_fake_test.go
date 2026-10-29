@@ -116,11 +116,14 @@ func (a *fakeScheduleAPI) serve(w http.ResponseWriter, r *http.Request) {
 	id := strings.TrimPrefix(rest, "/")
 	switch {
 	case id == "" && r.Method == http.MethodGet:
-		items := make([]json.RawMessage, 0, len(a.order))
+		list := client.ScheduleListResponse{Schedules: make([]client.ScheduleResponse, 0, len(a.order))}
 		for _, sid := range a.order {
-			items = append(items, a.render(a.schedules[sid]))
+			list.Schedules = append(list.Schedules, a.response(a.schedules[sid]))
 		}
-		body, _ := json.Marshal(map[string][]json.RawMessage{"schedules": items})
+		body, err := json.Marshal(list)
+		if err != nil {
+			a.t.Fatalf("render list: %v", err)
+		}
 		writeJSON(w, http.StatusOK, string(body))
 	case id == "" && r.Method == http.MethodPost:
 		a.create(w, r)
@@ -444,10 +447,11 @@ func fillCommandDefaults(c *client.CommandScheduleAction) {
 	}
 }
 
-// render builds the generated ScheduleResponse for a schedule. Like the API,
-// it fills the deprecated `prompt` mirror for a prompt action and derives
-// next_fire_at, which is null while paused.
-func (a *fakeScheduleAPI) render(s *fakeSchedule) json.RawMessage {
+// response builds the generated ScheduleResponse for a schedule, for both the
+// single-schedule endpoints and the list. Like the API, it fills the
+// deprecated `prompt` mirror for a prompt action and derives next_fire_at,
+// which is null while paused.
+func (a *fakeScheduleAPI) response(s *fakeSchedule) client.ScheduleResponse {
 	created := time.Date(2026, 10, 29, 10, 0, 0, 0, time.UTC)
 	resp := client.ScheduleResponse{
 		ScheduleId: s.id, OrgId: "org-1", BotId: "bot-1", ConversationId: s.conversationID,
@@ -466,7 +470,12 @@ func (a *fakeScheduleAPI) render(s *fakeSchedule) json.RawMessage {
 		next := time.Date(2026, 11, 2, 9, 0, 0, 0, time.UTC)
 		resp.NextFireAt = &next
 	}
-	out, err := json.Marshal(resp)
+	return resp
+}
+
+// render serializes one schedule's response.
+func (a *fakeScheduleAPI) render(s *fakeSchedule) json.RawMessage {
+	out, err := json.Marshal(a.response(s))
 	if err != nil {
 		a.t.Fatalf("render: %v", err)
 	}
