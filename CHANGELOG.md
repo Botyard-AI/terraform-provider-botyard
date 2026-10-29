@@ -12,6 +12,24 @@ a version.
 
 ## [Unreleased]
 
+### Removed
+
+- **BREAKING — `botyard_bot`: `config.model` removed.** The block had no effect: the Botyard API no longer accepts `model` on OpenClaw config, and a bot's model chain comes from its LLM credential links. Set the model with `botyard_bot_credential_assignment`. (#39)
+- **BREAKING — `botyard_bot`: `native_config.prompt_template` and `native_config.prompt_ref` removed.** The API removed both fields, and v0.5.1 and v0.6.0 already refused them at plan time. Native instructions live in bot files. (#39)
+
+  **Upgrading:**
+  1. Delete `config.model`, `native_config.prompt_template` and `native_config.prompt_ref` from your configuration.
+  2. A leftover removed key is silently ignored, because Terraform drops undeclared object keys before the provider sees them. An expression that *reads* a removed attribute (for example an output) fails at validate time.
+  3. `terraform show -json` fails with `unsupported attribute "prompt_ref"` (or `"model"`) for a bot whose state still holds a removed key. Run one `terraform apply` after upgrading; a no-change apply is enough. `plan` and `apply` are unaffected.
+
+### Added
+
+- **`botyard_bot`: `native_config.tool_images`** controls how images from tool results are passed to the model: `enabled`, `max_dimension_px` (1–8000) and `default_detail` (`auto` / `low` / `high` / `original`). (#39)
+  - A declared block owns all three fields. A field you leave out is reset to the platform default, and `tool_images = {}` resets them all.
+  - Removing the whole block leaves the current server values unchanged.
+- **`botyard_bot`: `config.tool_search`** for OpenClaw bots, with the same `mode` (`always` / `auto` / `off`) and `auto_threshold_percent` as `native_config.tool_search`. Both are validated at plan time. (#39)
+  - OpenClaw's tool search has no threshold, so on OpenClaw bots `auto` behaves like `always` and `auto_threshold_percent` is ignored.
+
 ## [0.6.1] - 2026-10-29
 
 ### Fixed
