@@ -384,6 +384,11 @@ const (
 	ConversationScopeUser ConversationScope = "user"
 )
 
+// Defines values for CreateCompletionKind.
+const (
+	CreateCompletionKindCreate CreateCompletionKind = "create"
+)
+
 // Defines values for CredentialBackedModelConfigTextVerbosity.
 const (
 	CredentialBackedModelConfigTextVerbosityHigh   CredentialBackedModelConfigTextVerbosity = "high"
@@ -1031,6 +1036,26 @@ const (
 	PackBotPackAvatarKindPack PackBotPackAvatarKind = "pack"
 )
 
+// Defines values for PackCreateCredentialFormKind.
+const (
+	PackCreateCredentialFormKindCredentialForm PackCreateCredentialFormKind = "credential_form"
+)
+
+// Defines values for PackCreateNoneKind.
+const (
+	PackCreateNoneKindNone PackCreateNoneKind = "none"
+)
+
+// Defines values for PackCreateServerChoiceChoice.
+const (
+	PackCreateServerChoiceChoiceCreate PackCreateServerChoiceChoice = "create"
+)
+
+// Defines values for PackCreateSetupFormKind.
+const (
+	PackCreateSetupFormKindSetupForm PackCreateSetupFormKind = "setup_form"
+)
+
 // Defines values for PackLeavePendingChoiceChoice.
 const (
 	PackLeavePendingChoiceChoiceLeavePending PackLeavePendingChoiceChoice = "leave_pending"
@@ -1375,6 +1400,7 @@ const (
 // Defines values for SecretLinkRemovalAction.
 const (
 	SecretLinkRemovalActionKeptAdopted SecretLinkRemovalAction = "kept_adopted"
+	SecretLinkRemovalActionKeptShared  SecretLinkRemovalAction = "kept_shared"
 	SecretLinkRemovalActionRemove      SecretLinkRemovalAction = "remove"
 )
 
@@ -1460,6 +1486,7 @@ const (
 // Defines values for SkillRemovalAction.
 const (
 	SkillRemovalActionKeptAdopted SkillRemovalAction = "kept_adopted"
+	SkillRemovalActionKeptShared  SkillRemovalAction = "kept_shared"
 	SkillRemovalActionRemove      SkillRemovalAction = "remove"
 )
 
@@ -1548,6 +1575,7 @@ const (
 // Defines values for ToolRemovalAction.
 const (
 	ToolRemovalActionKeptAdopted ToolRemovalAction = "kept_adopted"
+	ToolRemovalActionKeptShared  ToolRemovalAction = "kept_shared"
 	ToolRemovalActionRemove      ToolRemovalAction = "remove"
 )
 
@@ -4412,6 +4440,33 @@ type CpuMetrics struct {
 	// UsageUsec Cumulative CPU time from `cpu.stat`. Monotonic within one boot; it is the
 	// raw counter, not a rate.
 	UsageUsec *int `json:"usage_usec"`
+}
+
+// CreateCompletion Connect a new account: create a new server for this connection and bind it (#4386).
+//
+// The same inputs as the install's “create“ choice
+// (:mod:`~botyard_core.services.api.pack_connection_create`): every secret a
+// Runtime Vault reference. Records that this connection gets a new account, so
+// later steps never fall back to choosing an existing server.
+type CreateCompletion struct {
+	// AcceptMetered Must be true when the new server is billed as a hosted MCP server.
+	AcceptMetered            *bool                `json:"accept_metered,omitempty"`
+	BotPackConnectionSetupId string               `json:"bot_pack_connection_setup_id"`
+	Kind                     CreateCompletionKind `json:"kind"`
+
+	// Name The new server's name; default the entry's. Not stored.
+	Name *string `json:"name"`
+
+	// Setup What the new account needs, by the connection preview's setup.kind.
+	Setup CreateCompletion_Setup `json:"setup"`
+}
+
+// CreateCompletionKind defines model for CreateCompletion.Kind.
+type CreateCompletionKind string
+
+// CreateCompletion_Setup What the new account needs, by the connection preview's setup.kind.
+type CreateCompletion_Setup struct {
+	union json.RawMessage
 }
 
 // CredentialBackedModelConfig A single OpenClaw model entry backed by a Botyard credential.
@@ -7478,7 +7533,7 @@ type PackBotRequest struct {
 	// Avatar 'pack' (the default) starts with the pack's avatar; 'custom' with your own.
 	Avatar *PackBotRequest_Avatar `json:"avatar,omitempty"`
 
-	// Connections Per mcp_catalog_entry connection: 'use_server' binds the named org server; 'leave_pending' binds nothing, now or by later setup, until bound explicitly. A connection left out binds as before: the one visible server from its entry. Vault connections take no choice.
+	// Connections Per mcp_catalog_entry connection: 'use_server' binds the named org server; 'leave_pending' binds nothing, now or by later setup, until bound explicitly; 'create' connects a new account, created and bound after the install commits (needs mcp_server.create). A connection left out binds as before: the one visible server from its entry. Vault connections take no choice.
 	Connections *[]PackBotRequest_Connections_Item `json:"connections,omitempty"`
 
 	// Credentials Credential links for the new bot, with the same shape, rules and bot-owner gate as `POST /bots`'s `credentials`, applied in the same transaction. When they set the LLM scope they replace the pack's recommended model, and `model` reports `chosen`.
@@ -7636,6 +7691,69 @@ type PackConnectionSetupResult_Action struct {
 	union json.RawMessage
 }
 
+// PackCreateCredentialForm The vendor's credentials, as Runtime Vault entries. Typed values are not accepted.
+type PackCreateCredentialForm struct {
+	Kind PackCreateCredentialFormKind `json:"kind"`
+
+	// VaultEntryRefs Credential field name to the id of an existing org Runtime Vault secret holding its value. Needs `secret:secret_policy.update`.
+	VaultEntryRefs map[string]string `json:"vault_entry_refs"`
+}
+
+// PackCreateCredentialFormKind defines model for PackCreateCredentialForm.Kind.
+type PackCreateCredentialFormKind string
+
+// PackCreateNone Nothing to supply: the server is created from the entry and what the org has.
+type PackCreateNone struct {
+	Kind PackCreateNoneKind `json:"kind"`
+}
+
+// PackCreateNoneKind defines model for PackCreateNone.Kind.
+type PackCreateNoneKind string
+
+// PackCreateServerChoice Connect a new account: create a new org MCP server for this connection (#4386).
+//
+// Nothing is created until the install commits. Then the setup engine creates
+// the server as the installer and binds it, in the same request; a step that
+// needs a human (an approval) comes back pending in “setups“, and a
+// failure leaves that connection “failed“ with the bot installed. Only *that* a new account was chosen is stored, never the input.
+// Every secret is a Runtime Vault reference (:mod:`~botyard_core.services.api.pack_connection_create`).
+// An MCP catalogue entry connection only; needs “mcp_server:mcp_server.create“.
+// Not for an entry that needs a vendor sign-in (OAuth): that is refused
+// “oauth_create_not_supported“; connect the account in the app under MCP
+// servers first, then choose it with “use_server“ (or leave it pending).
+type PackCreateServerChoice struct {
+	// AcceptMetered Must be true when the connection preview says `metered`: the new server is billed as a hosted MCP server.
+	AcceptMetered *bool                        `json:"accept_metered,omitempty"`
+	Choice        PackCreateServerChoiceChoice `json:"choice"`
+
+	// Name The new server's name; default the entry's. Suffixed with the bot's name once on a conflict. Not stored: a retry uses the default.
+	Name *string `json:"name"`
+
+	// PackVersionConnectionId A connection of the pack version being installed.
+	PackVersionConnectionId string `json:"pack_version_connection_id"`
+
+	// Setup What the new account needs, by the connection preview's setup.kind.
+	Setup PackCreateServerChoice_Setup `json:"setup"`
+}
+
+// PackCreateServerChoiceChoice defines model for PackCreateServerChoice.Choice.
+type PackCreateServerChoiceChoice string
+
+// PackCreateServerChoice_Setup What the new account needs, by the connection preview's setup.kind.
+type PackCreateServerChoice_Setup struct {
+	union json.RawMessage
+}
+
+// PackCreateSetupForm Answers to the entry's setup form. Secret fields take a vault path (“secret_ref“).
+type PackCreateSetupForm struct {
+	// CatalogFormAnswers Field id to answer; wins over what the org already answers. A field that can take a vault reference must be answered `secret_ref` with the key path of an existing Runtime Vault secret: typed secrets are refused.
+	CatalogFormAnswers *map[string]McpCatalogFormFieldValueInput `json:"catalog_form_answers,omitempty"`
+	Kind               PackCreateSetupFormKind                   `json:"kind"`
+}
+
+// PackCreateSetupFormKind defines model for PackCreateSetupForm.Kind.
+type PackCreateSetupFormKind string
+
 // PackInstallPreview What installing would do, per request, in request order. Nothing was written.
 type PackInstallPreview struct {
 	Installs []PlannedInstall `json:"installs"`
@@ -7647,7 +7765,7 @@ type PackInstallRequest struct {
 	Avatar *PackAvatarChoice `json:"avatar,omitempty"`
 	BotId  string            `json:"bot_id"`
 
-	// Connections Per mcp_catalog_entry connection: 'use_server' binds the named org server; 'leave_pending' binds nothing, now or by later setup, until bound explicitly. A connection left out binds as before: the one visible server from its entry. Vault connections take no choice.
+	// Connections Per mcp_catalog_entry connection: 'use_server' binds the named org server; 'leave_pending' binds nothing, now or by later setup, until bound explicitly; 'create' connects a new account, created and bound after the install commits (needs mcp_server.create). A connection left out binds as before: the one visible server from its entry. Vault connections take no choice.
 	Connections   *[]PackInstallRequest_Connections_Item `json:"connections,omitempty"`
 	PackVersionId string                                 `json:"pack_version_id"`
 
@@ -8779,6 +8897,9 @@ type SecretPolicyCreateRequest struct {
 
 	// BotIds Bot IDs to link to this variable on creation. Ignored when allow_all_bots is true. Defaults to no explicit links.
 	BotIds *[]string `json:"bot_ids,omitempty"`
+
+	// CreateOnly When true, the request only ever inserts: an entry already at key_path is a 409 and is left untouched. When false (the default), an existing entry at key_path is overwritten with this value and metadata.
+	CreateOnly *bool `json:"create_only,omitempty"`
 
 	// Description Optional description explaining the vault entry's purpose
 	Description *string `json:"description"`
@@ -12617,6 +12738,125 @@ func (t *ContainerImageMcpCatalogEntryDetail_ConnectMethod) UnmarshalJSON(b []by
 	return err
 }
 
+// AsPackCreateNone returns the union data inside the CreateCompletion_Setup as a PackCreateNone
+func (t CreateCompletion_Setup) AsPackCreateNone() (PackCreateNone, error) {
+	var body PackCreateNone
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPackCreateNone overwrites any union data inside the CreateCompletion_Setup as the provided PackCreateNone
+func (t *CreateCompletion_Setup) FromPackCreateNone(v PackCreateNone) error {
+	v.Kind = "none"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePackCreateNone performs a merge with any union data inside the CreateCompletion_Setup, using the provided PackCreateNone
+func (t *CreateCompletion_Setup) MergePackCreateNone(v PackCreateNone) error {
+	v.Kind = "none"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPackCreateSetupForm returns the union data inside the CreateCompletion_Setup as a PackCreateSetupForm
+func (t CreateCompletion_Setup) AsPackCreateSetupForm() (PackCreateSetupForm, error) {
+	var body PackCreateSetupForm
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPackCreateSetupForm overwrites any union data inside the CreateCompletion_Setup as the provided PackCreateSetupForm
+func (t *CreateCompletion_Setup) FromPackCreateSetupForm(v PackCreateSetupForm) error {
+	v.Kind = "setup_form"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePackCreateSetupForm performs a merge with any union data inside the CreateCompletion_Setup, using the provided PackCreateSetupForm
+func (t *CreateCompletion_Setup) MergePackCreateSetupForm(v PackCreateSetupForm) error {
+	v.Kind = "setup_form"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPackCreateCredentialForm returns the union data inside the CreateCompletion_Setup as a PackCreateCredentialForm
+func (t CreateCompletion_Setup) AsPackCreateCredentialForm() (PackCreateCredentialForm, error) {
+	var body PackCreateCredentialForm
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPackCreateCredentialForm overwrites any union data inside the CreateCompletion_Setup as the provided PackCreateCredentialForm
+func (t *CreateCompletion_Setup) FromPackCreateCredentialForm(v PackCreateCredentialForm) error {
+	v.Kind = "credential_form"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePackCreateCredentialForm performs a merge with any union data inside the CreateCompletion_Setup, using the provided PackCreateCredentialForm
+func (t *CreateCompletion_Setup) MergePackCreateCredentialForm(v PackCreateCredentialForm) error {
+	v.Kind = "credential_form"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t CreateCompletion_Setup) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"kind"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t CreateCompletion_Setup) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "credential_form":
+		return t.AsPackCreateCredentialForm()
+	case "none":
+		return t.AsPackCreateNone()
+	case "setup_form":
+		return t.AsPackCreateSetupForm()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t CreateCompletion_Setup) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *CreateCompletion_Setup) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
 // AsAndBotFilterField returns the union data inside the FilterNodeBotFilterField as a AndBotFilterField
 func (t FilterNodeBotFilterField) AsAndBotFilterField() (AndBotFilterField, error) {
 	var body AndBotFilterField
@@ -14913,6 +15153,34 @@ func (t *PackBotRequest_Connections_Item) MergePackLeavePendingChoice(v PackLeav
 	return err
 }
 
+// AsPackCreateServerChoice returns the union data inside the PackBotRequest_Connections_Item as a PackCreateServerChoice
+func (t PackBotRequest_Connections_Item) AsPackCreateServerChoice() (PackCreateServerChoice, error) {
+	var body PackCreateServerChoice
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPackCreateServerChoice overwrites any union data inside the PackBotRequest_Connections_Item as the provided PackCreateServerChoice
+func (t *PackBotRequest_Connections_Item) FromPackCreateServerChoice(v PackCreateServerChoice) error {
+	v.Choice = "create"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePackCreateServerChoice performs a merge with any union data inside the PackBotRequest_Connections_Item, using the provided PackCreateServerChoice
+func (t *PackBotRequest_Connections_Item) MergePackCreateServerChoice(v PackCreateServerChoice) error {
+	v.Choice = "create"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
 func (t PackBotRequest_Connections_Item) Discriminator() (string, error) {
 	var discriminator struct {
 		Discriminator string `json:"choice"`
@@ -14927,6 +15195,8 @@ func (t PackBotRequest_Connections_Item) ValueByDiscriminator() (interface{}, er
 		return nil, err
 	}
 	switch discriminator {
+	case "create":
+		return t.AsPackCreateServerChoice()
 	case "leave_pending":
 		return t.AsPackLeavePendingChoice()
 	case "use_server":
@@ -15454,6 +15724,125 @@ func (t *PackConnectionSetupResult_Action) UnmarshalJSON(b []byte) error {
 	return err
 }
 
+// AsPackCreateNone returns the union data inside the PackCreateServerChoice_Setup as a PackCreateNone
+func (t PackCreateServerChoice_Setup) AsPackCreateNone() (PackCreateNone, error) {
+	var body PackCreateNone
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPackCreateNone overwrites any union data inside the PackCreateServerChoice_Setup as the provided PackCreateNone
+func (t *PackCreateServerChoice_Setup) FromPackCreateNone(v PackCreateNone) error {
+	v.Kind = "none"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePackCreateNone performs a merge with any union data inside the PackCreateServerChoice_Setup, using the provided PackCreateNone
+func (t *PackCreateServerChoice_Setup) MergePackCreateNone(v PackCreateNone) error {
+	v.Kind = "none"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPackCreateSetupForm returns the union data inside the PackCreateServerChoice_Setup as a PackCreateSetupForm
+func (t PackCreateServerChoice_Setup) AsPackCreateSetupForm() (PackCreateSetupForm, error) {
+	var body PackCreateSetupForm
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPackCreateSetupForm overwrites any union data inside the PackCreateServerChoice_Setup as the provided PackCreateSetupForm
+func (t *PackCreateServerChoice_Setup) FromPackCreateSetupForm(v PackCreateSetupForm) error {
+	v.Kind = "setup_form"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePackCreateSetupForm performs a merge with any union data inside the PackCreateServerChoice_Setup, using the provided PackCreateSetupForm
+func (t *PackCreateServerChoice_Setup) MergePackCreateSetupForm(v PackCreateSetupForm) error {
+	v.Kind = "setup_form"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPackCreateCredentialForm returns the union data inside the PackCreateServerChoice_Setup as a PackCreateCredentialForm
+func (t PackCreateServerChoice_Setup) AsPackCreateCredentialForm() (PackCreateCredentialForm, error) {
+	var body PackCreateCredentialForm
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPackCreateCredentialForm overwrites any union data inside the PackCreateServerChoice_Setup as the provided PackCreateCredentialForm
+func (t *PackCreateServerChoice_Setup) FromPackCreateCredentialForm(v PackCreateCredentialForm) error {
+	v.Kind = "credential_form"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePackCreateCredentialForm performs a merge with any union data inside the PackCreateServerChoice_Setup, using the provided PackCreateCredentialForm
+func (t *PackCreateServerChoice_Setup) MergePackCreateCredentialForm(v PackCreateCredentialForm) error {
+	v.Kind = "credential_form"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t PackCreateServerChoice_Setup) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"kind"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t PackCreateServerChoice_Setup) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "credential_form":
+		return t.AsPackCreateCredentialForm()
+	case "none":
+		return t.AsPackCreateNone()
+	case "setup_form":
+		return t.AsPackCreateSetupForm()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t PackCreateServerChoice_Setup) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *PackCreateServerChoice_Setup) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
 // AsPackUseServerChoice returns the union data inside the PackInstallRequest_Connections_Item as a PackUseServerChoice
 func (t PackInstallRequest_Connections_Item) AsPackUseServerChoice() (PackUseServerChoice, error) {
 	var body PackUseServerChoice
@@ -15510,6 +15899,34 @@ func (t *PackInstallRequest_Connections_Item) MergePackLeavePendingChoice(v Pack
 	return err
 }
 
+// AsPackCreateServerChoice returns the union data inside the PackInstallRequest_Connections_Item as a PackCreateServerChoice
+func (t PackInstallRequest_Connections_Item) AsPackCreateServerChoice() (PackCreateServerChoice, error) {
+	var body PackCreateServerChoice
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPackCreateServerChoice overwrites any union data inside the PackInstallRequest_Connections_Item as the provided PackCreateServerChoice
+func (t *PackInstallRequest_Connections_Item) FromPackCreateServerChoice(v PackCreateServerChoice) error {
+	v.Choice = "create"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePackCreateServerChoice performs a merge with any union data inside the PackInstallRequest_Connections_Item, using the provided PackCreateServerChoice
+func (t *PackInstallRequest_Connections_Item) MergePackCreateServerChoice(v PackCreateServerChoice) error {
+	v.Choice = "create"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
 func (t PackInstallRequest_Connections_Item) Discriminator() (string, error) {
 	var discriminator struct {
 		Discriminator string `json:"choice"`
@@ -15524,6 +15941,8 @@ func (t PackInstallRequest_Connections_Item) ValueByDiscriminator() (interface{}
 		return nil, err
 	}
 	switch discriminator {
+	case "create":
+		return t.AsPackCreateServerChoice()
 	case "leave_pending":
 		return t.AsPackLeavePendingChoice()
 	case "use_server":
@@ -15925,6 +16344,34 @@ func (t *PackSetupCompleteBody_Completions_Item) MergeServerChoiceCompletion(v S
 	return err
 }
 
+// AsCreateCompletion returns the union data inside the PackSetupCompleteBody_Completions_Item as a CreateCompletion
+func (t PackSetupCompleteBody_Completions_Item) AsCreateCompletion() (CreateCompletion, error) {
+	var body CreateCompletion
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromCreateCompletion overwrites any union data inside the PackSetupCompleteBody_Completions_Item as the provided CreateCompletion
+func (t *PackSetupCompleteBody_Completions_Item) FromCreateCompletion(v CreateCompletion) error {
+	v.Kind = "create"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeCreateCompletion performs a merge with any union data inside the PackSetupCompleteBody_Completions_Item, using the provided CreateCompletion
+func (t *PackSetupCompleteBody_Completions_Item) MergeCreateCompletion(v CreateCompletion) error {
+	v.Kind = "create"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
 func (t PackSetupCompleteBody_Completions_Item) Discriminator() (string, error) {
 	var discriminator struct {
 		Discriminator string `json:"kind"`
@@ -15939,6 +16386,8 @@ func (t PackSetupCompleteBody_Completions_Item) ValueByDiscriminator() (interfac
 		return nil, err
 	}
 	switch discriminator {
+	case "create":
+		return t.AsCreateCompletion()
 	case "credential_form":
 		return t.AsCredentialFormCompletion()
 	case "server_choice":
