@@ -73,6 +73,58 @@ resource "botyard_bot" "researcher" {
   }
 }
 
+# A bot created from a Bot Pack. The pack is installed when the bot is
+# created; removing the `pack` block later uninstalls it and keeps the bot.
+# `settings` and `connections` apply at creation only. Connection ids are the
+# pack version's `pack_version_connection_id`s, as shown by the API's
+# connections preview (`POST /v1/orgs/{org_id}/packs/connections/preview`).
+data "botyard_pack_version" "crm" {
+  slug = "crm-assistant"
+}
+
+resource "botyard_mcp_server" "crm" {
+  # ... an org MCP server for the pack's CRM connection
+}
+
+resource "botyard_bot" "crm" {
+  name = "CRM Assistant"
+
+  pack = {
+    pack_version_id = data.botyard_pack_version.crm.pack_version_id
+
+    settings = [
+      { path = "tool_search", choice = "custom", custom = { value = jsonencode({ mode = "auto" }) } },
+    ]
+
+    connections = [
+      # Bind a Terraform-managed server...
+      {
+        pack_version_connection_id = "00000000-0000-0000-0000-000000000001"
+        choice                     = "use_server"
+        use_server                 = { mcp_server_id = botyard_mcp_server.crm.id }
+      },
+      # ...connect a new account with Runtime Vault references (not OAuth:
+      # connect those in the app first, then use `use_server`)...
+      {
+        pack_version_connection_id = "00000000-0000-0000-0000-000000000002"
+        choice                     = "create"
+        create = {
+          accept_metered = true
+          setup = {
+            kind            = "credential_form"
+            credential_form = { vault_entry_refs = { api_key = "00000000-0000-0000-0000-0000000000aa" } }
+          }
+        }
+      },
+      # ...or leave one for later.
+      {
+        pack_version_connection_id = "00000000-0000-0000-0000-000000000003"
+        choice                     = "leave_pending"
+      },
+    ]
+  }
+}
+
 # Runtime placement (runtime_class, storage_class, runtime_privilege_mode),
 # namespace, and control-plane state are read-only, exported for reference.
 output "support_bot_slug" {
@@ -162,6 +214,7 @@ output "triage_host_policy" {
 - `harness` (String) Which agent software this bot runs: `openclaw` (default), `botyard_native`, or `claude_code`. Immutable — changing it forces replacement. Declare `config` for `openclaw` and `native_config` for `botyard_native`. The permitted pairs with `hosting_type` are `(hosted, openclaw)`, `(hosted, botyard_native)` and `(self_hosted, claude_code)`.
 - `hosting_type` (String) Who runs this bot's runtime: `hosted` (default) or `self_hosted`. Immutable — changing it forces replacement. Must form a permitted pair with `harness`; the API enforces the allowlist behind `GET /orgs/{org_id}/bots/hosting-options`.
 - `native_config` (Attributes) Configuration for a native (`botyard_native`) bot, applied via the config endpoint (embedded in the create request and sent to `PATCH /config` on update). Requires `harness = "botyard_native"`, and conflicts with `config`, which models the OpenClaw shape. Only the fields you set are applied over the platform's defaults. (see [below for nested schema](#nestedatt--native_config))
+- `pack` (Attributes) A Bot Pack to create this bot from. When set, the bot is created with `POST /bots/from-pack`, which installs the pack in the same transaction. Removing the block uninstalls the pack and keeps the bot. Adding it to an existing bot, or changing `pack_version_id`, is refused at plan time: the API has no install-on-existing-bot or upgrade path yet, and the provider never replaces a bot (that would lose its conversations and memory). `avatar_url` left unset means the pack's avatar is kept. (see [below for nested schema](#nestedatt--pack))
 
 ### Read-Only
 
@@ -292,6 +345,131 @@ Optional:
 - `auto_threshold_percent` (Number) Percentage (0 to 100) of the context window the tool schemas must exceed before `auto` defers them. Ignored unless `mode` is `auto`, and read only by the Claude Code runtime; OpenClaw's embedded Tool Search has no threshold, so `auto` behaves like `always` there.
 - `mode` (String) `always` (defer every turn), `auto` (defer above the threshold), or `off` (never defer). The platform default is `auto`.
 
+
+
+<a id="nestedatt--pack"></a>
+### Nested Schema for `pack`
+
+Required:
+
+- `pack_version_id` (String) The pack version to install, e.g. `data.botyard_pack.support.latest.pack_version_id`. Changing it is a plan-time error until the API offers in-place upgrades.
+
+Optional:
+
+- `connections` (Attributes List) Per MCP connection of the pack version: `use_server` binds an org MCP server, `leave_pending` binds nothing, and `create` connects a new account with Runtime Vault references. A connection left out binds the one visible server from its catalogue entry, as in the app. Applied at creation only. A connection that needs a vendor sign-in (OAuth) cannot be created here: connect it in the app first, then use `use_server` or `leave_pending`. (see [below for nested schema](#nestedatt--pack--connections))
+- `settings` (Attributes List) Per pack setting: `pack` (the default for a setting left out), `keep` the bot's own value, or `custom` with a `custom = { value }` payload. Applied at creation only. (see [below for nested schema](#nestedatt--pack--settings))
+
+Read-Only:
+
+- `bot_pack_install_id` (String) The install's id.
+- `pack_id` (String) The installed pack's id.
+- `pack_slug` (String) The installed pack's slug.
+- `pending_connections` (Attributes List) Connections whose setup is not done, in connection order. Finish them in the app; they refresh on every read. (see [below for nested schema](#nestedatt--pack--pending_connections))
+- `version_no` (Number) The installed version's number.
+
+<a id="nestedatt--pack--connections"></a>
+### Nested Schema for `pack.connections`
+
+Required:
+
+- `choice` (String) `use_server`, `leave_pending` or `create`.
+- `pack_version_connection_id` (String) A connection of the pack version.
+
+Optional:
+
+- `create` (Attributes) `choice = "create"` only, and required for it: the new account. (see [below for nested schema](#nestedatt--pack--connections--create))
+- `use_server` (Attributes) `choice = "use_server"` only, and required for it. (see [below for nested schema](#nestedatt--pack--connections--use_server))
+
+<a id="nestedatt--pack--connections--create"></a>
+### Nested Schema for `pack.connections.create`
+
+Required:
+
+- `setup` (Attributes) What the new account needs, matching the connection's setup kind. (see [below for nested schema](#nestedatt--pack--connections--create--setup))
+
+Optional:
+
+- `accept_metered` (Boolean) Must be `true` when the connection is metered: the new server is billed as a hosted MCP server.
+- `name` (String) The new server's name. Defaults to the catalogue entry's.
+
+<a id="nestedatt--pack--connections--create--setup"></a>
+### Nested Schema for `pack.connections.create.setup`
+
+Required:
+
+- `kind` (String) `none`, `setup_form` or `credential_form`.
+
+Optional:
+
+- `credential_form` (Attributes) `kind = "credential_form"` only, and required for it. (see [below for nested schema](#nestedatt--pack--connections--create--setup--credential_form))
+- `setup_form` (Attributes) `kind = "setup_form"` only, and required for it. (see [below for nested schema](#nestedatt--pack--connections--create--setup--setup_form))
+
+<a id="nestedatt--pack--connections--create--setup--credential_form"></a>
+### Nested Schema for `pack.connections.create.setup.credential_form`
+
+Required:
+
+- `vault_entry_refs` (Map of String) Credential field name to the id of an org Runtime Vault secret holding its value. At least one.
+
+
+<a id="nestedatt--pack--connections--create--setup--setup_form"></a>
+### Nested Schema for `pack.connections.create.setup.setup_form`
+
+Required:
+
+- `catalog_form_answers` (Attributes Map) Field id to answer. A secret field must be `mode = "secret_ref"` with a Runtime Vault key path. (see [below for nested schema](#nestedatt--pack--connections--create--setup--setup_form--catalog_form_answers))
+
+<a id="nestedatt--pack--connections--create--setup--setup_form--catalog_form_answers"></a>
+### Nested Schema for `pack.connections.create.setup.setup_form.catalog_form_answers`
+
+Required:
+
+- `mode` (String) `plaintext` or `secret_ref`.
+- `value` (String) The plaintext value, or the vault key path for `secret_ref`.
+
+
+
+
+
+<a id="nestedatt--pack--connections--use_server"></a>
+### Nested Schema for `pack.connections.use_server`
+
+Required:
+
+- `mcp_server_id` (String) The org MCP server to bind, e.g. `botyard_mcp_server.crm.id`.
+
+
+
+<a id="nestedatt--pack--settings"></a>
+### Nested Schema for `pack.settings`
+
+Required:
+
+- `choice` (String) `pack`, `keep` or `custom`.
+- `path` (String) The pack setting, e.g. `tool_search`.
+
+Optional:
+
+- `custom` (Attributes) `choice = "custom"` only, and required for it. (see [below for nested schema](#nestedatt--pack--settings--custom))
+
+<a id="nestedatt--pack--settings--custom"></a>
+### Nested Schema for `pack.settings.custom`
+
+Required:
+
+- `value` (String) The value as JSON, in the setting's own shape, e.g. `jsonencode({ mode = "auto" })` for `tool_search`.
+
+
+
+<a id="nestedatt--pack--pending_connections"></a>
+### Nested Schema for `pack.pending_connections`
+
+Read-Only:
+
+- `bot_pack_connection_setup_id` (String) Its setup.
+- `pack_version_connection_id` (String) The connection.
+- `state` (String) Where the setup is, e.g. `needs_input`.
+
 ## Import
 
 Import is supported using the following syntax:
@@ -301,4 +479,13 @@ The [`terraform import` command](https://developer.hashicorp.com/terraform/cli/c
 ```shell
 # Bots are imported by their slug (the API's URL identifier).
 terraform import botyard_bot.support support-assistant
+
+# A bot with a Bot Pack install: `<slug>` alone adopts the install only when the
+# bot has exactly one (none imports no `pack` block). With several installs it
+# is an error that lists them; name the one this resource manages instead, by
+# install id or, when that pack slug is installed once on the bot, by pack slug:
+terraform import botyard_bot.support support-assistant:0b6c1f9e-4f7a-4d2b-9a51-3c2e8d7f6a10
+terraform import botyard_bot.support support-assistant:crm-assistant
+# `pack.settings` and `pack.connections` are create-time inputs the API cannot
+# read back, so they are not imported.
 ```

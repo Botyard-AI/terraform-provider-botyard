@@ -55,6 +55,58 @@ resource "botyard_bot" "researcher" {
   }
 }
 
+# A bot created from a Bot Pack. The pack is installed when the bot is
+# created; removing the `pack` block later uninstalls it and keeps the bot.
+# `settings` and `connections` apply at creation only. Connection ids are the
+# pack version's `pack_version_connection_id`s, as shown by the API's
+# connections preview (`POST /v1/orgs/{org_id}/packs/connections/preview`).
+data "botyard_pack_version" "crm" {
+  slug = "crm-assistant"
+}
+
+resource "botyard_mcp_server" "crm" {
+  # ... an org MCP server for the pack's CRM connection
+}
+
+resource "botyard_bot" "crm" {
+  name = "CRM Assistant"
+
+  pack = {
+    pack_version_id = data.botyard_pack_version.crm.pack_version_id
+
+    settings = [
+      { path = "tool_search", choice = "custom", custom = { value = jsonencode({ mode = "auto" }) } },
+    ]
+
+    connections = [
+      # Bind a Terraform-managed server...
+      {
+        pack_version_connection_id = "00000000-0000-0000-0000-000000000001"
+        choice                     = "use_server"
+        use_server                 = { mcp_server_id = botyard_mcp_server.crm.id }
+      },
+      # ...connect a new account with Runtime Vault references (not OAuth:
+      # connect those in the app first, then use `use_server`)...
+      {
+        pack_version_connection_id = "00000000-0000-0000-0000-000000000002"
+        choice                     = "create"
+        create = {
+          accept_metered = true
+          setup = {
+            kind            = "credential_form"
+            credential_form = { vault_entry_refs = { api_key = "00000000-0000-0000-0000-0000000000aa" } }
+          }
+        }
+      },
+      # ...or leave one for later.
+      {
+        pack_version_connection_id = "00000000-0000-0000-0000-000000000003"
+        choice                     = "leave_pending"
+      },
+    ]
+  }
+}
+
 # Runtime placement (runtime_class, storage_class, runtime_privilege_mode),
 # namespace, and control-plane state are read-only, exported for reference.
 output "support_bot_slug" {
