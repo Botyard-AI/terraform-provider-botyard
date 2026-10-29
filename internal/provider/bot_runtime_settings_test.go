@@ -19,6 +19,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
+
+	"github.com/Botyard-AI/terraform-provider-botyard/internal/client"
 )
 
 // PlatDev #4028b: `auto_suspend_enabled`, `runtime_privilege_mode` and
@@ -238,28 +240,60 @@ func (a *fakeRuntimeBotAPI) serve(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// overlay applies a sparse ResourceQuantities, normalising CPU to millicores
-// the way the API does, so the quantity type's value comparison is exercised.
+// overlay applies a sparse ResourceQuantities the way the API applies a
+// bot's patch (DesiredResources.with_overrides, derive_requests=True): each
+// sent line-item replaces its value, and a limit sent without its request
+// re-derives the request from the new limit. CPU is normalised to millicores
+// as the API does, so the quantity type's value comparison is exercised.
 func (a *fakeRuntimeBotAPI) overlay(raw json.RawMessage) {
-	var rq struct {
-		Resources []struct {
-			ResourceType string `json:"resource_type"`
-			Quantity     string `json:"quantity"`
-		} `json:"resources"`
-	}
-	if err := json.Unmarshal(raw, &rq); err != nil {
+	var rq client.ResourceQuantities
+	if err := json.Unmarshal(raw, &rq); err != nil || rq.Resources == nil {
 		a.t.Errorf("resources %s: %v", raw, err)
 		return
 	}
-	for _, it := range rq.Resources {
+	sent := map[client.MeteredResource]bool{}
+	for _, it := range *rq.Resources {
+		sent[it.ResourceType] = true
 		q := it.Quantity
-		if strings.HasPrefix(it.ResourceType, "cpu_") && !strings.HasSuffix(q, "m") {
+		if kindOf(it.ResourceType) == quantityCPU && !strings.HasSuffix(q, "m") {
 			if n, ok := parseQuantity(quantityCPU, q); ok {
 				q = fmt.Sprintf("%dm", n)
 			}
 		}
-		a.resources[it.ResourceType] = q
+		a.resources[string(it.ResourceType)] = q
 	}
+	if sent[client.MeteredResourceCpuLimit] && !sent[client.MeteredResourceCpuRequest] {
+		limit, _ := parseQuantity(quantityCPU, a.resources["cpu_limit"])
+		a.resources["cpu_request"] = fmt.Sprintf("%dm", derivedCPURequest(limit))
+	}
+	if sent[client.MeteredResourceMemoryLimit] && !sent[client.MeteredResourceMemoryRequest] {
+		limit, _ := parseQuantity(quantityBytes, a.resources["memory_limit"])
+		a.resources["memory_request"] = mebibytes(derivedMemoryRequestMiB(limit))
+	}
+}
+
+// derivedCPURequest mirrors botyard_core burstable_cpu_request_millicores:
+// 10% of the limit, within 250m-1000m, never above the limit.
+func derivedCPURequest(limitMilli int64) int64 {
+	req := (limitMilli + 9) / 10
+	req = max(250, min(req, 1000))
+	return min(limitMilli, req)
+}
+
+// derivedMemoryRequestMiB mirrors burstable_memory_request_bytes: 60% of the
+// limit with a 1536Mi floor, never above the limit.
+func derivedMemoryRequestMiB(limitBytes int64) int64 {
+	limitMiB := (limitBytes + (1<<20 - 1)) >> 20
+	req := max(int64(1536), (limitMiB*6+9)/10)
+	return min(limitMiB, req)
+}
+
+// mebibytes renders like the API: the largest binary suffix dividing evenly.
+func mebibytes(mib int64) string {
+	if mib%1024 == 0 {
+		return fmt.Sprintf("%dGi", mib/1024)
+	}
+	return fmt.Sprintf("%dMi", mib)
 }
 
 func (a *fakeRuntimeBotAPI) writeBot(w http.ResponseWriter, status int) {
@@ -357,7 +391,8 @@ func TestBotRuntimeSettings_Lifecycle(t *testing.T) {
   }`),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(addr, "resources.cpu_limit", "2"),
-					resource.TestCheckResourceAttr(addr, "resources.cpu_request", "500m"),
+					// Sending cpu_limit alone re-derived the request (10%, 250m floor).
+					resource.TestCheckResourceAttr(addr, "resources.cpu_request", "250m"),
 					resource.TestCheckResourceAttr(addr, "resources.storage", "10Gi"),
 					api.wantPatches(3, `resources={"resources":[{"quantity":"2","resource_type":"cpu_limit"}]}`),
 				),
@@ -388,6 +423,77 @@ func TestBotRuntimeSettings_Lifecycle(t *testing.T) {
 				Check: api.wantPatches(5, ""),
 			},
 			{
+				// The limit moves and the request is not configured: the API
+				// re-derives it (2 -> 4 CPU: 250m -> 400m). The plan must not
+				// promise the old 250m (inconsistent result otherwise).
+				Config: cfg(`
+  description            = "renamed"
+  auto_suspend_enabled   = false
+  runtime_privilege_mode = "privileged"
+  resources = {
+    cpu_limit = "4"
+  }`),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(addr, "resources.cpu_request", "400m"),
+					api.wantPatches(6, `resources={"resources":[{"quantity":"4","resource_type":"cpu_limit"}]}`),
+				),
+			},
+			{
+				// Explicit requests: cpu_request moves; memory_request restates
+				// the current 1Gi, so only cpu_request is sent.
+				Config: cfg(`
+  description            = "renamed"
+  auto_suspend_enabled   = false
+  runtime_privilege_mode = "privileged"
+  resources = {
+    cpu_limit      = "4"
+    cpu_request    = "300m"
+    memory_request = "1Gi"
+  }`),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(addr, "resources.cpu_request", "300m"),
+					api.wantPatches(7, `resources={"resources":[{"quantity":"300m","resource_type":"cpu_request"}]}`),
+				),
+			},
+			{
+				// Both limits move with their explicit requests unchanged: the
+				// requests travel with the limits, or the API would re-derive
+				// them (300m -> 600m, 1Gi -> 4916Mi).
+				Config: cfg(`
+  description            = "renamed"
+  auto_suspend_enabled   = false
+  runtime_privilege_mode = "privileged"
+  resources = {
+    cpu_limit      = "6"
+    cpu_request    = "300m"
+    memory_limit   = "8Gi"
+    memory_request = "1Gi"
+  }`),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(addr, "resources.cpu_request", "300m"),
+					resource.TestCheckResourceAttr(addr, "resources.memory_request", "1Gi"),
+					resource.TestCheckResourceAttr(addr, "resources.memory_limit", "8Gi"),
+					api.wantPatches(8, `resources={"resources":[`+
+						`{"quantity":"6","resource_type":"cpu_limit"},{"quantity":"8Gi","resource_type":"memory_limit"},`+
+						`{"quantity":"300m","resource_type":"cpu_request"},{"quantity":"1Gi","resource_type":"memory_request"}]}`),
+				),
+			},
+			{
+				// Still restart-free: an unrelated change sends no resources,
+				// explicit requests or not.
+				Config: cfg(`
+  description            = "renamed again"
+  auto_suspend_enabled   = false
+  runtime_privilege_mode = "privileged"
+  resources = {
+    cpu_limit      = "6"
+    cpu_request    = "300m"
+    memory_limit   = "8Gi"
+    memory_request = "1Gi"
+  }`),
+				Check: api.wantPatches(9, ""),
+			},
+			{
 				// Removing the block resets to the plan defaults; removing the
 				// other two keeps their values (Optional+Computed).
 				Config: cfg(`description = "renamed"`),
@@ -395,7 +501,7 @@ func TestBotRuntimeSettings_Lifecycle(t *testing.T) {
 					resource.TestCheckNoResourceAttr(addr, "resources.cpu_limit"),
 					resource.TestCheckResourceAttr(addr, "auto_suspend_enabled", "false"),
 					resource.TestCheckResourceAttr(addr, "runtime_privilege_mode", "privileged"),
-					api.wantPatches(6, "resources=null"),
+					api.wantPatches(10, "resources=null"),
 					func(*terraform.State) error {
 						if api.resources["cpu_limit"] != "1000m" {
 							return fmt.Errorf("cpu_limit after reset = %q", api.resources["cpu_limit"])

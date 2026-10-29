@@ -17,6 +17,7 @@ import (
 	fwresource "github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/plancheck"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
@@ -1119,6 +1120,93 @@ func TestBotPack_PartialCreateSavesNullOptOut(t *testing.T) {
 			}
 			if !got.SuggestionsOptOut.IsNull() {
 				t.Errorf("saved suggestions_opt_out = %s, want null", got.SuggestionsOptOut)
+			}
+		})
+	}
+}
+
+// TestBotPack_ConfigFailureSavesUnsentResources: a pack create carries
+// `resources` only in the runtime PATCH after the config PATCH. When the
+// config PATCH fails, that PATCH was never sent, so the saved state must hold
+// what the bot actually has (the from-pack response's resources, or null),
+// never the configured quantities. Refresh-free: through core, the next
+// plan's refresh would mask the saved state.
+func TestBotPack_ConfigFailureSavesUnsentResources(t *testing.T) {
+	for _, tc := range []struct {
+		name, fromPackResources, wantCPULimit string
+	}{
+		{"response carries resources", `{"resources":[{"quantity":"250m","resource_type":"cpu_request"},` +
+			`{"quantity":"1000m","resource_type":"cpu_limit"},{"quantity":"1536Mi","resource_type":"memory_request"},` +
+			`{"quantity":"2Gi","resource_type":"memory_limit"},{"quantity":"10Gi","resource_type":"storage"}]}`, "1000m"},
+		{"response without resources", "", "<null>"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx := context.Background()
+			api, srv := newFakePackBotAPI(t)
+			api.failConfig, api.resources = true, tc.fromPackResources
+			r := &BotResource{data: &providerData{client: newBotClient(t, srv.URL, "byk_test"), orgID: "org-1"}}
+			sch := botSchema(t)
+
+			unknownQ := func(k quantityKind) quantityValue {
+				return quantityValue{StringValue: basetypes.NewStringUnknown(), kind: k}
+			}
+			plan := BotResourceModel{
+				Name:                 types.StringValue("pack-probe"),
+				Description:          types.StringNull(),
+				AvatarURL:            types.StringNull(),
+				HostingType:          types.StringUnknown(),
+				Harness:              types.StringValue("botyard_native"),
+				SuggestionsOptOut:    types.BoolUnknown(),
+				AutoSuspendEnabled:   types.BoolUnknown(),
+				RuntimePrivilegeMode: types.StringUnknown(),
+				NativeConfig: &botNativeConfigModel{
+					ModelProvider:  types.StringUnknown(),
+					ModelName:      types.StringUnknown(),
+					HostPolicyJSON: types.StringUnknown(),
+				},
+				Pack: &botPackModel{
+					PackVersionID:      types.StringValue(fpPV1),
+					BotPackInstallID:   types.StringUnknown(),
+					PackID:             types.StringUnknown(),
+					PackSlug:           types.StringUnknown(),
+					VersionNo:          types.Int64Unknown(),
+					PendingConnections: types.ListUnknown(pendingConnectionObjectType),
+				},
+				Resources: &mcpServerResourcesModel{
+					CPURequest:    unknownQ(quantityCPU),
+					CPULimit:      quantityValue{StringValue: basetypes.NewStringValue("2"), kind: quantityCPU},
+					MemoryRequest: unknownQ(quantityBytes),
+					MemoryLimit:   unknownQ(quantityBytes),
+					Storage:       unknownQ(quantityBytes),
+				},
+			}
+			unknownComputed(&plan)
+			planned := tfsdk.Plan{Schema: sch}
+			if d := planned.Set(ctx, &plan); d.HasError() {
+				t.Fatalf("plan: %v", d)
+			}
+			resp := fwresource.CreateResponse{State: tfsdk.State{Schema: sch}}
+			r.Create(ctx, fwresource.CreateRequest{Plan: planned}, &resp)
+			if !resp.Diagnostics.HasError() {
+				t.Fatal("Create succeeded; want the injected config failure")
+			}
+			var got BotResourceModel
+			if d := resp.State.Get(ctx, &got); d.HasError() {
+				t.Fatalf("saved state: %v", d)
+			}
+			if got.Slug.ValueString() != "pack-probe" {
+				t.Fatalf("slug = %s: the created bot was not recorded", got.Slug)
+			}
+			if got.Resources == nil {
+				t.Fatal("resources block dropped")
+			}
+			if s := got.Resources.CPULimit.String(); strings.Trim(s, `"`) != tc.wantCPULimit {
+				t.Errorf("cpu_limit = %s, want %s: the configured 2 was never sent", s, tc.wantCPULimit)
+			}
+			api.mu.Lock()
+			defer api.mu.Unlock()
+			if len(api.botPatches) != 0 {
+				t.Errorf("bot PATCHes = %q, want none after the config failure", api.botPatches)
 			}
 		})
 	}

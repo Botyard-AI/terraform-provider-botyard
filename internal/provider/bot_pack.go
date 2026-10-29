@@ -551,6 +551,12 @@ func (r *BotResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanReq
 		}
 	}
 	r.modifyPackPlan(ctx, &plan, state, &resp.Diagnostics)
+	var cfg BotResourceModel
+	resp.Diagnostics.Append(req.Config.Get(ctx, &cfg)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	modifyBotResourcesPlan(ctx, plan, cfg, state, resp)
 	if runtimeClassMayChange(plan, state) {
 		resp.Diagnostics.Append(resp.Plan.SetAttribute(ctx, path.Root("runtime_class"), types.StringUnknown())...)
 	}
@@ -579,6 +585,9 @@ func (r *BotResource) createFromPack(ctx context.Context, plan BotResourceModel,
 		final, ok := r.updateBotConfig(ctx, bot.Slug, plan, &resp.Diagnostics)
 		if !ok {
 			mapBotDesiredConfig(bot.Harness, &bot.DesiredConfig, plan.Config, plan.NativeConfig, &resp.Diagnostics)
+			// The runtime PATCH, which carries `resources` on a pack create,
+			// was never sent.
+			settleUnsentResources(bot, plan.Resources)
 			r.savePartialPackBot(ctx, plan, declaredAvatar, resp)
 			return
 		}
@@ -592,6 +601,7 @@ func (r *BotResource) createFromPack(ctx context.Context, plan BotResourceModel,
 	mapBotResource(settled, &plan)
 	mapBotResources(settled, plan.Resources)
 	if !ok {
+		settleUnsentResources(settled, plan.Resources)
 		r.savePartialPackBot(ctx, plan, declaredAvatar, resp)
 		return
 	}

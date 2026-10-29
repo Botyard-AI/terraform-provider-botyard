@@ -239,7 +239,9 @@ Setting it to `false` requires a plan that allows opting out of auto-suspend; on
 
 When the block is **omitted**, Terraform does not manage compute: it never sends it, so a size set in the Botyard app is left alone. When the block is **declared**, each quantity you set is applied over the bot's current shape, and the ones you leave out adopt the bot's current values. Only quantities that changed are sent, because **every change restarts the bot**. **Removing the block** resets the bot to the plan's default shape; removing a single quantity keeps its current value.
 
-The plan's per-bot maximums apply, and sizing above the plan's included resources needs a payment method on the organization. `storage` can only grow. Quantities are compared by value, so `2` and `2000m` are the same CPU and never produce a diff. (see [below for nested schema](#nestedatt--resources))
+The plan's per-bot maximums apply, and sizing above the plan's included resources needs a payment method on the organization. `storage` can only grow. Quantities are compared by value, so `2` and `2000m` are the same CPU and never produce a diff.
+
+Requests follow their limits unless you set them: when `cpu_limit` or `memory_limit` changes and the matching request is not configured, the API re-derives the request from the new limit (CPU 10% of the limit within 250m–1000m; memory 60% with a 1536Mi floor), so the plan shows it as known after apply. A request you do set is sent with its limit, so it is kept. (see [below for nested schema](#nestedatt--resources))
 - `runtime_privilege_mode` (String) Privilege level of the bot runtime pod: `standard` or `privileged`. When omitted, Terraform reads the current value and leaves it alone.
 
 `privileged` requires a plan with privileged runtimes and moves the bot onto a Kata runtime class if it is not on one already. **Changing it restarts the bot.**
@@ -511,7 +513,7 @@ Optional:
 - `cpu_request` (String) CPU reserved for the pod, e.g. `500m` or `1`. Must not exceed `cpu_limit`.
 - `memory_limit` (String) Memory ceiling for the pod, e.g. `2Gi`.
 - `memory_request` (String) Memory reserved for the pod, e.g. `1Gi`. Must not exceed `memory_limit`.
-- `storage` (String) Size of the bot's durable workspace volume, e.g. `10Gi`. Can only grow: Kubernetes cannot shrink a volume, so the API refuses a smaller value.
+- `storage` (String) Size of the bot's durable workspace volume, e.g. `10Gi`. Can only grow: Kubernetes cannot shrink a volume, so the API refuses a smaller value. Removing the `resources` block resets the recorded size to the plan's default, but the volume itself is never shrunk.
 
 ## Import
 
