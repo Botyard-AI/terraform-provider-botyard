@@ -12,6 +12,15 @@ a version.
 
 ## [Unreleased]
 
+## [0.6.1] - 2026-10-29
+
+### Fixed
+
+- **`botyard_bot`: adding a nested config block to a bot that already exists failed with "Provider produced inconsistent result after apply".** For example `config.compaction`, `config.heartbeat` or `native_config.tool_search`. Creating a bot with the block was not affected. (#40)
+  - Fields you leave unset in the new block now show as `(known after apply)` and take the platform's defaults.
+  - Unchanged blocks keep their prior values, so existing plans stay clean.
+  - Workaround on v0.6.0: declare the block's fields explicitly, or create the bot with the block.
+
 ## [0.6.0] - 2026-10-26
 
 ### Added
@@ -158,7 +167,8 @@ a version.
 
 - Bumped `google.golang.org/grpc` (GO-2026-4762) and `golang.org/x/net` (GO-2026-5026), and pinned a patched Go toolchain. (#6)
 
-[Unreleased]: https://github.com/Botyard-AI/terraform-provider-botyard/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/Botyard-AI/terraform-provider-botyard/compare/v0.6.1...HEAD
+[0.6.1]: https://github.com/Botyard-AI/terraform-provider-botyard/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/Botyard-AI/terraform-provider-botyard/compare/v0.5.1...v0.6.0
 [0.5.1]: https://github.com/Botyard-AI/terraform-provider-botyard/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/Botyard-AI/terraform-provider-botyard/compare/v0.4.0...v0.5.0
