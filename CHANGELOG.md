@@ -29,6 +29,13 @@ a version.
   - Removing the whole block leaves the current server values unchanged.
 - **`botyard_bot`: `config.tool_search`** for OpenClaw bots, with the same `mode` (`always` / `auto` / `off`) and `auto_threshold_percent` as `native_config.tool_search`. Both are validated at plan time. (#39)
   - OpenClaw's tool search has no threshold, so on OpenClaw bots `auto` behaves like `always` and `auto_threshold_percent` is ignored.
+- **`botyard_bot`: new `pack` block, to create a bot from a Bot Pack.** The bot is created with the pack installed in the same step, and removing the block later uninstalls the pack and keeps the bot. (#38)
+  - Set `pack_version_id`, for example from `data.botyard_pack_version`. Optional `settings` and `connections` choose, per item, what the pack applies at creation. Each choice is a `choice` plus a payload for the variants that carry data, e.g. `use_server = { mcp_server_id = ... }`.
+  - `create` connections that would fail mid-apply are refused at plan time: a vendor sign-in (OAuth), an unavailable setup, the wrong setup kind, or a metered connection without `accept_metered = true`.
+  - The provider never replaces a bot, which would lose its conversations and memory. So adding `pack` to an existing bot, or changing `pack_version_id`, is a plan-time error until the API supports it. Changing `settings` or `connections` after creation is a warning; they only apply at creation.
+  - Leaving `avatar_url` unset keeps the pack's avatar.
+  - Import takes `<slug>`, `<slug>:<install_id>` or `<slug>:<pack_slug>`. `<slug>` alone adopts an install only when the bot has exactly one.
+  - Bots without `pack` are unchanged and make no extra API calls.
 
 ## [0.6.1] - 2026-10-29
 
