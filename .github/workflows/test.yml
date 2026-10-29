@@ -94,3 +94,45 @@ jobs:
             echo "$drift" >&2
             exit 1
           fi
+
+  changelog:
+    name: changelog
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # The release workflow extracts the release body with this script and
+      # fails before tagging when the section is missing; keep it tested, and
+      # prove every released section of CHANGELOG.md still extracts.
+      - name: changelog extraction tests
+        run: bash scripts/changelog_section_test.sh
+      # ADVISORY ONLY: warns (never fails) when a PR changes provider code under
+      # internal/ without touching the `## [Unreleased]` section. Not every
+      # internal/ change is user-visible (refactors, tests), so a reviewer
+      # decides; the warning just makes the omission visible.
+      - name: Unreleased entry check (advisory)
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          if ! git fetch --no-tags --depth=1 origin "$BASE_SHA" "$HEAD_SHA" 2>fetch.err; then
+            echo "::warning title=Changelog check skipped::could not fetch the PR base/head to compare: $(tr '\n' ' ' < fetch.err)"
+            exit 0
+          fi
+          # Captured first (not piped into grep -q) so a SIGPIPE under pipefail
+          # cannot read as "no changes".
+          changed="$(git diff --name-only "$BASE_SHA" "$HEAD_SHA" -- internal/)"
+          if [ -z "$changed" ]; then
+            echo "No changes under internal/; no Unreleased entry expected."
+            exit 0
+          fi
+          unreleased() {
+            git show "$1:CHANGELOG.md" 2>/dev/null \
+              | awk '/^## \[Unreleased\]/ { s = 1; next } s && /^## / { exit } s' || true
+          }
+          if [ "$(unreleased "$BASE_SHA")" = "$(unreleased "$HEAD_SHA")" ]; then
+            echo "::warning file=CHANGELOG.md,title=No Unreleased changelog entry::This PR changes internal/ but not the '## [Unreleased]' section of CHANGELOG.md. Add an entry if the change is user-visible."
+          else
+            echo "CHANGELOG.md '## [Unreleased]' was updated."
+          fi

@@ -28,24 +28,64 @@ below is retained for verification and disaster recovery only.
 Releases are produced by the **Release** workflow
 (`.github/workflows/release.yml`), triggered manually.
 
-1. Ensure `main` is at the commit you want to release and CI is green.
-2. GitHub → **Actions → Release → Run workflow**, on `main`:
+1. **Merge a changelog PR** that moves the `## [Unreleased]` entries into a new
+   `## [X.Y.Z] - YYYY-MM-DD` section for the version you are about to release
+   (see [Changelog](#changelog)). The release fails before tagging without it.
+2. Ensure `main` is at the commit you want to release and CI is green.
+3. GitHub → **Actions → Release → Run workflow**, on `main`:
    - Pick a **bump** — `patch` / `minor` / `major`. The next `vX.Y.Z` is derived
-     from the latest tag. With `v0.1.0` current: `patch → v0.1.1`,
-     `minor → v0.2.0`, `major → v1.0.0`.
+     from the latest tag. For example, with `v0.6.0` current: `patch → v0.6.1`,
+     `minor → v0.7.0`, `major → v1.0.0`. The bump must land on the version the
+     changelog PR named.
    - Leave **version** blank. Only set an explicit version to force a specific
      one — and note that an **already-published version fails closed** by design
      (you cannot re-cut `v0.1.0`; see re-run safety).
-3. The workflow:
+4. The workflow:
    - derives/validates the version (strict `vMAJOR.MINOR.PATCH`, no leading
      zeros, no pre-release/build metadata),
+   - extracts that version's `CHANGELOG.md` section with
+     `scripts/changelog-section.sh` and **fails, before tagging,** if it is
+     missing, undated, duplicated or empty, or has no link reference,
    - creates and pushes the annotated tag,
    - imports the GPG key from the `public` Environment,
    - runs **GoReleaser**, which cross-compiles the binaries, packages them as the
      Registry-expected zips, GPG-signs `SHA256SUMS`, and publishes the GitHub
-     release with `terraform-registry-manifest.json` attached.
-4. The repo's `release` webhook notifies the Registry, which ingests the new
+     release with `terraform-registry-manifest.json` attached. The release body
+     is the changelog section plus a **Full changes** footer taken from the
+     version's link reference in `CHANGELOG.md` (`--release-notes`).
+5. The repo's `release` webhook notifies the Registry, which ingests the new
    version (see [Verify a release ingested](#verify-a-release-ingested)).
+
+### Changelog
+
+[`CHANGELOG.md`](CHANGELOG.md) follows [Keep a
+Changelog](https://keepachangelog.com/en/1.1.0/). It is the single source of the
+release notes; nobody pastes notes into the GitHub release by hand.
+
+- **Every user-visible PR** adds a bullet under `## [Unreleased]`, in the
+  matching `### Added` / `Changed` / `Deprecated` / `Removed` / `Fixed` /
+  `Security` group, ending with the PR number, e.g. `(#36)`. Breaking changes
+  say so in bold and explain the upgrade. CI's `changelog` job warns (it never
+  fails) when a PR changes `internal/` without touching `## [Unreleased]`;
+  refactors and test-only changes can ignore the warning.
+- **Before a release**, a PR renames `## [Unreleased]` to
+  `## [X.Y.Z] - YYYY-MM-DD` (no `v`; the date of the planned release), adds a
+  fresh empty `## [Unreleased]` above it, and adds the version's link reference
+  at the bottom of the file (`[X.Y.Z]: .../compare/vPREV...vX.Y.Z`, and point
+  `[Unreleased]` at `vX.Y.Z...HEAD`). The link reference becomes the release's
+  **Full changes** footer, and the release fails without it. Review it as the release notes, then merge it and dispatch
+  the release from that commit.
+- Check the section locally before dispatching:
+
+  ```sh
+  scripts/changelog-section.sh --footer v0.6.1   # prints the release body, or fails
+  bash scripts/changelog_section_test.sh
+  ```
+
+- **If the release fails because the section is missing**, nothing was tagged:
+  merge the changelog PR and dispatch again. A fix to the notes after a release
+  is published goes into `CHANGELOG.md` and is copied into the GitHub release by
+  hand; the workflow never edits a published release.
 
 ### Re-run safety
 
@@ -55,6 +95,9 @@ accepts an existing tag only when it points at the dispatched commit, and refuse
 to clobber an already-published GitHub release (the version-check step fails
 closed unless the releases API confirms 404 — which is also why re-cutting an
 already-published version like `v0.1.0` fails).
+
+A resumed run reads the changelog from the dispatched (already tagged) commit, so
+it publishes the same notes as the first attempt would have.
 
 ### First release (`v0.1.0`) — completed bootstrap evidence
 
