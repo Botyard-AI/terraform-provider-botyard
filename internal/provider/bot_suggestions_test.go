@@ -151,7 +151,8 @@ func (a *fakeSuggestionsBotAPI) forbid(w http.ResponseWriter) bool {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusForbidden)
-	_, _ = w.Write([]byte(`{"detail":"Only the bot owner can perform this action"}`))
+	// The real owner gate's problem body (ForbiddenError, code `forbidden`).
+	_, _ = w.Write([]byte(botOwnerForbiddenBody))
 	return true
 }
 

@@ -17,6 +17,7 @@ import (
 	fwresource "github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/plancheck"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
@@ -61,6 +62,10 @@ type fakePackBotAPI struct {
 	calls        []string
 	fromPack     []byte
 	configPats   [][]byte
+	botPatches   [][]byte
+	// resources is the bot's effective `resources` JSON; a pack create
+	// carries none, so it is set only by a PATCH.
+	resources string
 }
 
 func newFakePackBotAPI(t *testing.T) (*fakePackBotAPI, *httptest.Server) {
@@ -122,8 +127,13 @@ func (a *fakePackBotAPI) serve(w http.ResponseWriter, r *http.Request) {
 	case r.Method == http.MethodGet && r.URL.Path == bot && a.exists:
 		_, _ = w.Write([]byte(a.botJSON()))
 	case r.Method == http.MethodPatch && r.URL.Path == bot && a.exists:
+		a.botPatches = append(a.botPatches, raw)
 		var body map[string]json.RawMessage
 		_ = json.Unmarshal(raw, &body)
+		if _, ok := body["resources"]; ok {
+			// The test PATCHes a complete shape, so the overlay is the shape.
+			a.resources = string(body["resources"])
+		}
 		if v, ok := body["avatar_url"]; ok {
 			var s *string
 			_ = json.Unmarshal(v, &s)
@@ -242,13 +252,17 @@ func (a *fakePackBotAPI) botJSON() string {
 	if a.avatar != "" {
 		avatar = fmt.Sprintf("%q", a.avatar)
 	}
-	return fmt.Sprintf(`{"id":%q,"slug":"pack-probe","org_id":"org-1","cluster_id":"c-1","name":"pack-probe",`+
+	resources := a.resources
+	if resources == "" {
+		resources = "null"
+	}
+	return fmt.Sprintf(`{"resources":%s,"id":%q,"slug":"pack-probe","org_id":"org-1","cluster_id":"c-1","name":"pack-probe",`+
 		`"namespace":"bot-pack-probe","tier":"starter","runtime_class":"kata_qemu","storage_class":"cluster_default",`+
 		`"runtime_privilege_mode":"standard","onboarding_state":"complete","health_status":"healthy",`+
 		`"desired_state":"running","config_generation":1,"hosting_type":"hosted","harness":"botyard_native",`+
 		`"avatar_url":%s,"created_at":"2026-10-28T10:00:00Z","updated_at":"2026-10-28T10:00:00Z",`+
 		`"desired_config":{"bot_type":"native","model":{"provider":"botyard","model":"m"},`+
-		`"tool_search":{"mode":%q,"auto_threshold_percent":40}}}`, fpBotID, avatar, a.mode)
+		`"tool_search":{"mode":%q,"auto_threshold_percent":40}}}`, resources, fpBotID, avatar, a.mode)
 }
 
 func packBotConfig(endpoint, extra string) string {
@@ -1026,6 +1040,44 @@ func TestBotPack_SuggestionsOptOut(t *testing.T) {
 	}
 }
 
+// TestBotPack_RuntimeSettings: a pack create carries no runtime settings, so
+// the declared `resources` go out in one PATCH right after from-pack, and an
+// unrelated change later resends nothing.
+func TestBotPack_RuntimeSettings(t *testing.T) {
+	api, srv := newFakePackBotAPI(t)
+	sized := packBlock(fpPV1, "") + `
+  resources = {
+    cpu_request    = "500m"
+    cpu_limit      = "1"
+    memory_request = "1Gi"
+    memory_limit   = "2Gi"
+    storage        = "10Gi"
+  }`
+	resource.UnitTest(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: packBotConfig(srv.URL, sized),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(addr, "resources.cpu_limit", "1"),
+					func(*terraform.State) error {
+						api.mu.Lock()
+						defer api.mu.Unlock()
+						if strings.Contains(string(api.fromPack), "resources") {
+							return fmt.Errorf("from-pack body carried resources: %s", api.fromPack)
+						}
+						if len(api.botPatches) != 1 || !strings.Contains(string(api.botPatches[0]), `"cpu_limit"`) {
+							return fmt.Errorf("bot PATCHes = %q, want one carrying the resources", api.botPatches)
+						}
+						return nil
+					},
+				),
+			},
+			{Config: packBotConfig(srv.URL, sized), PlanOnly: true},
+		},
+	})
+}
+
 // savePartialPackBot runs when a pack create fails after from-pack, before the
 // opt-out was read or written. It must record suggestions_opt_out as null,
 // never the configured value the server does not hold. Asserted on the state
@@ -1068,6 +1120,93 @@ func TestBotPack_PartialCreateSavesNullOptOut(t *testing.T) {
 			}
 			if !got.SuggestionsOptOut.IsNull() {
 				t.Errorf("saved suggestions_opt_out = %s, want null", got.SuggestionsOptOut)
+			}
+		})
+	}
+}
+
+// TestBotPack_ConfigFailureSavesUnsentResources: a pack create carries
+// `resources` only in the runtime PATCH after the config PATCH. When the
+// config PATCH fails, that PATCH was never sent, so the saved state must hold
+// what the bot actually has (the from-pack response's resources, or null),
+// never the configured quantities. Refresh-free: through core, the next
+// plan's refresh would mask the saved state.
+func TestBotPack_ConfigFailureSavesUnsentResources(t *testing.T) {
+	for _, tc := range []struct {
+		name, fromPackResources, wantCPULimit string
+	}{
+		{"response carries resources", `{"resources":[{"quantity":"250m","resource_type":"cpu_request"},` +
+			`{"quantity":"1000m","resource_type":"cpu_limit"},{"quantity":"1536Mi","resource_type":"memory_request"},` +
+			`{"quantity":"2Gi","resource_type":"memory_limit"},{"quantity":"10Gi","resource_type":"storage"}]}`, "1000m"},
+		{"response without resources", "", "<null>"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx := context.Background()
+			api, srv := newFakePackBotAPI(t)
+			api.failConfig, api.resources = true, tc.fromPackResources
+			r := &BotResource{data: &providerData{client: newBotClient(t, srv.URL, "byk_test"), orgID: "org-1"}}
+			sch := botSchema(t)
+
+			unknownQ := func(k quantityKind) quantityValue {
+				return quantityValue{StringValue: basetypes.NewStringUnknown(), kind: k}
+			}
+			plan := BotResourceModel{
+				Name:                 types.StringValue("pack-probe"),
+				Description:          types.StringNull(),
+				AvatarURL:            types.StringNull(),
+				HostingType:          types.StringUnknown(),
+				Harness:              types.StringValue("botyard_native"),
+				SuggestionsOptOut:    types.BoolUnknown(),
+				AutoSuspendEnabled:   types.BoolUnknown(),
+				RuntimePrivilegeMode: types.StringUnknown(),
+				NativeConfig: &botNativeConfigModel{
+					ModelProvider:  types.StringUnknown(),
+					ModelName:      types.StringUnknown(),
+					HostPolicyJSON: types.StringUnknown(),
+				},
+				Pack: &botPackModel{
+					PackVersionID:      types.StringValue(fpPV1),
+					BotPackInstallID:   types.StringUnknown(),
+					PackID:             types.StringUnknown(),
+					PackSlug:           types.StringUnknown(),
+					VersionNo:          types.Int64Unknown(),
+					PendingConnections: types.ListUnknown(pendingConnectionObjectType),
+				},
+				Resources: &mcpServerResourcesModel{
+					CPURequest:    unknownQ(quantityCPU),
+					CPULimit:      quantityValue{StringValue: basetypes.NewStringValue("2"), kind: quantityCPU},
+					MemoryRequest: unknownQ(quantityBytes),
+					MemoryLimit:   unknownQ(quantityBytes),
+					Storage:       unknownQ(quantityBytes),
+				},
+			}
+			unknownComputed(&plan)
+			planned := tfsdk.Plan{Schema: sch}
+			if d := planned.Set(ctx, &plan); d.HasError() {
+				t.Fatalf("plan: %v", d)
+			}
+			resp := fwresource.CreateResponse{State: tfsdk.State{Schema: sch}}
+			r.Create(ctx, fwresource.CreateRequest{Plan: planned}, &resp)
+			if !resp.Diagnostics.HasError() {
+				t.Fatal("Create succeeded; want the injected config failure")
+			}
+			var got BotResourceModel
+			if d := resp.State.Get(ctx, &got); d.HasError() {
+				t.Fatalf("saved state: %v", d)
+			}
+			if got.Slug.ValueString() != "pack-probe" {
+				t.Fatalf("slug = %s: the created bot was not recorded", got.Slug)
+			}
+			if got.Resources == nil {
+				t.Fatal("resources block dropped")
+			}
+			if s := got.Resources.CPULimit.String(); strings.Trim(s, `"`) != tc.wantCPULimit {
+				t.Errorf("cpu_limit = %s, want %s: the configured 2 was never sent", s, tc.wantCPULimit)
+			}
+			api.mu.Lock()
+			defer api.mu.Unlock()
+			if len(api.botPatches) != 0 {
+				t.Errorf("bot PATCHes = %q, want none after the config failure", api.botPatches)
 			}
 		})
 	}

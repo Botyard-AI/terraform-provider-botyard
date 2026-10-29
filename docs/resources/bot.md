@@ -3,17 +3,17 @@
 page_title: "botyard_bot Resource - Botyard"
 subcategory: ""
 description: |-
-  Manages a Botyard bot's desired-state record within the configured organization. Creating the resource persists the bot and triggers provisioner reconciliation best-effort. It manages the bot's core identity (name, description, avatar) and its OpenClaw config overrides, and exposes runtime placement and control-plane state as read-only attributes; the bot's skill/tool/credential assignments are managed separately.
-  Bot ownership. An API key owns only the bots it created, even when its organization role is owner. For a bot created in the Botyard app or with another key, import, refresh and planning are supported, but updates and deletion require the API key that created the bot.
+  Manages a Botyard bot's desired-state record within the configured organization. Creating the resource persists the bot and triggers provisioner reconciliation best-effort. It manages the bot's core identity (name, description, avatar), its OpenClaw config overrides and its runtime settings (auto_suspend_enabled, runtime_privilege_mode, resources), and exposes runtime placement and control-plane state as read-only attributes; the bot's skill/tool/credential assignments are managed separately.
+  Bot ownership. An API key owns only the bots it created, even when its organization role is owner. For a bot created in the Botyard app or with another key, import, refresh and planning are supported, but updates and deletion require the API key that created the bot, and fail with a "Not the bot's owner" error.
   suggestions_opt_out is also unreadable on such a bot: Terraform keeps the last value it knew (none after an import), and changing it fails with a "Not the bot's owner" error.
   See Getting started https://docs.botyard.io/docs/getting-started in the Botyard docs.
 ---
 
 # botyard_bot (Resource)
 
-Manages a Botyard bot's desired-state record within the configured organization. Creating the resource persists the bot and triggers provisioner reconciliation best-effort. It manages the bot's core identity (name, description, avatar) and its OpenClaw `config` overrides, and exposes runtime placement and control-plane state as read-only attributes; the bot's skill/tool/credential assignments are managed separately.
+Manages a Botyard bot's desired-state record within the configured organization. Creating the resource persists the bot and triggers provisioner reconciliation best-effort. It manages the bot's core identity (name, description, avatar), its OpenClaw `config` overrides and its runtime settings (`auto_suspend_enabled`, `runtime_privilege_mode`, `resources`), and exposes runtime placement and control-plane state as read-only attributes; the bot's skill/tool/credential assignments are managed separately.
 
-**Bot ownership.** An API key owns only the bots it created, even when its organization role is owner. For a bot created in the Botyard app or with another key, import, refresh and planning are supported, but updates and deletion require the API key that created the bot.
+**Bot ownership.** An API key owns only the bots it created, even when its organization role is owner. For a bot created in the Botyard app or with another key, import, refresh and planning are supported, but updates and deletion require the API key that created the bot, and fail with a "Not the bot's owner" error.
 
 `suggestions_opt_out` is also unreadable on such a bot: Terraform keeps the last value it knew (none after an import), and changing it fails with a "Not the bot's owner" error.
 
@@ -79,6 +79,14 @@ resource "botyard_bot" "researcher" {
     tool_search = {
       mode = "auto"
     }
+  }
+
+  # Size the bot above its plan preset. Only the quantities set here are
+  # managed; the others keep their current values. Changing them restarts the
+  # bot.
+  resources = {
+    cpu_limit    = "2"
+    memory_limit = "4Gi"
   }
 }
 
@@ -217,6 +225,9 @@ output "triage_host_policy" {
 
 ### Optional
 
+- `auto_suspend_enabled` (Boolean) Whether the platform may suspend the bot after a period without human activity. When omitted, Terraform reads the current value and leaves it alone.
+
+Setting it to `false` requires a plan that allows opting out of auto-suspend; on other plans the API refuses the change. This is the owner's stored preference: a plan that enforces auto-suspend still suspends the bot.
 - `avatar_url` (String) Avatar image URL (a DiceBear data URI or a custom URL). Optional — the API stores no avatar when omitted. Removing it from the config clears the stored value (sends JSON null).
 - `config` (Attributes) OpenClaw configuration overrides for the bot, applied via the config endpoint (embedded in the create request and sent to `PATCH /config` on update). Only the fields you set are applied over OpenClaw's defaults; omitted fields keep their server default. This block models the patchable config surface incrementally — `addons` and `bot_type` are not yet modeled. The model a bot runs on is not set here: it is derived from the bot's LLM credential links, managed with `botyard_bot_credential_assignment` (`scope = "llm"`, ordered by `ordinal`, with an optional `default_model`). (see [below for nested schema](#nestedatt--config))
 - `description` (String) Short human-facing description / role for the bot (max 500 chars). Display metadata only — not injected into the bot's system prompt. Omit to leave unset.
@@ -224,6 +235,16 @@ output "triage_host_policy" {
 - `hosting_type` (String) Who runs this bot's runtime: `hosted` (default) or `self_hosted`. Immutable — changing it forces replacement. Must form a permitted pair with `harness`; the API enforces the allowlist behind `GET /orgs/{org_id}/bots/hosting-options`.
 - `native_config` (Attributes) Configuration for a native (`botyard_native`) bot, applied via the config endpoint (embedded in the create request and sent to `PATCH /config` on update). Requires `harness = "botyard_native"`, and conflicts with `config`, which models the OpenClaw shape. Only the fields you set are applied over the platform's defaults. (see [below for nested schema](#nestedatt--native_config))
 - `pack` (Attributes) A Bot Pack to create this bot from. When set, the bot is created with `POST /bots/from-pack`, which installs the pack in the same transaction. Removing the block uninstalls the pack and keeps the bot. Adding it to an existing bot, or changing `pack_version_id`, is refused at plan time: the API has no install-on-existing-bot or upgrade path yet, and the provider never replaces a bot (that would lose its conversations and memory). `avatar_url` left unset means the pack's avatar is kept. The pack's config is applied first and the bot's declared `config` / `native_config` values win. A declared `native_config.tool_images` owns all its fields, so a partial block resets the fields it leaves out to the platform defaults, not to the pack's values: declare every `tool_images` field, or leave the block out. The pack's skills and tools count toward `botyard_bot_skill_assignment` / `botyard_bot_tool_assignment`, which own the bot's complete sets: include them with `setunion(data.botyard_pack_version.<name>.skill_ids, [...])`. (see [below for nested schema](#nestedatt--pack))
+- `resources` (Attributes) Compute for the bot's pod, as Kubernetes quantities, on top of the plan's preset.
+
+When the block is **omitted**, Terraform does not manage compute: it never sends it, so a size set in the Botyard app is left alone. When the block is **declared**, each quantity you set is applied over the bot's current shape, and the ones you leave out adopt the bot's current values. Only quantities that changed are sent, because **every change restarts the bot**. **Removing the block** resets the bot to the plan's default shape; removing a single quantity keeps its current value.
+
+The plan's per-bot maximums apply, and sizing above the plan's included resources needs a payment method on the organization. `storage` can only grow. Quantities are compared by value, so `2` and `2000m` are the same CPU and never produce a diff.
+
+Requests follow their limits unless you set them: when `cpu_limit` or `memory_limit` changes and the matching request is not configured, the API re-derives the request from the new limit (CPU 10% of the limit within 250m–1000m; memory 60% with a 1536Mi floor), so the plan shows it as known after apply. A request you do set is sent with its limit, so it is kept. (see [below for nested schema](#nestedatt--resources))
+- `runtime_privilege_mode` (String) Privilege level of the bot runtime pod: `standard` or `privileged`. When omitted, Terraform reads the current value and leaves it alone.
+
+`privileged` requires a plan with privileged runtimes and moves the bot onto a Kata runtime class if it is not on one already. **Changing it restarts the bot.**
 - `suggestions_opt_out` (Boolean) Opt the bot out of skill **and** tool suggestions. One platform flag covers both. `true` hides the suggestions banner for this bot; `false` turns suggestions back on. When omitted, Terraform reads the current value and leaves it alone.
 
 Reading and changing it require bot ownership, and an API key owns only the bots it created. On a bot created in the Botyard app or with another key, Terraform cannot read the flag: it keeps the last value it knew (none after an import), so a refresh or plan is unaffected, and changing it fails with a "Not the bot's owner" error.
@@ -240,8 +261,7 @@ Reading and changing it require bot ownership, and an API key owns only the bots
 - `namespace` (String) Kubernetes namespace for the bot runtime.
 - `onboarding_state` (String) Guided-setup lifecycle state of the bot.
 - `org_id` (String) Organization ID that owns the bot.
-- `runtime_class` (String) Container runtime class for the bot pod (e.g. `kata_qemu`, `runc`, or a cluster default). Set by the platform; not user-configurable.
-- `runtime_privilege_mode` (String) Privilege level of the bot runtime pod. Read-only in this provider version.
+- `runtime_class` (String) Container runtime class for the bot pod (e.g. `kata_qemu`, `runc`, or a cluster default). Set by the platform; not user-configurable. Switching `runtime_privilege_mode` to `privileged` can change it.
 - `slug` (String) URL-friendly bot identifier, derived from the name at creation. Used as the import ID.
 - `storage_class` (String) Storage class for the bot's workspace PVC. Set by the platform; not user-configurable.
 - `updated_at` (String) Last-update timestamp (RFC 3339).
@@ -481,6 +501,19 @@ Read-Only:
 - `bot_pack_connection_setup_id` (String) Its setup.
 - `pack_version_connection_id` (String) The connection.
 - `state` (String) Where the setup is, e.g. `needs_input`.
+
+
+
+<a id="nestedatt--resources"></a>
+### Nested Schema for `resources`
+
+Optional:
+
+- `cpu_limit` (String) CPU ceiling for the pod, e.g. `1` or `2`.
+- `cpu_request` (String) CPU reserved for the pod, e.g. `500m` or `1`. Must not exceed `cpu_limit`.
+- `memory_limit` (String) Memory ceiling for the pod, e.g. `2Gi`.
+- `memory_request` (String) Memory reserved for the pod, e.g. `1Gi`. Must not exceed `memory_limit`.
+- `storage` (String) Size of the bot's durable workspace volume, e.g. `10Gi`. Can only grow: Kubernetes cannot shrink a volume, so the API refuses a smaller value. Removing the `resources` block resets the recorded size to the plan's default, but the volume itself is never shrunk.
 
 ## Import
 

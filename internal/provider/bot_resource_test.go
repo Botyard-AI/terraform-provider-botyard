@@ -107,7 +107,7 @@ func TestBuildBotUpdateBody_OnlyMetadataFields(t *testing.T) {
 	model.Description = types.StringValue("new desc")
 	model.AvatarURL = types.StringValue("https://ex/a.png")
 
-	body, err := buildBotUpdateBody(model, types.StringNull())
+	body, err := buildBotUpdateBody(model, botResourceModel())
 	if err != nil {
 		t.Fatalf("build: %v", err)
 	}
@@ -119,9 +119,11 @@ func TestBuildBotUpdateBody_OnlyMetadataFields(t *testing.T) {
 	if jsonStr(t, m["avatar_url"]) != "https://ex/a.png" {
 		t.Errorf("avatar_url = %s", m["avatar_url"])
 	}
-	// name is immutable (RequiresReplace) and rejected by BotUpdate; config,
-	// tier, and runtime fields are out of Phase A scope for the metadata PATCH.
-	for _, k := range []string{"name", "config", "tier", "cluster_id", "runtime_class", "runtime_privilege_mode", "slug"} {
+	// name is immutable (RequiresReplace) and rejected by BotUpdate; config
+	// has its own PATCH; tier and runtime_class are not writable; the runtime
+	// settings are sent only when the plan moves them (here it does not).
+	for _, k := range []string{"name", "config", "tier", "cluster_id", "runtime_class", "runtime_privilege_mode",
+		"auto_suspend_enabled", "resources", "slug"} {
 		if _, ok := m[k]; ok {
 			t.Errorf("update body must not carry %q", k)
 		}
@@ -135,7 +137,7 @@ func TestBuildBotUpdateBody_OnlyMetadataFields(t *testing.T) {
 // UseStateForUnknown that would restore the old value.)
 func TestBuildBotUpdateBody_ClearsWithNull(t *testing.T) {
 	model := botResourceModel() // description + avatar_url both null
-	body, err := buildBotUpdateBody(model, types.StringNull())
+	body, err := buildBotUpdateBody(model, botResourceModel())
 	if err != nil {
 		t.Fatalf("build: %v", err)
 	}
@@ -344,7 +346,7 @@ func TestBotResource_UpdateRoundTrip(t *testing.T) {
 	c := newBotClient(t, srv.URL, "byk_test")
 	model := botResourceModel()
 	model.Description = types.StringValue("updated")
-	body, err := buildBotUpdateBody(model, types.StringNull())
+	body, err := buildBotUpdateBody(model, botResourceModel())
 	if err != nil {
 		t.Fatalf("build: %v", err)
 	}

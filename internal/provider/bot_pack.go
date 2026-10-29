@@ -551,12 +551,22 @@ func (r *BotResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanReq
 		}
 	}
 	r.modifyPackPlan(ctx, &plan, state, &resp.Diagnostics)
+	var cfg BotResourceModel
+	resp.Diagnostics.Append(req.Config.Get(ctx, &cfg)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	modifyBotResourcesPlan(ctx, plan, cfg, state, resp)
+	if runtimeClassMayChange(plan, state) {
+		resp.Diagnostics.Append(resp.Plan.SetAttribute(ctx, path.Root("runtime_class"), types.StringUnknown())...)
+	}
 }
 
 // createFromPack is Create for a bot with a `pack` block: from-pack, then the
 // sparse config PATCH when a config block is declared, then the install read
 // that fills the computed `pack` attributes.
 func (r *BotResource) createFromPack(ctx context.Context, plan BotResourceModel, resp *resource.CreateResponse) {
+	want := plannedRuntimeSettings(plan)
 	bot, installID, ok := r.createBotFromPack(ctx, plan, &resp.Diagnostics)
 	if !ok {
 		return
@@ -575,11 +585,25 @@ func (r *BotResource) createFromPack(ctx context.Context, plan BotResourceModel,
 		final, ok := r.updateBotConfig(ctx, bot.Slug, plan, &resp.Diagnostics)
 		if !ok {
 			mapBotDesiredConfig(bot.Harness, &bot.DesiredConfig, plan.Config, plan.NativeConfig, &resp.Diagnostics)
+			// The runtime PATCH, which carries `resources` on a pack create,
+			// was never sent.
+			settleUnsentResources(bot, plan.Resources)
 			r.savePartialPackBot(ctx, plan, declaredAvatar, resp)
 			return
 		}
 		mapBotResource(final, &plan)
 		mapBotDesiredConfig(final.Harness, &final.DesiredConfig, plan.Config, plan.NativeConfig, &resp.Diagnostics)
+		bot = final
+	}
+	// A pack create carries none of the runtime settings, `resources`
+	// included, so the PATCH settles all of them.
+	settled, ok := r.applyRuntimeSettingsAfterCreate(ctx, want, bot, true, &resp.Diagnostics)
+	mapBotResource(settled, &plan)
+	mapBotResources(settled, plan.Resources)
+	if !ok {
+		settleUnsentResources(settled, plan.Resources)
+		r.savePartialPackBot(ctx, plan, declaredAvatar, resp)
+		return
 	}
 	if !r.refreshPack(ctx, &plan, &resp.Diagnostics) {
 		r.savePartialPackBot(ctx, plan, declaredAvatar, resp)
@@ -611,6 +635,7 @@ func (r *BotResource) savePartialPackBot(ctx context.Context, plan BotResourceMo
 		p.PendingConnections = types.ListNull(pendingConnectionObjectType)
 	}
 	plan.SuggestionsOptOut = types.BoolNull()
+	nullUnknownResources(plan.Resources)
 	keepPackAvatar(&plan, declaredAvatar)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }

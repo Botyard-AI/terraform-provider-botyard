@@ -56,6 +56,14 @@ resource "botyard_bot" "researcher" {
       mode = "auto"
     }
   }
+
+  # Size the bot above its plan preset. Only the quantities set here are
+  # managed; the others keep their current values. Changing them restarts the
+  # bot.
+  resources = {
+    cpu_limit    = "2"
+    memory_limit = "4Gi"
+  }
 }
 
 # A bot created from a Bot Pack. The pack is installed when the bot is
