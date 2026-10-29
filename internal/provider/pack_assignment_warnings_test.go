@@ -36,7 +36,8 @@ type packWarnAPI struct {
 	tools         []string
 	botReads      int
 	installsReads int
-	unexpected    []string // requests the fake does not serve; failed in t.Cleanup
+	slugReads     map[string]int // bot GETs by slug
+	unexpected    []string       // requests the fake does not serve; failed in t.Cleanup
 }
 
 // fakeAssignedSkill / fakeAssignedTool are the list rows the fake returns.
@@ -82,7 +83,8 @@ func (a *packWarnAPI) checkUnexpected(t *testing.T) {
 }
 
 func newPackWarnAPI(items ...string) *packWarnAPI {
-	return &packWarnAPI{botStatus: 200, items: "[" + strings.Join(items, ",") + "]", skills: map[string]bool{}}
+	return &packWarnAPI{botStatus: 200, items: "[" + strings.Join(items, ",") + "]", skills: map[string]bool{},
+		slugReads: map[string]int{}}
 }
 
 func skillItem(skillID string, live bool, origin string) string {
@@ -114,6 +116,7 @@ func (a *packWarnAPI) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch p := r.URL.Path; {
 	case p == "/v1/orgs/org-1/bots/bot-1" && r.Method == http.MethodGet:
 		a.botReads++
+		a.slugReads["bot-1"]++
 		if a.botStatus != 200 {
 			jsonOK(a.botStatus, `{"title":"nope","status":`+fmt.Sprint(a.botStatus)+`}`)
 			return
@@ -121,6 +124,7 @@ func (a *packWarnAPI) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		jsonOK(200, `{"id":"`+warnBotID+`","slug":"bot-1","name":"Bot"}`)
 	case p == "/v1/orgs/org-1/bots/bot-2" && r.Method == http.MethodGet:
 		a.botReads++ // a bot that does not exist yet (bot_slug change to a new bot)
+		a.slugReads["bot-2"]++
 		jsonOK(404, `{"title":"not found","status":404}`)
 	case p == "/v1/orgs/org-1/packs/installs" && r.Method == http.MethodGet:
 		a.installsReads++
@@ -483,5 +487,86 @@ resource "botyard_bot_skill_assignment" "s" {
 				},
 			),
 		}},
+	})
+}
+
+func (a *packWarnAPI) readsOf(slug string) int {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	return a.slugReads[slug]
+}
+
+// TestPackStripWarning_ReplacePlanChecksPreviousBot runs real Terraform core:
+// changing bot_slug replaces the assignment, and core plans that as one
+// change (prior state, then a re-plan with null prior) with no ModifyPlan for
+// the delete half. The plan must still check the previous bot, whose pack
+// skill the replacement's Delete would unassign. The fake only serves reads
+// the check makes, so reads of bot-1 and its installs during the plan-only
+// step are the check running; the warning text itself is asserted by the
+// ModifyPlan unit tests.
+func TestPackStripWarning_ReplacePlanChecksPreviousBot(t *testing.T) {
+	api := newPackWarnAPI(skillItem("sk-pack", true, "added"))
+	api.skills["sk-pack"] = true
+	srv := httptest.NewServer(api)
+	t.Cleanup(srv.Close)
+	t.Cleanup(func() { api.checkUnexpected(t) })
+	cfg := func(slug string) string {
+		return packsConfig(srv.URL, `
+resource "botyard_bot_skill_assignment" "s" {
+  bot_slug  = "`+slug+`"
+  skill_ids = ["sk-pack"]
+}
+`)
+	}
+	var bot1Before, installsBefore int
+	tfresource.UnitTest(t, tfresource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []tfresource.TestStep{
+			{Config: cfg("bot-1")}, // keeps the pack skill: quiet
+			{
+				PreConfig: func() {
+					bot1Before = api.readsOf("bot-1")
+					_, installsBefore = api.reads()
+				},
+				Config:             cfg("bot-2"),
+				PlanOnly:           true,
+				ExpectNonEmptyPlan: true, // replacement
+			},
+			{
+				PreConfig: func() {
+					_, installs := api.reads()
+					if got := api.readsOf("bot-1") - bot1Before; got < 1 {
+						t.Errorf("replacement plan did not read the previous bot (bot-1): %d reads", got)
+					}
+					if installs-installsBefore < 1 {
+						t.Errorf("replacement plan did not read the previous bot's pack installs")
+					}
+					if api.readsOf("bot-2") < 1 {
+						t.Errorf("replacement plan did not check the new bot (bot-2)")
+					}
+				},
+				Config:   cfg("bot-1"),
+				PlanOnly: true, // unchanged: empty plan
+			},
+			{
+				PreConfig: func() {
+					bot1Before = api.readsOf("bot-1")
+					_, installsBefore = api.reads()
+				},
+				Config:   cfg("bot-1"),
+				PlanOnly: true,
+			},
+			{
+				PreConfig: func() {
+					_, installs := api.reads()
+					if got := api.readsOf("bot-1") - bot1Before; got != 0 || installs != installsBefore {
+						t.Errorf("an unchanged plan must make no check reads, got %d bot and %d installs reads",
+							got, installs-installsBefore)
+					}
+				},
+				Config:   cfg("bot-1"),
+				PlanOnly: true,
+			},
+		},
 	})
 }

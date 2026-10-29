@@ -25,31 +25,25 @@ import (
 // The check is advisory: it never fails a plan. If the bot does not exist yet,
 // or a read fails, the warning is skipped (a failed read says so).
 
-// packAssignmentKind selects which install items a resource cares about.
-type packAssignmentKind int
+// packAssignmentKind selects which install items a resource cares about. It
+// carries its own names, so neither kind is an implicit default.
+type packAssignmentKind struct {
+	nounText string // "skill" / "tool"
+	attrName string // the resource's id-set attribute
+}
 
-const (
-	packAssignmentSkills packAssignmentKind = iota
-	packAssignmentTools
+var (
+	packAssignmentSkills = packAssignmentKind{nounText: "skill", attrName: "skill_ids"}
+	packAssignmentTools  = packAssignmentKind{nounText: "tool", attrName: "tool_ids"}
 )
 
-func (k packAssignmentKind) noun() string {
-	if k == packAssignmentTools {
-		return "tool"
-	}
-	return "skill"
-}
+func (k packAssignmentKind) noun() string { return k.nounText }
+
+func (k packAssignmentKind) attr() string { return k.attrName }
 
 // packVersionRef is the pack_version expression yielding this kind's ids.
 func (k packAssignmentKind) packVersionRef() string {
 	return "data.botyard_pack_version.<name>." + k.attr()
-}
-
-func (k packAssignmentKind) attr() string {
-	if k == packAssignmentTools {
-		return "tool_ids"
-	}
-	return "skill_ids"
 }
 
 // packItemRef is one live pack item: the catalog id the assignment resource
