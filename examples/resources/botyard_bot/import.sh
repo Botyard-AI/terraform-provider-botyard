@@ -1,4 +1,11 @@
 # Bots are imported by their slug (the API's URL identifier).
+#
+# An API key owns only the bots it created. For a bot created in the Botyard
+# app or with another key, import, refresh and planning are supported, but
+# updates and deletion require the API key that created the bot.
+# `suggestions_opt_out` is also unreadable on such a bot: leave it out of the
+# configuration. It stays unset after import, and setting it fails with
+# "Not the bot's owner".
 terraform import botyard_bot.support support-assistant
 
 # A bot with a Bot Pack install: `<slug>` alone adopts the install only when the

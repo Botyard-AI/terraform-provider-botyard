@@ -36,6 +36,9 @@ a version.
   - Leaving `avatar_url` unset keeps the pack's avatar.
   - Import takes `<slug>`, `<slug>:<install_id>` or `<slug>:<pack_slug>`. `<slug>` alone adopts an install only when the bot has exactly one.
   - Bots without `pack` are unchanged and make no extra API calls.
+- **`botyard_bot`: `suggestions_opt_out`** turns off skill **and** tool suggestions for a bot (one platform flag covers both). `true` opts out; an explicit `false` turns suggestions back on. Works the same for bots created with `pack`. (#43)
+  - Leaving it out reads the current value and never changes it, so existing configurations plan clean after upgrading. Each refresh reads the flag with one extra API call.
+  - An API key owns only the bots it created. For a bot created in the Botyard app or with another key, import, refresh and planning are supported, but updates and deletion require the API key that created the bot. The flag is also unreadable on such a bot: Terraform keeps the last value it knew (none after an import), and setting it fails with a "Not the bot's owner" error.
 
 ## [0.6.1] - 2026-10-29
 

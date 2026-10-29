@@ -68,6 +68,10 @@ type BotResourceModel struct {
 	// The Bot Pack the bot was created from; nil without one (see bot_pack.go).
 	Pack *botPackModel `tfsdk:"pack"`
 
+	// Suggestions opt-out (Optional+Computed). Not on BotResponse: read and
+	// written through the bot's suggestions endpoint (see bot_suggestions.go).
+	SuggestionsOptOut types.Bool `tfsdk:"suggestions_opt_out"`
+
 	// Server-owned identity (computed).
 	ID        types.String `tfsdk:"id"`
 	Slug      types.String `tfsdk:"slug"`
@@ -126,6 +130,11 @@ func (r *BotResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *
 			"It manages the bot's core identity (name, description, avatar) and its OpenClaw `config` " +
 			"overrides, and exposes runtime placement and control-plane state as read-only attributes; " +
 			"the bot's skill/tool/credential assignments are managed separately.\n\n" +
+			"**Bot ownership.** An API key owns only the bots it created, even when its organization role is " +
+			"owner. For a bot created in the Botyard app or with another key, import, refresh and planning are " +
+			"supported, but updates and deletion require the API key that created the bot.\n\n" +
+			"`suggestions_opt_out` is also unreadable on such a bot: Terraform keeps the last value it knew " +
+			"(none after an import), and changing it fails with a \"Not the bot's owner\" error.\n\n" +
 			"See [Getting started](https://docs.botyard.io/docs/getting-started) in the Botyard docs.",
 		Attributes: map[string]schema.Attribute{
 			"name": schema.StringAttribute{
@@ -190,6 +199,8 @@ func (r *BotResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *
 			"config":        botConfigSchemaAttribute(),
 			"native_config": botNativeConfigSchemaAttribute(),
 			"pack":          botPackSchemaAttribute(),
+
+			suggestionsOptOutAttr: suggestionsOptOutSchemaAttribute(),
 
 			"id":        stableComputedString("Unique bot identifier (UUID)."),
 			"slug":      stableComputedString("URL-friendly bot identifier, derived from the name at creation. Used as the import ID."),
@@ -323,6 +334,9 @@ func (r *BotResource) Create(ctx context.Context, req resource.CreateRequest, re
 	// The create POST embeds the config, so the 201 already reflects the merged
 	// desired_config — refresh the declared config leaves from it.
 	mapBotDesiredConfig(apiResp.JSON201.Harness, &apiResp.JSON201.DesiredConfig, plan.Config, plan.NativeConfig, &resp.Diagnostics)
+	// The bot exists from here on, so state is set even if the opt-out call
+	// fails: Terraform then taints the bot rather than orphaning it.
+	plan.SuggestionsOptOut = r.applySuggestionsOptOutOnCreate(ctx, plan.Slug.ValueString(), plan.SuggestionsOptOut, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
@@ -370,6 +384,7 @@ func (r *BotResource) Read(ctx context.Context, req resource.ReadRequest, resp *
 			return
 		}
 		keepPackAvatar(&state, declaredAvatar)
+		state.SuggestionsOptOut = r.refreshSuggestionsOptOut(ctx, state.Slug.ValueString(), state.SuggestionsOptOut, &resp.Diagnostics)
 		resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 	}
 }
@@ -378,6 +393,31 @@ func (r *BotResource) Update(ctx context.Context, req resource.UpdateRequest, re
 	var plan, state BotResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	// The suggestions opt-out goes first, before any other write. Its endpoint
+	// is the only one with an owner-specific diagnostic, so on a bot this key
+	// does not own (D6 #4379) the practitioner sees "Not the bot's owner" for
+	// the setting they changed, not a generic 403 from the metadata PATCH,
+	// which is sent on every update.
+	//
+	// The framework seeds resp.State with the PRIOR state (fwserver
+	// server_updateresource.go: "Require explicit provider updates for
+	// tracking successful updates"), so every early return below records only
+	// what has been explicitly set. If the opt-out fails, nothing has been
+	// written and the prior state is right as it is. If it succeeds, checkpoint
+	// it at once: prior state plus the applied flag, and nothing from the plan
+	// that has not been written yet. A later failure then keeps the flag
+	// instead of reverting it to a value the server no longer holds.
+	optOut, ok := r.applySuggestionsOptOutOnUpdate(ctx, state.Slug.ValueString(), plan.SuggestionsOptOut, state.SuggestionsOptOut, &resp.Diagnostics)
+	if !ok {
+		return
+	}
+	checkpoint := state
+	checkpoint.SuggestionsOptOut = optOut
+	resp.Diagnostics.Append(resp.State.Set(ctx, &checkpoint)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -432,6 +472,7 @@ func (r *BotResource) Update(ctx context.Context, req resource.UpdateRequest, re
 		}
 	}
 	keepPackAvatar(&plan, declaredAvatar)
+	plan.SuggestionsOptOut = optOut
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 

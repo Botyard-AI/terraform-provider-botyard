@@ -4,12 +4,18 @@ page_title: "botyard_bot Resource - Botyard"
 subcategory: ""
 description: |-
   Manages a Botyard bot's desired-state record within the configured organization. Creating the resource persists the bot and triggers provisioner reconciliation best-effort. It manages the bot's core identity (name, description, avatar) and its OpenClaw config overrides, and exposes runtime placement and control-plane state as read-only attributes; the bot's skill/tool/credential assignments are managed separately.
+  Bot ownership. An API key owns only the bots it created, even when its organization role is owner. For a bot created in the Botyard app or with another key, import, refresh and planning are supported, but updates and deletion require the API key that created the bot.
+  suggestions_opt_out is also unreadable on such a bot: Terraform keeps the last value it knew (none after an import), and changing it fails with a "Not the bot's owner" error.
   See Getting started https://docs.botyard.io/docs/getting-started in the Botyard docs.
 ---
 
 # botyard_bot (Resource)
 
 Manages a Botyard bot's desired-state record within the configured organization. Creating the resource persists the bot and triggers provisioner reconciliation best-effort. It manages the bot's core identity (name, description, avatar) and its OpenClaw `config` overrides, and exposes runtime placement and control-plane state as read-only attributes; the bot's skill/tool/credential assignments are managed separately.
+
+**Bot ownership.** An API key owns only the bots it created, even when its organization role is owner. For a bot created in the Botyard app or with another key, import, refresh and planning are supported, but updates and deletion require the API key that created the bot.
+
+`suggestions_opt_out` is also unreadable on such a bot: Terraform keeps the last value it knew (none after an import), and changing it fails with a "Not the bot's owner" error.
 
 See [Getting started](https://docs.botyard.io/docs/getting-started) in the Botyard docs.
 
@@ -22,6 +28,9 @@ See [Getting started](https://docs.botyard.io/docs/getting-started) in the Botya
 resource "botyard_bot" "support" {
   name        = "Support Assistant"
   description = "Answers customer questions in the help center."
+
+  # Hide skill and tool suggestions for this bot.
+  suggestions_opt_out = true
 }
 
 # A bot with OpenClaw config overrides. `config` is a nested attribute, so it
@@ -215,6 +224,9 @@ output "triage_host_policy" {
 - `hosting_type` (String) Who runs this bot's runtime: `hosted` (default) or `self_hosted`. Immutable — changing it forces replacement. Must form a permitted pair with `harness`; the API enforces the allowlist behind `GET /orgs/{org_id}/bots/hosting-options`.
 - `native_config` (Attributes) Configuration for a native (`botyard_native`) bot, applied via the config endpoint (embedded in the create request and sent to `PATCH /config` on update). Requires `harness = "botyard_native"`, and conflicts with `config`, which models the OpenClaw shape. Only the fields you set are applied over the platform's defaults. (see [below for nested schema](#nestedatt--native_config))
 - `pack` (Attributes) A Bot Pack to create this bot from. When set, the bot is created with `POST /bots/from-pack`, which installs the pack in the same transaction. Removing the block uninstalls the pack and keeps the bot. Adding it to an existing bot, or changing `pack_version_id`, is refused at plan time: the API has no install-on-existing-bot or upgrade path yet, and the provider never replaces a bot (that would lose its conversations and memory). `avatar_url` left unset means the pack's avatar is kept. (see [below for nested schema](#nestedatt--pack))
+- `suggestions_opt_out` (Boolean) Opt the bot out of skill **and** tool suggestions. One platform flag covers both. `true` hides the suggestions banner for this bot; `false` turns suggestions back on. When omitted, Terraform reads the current value and leaves it alone.
+
+Reading and changing it require bot ownership, and an API key owns only the bots it created. On a bot created in the Botyard app or with another key, Terraform cannot read the flag: it keeps the last value it knew (none after an import), so a refresh or plan is unaffected, and changing it fails with a "Not the bot's owner" error.
 
 ### Read-Only
 
@@ -478,6 +490,13 @@ The [`terraform import` command](https://developer.hashicorp.com/terraform/cli/c
 
 ```shell
 # Bots are imported by their slug (the API's URL identifier).
+#
+# An API key owns only the bots it created. For a bot created in the Botyard
+# app or with another key, import, refresh and planning are supported, but
+# updates and deletion require the API key that created the bot.
+# `suggestions_opt_out` is also unreadable on such a bot: leave it out of the
+# configuration. It stays unset after import, and setting it fails with
+# "Not the bot's owner".
 terraform import botyard_bot.support support-assistant
 
 # A bot with a Bot Pack install: `<slug>` alone adopts the install only when the

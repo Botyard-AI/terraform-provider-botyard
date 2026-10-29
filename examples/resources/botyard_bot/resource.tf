@@ -4,6 +4,9 @@
 resource "botyard_bot" "support" {
   name        = "Support Assistant"
   description = "Answers customer questions in the help center."
+
+  # Hide skill and tool suggestions for this bot.
+  suggestions_opt_out = true
 }
 
 # A bot with OpenClaw config overrides. `config` is a nested attribute, so it

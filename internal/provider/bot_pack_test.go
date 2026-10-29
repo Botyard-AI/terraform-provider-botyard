@@ -14,6 +14,8 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
+	fwresource "github.com/hashicorp/terraform-plugin-framework/resource"
+	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/plancheck"
@@ -51,6 +53,9 @@ type fakePackBotAPI struct {
 
 	failConfig   bool // PATCH /config answers 500
 	failInstalls bool // GET /packs/installs answers 500
+	failOptOut   bool // PUT /suggestions/opt-out answers 500
+	optOut       bool
+	optOutPuts   []bool
 	mode         string
 	avatar       string
 	calls        []string
@@ -166,6 +171,23 @@ func (a *fakePackBotAPI) serve(w http.ResponseWriter, r *http.Request) {
 		}
 		a.installed, a.avatar = false, ""
 		_, _ = w.Write([]byte(`{"uninstalls":[]}`))
+	// botyard_bot reads suggestions_opt_out on every refresh (PR 43).
+	case r.Method == http.MethodGet && r.URL.Path == bot+"/suggestions" && a.exists:
+		_, _ = fmt.Fprintf(w, `{"skills":[],"tools":[],"opt_out":%t}`, a.optOut)
+	case r.Method == http.MethodPut && r.URL.Path == bot+"/suggestions/opt-out" && a.failOptOut:
+		w.WriteHeader(http.StatusInternalServerError)
+		_, _ = w.Write([]byte(`{"title":"injected opt-out failure","status":500}`))
+	case r.Method == http.MethodPut && r.URL.Path == bot+"/suggestions/opt-out" && a.exists:
+		var body struct {
+			OptOut *bool `json:"opt_out"`
+		}
+		if err := json.Unmarshal(raw, &body); err != nil || body.OptOut == nil {
+			a.t.Errorf("opt-out PUT body %s", raw)
+		} else {
+			a.optOut = *body.OptOut
+			a.optOutPuts = append(a.optOutPuts, *body.OptOut)
+		}
+		_, _ = fmt.Fprintf(w, `{"skills":[],"tools":[],"opt_out":%t}`, a.optOut)
 	case r.Method == http.MethodPost && r.URL.Path == base+"/packs/connections/preview":
 		_, _ = fmt.Fprintf(w, `{"versions":[{"pack_version_id":%q,"connections":[%s,%s,%s]}],"not_found":[]}`, fpPV1,
 			previewMcp(fpConnCRM, "credential_form", true), previewMcp(fpConnMail, "oauth", false),
@@ -878,7 +900,10 @@ func (c priorStateHas) CheckPlan(_ context.Context, req plancheck.CheckPlanReque
 		if r.Address != addr {
 			continue
 		}
-		got := map[string]string{"id": fmt.Sprint(r.AttributeValues["id"])}
+		got := map[string]string{
+			"id":                  fmt.Sprint(r.AttributeValues["id"]),
+			"suggestions_opt_out": fmt.Sprint(r.AttributeValues["suggestions_opt_out"]),
+		}
 		if p, ok := r.AttributeValues["pack"].(map[string]any); ok {
 			got["pack.bot_pack_install_id"] = fmt.Sprint(p["bot_pack_install_id"])
 		}
@@ -904,10 +929,14 @@ func TestBotPack_PartialCreateIsTaintedNotOrphaned(t *testing.T) {
 	}{
 		{"config patch fails", func(a *fakePackBotAPI, on bool) { a.failConfig = on }, `Unexpected response updating bot config`},
 		{"installs read fails", func(a *fakePackBotAPI, on bool) { a.failInstalls = on }, `Unexpected response reading bot pack installs`},
+		{"opt-out write fails", func(a *fakePackBotAPI, on bool) { a.failOptOut = on }, `Unexpected response setting bot suggestions opt-out`},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			api, srv := newFakePackBotAPI(t)
-			cfg := packBotConfig(srv.URL, packBlock(fpPV1, ""))
+			// A declared opt-out: the failed create must not record it as
+			// applied (state holds null, not true), and only the replacement
+			// writes it.
+			cfg := packBotConfig(srv.URL, packBlock(fpPV1, "")+"\n  suggestions_opt_out = true")
 			countCalls := func(call string) int {
 				n := 0
 				for _, c := range api.callLog() {
@@ -930,7 +959,12 @@ func TestBotPack_PartialCreateIsTaintedNotOrphaned(t *testing.T) {
 						Config:    cfg,
 						ConfigPlanChecks: resource.ConfigPlanChecks{PreApply: []plancheck.PlanCheck{
 							plancheck.ExpectResourceAction(addr, plancheck.ResourceActionDestroyBeforeCreate),
-							priorStateHas{want: map[string]string{"id": fpBotID, "pack.bot_pack_install_id": fpInstallID}},
+							priorStateHas{want: map[string]string{
+								// The failed create saved null; the plan's refresh then
+								// reads the server's value. Either way, never the
+								// configured `true` the server does not hold.
+								"id": fpBotID, "pack.bot_pack_install_id": fpInstallID, "suggestions_opt_out": "false",
+							}},
 						}},
 						Check: func(*terraform.State) error {
 							if n := countCalls("POST /v1/orgs/org-1/bots/from-pack"); n != 2 {
@@ -939,11 +973,102 @@ func TestBotPack_PartialCreateIsTaintedNotOrphaned(t *testing.T) {
 							if n := countCalls("DELETE /v1/orgs/org-1/bots/pack-probe"); n != 1 {
 								return fmt.Errorf("bot deletes = %d, want 1: the tainted bot removed before its replacement", n)
 							}
+							api.mu.Lock()
+							defer api.mu.Unlock()
+							if fmt.Sprint(api.optOutPuts) != "[true]" {
+								return fmt.Errorf("applied opt-out PUTs = %v, want [true] (the replacement only)", api.optOutPuts)
+							}
 							return nil
 						},
 					},
 				},
 			})
+		})
+	}
+}
+
+// A pack-created bot settles suggestions_opt_out like any other: omitted is
+// read and never written; true and an explicit false are written once and
+// re-plan clean.
+func TestBotPack_SuggestionsOptOut(t *testing.T) {
+	for _, tc := range []struct {
+		name, attr, want, puts string
+	}{
+		{"omitted", "", "false", "[]"},
+		{"true", "\n  suggestions_opt_out = true", "true", "[true]"},
+		{"explicit false", "\n  suggestions_opt_out = false", "false", "[false]"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			api, srv := newFakePackBotAPI(t)
+			cfg := packBotConfig(srv.URL, packBlock(fpPV1, "")+tc.attr)
+			resource.UnitTest(t, resource.TestCase{
+				ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+				Steps: []resource.TestStep{
+					{
+						Config: cfg,
+						Check: resource.ComposeAggregateTestCheckFunc(
+							resource.TestCheckResourceAttr(addr, "pack.bot_pack_install_id", fpInstallID),
+							resource.TestCheckResourceAttr(addr, "suggestions_opt_out", tc.want),
+							func(*terraform.State) error {
+								api.mu.Lock()
+								defer api.mu.Unlock()
+								if got := fmt.Sprint(api.optOutPuts); got != tc.puts {
+									return fmt.Errorf("opt-out PUTs = %s, want %s", got, tc.puts)
+								}
+								return nil
+							},
+						),
+					},
+					{Config: cfg, PlanOnly: true},
+				},
+			})
+		})
+	}
+}
+
+// savePartialPackBot runs when a pack create fails after from-pack, before the
+// opt-out was read or written. It must record suggestions_opt_out as null,
+// never the configured value the server does not hold. Asserted on the state
+// it returns, with no refresh: TestBotPack_PartialCreateIsTaintedNotOrphaned
+// goes through Terraform core, whose next plan re-reads the flag first.
+func TestBotPack_PartialCreateSavesNullOptOut(t *testing.T) {
+	for _, tc := range []struct {
+		name    string
+		planned types.Bool
+	}{
+		{"configured true", types.BoolValue(true)},
+		{"configured false", types.BoolValue(false)},
+		{"omitted (unknown)", types.BoolUnknown()},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx := context.Background()
+			sch := botSchema(t)
+			plan := BotResourceModel{
+				Name:              types.StringValue("pack-probe"),
+				Slug:              types.StringValue("pack-probe"),
+				ID:                types.StringValue(fpBotID),
+				SuggestionsOptOut: tc.planned,
+				Pack: &botPackModel{
+					PackVersionID:      types.StringValue(fpPV1),
+					BotPackInstallID:   types.StringValue(fpInstallID),
+					PackID:             types.StringUnknown(),
+					PackSlug:           types.StringUnknown(),
+					VersionNo:          types.Int64Unknown(),
+					PendingConnections: types.ListUnknown(pendingConnectionObjectType),
+				},
+			}
+			resp := fwresource.CreateResponse{State: tfsdk.State{Schema: sch}}
+			(&BotResource{}).savePartialPackBot(ctx, plan, types.StringNull(), &resp)
+			if resp.Diagnostics.HasError() {
+				t.Fatalf("diags: %v", resp.Diagnostics)
+			}
+			var got BotResourceModel
+			if d := resp.State.Get(ctx, &got); d.HasError() {
+				t.Fatalf("saved state: %v", d)
+			}
+			if !got.SuggestionsOptOut.IsNull() {
+				t.Errorf("saved suggestions_opt_out = %s, want null", got.SuggestionsOptOut)
+			}
 		})
 	}
 }
