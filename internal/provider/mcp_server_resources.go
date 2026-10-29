@@ -15,7 +15,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-go/tftypes"
@@ -76,17 +75,26 @@ func (m *mcpServerResourcesModel) lineItems() []struct {
 	}
 }
 
-func mcpServerResourcesSchemaAttribute() schema.SingleNestedAttribute {
-	leaf := func(kind quantityKind, desc string) schema.StringAttribute {
-		return schema.StringAttribute{
-			CustomType:          quantityType{kind: kind},
-			Optional:            true,
-			Computed:            true,
-			MarkdownDescription: desc,
-			Validators:          []validator.String{quantityFormatValidator(kind)},
-			PlanModifiers:       []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
-		}
+// resourceQuantityLeaf is one Optional+Computed line-item of a `resources`
+// block: set means managed, unset adopts the current value.
+//
+// The modifier must be the nested variant: with the stock UseStateForUnknown,
+// declaring the block on an existing resource planned every unset line-item
+// as null (its absent parent's null), and the apply then failed with
+// "Provider produced inconsistent result after apply" once the API filled it.
+func resourceQuantityLeaf(kind quantityKind, desc string) schema.StringAttribute {
+	return schema.StringAttribute{
+		CustomType:          quantityType{kind: kind},
+		Optional:            true,
+		Computed:            true,
+		MarkdownDescription: desc,
+		Validators:          []validator.String{quantityFormatValidator(kind)},
+		PlanModifiers:       []planmodifier.String{nestedUseStateForUnknownString()},
 	}
+}
+
+func mcpServerResourcesSchemaAttribute() schema.SingleNestedAttribute {
+	leaf := resourceQuantityLeaf
 	return schema.SingleNestedAttribute{
 		Optional: true,
 		MarkdownDescription: "Pod compute for a `container_image` server, as Kubernetes quantities. Only valid " +

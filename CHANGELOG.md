@@ -44,6 +44,10 @@ a version.
   - Keep them with `setunion(data.botyard_pack_version.<name>.skill_ids, [...])`, or `tool_ids` for tools. The docs and examples have a "Bots with a pack" section.
   - The check reads the bot and its pack installs. It runs only when `skill_ids` / `tool_ids` changes or the resource is destroyed, so an unchanged plan makes no extra calls. If the read fails, the plan says the check was skipped.
 
+### Fixed
+
+- **`botyard_mcp_server`: declaring a `resources` block on an existing server no longer fails** with "Provider produced inconsistent result after apply". Quantities you leave out now adopt the server's current values. On v0.6.x, work around it by declaring `resources` when the server is created. (#45)
+
 ## [0.6.1] - 2026-10-29
 
 ### Fixed

@@ -330,6 +330,19 @@ func TestMcpServerResources_Lifecycle(t *testing.T) {
 				Config:   mcpConfig(srv.URL, "renamed", ""),
 				PlanOnly: true,
 			},
+			// 8. Declaring the block on the existing server: the unset
+			//    line-items adopt the server's values. With the stock
+			//    UseStateForUnknown they planned null (their absent parent's
+			//    null) and the apply failed with "inconsistent result".
+			{
+				Config: mcpConfig(srv.URL, "renamed", `resources = {
+    cpu_limit = "2"
+  }`),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("botyard_mcp_server.runner", "resources.cpu_limit", "2"),
+					resource.TestCheckResourceAttr("botyard_mcp_server.runner", "resources.storage", "20Gi"),
+				),
+			},
 		},
 	})
 }
