@@ -39,6 +39,10 @@ a version.
 - **`botyard_bot`: `suggestions_opt_out`** turns off skill **and** tool suggestions for a bot (one platform flag covers both). `true` opts out; an explicit `false` turns suggestions back on. Works the same for bots created with `pack`. (#43)
   - Leaving it out reads the current value and never changes it, so existing configurations plan clean after upgrading. Each refresh reads the flag with one extra API call.
   - An API key owns only the bots it created. For a bot created in the Botyard app or with another key, import, refresh and planning are supported, but updates and deletion require the API key that created the bot. The flag is also unreadable on such a bot: Terraform keeps the last value it knew (none after an import), and setting it fails with a "Not the bot's owner" error.
+- **`botyard_bot_skill_assignment` and `botyard_bot_tool_assignment` warn before removing a pack's skills or tools.** These resources own the bot's complete set. On a bot with a pack installed, leaving the pack's items out unassigns them on apply, and the pack does not add them back. (#44)
+  - The plan names each pack-installed skill or tool that a change, a destroy, or a `bot_slug` change (which replaces the resource and unassigns everything from the previous bot) would remove. It is a warning only; the plan and apply still go ahead.
+  - Keep them with `setunion(data.botyard_pack_version.<name>.skill_ids, [...])`, or `tool_ids` for tools. The docs and examples have a "Bots with a pack" section.
+  - The check reads the bot and its pack installs. It runs only when `skill_ids` / `tool_ids` changes or the resource is destroyed, so an unchanged plan makes no extra calls. If the read fails, the plan says the check was skipped.
 
 ## [0.6.1] - 2026-10-29
 

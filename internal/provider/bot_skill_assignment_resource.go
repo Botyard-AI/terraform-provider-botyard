@@ -22,6 +22,7 @@ var (
 	_ resource.Resource                = (*BotSkillAssignmentResource)(nil)
 	_ resource.ResourceWithConfigure   = (*BotSkillAssignmentResource)(nil)
 	_ resource.ResourceWithImportState = (*BotSkillAssignmentResource)(nil)
+	_ resource.ResourceWithModifyPlan  = (*BotSkillAssignmentResource)(nil)
 )
 
 // BotSkillAssignmentResource manages the complete set of skills assigned to a
@@ -58,7 +59,13 @@ func (r *BotSkillAssignmentResource) Schema(_ context.Context, _ resource.Schema
 			"**exclusive** ownership of the bot's skill assignments: any skill assigned outside Terraform is " +
 			"removed on the next apply so the bot's assigned skills converge on `skill_ids`. Use at most one " +
 			"`botyard_bot_skill_assignment` per bot. Assigning a skill makes it available to the bot; the " +
-			"separate deploy step that pushes SKILL.md files to a running pod is not modeled here.",
+			"separate deploy step that pushes SKILL.md files to a running pod is not modeled here. " +
+			"\n\n**Bots with a pack.** A pack installed on the bot (`botyard_bot` `pack`) assigns its own skills, " +
+			"and they count toward this exclusive set: leaving them out of `skill_ids` unassigns them on apply, and the " +
+			"pack does not re-grant them. Include them with " +
+			"`setunion(data.botyard_pack_version.<name>.skill_ids, [...])`. The plan warns, naming each pack-installed " +
+			"skill, when a change or destroy would remove one; checking costs two reads (the bot, then its pack " +
+			"installs) and only runs when `skill_ids` changes or the resource is destroyed.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
@@ -174,6 +181,37 @@ func (r *BotSkillAssignmentResource) Delete(ctx context.Context, req resource.De
 		resp.Diagnostics.AddError("Unexpected response deleting bot skill assignments",
 			fmt.Sprintf("Delete returned HTTP %d: %s", status, describeAPIError(body)))
 	}
+}
+
+// ModifyPlan warns when the plan would unassign skills a pack installed on the
+// bot. It never changes the plan.
+func (r *BotSkillAssignmentResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	var state BotSkillAssignmentResourceModel
+	if !req.State.Raw.IsNull() {
+		resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+	}
+	if req.Plan.Raw.IsNull() {
+		warnPackAssignmentPlan(ctx, r.data, packAssignmentSkills, state.BotSlug, state.SkillIDs, types.SetNull(types.StringType),
+			packPlanDestroy, &resp.Diagnostics)
+		return
+	}
+	var plan BotSkillAssignmentResourceModel
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	prior := types.SetNull(types.StringType)
+	if !req.State.Raw.IsNull() {
+		if state.BotSlug.Equal(plan.BotSlug) {
+			prior = state.SkillIDs
+		} else {
+			// bot_slug changes: RequiresReplace, so Delete unassigns state's ids
+			// from the previous bot. Check that bot too.
+			warnPackAssignmentPlan(ctx, r.data, packAssignmentSkills, state.BotSlug, state.SkillIDs, types.SetNull(types.StringType),
+				packPlanReplaceOld, &resp.Diagnostics)
+		}
+	}
+	warnPackAssignmentPlan(ctx, r.data, packAssignmentSkills, plan.BotSlug, prior, plan.SkillIDs, packPlanUpdate, &resp.Diagnostics)
 }
 
 // ImportState imports the assignment by the bot slug it manages.

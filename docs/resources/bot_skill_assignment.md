@@ -4,11 +4,14 @@ page_title: "botyard_bot_skill_assignment Resource - Botyard"
 subcategory: ""
 description: |-
   Manages the complete set of skills assigned to a Botyard bot. This resource takes exclusive ownership of the bot's skill assignments: any skill assigned outside Terraform is removed on the next apply so the bot's assigned skills converge on skill_ids. Use at most one botyard_bot_skill_assignment per bot. Assigning a skill makes it available to the bot; the separate deploy step that pushes SKILL.md files to a running pod is not modeled here.
+  Bots with a pack. A pack installed on the bot (botyard_bot pack) assigns its own skills, and they count toward this exclusive set: leaving them out of skill_ids unassigns them on apply, and the pack does not re-grant them. Include them with setunion(data.botyard_pack_version.<name>.skill_ids, [...]). The plan warns, naming each pack-installed skill, when a change or destroy would remove one; checking costs two reads (the bot, then its pack installs) and only runs when skill_ids changes or the resource is destroyed.
 ---
 
 # botyard_bot_skill_assignment (Resource)
 
-Manages the complete set of skills assigned to a Botyard bot. This resource takes **exclusive** ownership of the bot's skill assignments: any skill assigned outside Terraform is removed on the next apply so the bot's assigned skills converge on `skill_ids`. Use at most one `botyard_bot_skill_assignment` per bot. Assigning a skill makes it available to the bot; the separate deploy step that pushes SKILL.md files to a running pod is not modeled here.
+Manages the complete set of skills assigned to a Botyard bot. This resource takes **exclusive** ownership of the bot's skill assignments: any skill assigned outside Terraform is removed on the next apply so the bot's assigned skills converge on `skill_ids`. Use at most one `botyard_bot_skill_assignment` per bot. Assigning a skill makes it available to the bot; the separate deploy step that pushes SKILL.md files to a running pod is not modeled here. 
+
+**Bots with a pack.** A pack installed on the bot (`botyard_bot` `pack`) assigns its own skills, and they count toward this exclusive set: leaving them out of `skill_ids` unassigns them on apply, and the pack does not re-grant them. Include them with `setunion(data.botyard_pack_version.<name>.skill_ids, [...])`. The plan warns, naming each pack-installed skill, when a change or destroy would remove one; checking costs two reads (the bot, then its pack installs) and only runs when `skill_ids` changes or the resource is destroyed.
 
 ## Example Usage
 
@@ -24,6 +27,21 @@ resource "botyard_bot_skill_assignment" "assistant_skills" {
     "b1a7c0de-0000-4000-8000-000000000001",
     "b1a7c0de-0000-4000-8000-000000000002",
   ]
+}
+
+# On a bot created from a pack, the pack's skills are part of the exclusive
+# set. Keep them by adding the pack version's skill_ids; otherwise the plan
+# warns and the apply unassigns them.
+data "botyard_pack_version" "crm" {
+  slug = "crm-assistant"
+}
+
+resource "botyard_bot_skill_assignment" "crm_bot_skills" {
+  bot_slug = botyard_bot.crm.slug
+
+  skill_ids = setunion(data.botyard_pack_version.crm.skill_ids, [
+    "b1a7c0de-0000-4000-8000-000000000001",
+  ])
 }
 ```
 
