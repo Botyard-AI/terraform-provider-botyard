@@ -191,7 +191,7 @@ func (r *BotToolAssignmentResource) ModifyPlan(ctx context.Context, req resource
 	}
 	if req.Plan.Raw.IsNull() {
 		warnPackAssignmentPlan(ctx, r.data, packAssignmentTools, state.BotSlug, state.ToolIDs, types.SetNull(types.StringType),
-			true, &resp.Diagnostics)
+			packPlanDestroy, &resp.Diagnostics)
 		return
 	}
 	var plan BotToolAssignmentResourceModel
@@ -200,10 +200,17 @@ func (r *BotToolAssignmentResource) ModifyPlan(ctx context.Context, req resource
 		return
 	}
 	prior := types.SetNull(types.StringType)
-	if !req.State.Raw.IsNull() && state.BotSlug.Equal(plan.BotSlug) {
-		prior = state.ToolIDs
+	if !req.State.Raw.IsNull() {
+		if state.BotSlug.Equal(plan.BotSlug) {
+			prior = state.ToolIDs
+		} else {
+			// bot_slug changes: RequiresReplace, so Delete unassigns state's ids
+			// from the previous bot. Check that bot too.
+			warnPackAssignmentPlan(ctx, r.data, packAssignmentTools, state.BotSlug, state.ToolIDs, types.SetNull(types.StringType),
+				packPlanReplaceOld, &resp.Diagnostics)
+		}
 	}
-	warnPackAssignmentPlan(ctx, r.data, packAssignmentTools, plan.BotSlug, prior, plan.ToolIDs, false, &resp.Diagnostics)
+	warnPackAssignmentPlan(ctx, r.data, packAssignmentTools, plan.BotSlug, prior, plan.ToolIDs, packPlanUpdate, &resp.Diagnostics)
 }
 
 // ImportState imports the assignment by the bot slug it manages.

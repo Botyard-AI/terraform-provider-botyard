@@ -181,11 +181,27 @@ func describePackItems(items []packItemRef) string {
 	return strings.Join(lines, "\n")
 }
 
+// packPlanMode says which half of a plan warnPackAssignmentPlan checks.
+type packPlanMode int
+
+const (
+	// packPlanUpdate: create or in-place update; plan is the new set on slug.
+	packPlanUpdate packPlanMode = iota
+	// packPlanDestroy: the resource is destroyed; state's ids are unassigned.
+	packPlanDestroy
+	// packPlanReplaceOld: bot_slug changes, which forces replacement. Terraform
+	// plans that as one change and never calls ModifyPlan for its delete half,
+	// so the old bot's unassignment (Delete of state's ids) is checked here.
+	packPlanReplaceOld
+)
+
 // warnPackAssignmentPlan is the shared ModifyPlan body. state and plan are the
-// prior and planned sets (null when absent); a destroy has a null plan.
+// prior and planned sets (null when absent). For packPlanDestroy and
+// packPlanReplaceOld, slug and state are the prior bot's and plan is ignored.
 func warnPackAssignmentPlan(ctx context.Context, data *providerData, kind packAssignmentKind,
-	slug types.String, state, plan types.Set, destroy bool, diags *diag.Diagnostics,
+	slug types.String, state, plan types.Set, mode packPlanMode, diags *diag.Diagnostics,
 ) {
+	destroy := mode != packPlanUpdate
 	if data == nil || slug.IsUnknown() || slug.IsNull() {
 		return
 	}
@@ -207,6 +223,16 @@ func warnPackAssignmentPlan(ctx context.Context, data *providerData, kind packAs
 	}
 
 	noun := kind.noun()
+	if mode == packPlanReplaceOld {
+		if removed := removedPackItems(live, ids); len(removed) > 0 {
+			diags.AddAttributeWarning(path.Root("bot_slug"), "Replacing this assignment removes pack-installed "+noun+"s",
+				fmt.Sprintf("Changing bot_slug replaces this resource: every %s in its %s is unassigned from the "+
+					"previous bot %q, including these that a pack installed there:\n%s\n\nThat bot loses them. To "+
+					"keep them, manage it with its own assignment that includes the pack's %ss.", noun, kind.attr(),
+					slug.ValueString(), describePackItems(removed), noun))
+		}
+		return
+	}
 	if destroy {
 		if removed := removedPackItems(live, ids); len(removed) > 0 {
 			diags.AddWarning("Destroying this assignment removes pack-installed "+noun+"s",

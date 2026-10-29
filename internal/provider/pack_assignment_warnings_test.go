@@ -119,6 +119,9 @@ func (a *packWarnAPI) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		jsonOK(200, `{"id":"`+warnBotID+`","slug":"bot-1","name":"Bot"}`)
+	case p == "/v1/orgs/org-1/bots/bot-2" && r.Method == http.MethodGet:
+		a.botReads++ // a bot that does not exist yet (bot_slug change to a new bot)
+		jsonOK(404, `{"title":"not found","status":404}`)
 	case p == "/v1/orgs/org-1/packs/installs" && r.Method == http.MethodGet:
 		a.installsReads++
 		if a.installsFail {
@@ -200,6 +203,7 @@ func warnProviderData(t *testing.T, api *packWarnAPI) *providerData {
 // an id set. unknownSlug / unknownIDs / unknownElem model values only known
 // at apply.
 type assignmentSet struct {
+	slug        string // bot slug; "bot-1" when empty
 	ids         []string
 	unknownSlug bool
 	unknownIDs  bool
@@ -216,6 +220,9 @@ func assignmentRaw(t *testing.T, sch resource.SchemaResponse, attrName string, s
 	st := tfsdk.State{Schema: sch.Schema, Raw: tftypes.NewValue(typ, nil)}
 	var diags diag.Diagnostics
 	slug := types.StringValue("bot-1")
+	if s.slug != "" {
+		slug = types.StringValue(s.slug)
+	}
 	if s.unknownSlug {
 		slug = types.StringUnknown()
 	}
@@ -282,6 +289,7 @@ func TestPackStripWarning_Skills(t *testing.T) {
 		wantWarn     []string // substrings; nil means no warning
 		wantNoWarn   []string
 		wantReads    bool
+		wantBotReads int // bot GETs when wantReads; 1 when zero
 	}{
 		{
 			name:       "create without the pack's skills warns",
@@ -346,6 +354,22 @@ func TestPackStripWarning_Skills(t *testing.T) {
 			wantReads: true,
 		},
 		{
+			name:         "bot_slug change warns for the previous bot's pack skills",
+			state:        &assignmentSet{ids: []string{"sk-mine", "sk-pack-a"}},
+			plan:         &assignmentSet{slug: "bot-2", ids: []string{"sk-mine", "sk-pack-a"}},
+			wantWarn:     []string{"Replacing this assignment removes pack-installed skills", "sk-pack-a", `"bot-1"`},
+			wantNoWarn:   []string{"sk-pack-b", "sk-mine", "Plan removes"},
+			wantReads:    true,
+			wantBotReads: 2, // the previous bot, then the new one (404: not created yet)
+		},
+		{
+			name:         "bot_slug change without pack skills on the previous bot is quiet",
+			state:        &assignmentSet{ids: []string{"sk-mine"}},
+			plan:         &assignmentSet{slug: "bot-2", ids: []string{"sk-mine"}},
+			wantReads:    true,
+			wantBotReads: 2,
+		},
+		{
 			name:  "destroy of an empty set makes no calls",
 			state: &assignmentSet{ids: []string{}},
 		},
@@ -377,8 +401,12 @@ func TestPackStripWarning_Skills(t *testing.T) {
 				}
 			}
 			bots, installs := api.reads()
-			if tc.wantReads && (bots != 1 || installs != 1) {
-				t.Errorf("want 1 bot read and 1 installs read, got %d and %d", bots, installs)
+			wantBots := tc.wantBotReads
+			if wantBots == 0 {
+				wantBots = 1
+			}
+			if tc.wantReads && (bots != wantBots || installs != 1) {
+				t.Errorf("want %d bot read(s) and 1 installs read, got %d and %d", wantBots, bots, installs)
 			}
 			if !tc.wantReads && installs != 0 {
 				t.Errorf("want no installs read, got %d", installs)
@@ -410,6 +438,13 @@ func TestPackStripWarning_Tools(t *testing.T) {
 	d = modifyPlanDiags(t, r, "tool_ids", nil, &assignmentSet{ids: []string{"tl-mine", "tl-pack"}})
 	if w := warningText(d); w != "" {
 		t.Errorf("keeping the pack tool must be quiet, got:\n%s", w)
+	}
+
+	d = modifyPlanDiags(t, r, "tool_ids", &assignmentSet{ids: []string{"tl-pack"}},
+		&assignmentSet{slug: "bot-2", ids: []string{"tl-pack"}})
+	if w := warningText(d); !strings.Contains(w, "Replacing this assignment removes pack-installed tools") ||
+		!strings.Contains(w, "tl-pack") {
+		t.Errorf("bot_slug change must warn for the previous bot, got:\n%s", w)
 	}
 
 	d = modifyPlanDiags(t, r, "tool_ids", &assignmentSet{ids: []string{"tl-pack"}}, nil)
