@@ -12,6 +12,10 @@ a version.
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-10-29
+
+**This release has breaking changes.** See **Removed** for the upgrade steps: delete the removed keys from your configuration, then run one `terraform apply`.
+
 ### Removed
 
 - **BREAKING — `botyard_bot`: `config.model` removed.** The block had no effect: the Botyard API no longer accepts `model` on OpenClaw config, and a bot's model chain comes from its LLM credential links. Set the model with `botyard_bot_credential_assignment`. (#39)
@@ -42,7 +46,7 @@ a version.
 - **`botyard_bot_skill_assignment` and `botyard_bot_tool_assignment` warn before removing a pack's skills or tools.** These resources own the bot's complete set. On a bot with a pack installed, leaving the pack's items out unassigns them on apply, and the pack does not add them back. (#44)
   - The plan names each pack-installed skill or tool that a change, a destroy, or a `bot_slug` change (which replaces the resource and unassigns everything from the previous bot) would remove. It is a warning only; the plan and apply still go ahead.
   - Keep them with `setunion(data.botyard_pack_version.<name>.skill_ids, [...])`, or `tool_ids` for tools. The docs and examples have a "Bots with a pack" section.
-  - The check reads the bot and its pack installs. It runs only when `skill_ids` / `tool_ids` changes or the resource is destroyed, so an unchanged plan makes no extra calls. If the read fails, the plan says the check was skipped.
+  - The check reads the bot and its pack installs. It runs only when `skill_ids` / `tool_ids` or `bot_slug` changes, or the resource is destroyed, so an unchanged plan makes no extra calls. If the read fails, the plan says the check was skipped.
 - **`botyard_bot`: runtime settings `auto_suspend_enabled`, `runtime_privilege_mode` (now writable) and a `resources` block.** Works the same for bots created with `pack`. (#46)
   - Each is sent only when the plan changes it: changing `runtime_privilege_mode` or `resources` restarts the bot, so an unrelated apply never resends them.
   - Leaving `auto_suspend_enabled` or `runtime_privilege_mode` out reads the current value and never changes it, so existing configurations plan clean after upgrading.
@@ -212,7 +216,8 @@ a version.
 
 - Bumped `google.golang.org/grpc` (GO-2026-4762) and `golang.org/x/net` (GO-2026-5026), and pinned a patched Go toolchain. (#6)
 
-[Unreleased]: https://github.com/Botyard-AI/terraform-provider-botyard/compare/v0.6.1...HEAD
+[Unreleased]: https://github.com/Botyard-AI/terraform-provider-botyard/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/Botyard-AI/terraform-provider-botyard/compare/v0.6.1...v0.7.0
 [0.6.1]: https://github.com/Botyard-AI/terraform-provider-botyard/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/Botyard-AI/terraform-provider-botyard/compare/v0.5.1...v0.6.0
 [0.5.1]: https://github.com/Botyard-AI/terraform-provider-botyard/compare/v0.5.0...v0.5.1

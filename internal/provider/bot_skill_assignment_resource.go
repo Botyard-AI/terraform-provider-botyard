@@ -64,8 +64,10 @@ func (r *BotSkillAssignmentResource) Schema(_ context.Context, _ resource.Schema
 			"and they count toward this exclusive set: leaving them out of `skill_ids` unassigns them on apply, and the " +
 			"pack does not re-grant them. Include them with " +
 			"`setunion(data.botyard_pack_version.<name>.skill_ids, [...])`. The plan warns, naming each pack-installed " +
-			"skill, when a change or destroy would remove one; checking costs two reads (the bot, then its pack " +
-			"installs) and only runs when `skill_ids` changes or the resource is destroyed.",
+			"skill, when a change, a destroy or a `bot_slug` change would remove one. A `bot_slug` change replaces the " +
+			"resource, which unassigns everything from the previous bot, so both bots are checked. Each check costs " +
+			"two reads (the bot, then its pack installs) and only runs when `skill_ids` or `bot_slug` changes or the " +
+			"resource is destroyed.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
