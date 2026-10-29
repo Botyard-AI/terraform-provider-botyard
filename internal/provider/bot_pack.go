@@ -580,11 +580,17 @@ func (r *BotResource) createFromPack(ctx context.Context, plan BotResourceModel,
 		return
 	}
 	keepPackAvatar(&plan, declaredAvatar)
+	// Same as a plain create: the bot exists, so state is set even if the
+	// opt-out call fails, and Terraform taints the bot.
+	plan.SuggestionsOptOut = r.applySuggestionsOptOutOnCreate(ctx, plan.Slug.ValueString(), plan.SuggestionsOptOut, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
 // savePartialPackBot records a bot whose create got past from-pack but failed
 // later. Unknown computed `pack` values are made known-null so state is valid.
+// The suggestions opt-out is settled last in createFromPack, so on this path it
+// was neither read nor written: record it as null (not known) rather than as
+// the configured value, which the server does not hold.
 func (r *BotResource) savePartialPackBot(ctx context.Context, plan BotResourceModel, declaredAvatar types.String, resp *resource.CreateResponse) {
 	p := plan.Pack
 	for _, s := range []*types.String{&p.PackID, &p.PackSlug} {
@@ -598,6 +604,7 @@ func (r *BotResource) savePartialPackBot(ctx context.Context, plan BotResourceMo
 	if p.PendingConnections.IsUnknown() {
 		p.PendingConnections = types.ListNull(pendingConnectionObjectType)
 	}
+	plan.SuggestionsOptOut = types.BoolNull()
 	keepPackAvatar(&plan, declaredAvatar)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }

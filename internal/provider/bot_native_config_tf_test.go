@@ -102,6 +102,14 @@ func (a *fakeNativeBotAPI) serve(w http.ResponseWriter, r *http.Request) {
 	case r.Method == http.MethodDelete && r.URL.Path == bot && a.exists:
 		a.exists = false
 		w.WriteHeader(http.StatusNoContent)
+	case r.Method == http.MethodGet && r.URL.Path == bot+"/suggestions" && a.exists:
+		// botyard_bot refreshes suggestions_opt_out on every read. These tests
+		// never set it, so the server default is all this fake needs; a state
+		// from an older provider has no value, and refreshing it from here must
+		// still plan clean (the upgrade tests rely on that).
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(`{"skills":[],"tools":[],"opt_out":false}`))
 	default:
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusNotFound)
