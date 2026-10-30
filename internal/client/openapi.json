@@ -2190,7 +2190,7 @@
           "bots"
         ],
         "summary": "Get Bot Hosting Options",
-        "description": "List the ``(hosting_type, harness)`` combinations a bot may be created with.\n\nServed from the allowlist in :mod:`botyard_core.hosting` \u2014 the same\nconstant bot creation validates against \u2014 so the \"Add bot\" UI derives its\noptions rather than carrying a third copy of the table that can drift.\n\nOrg-scoped by route so the set can later vary by plan or feature flag\nwithout a breaking URL change; today it is identical for every org.",
+        "description": "List the ``(hosting_type, harness)`` combinations this org may create a bot with.\n\nServed from the allowlist in :mod:`botyard_core.hosting` \u2014 the same\nconstant bot creation validates against \u2014 so the \"Add bot\" UI derives its\noptions rather than carrying a third copy of the table that can drift.\n\nAn org-gated pair (``self_hosted`` + ``botyard_native``) is listed only for\nthe orgs the server-side allowlist enables, through the same\n``OrgHostingGate`` bot creation enforces. No feature flag widens it.",
         "operationId": "get_bot_hosting_options_v1_orgs__org_id__bots_hosting_options_get",
         "parameters": [
           {
@@ -13935,6 +13935,18 @@
               "title": "Bot Ids"
             },
             "description": "Bots to read, each at most once."
+          },
+          {
+            "name": "include_connection_health",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Include connection status and revalidate bound Composio authorisations. Set false for a cheap metadata/items read: connections and pending_connections are empty because they were not evaluated, not because every connection is healthy or complete.",
+              "default": true,
+              "title": "Include Connection Health"
+            },
+            "description": "Include connection status and revalidate bound Composio authorisations. Set false for a cheap metadata/items read: connections and pending_connections are empty because they were not evaluated, not because every connection is healthy or complete."
           }
         ],
         "responses": {
@@ -16781,7 +16793,7 @@
           "users"
         ],
         "summary": "Delete Current User",
-        "description": "Delete the workspaces that go with the caller's account (PlatDev #4423).\n\nCalled by the auth service's better-auth ``beforeDelete`` hook, after the\nperson has re-authenticated and just before the login itself is deleted.\nWorkspaces the caller is the only member of are deleted, through the same\ncascade as ``DELETE /v1/orgs/{id}``. Refused with 409 when the caller is the\nonly owner of a workspace that has other members; then nothing changes and\nthe auth service keeps the login.\n\nThe caller's identity and memberships are left alone: the auth service's\n``afterDelete`` strips and anonymizes them once the login is gone. Each\nworkspace commits on its own, because ending its subscription is a\nbilling-provider call no rollback can undo; if one fails, the ones before\nit stay deleted, the error is returned, the auth service keeps the login,\nand a retry carries on with what is left. Singleton by nature: it acts on\nthe caller's own account only.",
+        "description": "Delete the workspaces that go with the caller's account (PlatDev #4423).\n\nCalled by the auth service's better-auth ``beforeDelete`` hook, after the\nperson has re-authenticated and just before the login itself is deleted.\nWorkspaces the caller is the only member of are deleted, through the same\ncascade as ``DELETE /v1/orgs/{id}``. Refused with 409 when the caller is the\nonly owner of a workspace that has other members; then nothing changes and\nthe auth service keeps the login.\n\nThe caller's identity and memberships are left alone: the auth service's\n``afterDelete`` strips and anonymizes them once the login is gone. Each\nworkspace commits on its own, because ending its subscription is a\nbilling-provider call no rollback can undo; if one fails, the ones before\nit stay deleted, the error is returned, the auth service keeps the login,\nand a retry carries on with what is left. Singleton by nature: it acts on\nthe caller's own account only.\n\nPassing the guard records a deletion attempt for this request (PlatDev\n#4518), so a co-owner deleting concurrently no longer counts the caller as\nan owner. Every error path below deletes only this request's own attempt\nrow before answering, never the caller's other attempts; the success answer\nkeeps it, because the auth service deletes the login after it. The attempt\nid is returned in the ``Botyard-Account-Deletion-Attempt`` header so the\nauth service logs the same id (operator runbook).",
         "operationId": "delete_current_user_v1_users_me_delete",
         "responses": {
           "204": {
@@ -17844,7 +17856,7 @@
           "realtime"
         ],
         "summary": "Get Realtime Token",
-        "description": "Mint a short-lived Centrifugo connection token.",
+        "description": "Mint a short-lived Centrifugo connection token.\n\nThe token carries the session facts the org boundary needs (``meta``), so\norg-scoped channels are authorized like org-scoped REST routes rather than\nby membership alone.",
         "operationId": "get_realtime_token_v1_realtime_token_get",
         "responses": {
           "200": {
@@ -29586,6 +29598,70 @@
         "title": "AdminUserCreate",
         "description": "Request to create a user (platform admin only)."
       },
+      "AdminWorkforceBoardDeletedContent": {
+        "properties": {
+          "event_type": {
+            "type": "string",
+            "const": "admin.workforce_board.deleted",
+            "title": "Event Type",
+            "default": "admin.workforce_board.deleted"
+          },
+          "slug": {
+            "type": "string",
+            "title": "Slug"
+          },
+          "deleted_task_count": {
+            "type": "integer",
+            "title": "Deleted Task Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "slug",
+          "deleted_task_count"
+        ],
+        "title": "AdminWorkforceBoardDeletedContent",
+        "description": "Typed content for a workforce board being soft-deleted.\n\n``slug`` is recorded because it is reusable after a soft delete\n(``ux_workforces_org_slug_active`` is partial): a later board may hold the\nsame slug, and the trail must say which one went."
+      },
+      "AdminWorkforceBoardUpdatedContent": {
+        "properties": {
+          "event_type": {
+            "type": "string",
+            "const": "admin.workforce_board.updated",
+            "title": "Event Type",
+            "default": "admin.workforce_board.updated"
+          },
+          "changes": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/WorkforceBoardFieldChange"
+            },
+            "type": "object",
+            "title": "Changes"
+          },
+          "columns_changed": {
+            "type": "boolean",
+            "title": "Columns Changed",
+            "default": false
+          },
+          "previous_column_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Previous Column Ids"
+          },
+          "column_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Column Ids"
+          }
+        },
+        "type": "object",
+        "title": "AdminWorkforceBoardUpdatedContent",
+        "description": "Typed content for a workforce board's own fields being edited.\n\n``changes`` is keyed by field name (``name``, ``slug``, ``description``) and\ncarries only the fields that actually differ, so every record is a real\nedit rather than a PATCH that resent what was already there.\n\nColumns are recorded by **id**, in order, rather than as the full column\nobjects: the ids are what tasks reference, so they are what an auditor\nneeds to explain a task that \"moved\"; renaming a column keeps its id and\nis captured by ``columns_changed`` alone."
+      },
       "AgentContainerImageMcpServerCreate": {
         "properties": {
           "name": {
@@ -31289,6 +31365,18 @@
             "$ref": "#/components/schemas/AuthzMcpServerAccessChangedContent"
           },
           {
+            "$ref": "#/components/schemas/AdminWorkforceBoardUpdatedContent"
+          },
+          {
+            "$ref": "#/components/schemas/AdminWorkforceBoardDeletedContent"
+          },
+          {
+            "$ref": "#/components/schemas/AuthzWorkforceBoardMemberAddedContent"
+          },
+          {
+            "$ref": "#/components/schemas/AuthzWorkforceBoardMemberRemovedContent"
+          },
+          {
             "$ref": "#/components/schemas/AuthzGrantCreatedContent"
           },
           {
@@ -31323,6 +31411,12 @@
           },
           {
             "$ref": "#/components/schemas/StarterCreditDevicePolicyUpdatedContent"
+          },
+          {
+            "$ref": "#/components/schemas/ScimMembershipAppliedContent"
+          },
+          {
+            "$ref": "#/components/schemas/ScimMembershipBlockedContent"
           }
         ],
         "discriminator": {
@@ -31333,11 +31427,17 @@
             "admin.mcp_catalog_entry.updated": "#/components/schemas/AdminMcpCatalogEntryUpdatedContent",
             "admin.platform_team.granted": "#/components/schemas/PlatformTeamGrantedContent",
             "admin.platform_team.revoked": "#/components/schemas/PlatformTeamRevokedContent",
+            "admin.workforce_board.deleted": "#/components/schemas/AdminWorkforceBoardDeletedContent",
+            "admin.workforce_board.updated": "#/components/schemas/AdminWorkforceBoardUpdatedContent",
+            "auth.scim.membership_applied": "#/components/schemas/ScimMembershipAppliedContent",
+            "auth.scim.membership_blocked": "#/components/schemas/ScimMembershipBlockedContent",
             "authz.grant.created": "#/components/schemas/AuthzGrantCreatedContent",
             "authz.grant.revoked": "#/components/schemas/AuthzGrantRevokedContent",
             "authz.mcp_server_access.changed": "#/components/schemas/AuthzMcpServerAccessChangedContent",
             "authz.role_permission.added": "#/components/schemas/AuthzRolePermissionAddedContent",
             "authz.role_permission.removed": "#/components/schemas/AuthzRolePermissionRemovedContent",
+            "authz.workforce_board_member.added": "#/components/schemas/AuthzWorkforceBoardMemberAddedContent",
+            "authz.workforce_board_member.removed": "#/components/schemas/AuthzWorkforceBoardMemberRemovedContent",
             "billing.starter_credit_device.granted": "#/components/schemas/StarterCreditDeviceGrantedContent",
             "billing.starter_credit_device.policy_updated": "#/components/schemas/StarterCreditDevicePolicyUpdatedContent",
             "billing.starter_credit_device.refused": "#/components/schemas/StarterCreditDeviceRefusedContent",
@@ -31794,6 +31894,8 @@
           "auth.login.failed",
           "auth.mfa.enabled",
           "auth.mfa.disabled",
+          "auth.scim.membership_applied",
+          "auth.scim.membership_blocked",
           "rollout.initiated",
           "rollout.completed",
           "provisioning.maintenance_restart.force_applied",
@@ -31807,6 +31909,10 @@
           "admin.claude_connection.erased",
           "admin.mcp_catalog_entry.updated",
           "authz.mcp_server_access.changed",
+          "admin.workforce_board.updated",
+          "admin.workforce_board.deleted",
+          "authz.workforce_board_member.added",
+          "authz.workforce_board_member.removed",
           "authz.grant.created",
           "authz.grant.revoked",
           "authz.role_permission.added",
@@ -32125,6 +32231,72 @@
         ],
         "title": "AuthzRolePermissionRemovedContent",
         "description": "Typed content for a permission pattern being removed from a role bundle.\n\nRemoval drops the role back toward the code-defined floor; it can never take\na built-in role below it."
+      },
+      "AuthzWorkforceBoardMemberAddedContent": {
+        "properties": {
+          "event_type": {
+            "type": "string",
+            "const": "authz.workforce_board_member.added",
+            "title": "Event Type",
+            "default": "authz.workforce_board_member.added"
+          },
+          "member_actor_type": {
+            "type": "string",
+            "title": "Member Actor Type"
+          },
+          "member_actor_id": {
+            "type": "string",
+            "title": "Member Actor Id"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          }
+        },
+        "type": "object",
+        "required": [
+          "member_actor_type",
+          "member_actor_id",
+          "role"
+        ],
+        "title": "AuthzWorkforceBoardMemberAddedContent",
+        "description": "Typed content for a principal joining a board's member list.\n\nThe member is recorded as ``actor_type`` + ``actor_id`` because a board's\nmembers are users, bots and API keys alike (epic #4482 decision 1); the\nenvelope's ``target_*`` columns carry the same principal for filtering."
+      },
+      "AuthzWorkforceBoardMemberRemovedContent": {
+        "properties": {
+          "event_type": {
+            "type": "string",
+            "const": "authz.workforce_board_member.removed",
+            "title": "Event Type",
+            "default": "authz.workforce_board_member.removed"
+          },
+          "member_actor_type": {
+            "type": "string",
+            "title": "Member Actor Type"
+          },
+          "member_actor_id": {
+            "type": "string",
+            "title": "Member Actor Id"
+          },
+          "role": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Role"
+          }
+        },
+        "type": "object",
+        "required": [
+          "member_actor_type",
+          "member_actor_id"
+        ],
+        "title": "AuthzWorkforceBoardMemberRemovedContent",
+        "description": "Typed content for a principal leaving, or being taken off, a board's member list.\n\n``role`` is the role the principal held, or ``None`` for a legacy\n``workforce_bot_members`` row with no ``resource_members`` twin."
       },
       "AvatarRemoval": {
         "properties": {
@@ -34432,6 +34604,12 @@
             "title": "Slug",
             "description": "URL-friendly bot identifier"
           },
+          "suggestions_opt_out": {
+            "type": "boolean",
+            "title": "Suggestions Opt Out",
+            "description": "Whether skill and tool suggestions are disabled for this bot.",
+            "default": false
+          },
           "org_id": {
             "type": "string",
             "title": "Org Id"
@@ -35829,6 +36007,12 @@
             "type": "string",
             "title": "Slug",
             "description": "URL-friendly bot identifier"
+          },
+          "suggestions_opt_out": {
+            "type": "boolean",
+            "title": "Suggestions Opt Out",
+            "description": "Whether skill and tool suggestions are disabled for this bot.",
+            "default": false
           },
           "org_id": {
             "type": "string",
@@ -39667,11 +39851,98 @@
         "title": "CentrifugoProxyError",
         "description": "Error payload of a Centrifugo proxy response (``proxyproto.Error``)."
       },
+      "CentrifugoSubRefreshExpired": {
+        "properties": {
+          "expired": {
+            "type": "boolean",
+            "const": true,
+            "title": "Expired",
+            "description": "Always true: the subscription ends"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "expired"
+        ],
+        "title": "CentrifugoSubRefreshExpired",
+        "description": "Sub-refresh ``result`` that ends the subscription now.\n\nCentrifugo ignores ``error`` and ``disconnect`` on sub-refresh replies, so\n``expired`` is the only way to refuse. A transport error or non-200 is worse\nthan useless here: Centrifugo answers it by granting another 60 seconds."
+      },
+      "CentrifugoSubRefreshExtended": {
+        "properties": {
+          "expire_at": {
+            "type": "integer",
+            "title": "Expire At",
+            "description": "Unix seconds of the next re-authorization"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "expire_at"
+        ],
+        "title": "CentrifugoSubRefreshExtended",
+        "description": "Sub-refresh ``result`` that keeps the subscription until a new expiry."
+      },
+      "CentrifugoSubRefreshRequest": {
+        "properties": {
+          "user": {
+            "type": "string",
+            "title": "User",
+            "description": "User ID from the Centrifugo connection token"
+          },
+          "channel": {
+            "type": "string",
+            "title": "Channel",
+            "description": "Channel whose subscription is expiring"
+          },
+          "meta": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RealtimeConnectionMeta"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Connection meta from the token (``include_connection_meta``)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user",
+          "channel"
+        ],
+        "title": "CentrifugoSubRefreshRequest",
+        "description": "Centrifugo sub-refresh proxy request body: a subscription is about to expire."
+      },
+      "CentrifugoSubRefreshResponse": {
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CentrifugoSubRefreshExtended"
+              },
+              {
+                "$ref": "#/components/schemas/CentrifugoSubRefreshExpired"
+              }
+            ],
+            "title": "Result",
+            "description": "Either a new expiry or the end of the subscription"
+          }
+        },
+        "type": "object",
+        "required": [
+          "result"
+        ],
+        "title": "CentrifugoSubRefreshResponse",
+        "description": "Sub-refresh proxy response (``proxyproto.SubRefreshResponse``)."
+      },
       "CentrifugoSubscribeAllowed": {
         "properties": {
           "result": {
             "$ref": "#/components/schemas/CentrifugoSubscribeResultBody",
-            "description": "Subscribe result; empty because no overrides are set"
+            "description": "Subscribe result: the subscription's expiry"
           }
         },
         "type": "object",
@@ -39706,6 +39977,17 @@
             "type": "string",
             "title": "Channel",
             "description": "Channel the client is subscribing to"
+          },
+          "meta": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RealtimeConnectionMeta"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Connection meta from the token (``include_connection_meta``). Absent for a token minted before meta existed; org-scoped channels then refuse temporarily."
           }
         },
         "type": "object",
@@ -39717,11 +39999,20 @@
         "description": "Centrifugo subscribe proxy request body."
       },
       "CentrifugoSubscribeResultBody": {
-        "properties": {},
+        "properties": {
+          "expire_at": {
+            "type": "integer",
+            "title": "Expire At",
+            "description": "Unix seconds at which the subscription expires unless the sub-refresh proxy re-authorizes it. Bounds how long a subscription outlives its authorization."
+          }
+        },
         "additionalProperties": false,
         "type": "object",
+        "required": [
+          "expire_at"
+        ],
         "title": "CentrifugoSubscribeResultBody",
-        "description": "Empty ``result`` of an allowed subscription; no per-subscription overrides are set."
+        "description": "``result`` of an allowed subscription: only its expiry; no overrides are set."
       },
       "ChallengeResponse": {
         "properties": {
@@ -47873,6 +48164,10 @@
           "effect_coverage": {
             "$ref": "#/components/schemas/BotDeviceEffectCoverage",
             "description": "How much of this runtime's externally visible effect surface Botyard mediates. 'partial' for v0. A governance claim, not a negotiated capability \u2014 it is persisted on the runtime record and is deliberately absent from the protocol handshake"
+          },
+          "harness": {
+            "$ref": "#/components/schemas/BotHarness",
+            "description": "The bot's harness, read from the bot on this exchange. A self-hosted runtime offers native turns only when this is 'botyard_native'. Admission only: every turn is still routed and authorized server-side"
           }
         },
         "type": "object",
@@ -47886,7 +48181,8 @@
           "issued_at",
           "expires_at",
           "trust_tier",
-          "effect_coverage"
+          "effect_coverage",
+          "harness"
         ],
         "title": "DeviceAssertionExchangeResponse",
         "description": "A short-lived session, bought by one assertion.\n\n``session_token`` is returned exactly once and is never recoverable \u2014 only\nits hash is stored.\n\n*** THE TOKEN IS NOT A BEARER CAPABILITY AND ITS EXPIRY IS NOT THE\nREVOCATION MECHANISM. *** Every use of it re-reads the device registry, so\na revoked device is denied on its next call whatever ``expires_at`` says.\n``expires_at`` bounds how long a session may be reused; it says nothing\nabout how long a revoked device keeps working, which is \"not at all\".\n\n``gateway_url`` is returned here rather than configured on the device. The\nexchange is a live registry read, so sourcing the URL from it makes \"holds\na gateway URL\" imply \"is a currently-valid device\" \u2014 a stronger property\nthan enrollment can give, since enrollment only evidences a past event."
@@ -48259,7 +48555,8 @@
           "schedule",
           "integration",
           "audit",
-          "authz"
+          "authz",
+          "identity"
         ],
         "title": "Domain",
         "description": "Top-level product area a permission belongs to (a permission axis)."
@@ -51633,6 +51930,16 @@
         "type": "object",
         "title": "IdentityConfigPatch",
         "description": "Patchable fields for bot identity."
+      },
+      "IdpProvenance": {
+        "type": "string",
+        "enum": [
+          "unknown",
+          "first_party",
+          "external"
+        ],
+        "title": "IdpProvenance",
+        "description": "How a session's identity provider is known \u2014 three states, not two.\n\n``external_idp`` alone cannot answer \"was this session established by a\ncustomer IdP?\", because *absent* and *explicitly null* are different\nobservations that both decode to ``None``:\n\n- ``UNKNOWN`` \u2014 the token carries no ``external_idp`` claim at all, so it\n  was minted before the claim existed. Nothing is proven about how the\n  session was established; enforcement must decide this case by rollout\n  policy and must not read it as first-party.\n- ``FIRST_PARTY`` \u2014 the claim is present and null. The auth service\n  positively asserted that no external IdP was involved (password, magic\n  link, passkey, Google, or the SPIFFE->session exchange).\n- ``EXTERNAL`` \u2014 the claim carries a connection id. The session is\n  *restricted* to organizations attached to that connection.\n\nCollapsing UNKNOWN into FIRST_PARTY is the permissive direction, which is\nwhy the distinction is preserved all the way to the consumer rather than\nbeing flattened at parse time."
       },
       "ImageUrl-Input": {
         "properties": {
@@ -64291,6 +64598,12 @@
       },
       "OrgBotPackInstalls": {
         "properties": {
+          "connection_health_included": {
+            "type": "boolean",
+            "title": "Connection Health Included",
+            "description": "Whether connection status and health were evaluated for this response. When false, connections and pending_connections are empty because they were not evaluated, not because no connections exist.",
+            "default": true
+          },
           "bots": {
             "items": {
               "$ref": "#/components/schemas/BotPacks"
@@ -71616,6 +71929,56 @@
         "title": "ReadyResponse",
         "description": "Readiness probe response (``200`` ready, ``503`` not ready).\n\n``spiffe_key_source`` is report-only detail; it never gates readiness for\nthe API (#355)."
       },
+      "RealtimeConnectionMeta": {
+        "properties": {
+          "sid": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sid"
+          },
+          "external_idp": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "External Idp"
+          },
+          "idp_provenance": {
+            "$ref": "#/components/schemas/IdpProvenance"
+          },
+          "mfa_verified_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mfa Verified At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "sid",
+          "external_idp",
+          "idp_provenance",
+          "mfa_verified_at"
+        ],
+        "title": "RealtimeConnectionMeta",
+        "description": "The session facts the org boundary needs, carried on a realtime connection.\n\nMinted into the connection JWT's ``meta`` claim from the caller's verified\nAPI session, and handed back by Centrifugo on every subscribe and\nsub-refresh proxy call (``include_connection_meta``). It is covered by the\ntoken's HMAC, so the proxy can trust it exactly as far as it trusts the\ntoken: this is **integrity, not confidentiality**. Centrifugo does not echo\n``meta`` to subscribers, but the browser holds the signed JWT from\n``/v1/realtime/token`` and can base64-decode it. Never put a secret here.\n\nWithout it the subscribe proxy knows only the user id, so org channels were\nauthorized by membership alone, skipping the org's ``mfa_required`` and the\nsession's IdP reach that every REST route enforces (PlatDev #4517).\n\nA client-side token refresh replaces the connection's meta, so a session\nthat steps up to MFA is seen within one token lifetime."
+      },
       "RealtimeTokenResponse": {
         "properties": {
           "token": {
@@ -72182,7 +72545,11 @@
           "permission",
           "notification",
           "activity",
-          "private_source"
+          "private_source",
+          "sso_connection",
+          "scim_connection",
+          "scim_group_role_mapping",
+          "sign_in_policy"
         ],
         "title": "Resource",
         "description": "The noun a permission acts on (a permission axis).\n\n**Partial and growing** \u2014 this seeds the resources implied by the current\nvocabulary + the mapped ``/v1/admin`` surface; Phase B (API) and Phase C\n(MCP) add members as they annotate each route/tool. The same enum names both\nthe permission's capability noun and, for instance scoping, an addressable\nobject type (:class:`~botyard_core.authz.models.ResourceScope`); the two\ncoincide for most resources (``task``, ``bot``) and differ only for\nsub-resources (``bot:config`` targets a ``bot`` object)."
@@ -74142,6 +74509,185 @@
         ],
         "title": "ScheduleWakeOrigin",
         "description": "A schedule fired: either a one-shot ``awake_self`` or a recurring run."
+      },
+      "ScimMembershipAdded": {
+        "properties": {
+          "effect": {
+            "type": "string",
+            "const": "added",
+            "title": "Effect",
+            "default": "added"
+          },
+          "role_id": {
+            "type": "string",
+            "title": "Role Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "role_id"
+        ],
+        "title": "ScimMembershipAdded",
+        "description": "SCIM made the person a member."
+      },
+      "ScimMembershipAppliedContent": {
+        "properties": {
+          "event_type": {
+            "type": "string",
+            "const": "auth.scim.membership_applied",
+            "title": "Event Type",
+            "default": "auth.scim.membership_applied"
+          },
+          "scim_connection_id": {
+            "type": "string",
+            "title": "Scim Connection Id"
+          },
+          "change": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ScimMembershipAdded"
+              },
+              {
+                "$ref": "#/components/schemas/ScimMembershipRoleChanged"
+              },
+              {
+                "$ref": "#/components/schemas/ScimMembershipLinked"
+              },
+              {
+                "$ref": "#/components/schemas/ScimMembershipRemoved"
+              }
+            ],
+            "title": "Change",
+            "discriminator": {
+              "propertyName": "effect",
+              "mapping": {
+                "added": "#/components/schemas/ScimMembershipAdded",
+                "linked": "#/components/schemas/ScimMembershipLinked",
+                "removed": "#/components/schemas/ScimMembershipRemoved",
+                "role_changed": "#/components/schemas/ScimMembershipRoleChanged"
+              }
+            }
+          },
+          "outbox_version": {
+            "type": "integer",
+            "title": "Outbox Version"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scim_connection_id",
+          "change",
+          "outbox_version"
+        ],
+        "title": "ScimMembershipAppliedContent",
+        "description": "Typed content for a SCIM-driven membership change. No email or name."
+      },
+      "ScimMembershipBlockedContent": {
+        "properties": {
+          "event_type": {
+            "type": "string",
+            "const": "auth.scim.membership_blocked",
+            "title": "Event Type",
+            "default": "auth.scim.membership_blocked"
+          },
+          "scim_connection_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scim Connection Id"
+          },
+          "reason": {
+            "type": "string",
+            "enum": [
+              "seat_limit",
+              "last_owner",
+              "identity_conflict",
+              "owner_protected"
+            ],
+            "title": "Reason"
+          },
+          "outbox_version": {
+            "type": "integer",
+            "title": "Outbox Version"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reason",
+          "outbox_version"
+        ],
+        "title": "ScimMembershipBlockedContent",
+        "description": "Typed content for an IdP change the drainer refused by policy."
+      },
+      "ScimMembershipLinked": {
+        "properties": {
+          "effect": {
+            "type": "string",
+            "const": "linked",
+            "title": "Effect",
+            "default": "linked"
+          },
+          "role_id": {
+            "type": "string",
+            "title": "Role Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "role_id"
+        ],
+        "title": "ScimMembershipLinked",
+        "description": "SCIM took over sourcing an existing member; the role did not change."
+      },
+      "ScimMembershipRemoved": {
+        "properties": {
+          "effect": {
+            "type": "string",
+            "const": "removed",
+            "title": "Effect",
+            "default": "removed"
+          },
+          "previous_role_id": {
+            "type": "string",
+            "title": "Previous Role Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "previous_role_id"
+        ],
+        "title": "ScimMembershipRemoved",
+        "description": "SCIM ended the membership."
+      },
+      "ScimMembershipRoleChanged": {
+        "properties": {
+          "effect": {
+            "type": "string",
+            "const": "role_changed",
+            "title": "Effect",
+            "default": "role_changed"
+          },
+          "role_id": {
+            "type": "string",
+            "title": "Role Id"
+          },
+          "previous_role_id": {
+            "type": "string",
+            "title": "Previous Role Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "role_id",
+          "previous_role_id"
+        ],
+        "title": "ScimMembershipRoleChanged",
+        "description": "SCIM changed an existing member's role."
       },
       "ScriptOp": {
         "properties": {
@@ -84563,6 +85109,35 @@
         "title": "WebExposureStatus",
         "description": "Lifecycle status for a bot-hosted web exposure."
       },
+      "WorkforceBoardFieldChange": {
+        "properties": {
+          "previous": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previous"
+          },
+          "current": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current"
+          }
+        },
+        "type": "object",
+        "title": "WorkforceBoardFieldChange",
+        "description": "One edited board field, both ends recorded.\n\n``None`` on either side means the field was empty, not that it was unknown.\nBoth default to ``None`` because the audit writer stores content with\n``None`` values dropped; without the default an emptied or first-set field\nwould not read back."
+      },
       "WorkforceBotMemberResponse": {
         "properties": {
           "id": {
@@ -86598,7 +87173,7 @@
         "type": "string"
       },
       "ConversationUpdatedEvent": {
-        "description": "Published when a conversation's own fields change \u2014 e.g. its title is\nauto-generated from the first user message, or a user renames it.\n\nLets sidebar/list views refresh without a manual reload. Routed like\n:class:`ConversationActivityEvent`: to the org channel for org-scoped\nconversations and the owner's personal channel for user-scoped ones. The\nnew ``title`` rides along so clients can patch cached rows directly, though\nthe conversation-list refetch remains the canonical source of truth.",
+        "description": "Published when a conversation's own fields change \u2014 e.g. its title is\nauto-generated from the first user message, or a user renames it.\n\nLets sidebar/list views refresh without a manual reload. Routed like\n:class:`ConversationActivityEvent`: to the org channel for org-scoped\nconversations and the owner's personal channel for user-scoped ones.\n\n``title`` rides along on the **org** channel only, whose subscribe and\nsub-refresh pass the org boundary. The personal channel is admitted on\nidentity alone, with no org boundary, so it carries no content: ids and\nkinds still cross (activity metadata), but the client refetches the title\nthrough the boundary-gated REST list (PlatDev #4517). The payload inventory\nis pinned in ``core/tests/services/test_personal_channel_payloads.py``.\nThe conversation-list refetch is the source of truth on both channels.",
         "properties": {
           "type": {
             "const": "conversation.updated",
@@ -86621,7 +87196,7 @@
               }
             ],
             "default": null,
-            "description": "The conversation's title after the update, or null if still untitled.",
+            "description": "On the org channel: the conversation's title after the update, or null if it is untitled. On the personal channel: always null, which says nothing about the title; refetch the conversation list for it.",
             "title": "Title"
           }
         },
