@@ -68,8 +68,8 @@ type BotResourceModel struct {
 	// The Bot Pack the bot was created from; nil without one (see bot_pack.go).
 	Pack *botPackModel `tfsdk:"pack"`
 
-	// Suggestions opt-out (Optional+Computed). Not on BotResponse: read and
-	// written through the bot's suggestions endpoint (see bot_suggestions.go).
+	// Suggestions opt-out (Optional+Computed). Read from BotResponse, written
+	// through the bot's suggestions endpoint (see bot_suggestions.go).
 	SuggestionsOptOut types.Bool `tfsdk:"suggestions_opt_out"`
 
 	// Runtime settings (see bot_runtime_settings.go), written through PATCH
@@ -140,8 +140,8 @@ func (r *BotResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *
 			"owner. For a bot created in the Botyard app or with another key, import, refresh and planning are " +
 			"supported, but updates and deletion require the API key that created the bot, and fail with a " +
 			"\"Not the bot's owner\" error.\n\n" +
-			"`suggestions_opt_out` is also unreadable on such a bot: Terraform keeps the last value it knew " +
-			"(none after an import), and changing it fails with a \"Not the bot's owner\" error.\n\n" +
+			"On such a bot `suggestions_opt_out` is read normally, but changing it fails with a " +
+			"\"Not the bot's owner\" error.\n\n" +
 			"See [Getting started](https://docs.botyard.io/docs/getting-started) in the Botyard docs.",
 		Attributes: map[string]schema.Attribute{
 			"name": schema.StringAttribute{
@@ -357,7 +357,7 @@ func (r *BotResource) Create(ctx context.Context, req resource.CreateRequest, re
 		resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 		return
 	}
-	plan.SuggestionsOptOut = r.applySuggestionsOptOutOnCreate(ctx, plan.Slug.ValueString(), plan.SuggestionsOptOut, &resp.Diagnostics)
+	plan.SuggestionsOptOut = r.applySuggestionsOptOutOnCreate(ctx, plan.Slug.ValueString(), plan.SuggestionsOptOut, settled, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
@@ -406,7 +406,7 @@ func (r *BotResource) Read(ctx context.Context, req resource.ReadRequest, resp *
 			return
 		}
 		keepPackAvatar(&state, declaredAvatar)
-		state.SuggestionsOptOut = r.refreshSuggestionsOptOut(ctx, state.Slug.ValueString(), state.SuggestionsOptOut, &resp.Diagnostics)
+		state.SuggestionsOptOut = r.refreshSuggestionsOptOut(ctx, apiResp.JSON200, state.SuggestionsOptOut, &resp.Diagnostics)
 		resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 	}
 }

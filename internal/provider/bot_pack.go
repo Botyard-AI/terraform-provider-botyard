@@ -612,7 +612,7 @@ func (r *BotResource) createFromPack(ctx context.Context, plan BotResourceModel,
 	keepPackAvatar(&plan, declaredAvatar)
 	// Same as a plain create: the bot exists, so state is set even if the
 	// opt-out call fails, and Terraform taints the bot.
-	plan.SuggestionsOptOut = r.applySuggestionsOptOutOnCreate(ctx, plan.Slug.ValueString(), plan.SuggestionsOptOut, &resp.Diagnostics)
+	plan.SuggestionsOptOut = r.applySuggestionsOptOutOnCreate(ctx, plan.Slug.ValueString(), plan.SuggestionsOptOut, settled, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 

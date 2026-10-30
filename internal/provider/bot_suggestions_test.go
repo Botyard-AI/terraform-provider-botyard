@@ -24,6 +24,11 @@ import (
 // GET /suggestions and PUT /suggestions/opt-out, both owner-gated like the real
 // routes (require_bot_owner). Flipping `owned` off models a bot the provider's
 // API key did not create (D6 #4379, keep_403).
+//
+// The bot responses carry `suggestions_opt_out` like botyard v1.7.2256+ (#4524)
+// unless `legacy` is set, which models an older API that only exposes the flag
+// on the suggestions GET. `gets` counts those suggestions GETs: the current API
+// must never see one on refresh.
 type fakeSuggestionsBotAPI struct {
 	t *testing.T
 
@@ -37,6 +42,7 @@ type fakeSuggestionsBotAPI struct {
 	// failPatch makes the bot PATCH, or PATCH /config, answer 500.
 	failPatch, failConfig bool
 	gets                  int
+	legacy                bool
 }
 
 const suggestionsBotPath = "/v1/orgs/org-1/bots/opt-probe"
@@ -54,6 +60,31 @@ func (a *fakeSuggestionsBotAPI) set(fn func(*fakeSuggestionsBotAPI)) func() {
 		a.mu.Lock()
 		defer a.mu.Unlock()
 		fn(a)
+	}
+}
+
+// wantGets checks the number of suggestions GETs so far.
+func (a *fakeSuggestionsBotAPI) wantGets(want int) resource.TestCheckFunc {
+	return func(*terraform.State) error {
+		a.mu.Lock()
+		defer a.mu.Unlock()
+		if a.gets != want {
+			return fmt.Errorf("suggestions GETs = %d, want %d", a.gets, want)
+		}
+		return nil
+	}
+}
+
+// apiGenerations runs fn against the current API and against a legacy one
+// whose bot responses lack `suggestions_opt_out`.
+func apiGenerations(t *testing.T, fn func(t *testing.T, legacy bool)) {
+	t.Helper()
+	for _, legacy := range []bool{false, true} {
+		name := "current"
+		if legacy {
+			name = "legacy"
+		}
+		t.Run(name, func(t *testing.T) { fn(t, legacy) })
 	}
 }
 
@@ -167,9 +198,14 @@ func (a *fakeSuggestionsBotAPI) writeBot(w http.ResponseWriter, status int) {
 	if err != nil {
 		a.t.Errorf("encode description: %v", err)
 	}
+	optOut := ""
+	if !a.legacy {
+		optOut = fmt.Sprintf(`"suggestions_opt_out": %t,`, a.optOut)
+	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	_, _ = fmt.Fprintf(w, `{
+		%s
 		"description": %s,
 		"id": "8a1b2c3d-0000-4000-8000-000000000001", "slug": "opt-probe", "org_id": "org-1", "cluster_id": "c-1",
 		"name": "opt-probe", "namespace": "bot-opt-probe", "tier": "starter",
@@ -179,7 +215,7 @@ func (a *fakeSuggestionsBotAPI) writeBot(w http.ResponseWriter, status int) {
 		"access": "open", "hosting_type": "hosted", "harness": "openclaw",
 		"created_at": "2026-10-29T10:00:00Z", "updated_at": "2026-10-29T10:00:00Z",
 		"desired_config": {}
-	}`, desc)
+	}`, optOut, desc)
 }
 
 func suggestionsTestConfig(endpoint, attr string) string {
@@ -202,8 +238,16 @@ resource "botyard_bot" "b" {
 // explicit false are both written and re-plan clean; removing the attribute
 // leaves the server value alone; out-of-band drift against a declared value is
 // planned back; import reads the flag with no diff.
+//
+// Against the current API every read comes from the bot responses, so the
+// suggestions GET is never called (#4524); a legacy API falls back to it.
 func TestSuggestionsOptOut_Lifecycle(t *testing.T) {
+	apiGenerations(t, testSuggestionsOptOutLifecycle)
+}
+
+func testSuggestionsOptOutLifecycle(t *testing.T, legacy bool) {
 	api, srv := newFakeSuggestionsBotAPI(t)
+	api.legacy = legacy
 	const addr = "botyard_bot.b"
 	omitted := suggestionsTestConfig(srv.URL, "")
 	optedOut := suggestionsTestConfig(srv.URL, "suggestions_opt_out = true")
@@ -271,15 +315,27 @@ func TestSuggestionsOptOut_Lifecycle(t *testing.T) {
 			},
 		},
 	})
+	switch gets := api.gets; {
+	case !legacy && gets != 0:
+		t.Fatalf("suggestions GETs = %d, want 0: the current API carries the flag on the bot", gets)
+	case legacy && gets == 0:
+		t.Fatal("suggestions GETs = 0: a legacy API must fall back to the suggestions GET")
+	}
 }
 
 // TestSuggestionsOptOut_NotBotOwner covers a bot the API key did not create
 // (D6 #4379). The API refuses every write to such a bot; what the provider owes
-// is that refresh and plan keep working (the unreadable flag keeps its prior
-// value), and that changing the flag fails with a diagnostic that names the
-// setting and the ownership rule.
+// is that refresh and plan keep working (the current API reads the flag off the
+// bot; a legacy one keeps the prior value on the suggestions GET's 403), and
+// that changing the flag fails with a diagnostic that names the setting and the
+// ownership rule.
 func TestSuggestionsOptOut_NotBotOwner(t *testing.T) {
+	apiGenerations(t, testSuggestionsOptOutNotBotOwner)
+}
+
+func testSuggestionsOptOutNotBotOwner(t *testing.T, legacy bool) {
 	api, srv := newFakeSuggestionsBotAPI(t)
+	api.legacy = legacy
 	const addr = "botyard_bot.b"
 	omitted := suggestionsTestConfig(srv.URL, "")
 	disowned := api.set(func(a *fakeSuggestionsBotAPI) { a.owned = false })
@@ -290,7 +346,8 @@ func TestSuggestionsOptOut_NotBotOwner(t *testing.T) {
 			{Config: omitted, Check: resource.TestCheckResourceAttr(addr, "suggestions_opt_out", "false")},
 			{
 				PreConfig: disowned,
-				// A refresh-only apply: the 403 on the flag's GET is tolerated.
+				// A refresh-only apply. Current API: read off the bot. Legacy:
+				// the 403 on the flag's GET is tolerated.
 				RefreshState: true,
 				Check:        resource.TestCheckResourceAttr(addr, "suggestions_opt_out", "false"),
 			},
@@ -325,39 +382,51 @@ func TestSuggestionsOptOut_NotBotOwner(t *testing.T) {
 }
 
 // TestSuggestionsOptOut_ImportNotOwned: importing a bot the key did not
-// create cannot read the flag. The attribute stays null and an omitted
-// configuration plans clean.
+// create. The current API carries the flag on the bot GET, so import reads the
+// real value; a legacy API cannot read it, so the attribute stays null. Either
+// way an omitted configuration plans clean.
 func TestSuggestionsOptOut_ImportNotOwned(t *testing.T) {
-	api, srv := newFakeSuggestionsBotAPI(t)
-	api.exists, api.owned, api.optOut = true, false, true
-	const addr = "botyard_bot.b"
+	apiGenerations(t, func(t *testing.T, legacy bool) {
+		api, srv := newFakeSuggestionsBotAPI(t)
+		api.exists, api.owned, api.optOut, api.legacy = true, false, true, legacy
+		const addr = "botyard_bot.b"
+		want := "true"
+		if legacy {
+			want = "" // unreadable without ownership
+		}
 
-	resource.UnitTest(t, resource.TestCase{
-		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
-		Steps: []resource.TestStep{
-			{
-				ResourceName:       addr,
-				ImportState:        true,
-				ImportStateId:      "opt-probe",
-				ImportStatePersist: true,
-				Config:             suggestionsTestConfig(srv.URL, ""),
-				ImportStateCheck: func(states []*terraform.InstanceState) error {
-					if len(states) != 1 {
-						return fmt.Errorf("imported %d instances, want 1", len(states))
-					}
-					if v, ok := states[0].Attributes["suggestions_opt_out"]; ok && v != "" {
-						return fmt.Errorf("suggestions_opt_out = %q, want unset (unreadable without ownership)", v)
-					}
-					return nil
+		resource.UnitTest(t, resource.TestCase{
+			ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+			Steps: []resource.TestStep{
+				{
+					ResourceName:       addr,
+					ImportState:        true,
+					ImportStateId:      "opt-probe",
+					ImportStatePersist: true,
+					Config:             suggestionsTestConfig(srv.URL, ""),
+					ImportStateCheck: func(states []*terraform.InstanceState) error {
+						if len(states) != 1 {
+							return fmt.Errorf("imported %d instances, want 1", len(states))
+						}
+						if v := states[0].Attributes["suggestions_opt_out"]; v != want {
+							return fmt.Errorf("suggestions_opt_out = %q, want %q", v, want)
+						}
+						return nil
+					},
+				},
+				{Config: suggestionsTestConfig(srv.URL, ""), PlanOnly: true},
+				{
+					PreConfig: api.set(func(a *fakeSuggestionsBotAPI) { a.owned = true }),
+					Config:    suggestionsTestConfig(srv.URL, ""),
+					PlanOnly:  true,
 				},
 			},
-			{Config: suggestionsTestConfig(srv.URL, ""), PlanOnly: true},
-			{
-				PreConfig: api.set(func(a *fakeSuggestionsBotAPI) { a.owned = true }),
-				Config:    suggestionsTestConfig(srv.URL, ""),
-				PlanOnly:  true,
-			},
-		},
+		})
+		if !legacy {
+			if err := api.wantGets(0)(nil); err != nil {
+				t.Fatal(err)
+			}
+		}
 	})
 }
 

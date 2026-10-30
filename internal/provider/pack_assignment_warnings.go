@@ -84,8 +84,15 @@ func livePackItems(ctx context.Context, data *providerData, slug string, kind pa
 		return skip(fmt.Errorf("bot id %q is not a UUID: %w", botID, err))
 	}
 
+	lightRead := false
 	resp, err := data.client.ListBotPackInstallsV1OrgsOrgIdPacksInstallsGetWithResponse(ctx, data.orgID,
-		&client.ListBotPackInstallsV1OrgsOrgIdPacksInstallsGetParams{BotIds: []openapi_types.UUID{uid}})
+		&client.ListBotPackInstallsV1OrgsOrgIdPacksInstallsGetParams{
+			BotIds: []openapi_types.UUID{uid},
+			// Only the items are needed. The light read skips the Composio
+			// revalidation and connection-health computation (#4524);
+			// connections and pending_connections come back empty, unread.
+			IncludeConnectionHealth: &lightRead,
+		})
 	if err != nil {
 		return skip(err)
 	}

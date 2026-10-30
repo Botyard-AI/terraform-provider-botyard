@@ -19,19 +19,28 @@ import (
 // `suggestions_opt_out` on botyard_bot (PlatDev #4028a, decision D1 #4374).
 //
 // The bot has ONE flag covering both skill and tool suggestions
-// (`bots.suggestions_opt_out`, NOT NULL, default false). It is not on
-// BotResponse: it is read from `GET /bots/{slug}/suggestions` (`.opt_out`) and
-// written with `PUT /bots/{slug}/suggestions/opt-out {"opt_out": bool}`, whose
-// response is the same SuggestionsResponse. Both routes are gated by
-// `require_bot_owner`: an API key passes only on bots it created (D6 #4379,
-// keep_403).
+// (`bots.suggestions_opt_out`, NOT NULL, default false). Since botyard
+// v1.7.2256 (#4524) it is on BotResponse, so every bot GET, create and PATCH
+// response carries it, for any caller that can read the bot. The provider reads
+// it from there and never calls `GET /bots/{slug}/suggestions` on refresh: that
+// route also computes the bot's missing skill/tool suggestions against the org
+// catalogue, which a refresh does not need.
+//
+// It is still written with `PUT /bots/{slug}/suggestions/opt-out
+// {"opt_out": bool}`, whose response is a SuggestionsResponse. That route is
+// gated by `require_bot_owner`: an API key passes only on bots it created (D6
+// #4379, keep_403).
+//
+// Fallback: a BotResponse without the field (an API older than v1.7.2256, e.g.
+// after a rollback) falls back to the owner-gated suggestions GET, where a 403
+// keeps the prior value as before.
 //
 // Optional+Computed with the stock UseStateForUnknown. The attribute is a root
 // leaf, so the nested-parent problem nestedUseStateForUnknown solves does not
 // arise: on create there is no prior state (it stays unknown when omitted), and
 // on update the prior value is always a real refreshed one. Import leaves it
-// null until the first Read fills it from the GET, so an imported bot re-plans
-// clean whether or not the configuration declares it.
+// null until the first Read fills it from the bot GET, so an imported bot
+// re-plans clean whether or not the configuration declares it.
 
 const suggestionsOptOutAttr = "suggestions_opt_out"
 
@@ -42,10 +51,9 @@ func suggestionsOptOutSchemaAttribute() schema.BoolAttribute {
 		MarkdownDescription: "Opt the bot out of skill **and** tool suggestions. One platform flag covers both. " +
 			"`true` hides the suggestions banner for this bot; `false` turns suggestions back on. " +
 			"When omitted, Terraform reads the current value and leaves it alone.\n\n" +
-			"Reading and changing it require bot ownership, and an API key owns only the bots it created. On " +
-			"a bot created in the Botyard app or with another key, Terraform cannot read the flag: it keeps the " +
-			"last value it knew (none after an import), so a refresh or plan is unaffected, and changing it " +
-			"fails with a \"Not the bot's owner\" error.",
+			"Changing it requires bot ownership, and an API key owns only the bots it created. On a bot created " +
+			"in the Botyard app or with another key, Terraform reads the flag but changing it fails with a " +
+			"\"Not the bot's owner\" error.",
 		PlanModifiers: []planmodifier.Bool{boolplanmodifier.UseStateForUnknown()},
 	}
 }
@@ -120,12 +128,27 @@ func addBotOwnerForbiddenError(diags *diag.Diagnostics, attr path.Path, slug str
 			attr, slug, describeAPIError(body)))
 }
 
+// optOutFromBot returns the flag carried on a BotResponse. ok is false when the
+// API did not send it (older than v1.7.2256).
+func optOutFromBot(b *client.BotResponse) (types.Bool, bool) {
+	if b == nil || b.SuggestionsOptOut == nil {
+		return types.BoolNull(), false
+	}
+	return types.BoolValue(*b.SuggestionsOptOut), true
+}
+
 // applySuggestionsOptOutOnCreate settles the attribute after the bot exists.
 // A configured value is written (explicit false included, so the declared value
-// is what the server holds, not an assumed default); an omitted one is read.
-func (r *BotResource) applySuggestionsOptOutOnCreate(ctx context.Context, slug string, planned types.Bool, diags *diag.Diagnostics) types.Bool {
+// is what the server holds, not an assumed default); an omitted one is taken
+// from latest, the last BotResponse of the create, with no extra request.
+func (r *BotResource) applySuggestionsOptOutOnCreate(ctx context.Context, slug string, planned types.Bool,
+	latest *client.BotResponse, diags *diag.Diagnostics,
+) types.Bool {
 	if !planned.IsUnknown() && !planned.IsNull() {
 		got, _ := r.writeSuggestionsOptOut(ctx, slug, planned.ValueBool(), diags)
+		return got
+	}
+	if got, ok := optOutFromBot(latest); ok {
 		return got
 	}
 	got, _ := r.readSuggestionsOptOut(ctx, slug, diags)
@@ -146,10 +169,15 @@ func (r *BotResource) applySuggestionsOptOutOnUpdate(ctx context.Context, slug s
 	}
 }
 
-// refreshSuggestionsOptOut updates the attribute in Read. Forbidden keeps the
-// prior value; a failure has already added an error.
-func (r *BotResource) refreshSuggestionsOptOut(ctx context.Context, slug string, prior types.Bool, diags *diag.Diagnostics) types.Bool {
-	got, outcome := r.readSuggestionsOptOut(ctx, slug, diags)
+// refreshSuggestionsOptOut updates the attribute in Read from the bot GET's
+// response. Only without the field does it fall back to the suggestions GET,
+// where Forbidden keeps the prior value and a failure has already added an
+// error.
+func (r *BotResource) refreshSuggestionsOptOut(ctx context.Context, b *client.BotResponse, prior types.Bool, diags *diag.Diagnostics) types.Bool {
+	if got, ok := optOutFromBot(b); ok {
+		return got
+	}
+	got, outcome := r.readSuggestionsOptOut(ctx, b.Slug, diags)
 	if outcome == suggestionsOptOutReadOK {
 		return got
 	}

@@ -161,6 +161,12 @@ func (a *fakePackBotAPI) serve(w http.ResponseWriter, r *http.Request) {
 		if got := r.URL.Query().Get("bot_ids"); got != fpBotID {
 			a.t.Errorf("installs read bot_ids=%q, want %q", got, fpBotID)
 		}
+		// pack.pending_connections comes from this read, so it must be the
+		// full one: the light read (include_connection_health=false) returns
+		// pending_connections empty, unevaluated.
+		if got, ok := r.URL.Query()["include_connection_health"]; ok {
+			a.t.Errorf("installs read include_connection_health=%q, want it omitted (full read)", got)
+		}
 		var parts []string
 		if a.installed {
 			parts = append(parts, a.installJSON())
@@ -181,9 +187,11 @@ func (a *fakePackBotAPI) serve(w http.ResponseWriter, r *http.Request) {
 		}
 		a.installed, a.avatar = false, ""
 		_, _ = w.Write([]byte(`{"uninstalls":[]}`))
-	// botyard_bot reads suggestions_opt_out on every refresh (PR 43).
-	case r.Method == http.MethodGet && r.URL.Path == bot+"/suggestions" && a.exists:
-		_, _ = fmt.Fprintf(w, `{"skills":[],"tools":[],"opt_out":%t}`, a.optOut)
+	// botyard_bot reads suggestions_opt_out off the bot responses (#4524); the
+	// suggestions GET, which also computes suggestions, is never called.
+	case r.Method == http.MethodGet && r.URL.Path == bot+"/suggestions":
+		a.t.Errorf("unexpected suggestions GET: the flag is on the bot responses")
+		w.WriteHeader(http.StatusInternalServerError)
 	case r.Method == http.MethodPut && r.URL.Path == bot+"/suggestions/opt-out" && a.failOptOut:
 		w.WriteHeader(http.StatusInternalServerError)
 		_, _ = w.Write([]byte(`{"title":"injected opt-out failure","status":500}`))
@@ -256,13 +264,13 @@ func (a *fakePackBotAPI) botJSON() string {
 	if resources == "" {
 		resources = "null"
 	}
-	return fmt.Sprintf(`{"resources":%s,"id":%q,"slug":"pack-probe","org_id":"org-1","cluster_id":"c-1","name":"pack-probe",`+
+	return fmt.Sprintf(`{"suggestions_opt_out":%t,"resources":%s,"id":%q,"slug":"pack-probe","org_id":"org-1","cluster_id":"c-1","name":"pack-probe",`+
 		`"namespace":"bot-pack-probe","tier":"starter","runtime_class":"kata_qemu","storage_class":"cluster_default",`+
 		`"runtime_privilege_mode":"standard","onboarding_state":"complete","health_status":"healthy",`+
 		`"desired_state":"running","config_generation":1,"hosting_type":"hosted","harness":"botyard_native",`+
 		`"avatar_url":%s,"created_at":"2026-10-28T10:00:00Z","updated_at":"2026-10-28T10:00:00Z",`+
 		`"desired_config":{"bot_type":"native","model":{"provider":"botyard","model":"m"},`+
-		`"tool_search":{"mode":%q,"auto_threshold_percent":40}}}`, resources, fpBotID, avatar, a.mode)
+		`"tool_search":{"mode":%q,"auto_threshold_percent":40}}}`, a.optOut, resources, fpBotID, avatar, a.mode)
 }
 
 func packBotConfig(endpoint, extra string) string {

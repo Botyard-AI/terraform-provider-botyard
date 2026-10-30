@@ -138,6 +138,12 @@ func (a *packWarnAPI) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			jsonOK(400, `{"title":"wrong bot_ids","status":400}`)
 			return
 		}
+		// The check needs only the items: it must take the light read, which
+		// skips Composio revalidation and connection health (#4524).
+		if got := r.URL.Query()["include_connection_health"]; len(got) != 1 || got[0] != "false" {
+			a.unexpected = append(a.unexpected, fmt.Sprintf("installs read with include_connection_health %q, "+
+				"want [\"false\"]", got))
+		}
 		jsonOK(200, `{"bots":[{"bot_id":"`+warnBotID+`","installs":[{"bot_pack_install_id":"in-1",`+
 			`"connections":[],"installed_at":"2026-10-01T00:00:00Z","items":`+a.items+`,"name":"Sales",`+
 			`"pack_id":"p-1","pack_slug":"sales","pack_version_id":"pv-1","pending_connections":[],`+
