@@ -100,3 +100,8 @@ func (c *ClientWithResponses) RemoveMcpServerMember(ctx context.Context, orgID, 
 	return deleteStatus(c.RemoveMcpServerMemberV1OrgsOrgIdMcpServersMcpServerIdMembersActorTypeActorIdDelete(
 		ctx, orgID, mcpServerID, actorType, actorID))
 }
+
+// DeleteSchedule deletes one of a bot's schedules.
+func (c *ClientWithResponses) DeleteSchedule(ctx context.Context, orgID, botSlug, scheduleID string) (int, []byte, error) {
+	return deleteStatus(c.DeleteScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdDelete(ctx, orgID, botSlug, scheduleID))
+}

@@ -12,6 +12,17 @@ a version.
 
 ## [Unreleased]
 
+### Added
+
+- **New resource `botyard_bot_schedule`: a recurring schedule on a bot.** Set when it fires with exactly one of `cron`, `interval` or `rrule`, and what it does with exactly one of `prompt` (wake the bot) or `command` (run a command on its runtime, with exit-code classes, a recheck `window` and per-outcome routing). (#48)
+  - Switching timing kind or action kind updates the schedule in place. Every update sends only the fields that changed.
+  - **Terraform owns `enabled`.** A schedule paused in the app, or auto-paused after `max_consecutive_failures`, shows as drift, and the next apply resumes it.
+  - Leaving `conversation_id` out adopts the conversation Botyard creates for the schedule, with no diff.
+  - Command schedules need the `schedule:schedule_command.create` / `.update` permission on the API key's role. Without it, apply fails with an error naming the permission. Edits that leave the command unchanged still work without it.
+  - The resource manages only the schedule it created or imported (`<bot_slug>/<schedule_id>`). Other schedules on the bot are left alone.
+  - The next fire time is not stored in state, because it changes on every read.
+- **New data source `botyard_bot_schedules`** lists every recurring schedule on a bot, including ones the bot created itself, with each one's `next_fire_at`. (#48)
+
 ## [0.7.0] - 2026-10-29
 
 **This release has breaking changes.** See **Removed** for the upgrade steps: delete the removed keys from your configuration, then run one `terraform apply`.

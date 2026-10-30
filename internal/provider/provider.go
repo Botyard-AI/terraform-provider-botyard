@@ -171,6 +171,7 @@ func resolveProviderConfig(cfg BotyardProviderModel, getenv func(string) string)
 func (p *BotyardProvider) Resources(_ context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		NewBotResource,
+		NewBotScheduleResource,
 		NewBotCredentialAssignmentResource,
 		NewBotSkillAssignmentResource,
 		NewBotToolAssignmentResource,
@@ -184,6 +185,7 @@ func (p *BotyardProvider) Resources(_ context.Context) []func() resource.Resourc
 func (p *BotyardProvider) DataSources(_ context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
 		NewBotDataSource,
+		NewBotSchedulesDataSource,
 		NewBotTemplateDataSource,
 		NewBotTemplatesDataSource,
 		NewCredentialsDataSource,

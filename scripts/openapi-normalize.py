@@ -31,6 +31,11 @@ Pipeline (in order):
    oapi-codegen cannot represent that and emits a NON-DETERMINISTIC client for
    it (see below).
 
+6. ``mark_tristate`` (after prune): type each ``--tristate-fields`` property
+   (``Schema.property``) as ``nullable.Nullable[T]`` with omitempty, so the
+   generated request struct can omit the key, send a value, or send null. See
+   the function for why this is opt-in per field.
+
 (A final ``openapi-down-convert`` pass in generate-client.sh handles the version
 bump and any remaining 3.0 cleanups.)
 
@@ -392,11 +397,56 @@ def drop_ambiguous_discriminators(spec: dict[str, Any]) -> list[str]:
     return sorted(dropped)
 
 
+TRISTATE_GO_TYPES = {"string": "string", "integer": "int", "boolean": "bool"}
+NULLABLE_IMPORT = "github.com/oapi-codegen/nullable"
+
+
+def mark_tristate(spec: dict[str, Any], fields: tuple[str, ...]) -> None:
+    """Make optional nullable request properties three-state in Go.
+
+    oapi-codegen renders an optional *nullable* property as ``*T`` WITHOUT
+    omitempty, so a nil pointer sends ``null``. For a PATCH field documented as
+    "send null to clear; omit to leave unchanged" that makes omission
+    impossible: every update built from the generated struct clears it.
+    ``nullable.Nullable[T]`` (the oapi-codegen companion type) has three states
+    and, being a map, is dropped by omitempty when unset.
+
+    This is opt-in per field rather than oapi-codegen's global
+    ``nullable-type`` switch, which would retype every nullable field in the
+    client (responses included) that existing resources already consume.
+
+    Fails closed: a listed field that is missing, required, not nullable or
+    not a scalar is an error, so spec drift cannot silently undo it.
+    """
+    schemas = spec.get("components", {}).get("schemas", {})
+    for field in fields:
+        schema_name, _, prop_name = field.partition(".")
+        if not prop_name:
+            raise SystemExit(f"--tristate-fields: {field!r} is not Schema.property")
+        schema = schemas.get(schema_name)
+        if schema is None:
+            raise SystemExit(f"--tristate-fields: schema {schema_name!r} not in the pruned spec")
+        prop = schema.get("properties", {}).get(prop_name)
+        if prop is None:
+            raise SystemExit(f"--tristate-fields: {field!r} has no such property")
+        if prop_name in schema.get("required", []):
+            raise SystemExit(f"--tristate-fields: {field!r} is required, so it cannot be omitted")
+        if prop.get("nullable") is not True:
+            raise SystemExit(f"--tristate-fields: {field!r} is not nullable")
+        go_type = TRISTATE_GO_TYPES.get(prop.get("type", ""))
+        if go_type is None:
+            raise SystemExit(f"--tristate-fields: {field!r} has unsupported type {prop.get('type')!r}")
+        prop["x-go-type"] = f"nullable.Nullable[{go_type}]"
+        prop["x-go-type-import"] = {"path": NULLABLE_IMPORT}
+        prop["x-omitempty"] = True
+
+
 def normalize_spec(
     spec: dict[str, Any],
     keep_tags: set[str],
     exclude_paths: tuple[str, ...] = (),
     exclude_operations: tuple[str, ...] = (),
+    tristate_fields: tuple[str, ...] = (),
 ) -> dict[str, Any]:
     """Full in-place normalization; returns the same spec for convenience."""
     collapse_nullable(spec)
@@ -405,6 +455,7 @@ def normalize_spec(
     fix_discriminator_properties(spec)
     for dropped in drop_ambiguous_discriminators(spec):
         print(f"dropped many-to-one discriminator: {dropped}")
+    mark_tristate(spec, tristate_fields)
     return spec
 
 
@@ -427,11 +478,22 @@ def main() -> None:
         help="operationIds to drop even when their path is kept and tag-matched "
         "(e.g. a write operation on a path whose read operation the client needs).",
     )
+    ap.add_argument(
+        "--tristate-fields",
+        nargs="*",
+        default=[],
+        help="Schema.property request fields to generate as nullable.Nullable[T] "
+        "(omit / value / null).",
+    )
     args = ap.parse_args()
 
     spec = json.load(open(args.src))
     normalize_spec(
-        spec, set(args.keep_tags), tuple(args.exclude_paths), tuple(args.exclude_operations)
+        spec,
+        set(args.keep_tags),
+        tuple(args.exclude_paths),
+        tuple(args.exclude_operations),
+        tuple(args.tristate_fields),
     )
     json.dump(spec, open(args.dst, "w"))
     n_schemas = len(spec.get("components", {}).get("schemas", {}))

@@ -14,7 +14,7 @@ CLIENT_DIR="$ROOT/internal/client"
 SPEC="$CLIENT_DIR/openapi.json"
 
 # Tags the generated client covers. Widen as resources are added.
-KEEP_TAGS=(bots mcp-servers secret-policies skills bot-tools credentials tools bot-templates workforces suggestions packs)
+KEEP_TAGS=(bots mcp-servers secret-policies skills bot-tools credentials tools bot-templates workforces suggestions packs schedules)
 
 # Paths dropped even though their tag is kept:
 #   - The MCP catalog endpoints pull in McpCatalogFormField schemas whose inline
@@ -39,6 +39,11 @@ KEEP_TAGS=(bots mcp-servers secret-policies skills bot-tools credentials tools b
 #         of scope for read-only discovery (see the credential_assignment notes).
 # Re-include either when the corresponding (authoring/secret-bearing) surface is
 # built.
+#   - The schedules tag backs botyard_bot_schedule (CRUD) and the
+#     botyard_bot_schedules data source (list). The imperative schedule
+#     endpoints — preview, pause/resume, trigger, run history/summaries and the
+#     command-run trigger/listing — are actions, not desired state, so they are
+#     dropped.
 EXCLUDE_PATHS=(
   "/v1/orgs/{org_id}/mcp-servers/catalog"
   "/v1/orgs/{org_id}/mcp-servers/from-catalog"
@@ -54,6 +59,15 @@ EXCLUDE_PATHS=(
   "/v1/orgs/{org_id}/bots/{bot_slug}/credentials/private/{credential_id}"
   "/v1/orgs/{org_id}/bots/{bot_slug}/credentials/reorder"
   "/v1/orgs/{org_id}/bots/{bot_slug}/credentials/{credential_id}/model"
+  "/v1/orgs/{org_id}/bots/{bot_slug}/schedules/preview"
+  "/v1/orgs/{org_id}/bots/{bot_slug}/schedules/run-history"
+  "/v1/orgs/{org_id}/bots/{bot_slug}/schedules/run-summaries"
+  "/v1/orgs/{org_id}/bots/{bot_slug}/schedules/command-runs"
+  "/v1/orgs/{org_id}/bots/{bot_slug}/schedules/{schedule_id}/pause"
+  "/v1/orgs/{org_id}/bots/{bot_slug}/schedules/{schedule_id}/resume"
+  "/v1/orgs/{org_id}/bots/{bot_slug}/schedules/{schedule_id}/trigger"
+  "/v1/orgs/{org_id}/bots/{bot_slug}/schedules/{schedule_id}/runs"
+  "/v1/orgs/{org_id}/bots/{bot_slug}/schedules/{schedule_id}/command-runs"
 )
 
 # Write operations dropped from an otherwise-kept path: the credential
@@ -63,6 +77,16 @@ EXCLUDE_PATHS=(
 # CredentialCreate schema).
 EXCLUDE_OPERATIONS=(
   "create_credentials_v1_orgs__org_id__credentials_post"
+)
+
+# Optional nullable request fields generated as nullable.Nullable[T], so a
+# sparse PATCH can omit them, set them, or clear them with null. oapi-codegen
+# otherwise renders them as *T without omitempty, which sends null whenever the
+# field is left unset. The normalizer fails if a listed field stops being
+# optional and nullable.
+#   - ScheduleUpdateInput.title: "send null to clear; omit to leave unchanged".
+TRISTATE_FIELDS=(
+  "ScheduleUpdateInput.title"
 )
 
 OAPI_CODEGEN_VERSION="v2.4.1"
@@ -76,7 +100,8 @@ echo ">> normalize + prune (tags: ${KEEP_TAGS[*]}; exclude paths: ${EXCLUDE_PATH
 python3 "$ROOT/scripts/openapi-normalize.py" "$SPEC" "$tmp_norm" \
   --keep-tags "${KEEP_TAGS[@]}" \
   --exclude-paths "${EXCLUDE_PATHS[@]}" \
-  --exclude-operations "${EXCLUDE_OPERATIONS[@]}"
+  --exclude-operations "${EXCLUDE_OPERATIONS[@]}" \
+  --tristate-fields "${TRISTATE_FIELDS[@]}"
 
 echo ">> down-convert 3.1 -> 3.0"
 npx --yes "@apiture/openapi-down-convert@${DOWN_CONVERT_VERSION}" --input "$tmp_norm" --output "$tmp_30"

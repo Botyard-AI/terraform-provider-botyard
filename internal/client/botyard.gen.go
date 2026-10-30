@@ -15,6 +15,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/oapi-codegen/nullable"
 	"github.com/oapi-codegen/runtime"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
@@ -270,6 +271,18 @@ const (
 	ChosenModelKindChosen ChosenModelKind = "chosen"
 )
 
+// Defines values for CommandScheduleActionExitCodes.
+const (
+	CommandScheduleActionExitCodesDeferred CommandScheduleActionExitCodes = "deferred"
+	CommandScheduleActionExitCodesFailure  CommandScheduleActionExitCodes = "failure"
+	CommandScheduleActionExitCodesSuccess  CommandScheduleActionExitCodes = "success"
+)
+
+// Defines values for CommandScheduleActionKind.
+const (
+	CommandScheduleActionKindCommand CommandScheduleActionKind = "command"
+)
+
 // Defines values for CommandsConfigOwnerDisplay.
 const (
 	CommandsConfigOwnerDisplayHash CommandsConfigOwnerDisplay = "hash"
@@ -439,6 +452,11 @@ const (
 	CredentialScopeWebSearch   CredentialScope = "web_search"
 )
 
+// Defines values for CronScheduleSpecKind.
+const (
+	CronScheduleSpecKindCron CronScheduleSpecKind = "cron"
+)
+
 // Defines values for DeployStatus.
 const (
 	DeployStatusDeployed DeployStatus = "deployed"
@@ -572,6 +590,11 @@ const (
 	IntegrationLoginFailureUnexpectedPage                IntegrationLoginFailure = "unexpected_page"
 	IntegrationLoginFailureWorkerSessionLost             IntegrationLoginFailure = "worker_session_lost"
 	IntegrationLoginFailureWorkerUnavailable             IntegrationLoginFailure = "worker_unavailable"
+)
+
+// Defines values for IntervalScheduleSpecKind.
+const (
+	IntervalScheduleSpecKindInterval IntervalScheduleSpecKind = "interval"
 )
 
 // Defines values for ManagedRemoteMcpCatalogEntryDetailRuntimeKind.
@@ -1265,6 +1288,16 @@ const (
 	PlatformLoginConnectSecondFactorEmailCode PlatformLoginConnectSecondFactor = "email_code"
 )
 
+// Defines values for PromptScheduleActionKind.
+const (
+	PromptScheduleActionKindPrompt PromptScheduleActionKind = "prompt"
+)
+
+// Defines values for RRuleScheduleSpecKind.
+const (
+	RRuleScheduleSpecKindRrule RRuleScheduleSpecKind = "rrule"
+)
+
 // Defines values for RecommendedModelAppliedKind.
 const (
 	RecommendedModelAppliedKindRecommended RecommendedModelAppliedKind = "recommended"
@@ -1390,6 +1423,32 @@ const (
 const (
 	RuntimeVaultSensitivityPlain  RuntimeVaultSensitivity = "plain"
 	RuntimeVaultSensitivitySecret RuntimeVaultSensitivity = "secret"
+)
+
+// Defines values for ScheduleCatchupPolicy.
+const (
+	ScheduleCatchupPolicyRunOnceOnRecovery ScheduleCatchupPolicy = "run_once_on_recovery"
+	ScheduleCatchupPolicySkip              ScheduleCatchupPolicy = "skip"
+)
+
+// Defines values for ScheduleNotifyMode.
+const (
+	ScheduleNotifyModeEveryRun ScheduleNotifyMode = "every_run"
+	ScheduleNotifyModeOnChange ScheduleNotifyMode = "on_change"
+)
+
+// Defines values for ScheduleOverlapPolicy.
+const (
+	ScheduleOverlapPolicyQueue ScheduleOverlapPolicy = "queue"
+	ScheduleOverlapPolicySkip  ScheduleOverlapPolicy = "skip"
+)
+
+// Defines values for ScheduleSpecKind.
+const (
+	ScheduleSpecKindCron     ScheduleSpecKind = "cron"
+	ScheduleSpecKindEvent    ScheduleSpecKind = "event"
+	ScheduleSpecKindInterval ScheduleSpecKind = "interval"
+	ScheduleSpecKindRrule    ScheduleSpecKind = "rrule"
 )
 
 // Defines values for SecretActionKind.
@@ -3308,6 +3367,73 @@ type CliWatchdogProfile struct {
 	NoOutputTimeoutRatio *float32 `json:"no_output_timeout_ratio"`
 }
 
+// CommandScheduleAction Run a command on the bot's own runtime on every fire.
+type CommandScheduleAction struct {
+	// Command Shell command to spawn. Do not redirect its output: the runtime captures stdout and stderr into log_path itself, and refuses a command that contains log_path.
+	Command string `json:"command"`
+
+	// ConcurrencyGroup Lock shared across this bot's command schedules; omitted = no lock.
+	ConcurrencyGroup *string `json:"concurrency_group"`
+
+	// Cwd Working directory relative to the workspace root; omitted = the root.
+	Cwd *string `json:"cwd"`
+
+	// ExitCodeLabels Optional display label per exit_codes key ('0'..'255' or '*'), e.g. {"75": "Waiting for input", "76": "Job running"}. Every key must also be an exit_codes key; each label is 1..40 characters after trimming, single line. Run history saves the label that applied with each attempt, so later edits never relabel past runs. Unlabeled codes show their outcome's wording.
+	ExitCodeLabels *map[string]string `json:"exit_code_labels,omitempty"`
+
+	// ExitCodes Exit code ('0'..'255' or '*') to success|failure|deferred. Codes not listed and without a '*' entry classify as failure. 'deferred' ("not ready yet, check again") needs a window, and a window needs at least one deferred code.
+	ExitCodes *map[string]CommandScheduleActionExitCodes `json:"exit_codes,omitempty"`
+	Kind      CommandScheduleActionKind                  `json:"kind"`
+
+	// LogPath Absolute path the runtime writes the command's stdout and stderr to.
+	LogPath *string `json:"log_path"`
+
+	// OnOutcome Routing per outcome. Omitted: success and skipped_overlap do nothing; every other outcome wakes the bot and notifies the accountable human. 'deferred' cannot be routed (it is not final); 'late' needs a window.
+	OnOutcome *map[string]OutcomeRouting `json:"on_outcome,omitempty"`
+
+	// OutputPath Absolute path named in the wake; never read by the platform.
+	OutputPath *string `json:"output_path"`
+
+	// OverlapPolicy What a command fire does when its ``concurrency_group`` lock is held.
+	//
+	// ``SKIP`` resolves the fire as ``skipped_overlap``. ``QUEUE`` parks it in a
+	// single pending slot per key (newest wins) that is promoted when the lock
+	// frees.
+	OverlapPolicy *ScheduleOverlapPolicy `json:"overlap_policy,omitempty"`
+
+	// OverridableEnv Env var names a manual trigger (schedule_command_trigger) may set for one run. Empty = no overrides. Never a secret_env name or a reserved runtime name (BOTYARD_*, LD_*, PATH, HOME, ...). Override values are plain text stored in run history: never use them for secrets.
+	OverridableEnv *[]string `json:"overridable_env,omitempty"`
+
+	// SecretEnv Env vars resolved from the Runtime Vault at each spawn. Names may not use the BOTYARD_ prefix: every run also gets BOTYARD_SCHEDULE_ID, BOTYARD_OCCURRENCE_AT (ISO-8601 UTC, the same for every attempt of an occurrence), BOTYARD_ATTEMPT (1-based), BOTYARD_RUN_ID and BOTYARD_TRIGGER (scheduled|manual). A runtime too old to carry them runs the command without any of them, so treat a missing BOTYARD_OCCURRENCE_AT as identity unavailable, not as a first attempt.
+	SecretEnv *[]SecretEnvBinding `json:"secret_env,omitempty"`
+
+	// TimeoutSeconds Deadline per attempt; null means no deadline.
+	TimeoutSeconds *int `json:"timeout_seconds"`
+
+	// Window Run-until-success per period: rechecks a deferred exit every recheck_seconds until success or until the window closes (outcome 'late'). Omitted = every fire is a single attempt plus any retries.
+	Window *CommandWindow `json:"window"`
+}
+
+// CommandScheduleActionExitCodes defines model for CommandScheduleAction.ExitCodes.
+type CommandScheduleActionExitCodes string
+
+// CommandScheduleActionKind defines model for CommandScheduleAction.Kind.
+type CommandScheduleActionKind string
+
+// CommandWindow Run-until-success per period (PlatDev #4119).
+//
+// The schedule's timing marks each period's *start*. A “deferred“ exit
+// ("not ready yet") queues a recheck of the same occurrence
+// “recheck_seconds“ later; a success closes the period; still deferring
+// when the window closes ends the period as “late“.
+type CommandWindow struct {
+	// DurationSeconds How long after each period start rechecks may run, in seconds of local wall-clock time in the schedule's timezone: a 06:00 start with 43200 always closes at 18:00 local, across DST changes. Must close at or before the next period starts.
+	DurationSeconds int `json:"duration_seconds"`
+
+	// RecheckSeconds Delay between a deferred exit and the next check of the same occurrence.
+	RecheckSeconds int `json:"recheck_seconds"`
+}
+
 // CommandsConfig Schema-required commands configuration.
 type CommandsConfig struct {
 	Native          *interface{}                `json:"native,omitempty"`
@@ -4595,6 +4721,19 @@ type CredentialUsageResponse struct {
 	Windows []UsageWindowResponse `json:"windows"`
 }
 
+// CronScheduleSpec Fire on a cron expression, in “timezone“ (DST-correct).
+type CronScheduleSpec struct {
+	// Cron Cron expression, e.g. '0 9 * * 1-5'.
+	Cron string               `json:"cron"`
+	Kind CronScheduleSpecKind `json:"kind"`
+
+	// Timezone IANA timezone for DST-correct firing.
+	Timezone *string `json:"timezone,omitempty"`
+}
+
+// CronScheduleSpecKind defines model for CronScheduleSpec.Kind.
+type CronScheduleSpecKind string
+
 // DeployStatus Deployment status for any deployable entity (skills, bot files, etc.).
 type DeployStatus string
 
@@ -4952,6 +5091,22 @@ type IntegrationLoginAttemptDetail_Status struct {
 //     was withdrawn mid-login, before the tokens are stored.
 type IntegrationLoginFailure string
 
+// IntervalScheduleSpec Fire on a fixed period, optionally phase-anchored.
+type IntervalScheduleSpec struct {
+	// Anchor Optional phase anchor (ISO-8601); epoch when omitted.
+	Anchor *time.Time `json:"anchor"`
+
+	// IntervalSeconds Fixed period between fires, in seconds.
+	IntervalSeconds int                      `json:"interval_seconds"`
+	Kind            IntervalScheduleSpecKind `json:"kind"`
+
+	// Timezone IANA timezone for anchor alignment.
+	Timezone *string `json:"timezone,omitempty"`
+}
+
+// IntervalScheduleSpecKind defines model for IntervalScheduleSpec.Kind.
+type IntervalScheduleSpecKind string
+
 // JsonValueInput defines model for JsonValue-Input.
 type JsonValueInput struct {
 	union json.RawMessage
@@ -4974,6 +5129,29 @@ type JsonValueInput4 = []JsonValueInput
 
 // JsonValueInput5 defines model for .
 type JsonValueInput5 map[string]*JsonValueInput
+
+// JsonValueOutput defines model for JsonValue-Output.
+type JsonValueOutput struct {
+	union json.RawMessage
+}
+
+// JsonValueOutput0 defines model for .
+type JsonValueOutput0 = string
+
+// JsonValueOutput1 defines model for .
+type JsonValueOutput1 = int
+
+// JsonValueOutput2 defines model for .
+type JsonValueOutput2 = float32
+
+// JsonValueOutput3 defines model for .
+type JsonValueOutput3 = bool
+
+// JsonValueOutput4 defines model for .
+type JsonValueOutput4 = []JsonValueOutput
+
+// JsonValueOutput5 defines model for .
+type JsonValueOutput5 map[string]*JsonValueOutput
 
 // LinkedConversationSummary Safe metadata for a conversation linked to a task.
 type LinkedConversationSummary struct {
@@ -7069,6 +7247,18 @@ type NoRecommendedModel struct {
 // NoRecommendedModelKind defines model for NoRecommendedModel.Kind.
 type NoRecommendedModelKind string
 
+// NotifyHumansAction Notify humans in the schedule's conversation.
+type NotifyHumansAction struct {
+	// Mode When a ``notify_humans`` routing action actually notifies.
+	//
+	// ``ON_CHANGE`` only when the outcome class flips (``ok`` <-> ``not_ok``);
+	// ``EVERY_RUN`` on every matching outcome.
+	Mode *ScheduleNotifyMode `json:"mode,omitempty"`
+
+	// Recipients User ids to notify. Empty means the conversation's accountable human.
+	Recipients *[]string `json:"recipients,omitempty"`
+}
+
 // ObservedState Operator's view of where a bot is in the reconciler phase pipeline.
 //
 // Phase sub-states (“provisioning:*“ / “updating:*“) track progress
@@ -7482,6 +7672,32 @@ type OrgPackVersions struct {
 
 	// Versions The versions found.
 	Versions []OrgPackVersion `json:"versions"`
+}
+
+// OutcomeActions Terminal actions for an outcome. All omitted (“{}“) means do nothing.
+type OutcomeActions struct {
+	NotifyHumans *NotifyHumansAction `json:"notify_humans"`
+
+	// Pause Pause the schedule (enabled=false).
+	Pause   *bool          `json:"pause,omitempty"`
+	WakeBot *WakeBotAction `json:"wake_bot"`
+}
+
+// OutcomeRouting What to do for one outcome: act now, or retry and act on “then“.
+//
+// With “retry“ set, the terminal actions belong in “then“ (applied once
+// retries run out), never beside “retry“: actions next to a retry would be
+// ambiguous between "on every attempt" and "after the last one".
+type OutcomeRouting struct {
+	NotifyHumans *NotifyHumansAction `json:"notify_humans"`
+
+	// Pause Pause the schedule (enabled=false).
+	Pause *bool        `json:"pause,omitempty"`
+	Retry *RetryPolicy `json:"retry"`
+
+	// Then Actions applied once retries are exhausted.
+	Then    *OutcomeActions `json:"then"`
+	WakeBot *WakeBotAction  `json:"wake_bot"`
 }
 
 // PackAvatarChoice Whether an install onto an existing bot replaces its avatar (D16).
@@ -8403,8 +8619,8 @@ type PlannedSettingItem struct {
 	Path string `json:"path"`
 
 	// Reason Why, when it is not obvious.
-	Reason *string                          `json:"reason"`
-	Value  *BotyardCoreTypesJsonValueOutput `json:"value"`
+	Reason *string          `json:"reason"`
+	Value  *JsonValueOutput `json:"value"`
 }
 
 // PlannedSettingItemKind defines model for PlannedSettingItem.Kind.
@@ -8606,6 +8822,31 @@ type ProfilePackSupport struct {
 type ProfilePackSupport_Unsupported_Item struct {
 	union json.RawMessage
 }
+
+// PromptScheduleAction Wake the bot with a prompt on every fire (one agent turn per fire).
+type PromptScheduleAction struct {
+	Kind PromptScheduleActionKind `json:"kind"`
+
+	// Prompt Wake message delivered to the bot.
+	Prompt string `json:"prompt"`
+}
+
+// PromptScheduleActionKind defines model for PromptScheduleAction.Kind.
+type PromptScheduleActionKind string
+
+// RRuleScheduleSpec Fire on an RFC 5545 rule containing at least two occurrences.
+type RRuleScheduleSpec struct {
+	Kind RRuleScheduleSpecKind `json:"kind"`
+
+	// Rrule Recurring RFC 5545 rule with at least two occurrences (may embed DTSTART).
+	Rrule string `json:"rrule"`
+
+	// Timezone IANA timezone for DST-correct firing.
+	Timezone *string `json:"timezone,omitempty"`
+}
+
+// RRuleScheduleSpecKind defines model for RRuleScheduleSpec.Kind.
+type RRuleScheduleSpecKind string
 
 // ReassignColumnTasksRequest Move all tasks out of a column into another (e.g. before deleting it).
 type ReassignColumnTasksRequest struct {
@@ -8814,6 +9055,15 @@ type ResourceScopePayload struct {
 	ResourceType Resource `json:"resource_type"`
 }
 
+// RetryPolicy Re-run the command after a backoff; each attempt re-competes for the lock.
+type RetryPolicy struct {
+	// BackoffSeconds Delay before each retry, in seconds.
+	BackoffSeconds *int `json:"backoff_seconds,omitempty"`
+
+	// Max Retries after the first attempt.
+	Max int `json:"max"`
+}
+
 // RunAction Nothing to ask: “run_setups“ creates the server or starts the authorisation.
 type RunAction struct {
 	Kind RunActionKind `json:"kind"`
@@ -8824,6 +9074,194 @@ type RunActionKind string
 
 // RuntimeVaultSensitivity Sensitivity classification for a Runtime Vault entry.
 type RuntimeVaultSensitivity string
+
+// ScheduleCatchupPolicy What to do with fires missed while the bot/engine was unavailable.
+//
+// “SKIP“ drops missed occurrences entirely. “RUN_ONCE_ON_RECOVERY“ fires
+// a single catch-up run when the target becomes reachable again, regardless
+// of how many occurrences were missed (no thundering backlog).
+type ScheduleCatchupPolicy string
+
+// ScheduleCreate Create body for a schedule (fire-and-forget).
+type ScheduleCreate struct {
+	// Action What the schedule does on each fire: wake the bot with a prompt, or run a command on its runtime. Exactly one of action / prompt.
+	Action *ScheduleCreate_Action `json:"action"`
+
+	// CatchupPolicy What to do with fires missed while the bot/engine was unavailable.
+	//
+	// ``SKIP`` drops missed occurrences entirely. ``RUN_ONCE_ON_RECOVERY`` fires
+	// a single catch-up run when the target becomes reachable again, regardless
+	// of how many occurrences were missed (no thundering backlog).
+	CatchupPolicy *ScheduleCatchupPolicy `json:"catchup_policy,omitempty"`
+
+	// ConversationId Conversation to wake into; a dedicated one is auto-created when omitted.
+	ConversationId *string `json:"conversation_id"`
+
+	// Enabled Whether the schedule is active on create.
+	Enabled *bool `json:"enabled,omitempty"`
+
+	// MaxConsecutiveFailures Auto-pause after this many consecutive failures (0 disables).
+	MaxConsecutiveFailures *int `json:"max_consecutive_failures,omitempty"`
+
+	// Prompt Deprecated alias for action={kind:'prompt', prompt}.
+	// Deprecated:
+	Prompt   *string                 `json:"prompt"`
+	Schedule ScheduleCreate_Schedule `json:"schedule"`
+
+	// SkipIfBusy Skip (not misfire) if the conversation already has an active turn.
+	SkipIfBusy *bool `json:"skip_if_busy,omitempty"`
+
+	// Title Human-friendly label.
+	Title *string `json:"title"`
+}
+
+// ScheduleCreate_Action What the schedule does on each fire: wake the bot with a prompt, or run a command on its runtime. Exactly one of action / prompt.
+type ScheduleCreate_Action struct {
+	union json.RawMessage
+}
+
+// ScheduleCreate_Schedule defines model for ScheduleCreate.Schedule.
+type ScheduleCreate_Schedule struct {
+	union json.RawMessage
+}
+
+// ScheduleListResponse defines model for ScheduleListResponse.
+type ScheduleListResponse struct {
+	Schedules []ScheduleResponse `json:"schedules"`
+}
+
+// ScheduleNotifyMode When a “notify_humans“ routing action actually notifies.
+//
+// “ON_CHANGE“ only when the outcome class flips (“ok“ <-> “not_ok“);
+// “EVERY_RUN“ on every matching outcome.
+type ScheduleNotifyMode string
+
+// ScheduleOverlapPolicy What a command fire does when its “concurrency_group“ lock is held.
+//
+// “SKIP“ resolves the fire as “skipped_overlap“. “QUEUE“ parks it in a
+// single pending slot per key (newest wins) that is promoted when the lock
+// frees.
+type ScheduleOverlapPolicy string
+
+// ScheduleResponse A schedule as returned by the API (no delivery/await-reply surface in v1).
+type ScheduleResponse struct {
+	// Action What the schedule does on each fire — the same shape create/update take.
+	Action ScheduleResponse_Action `json:"action"`
+	BotId  string                  `json:"bot_id"`
+
+	// CatchupPolicy What to do with fires missed while the bot/engine was unavailable.
+	//
+	// ``SKIP`` drops missed occurrences entirely. ``RUN_ONCE_ON_RECOVERY`` fires
+	// a single catch-up run when the target becomes reachable again, regardless
+	// of how many occurrences were missed (no thundering backlog).
+	CatchupPolicy          ScheduleCatchupPolicy `json:"catchup_policy"`
+	ConversationId         string                `json:"conversation_id"`
+	CreatedAt              time.Time             `json:"created_at"`
+	Enabled                bool                  `json:"enabled"`
+	MaxConsecutiveFailures int                   `json:"max_consecutive_failures"`
+
+	// NextFireAt Next occurrence, derived from the schedule's spec on every read.
+	//
+	// Never stored. A persisted copy could not be advanced as occurrences
+	// fire, which is what once made healthy schedules render as permanently
+	// "overdue". ``None`` when the schedule is paused, when the spec has no
+	// remaining occurrence, or when it has no wall-clock timing.
+	NextFireAt *time.Time `json:"next_fire_at"`
+	OrgId      string     `json:"org_id"`
+
+	// Prompt Deprecated: the wake prompt when action.kind is 'prompt', else null.
+	// Deprecated:
+	Prompt     *string                `json:"prompt"`
+	ScheduleId string                 `json:"schedule_id"`
+	SkipIfBusy bool                   `json:"skip_if_busy"`
+	Spec       map[string]interface{} `json:"spec"`
+
+	// SpecKind How a schedule's firing times are specified (EPIC #493).
+	//
+	// The full domain is modeled from day one even though only ``CRON`` is wired
+	// into the engine first — so no schema migration is needed when the other
+	// kinds come online.
+	//
+	// - ``CRON`` — a cron expression (``spec.cron``).
+	// - ``INTERVAL`` — a fixed period in seconds plus an anchor
+	//   (``spec.interval_seconds`` + ``spec.anchor``).
+	// - ``RRULE`` — an iCalendar RFC 5545 recurrence rule (``spec.rrule``),
+	//   the native bi-weekly/complex-recurrence path Prefect gives us.
+	// - ``EVENT`` — fired by an external event/webhook selector rather than a
+	//   wall-clock time (``spec.event``).
+	SpecKind  ScheduleSpecKind `json:"spec_kind"`
+	Timezone  string           `json:"timezone"`
+	Title     *string          `json:"title"`
+	UpdatedAt time.Time        `json:"updated_at"`
+}
+
+// ScheduleResponse_Action What the schedule does on each fire — the same shape create/update take.
+type ScheduleResponse_Action struct {
+	union json.RawMessage
+}
+
+// ScheduleSpecKind How a schedule's firing times are specified (EPIC #493).
+//
+// The full domain is modeled from day one even though only “CRON“ is wired
+// into the engine first — so no schema migration is needed when the other
+// kinds come online.
+//
+//   - “CRON“ — a cron expression (“spec.cron“).
+//   - “INTERVAL“ — a fixed period in seconds plus an anchor
+//     (“spec.interval_seconds“ + “spec.anchor“).
+//   - “RRULE“ — an iCalendar RFC 5545 recurrence rule (“spec.rrule“),
+//     the native bi-weekly/complex-recurrence path Prefect gives us.
+//   - “EVENT“ — fired by an external event/webhook selector rather than a
+//     wall-clock time (“spec.event“).
+type ScheduleSpecKind string
+
+// ScheduleUpdateInput Sparse PATCH body shared by the API and MCP “schedule_update“.
+//
+// Every field defaults to :data:`UNSET` (omitted ⇒ unchanged). Fields typed
+// “… | None | UnsetType“ accept an explicit “null“ to *clear* the value,
+// distinct from omission — notably “title“.
+type ScheduleUpdateInput struct {
+	// Action New action: {kind:'prompt', prompt} or {kind:'command', ...}. Switching to a command needs the schedule_command permission. Omit to leave unchanged; cannot be combined with ``prompt``.
+	Action *ScheduleUpdateInput_Action `json:"action,omitempty"`
+
+	// CatchupPolicy What to do with fires missed while the bot/engine was unavailable.
+	//
+	// ``SKIP`` drops missed occurrences entirely. ``RUN_ONCE_ON_RECOVERY`` fires
+	// a single catch-up run when the target becomes reachable again, regardless
+	// of how many occurrences were missed (no thundering backlog).
+	CatchupPolicy *ScheduleCatchupPolicy `json:"catchup_policy,omitempty"`
+
+	// ConversationId Move the schedule's wakes to this conversation, which must be served by the same bot. Omit to leave unchanged. Not nullable: a schedule always has a target, so there is nothing to clear — unlike create, which auto-creates one when the field is omitted.
+	ConversationId *string `json:"conversation_id,omitempty"`
+
+	// Enabled Enable (true) or pause (false).
+	Enabled *bool `json:"enabled,omitempty"`
+
+	// MaxConsecutiveFailures Auto-pause threshold (0 disables).
+	MaxConsecutiveFailures *int `json:"max_consecutive_failures,omitempty"`
+
+	// Prompt Deprecated alias for action={kind:'prompt', prompt}. New wake message.
+	Prompt *string `json:"prompt,omitempty"`
+
+	// Schedule New timing; omit to leave unchanged.
+	Schedule *ScheduleUpdateInput_Schedule `json:"schedule,omitempty"`
+
+	// SkipIfBusy Skip a fire when the conversation is busy.
+	SkipIfBusy *bool `json:"skip_if_busy,omitempty"`
+
+	// Title New label. Send null to clear; omit to leave unchanged.
+	Title *nullable.Nullable[string] `json:"title,omitempty"`
+}
+
+// ScheduleUpdateInput_Action New action: {kind:'prompt', prompt} or {kind:'command', ...}. Switching to a command needs the schedule_command permission. Omit to leave unchanged; cannot be combined with “prompt“.
+type ScheduleUpdateInput_Action struct {
+	union json.RawMessage
+}
+
+// ScheduleUpdateInput_Schedule New timing; omit to leave unchanged.
+type ScheduleUpdateInput_Schedule struct {
+	union json.RawMessage
+}
 
 // SecretAction Store this secret in the org's Runtime Vault; the setup links it once it exists.
 type SecretAction struct {
@@ -8840,6 +9278,15 @@ type SecretAction struct {
 
 // SecretActionKind defines model for SecretAction.Kind.
 type SecretActionKind string
+
+// SecretEnvBinding One environment variable resolved from the Runtime Vault at spawn.
+type SecretEnvBinding struct {
+	// Name Environment variable name.
+	Name string `json:"name"`
+
+	// SecretKeyPath Runtime Vault key path; never a value.
+	SecretKeyPath string `json:"secret_key_path"`
+}
 
 // SecretExecProviderConfig OpenClaw exec secret provider configuration for Botyard Runtime Vault leases.
 type SecretExecProviderConfig struct {
@@ -10336,6 +10783,15 @@ type WaitForToolsAction struct {
 // WaitForToolsActionKind defines model for WaitForToolsAction.Kind.
 type WaitForToolsActionKind string
 
+// WakeBotAction Wake the bot in the schedule's conversation with a rendered message.
+type WakeBotAction struct {
+	// IncludeLogTail Lines of log_path to quote into the wake (0 disables).
+	IncludeLogTail *int `json:"include_log_tail,omitempty"`
+
+	// Message Wake message. May use {outcome}, {exit_code}, {label} (the exit_code_labels entry that classified the exit; empty when none applies), {attempt}, {log_tail}, {output_path} and {window_end} (the occurrence's window end in the schedule's timezone; empty without a window); write a literal brace as {{ or }}.
+	Message string `json:"message"`
+}
+
 // WorkforceBotMemberResponse Summary of a bot that is a member of a workforce.
 type WorkforceBotMemberResponse struct {
 	// AvatarUrl Bot avatar image URL
@@ -10598,29 +11054,6 @@ type WorkspaceStorageMetrics struct {
 	UsedBytes  *int    `json:"used_bytes"`
 }
 
-// BotyardCoreTypesJsonValueOutput defines model for botyard_core__types__JsonValue-Output.
-type BotyardCoreTypesJsonValueOutput struct {
-	union json.RawMessage
-}
-
-// BotyardCoreTypesJsonValueOutput0 defines model for .
-type BotyardCoreTypesJsonValueOutput0 = string
-
-// BotyardCoreTypesJsonValueOutput1 defines model for .
-type BotyardCoreTypesJsonValueOutput1 = int
-
-// BotyardCoreTypesJsonValueOutput2 defines model for .
-type BotyardCoreTypesJsonValueOutput2 = float32
-
-// BotyardCoreTypesJsonValueOutput3 defines model for .
-type BotyardCoreTypesJsonValueOutput3 = bool
-
-// BotyardCoreTypesJsonValueOutput4 defines model for .
-type BotyardCoreTypesJsonValueOutput4 = []BotyardCoreTypesJsonValueOutput
-
-// BotyardCoreTypesJsonValueOutput5 defines model for .
-type BotyardCoreTypesJsonValueOutput5 map[string]*BotyardCoreTypesJsonValueOutput
-
 // ListBotsV1OrgsOrgIdBotsGetParams defines parameters for ListBotsV1OrgsOrgIdBotsGet.
 type ListBotsV1OrgsOrgIdBotsGetParams struct {
 	Limit  *int `form:"limit,omitempty" json:"limit,omitempty"`
@@ -10758,6 +11191,12 @@ type CopyBotV1OrgsOrgIdBotsBotSlugCopyPostJSONRequestBody = BotCopyRequest
 
 // AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutJSONRequestBody defines body for AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPut for application/json ContentType.
 type AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutJSONRequestBody = BotCredentialAssign
+
+// CreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPostJSONRequestBody defines body for CreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPost for application/json ContentType.
+type CreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPostJSONRequestBody = ScheduleCreate
+
+// UpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatchJSONRequestBody defines body for UpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatch for application/json ContentType.
+type UpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatchJSONRequestBody = ScheduleUpdateInput
 
 // UnassignSkillsV1OrgsOrgIdBotsBotSlugSkillsDeleteJSONRequestBody defines body for UnassignSkillsV1OrgsOrgIdBotsBotSlugSkillsDelete for application/json ContentType.
 type UnassignSkillsV1OrgsOrgIdBotsBotSlugSkillsDeleteJSONRequestBody = BotSkillIds
@@ -13550,6 +13989,172 @@ func (t JsonValueInput) MarshalJSON() ([]byte, error) {
 }
 
 func (t *JsonValueInput) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsJsonValueOutput0 returns the union data inside the JsonValueOutput as a JsonValueOutput0
+func (t JsonValueOutput) AsJsonValueOutput0() (JsonValueOutput0, error) {
+	var body JsonValueOutput0
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromJsonValueOutput0 overwrites any union data inside the JsonValueOutput as the provided JsonValueOutput0
+func (t *JsonValueOutput) FromJsonValueOutput0(v JsonValueOutput0) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeJsonValueOutput0 performs a merge with any union data inside the JsonValueOutput, using the provided JsonValueOutput0
+func (t *JsonValueOutput) MergeJsonValueOutput0(v JsonValueOutput0) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsJsonValueOutput1 returns the union data inside the JsonValueOutput as a JsonValueOutput1
+func (t JsonValueOutput) AsJsonValueOutput1() (JsonValueOutput1, error) {
+	var body JsonValueOutput1
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromJsonValueOutput1 overwrites any union data inside the JsonValueOutput as the provided JsonValueOutput1
+func (t *JsonValueOutput) FromJsonValueOutput1(v JsonValueOutput1) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeJsonValueOutput1 performs a merge with any union data inside the JsonValueOutput, using the provided JsonValueOutput1
+func (t *JsonValueOutput) MergeJsonValueOutput1(v JsonValueOutput1) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsJsonValueOutput2 returns the union data inside the JsonValueOutput as a JsonValueOutput2
+func (t JsonValueOutput) AsJsonValueOutput2() (JsonValueOutput2, error) {
+	var body JsonValueOutput2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromJsonValueOutput2 overwrites any union data inside the JsonValueOutput as the provided JsonValueOutput2
+func (t *JsonValueOutput) FromJsonValueOutput2(v JsonValueOutput2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeJsonValueOutput2 performs a merge with any union data inside the JsonValueOutput, using the provided JsonValueOutput2
+func (t *JsonValueOutput) MergeJsonValueOutput2(v JsonValueOutput2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsJsonValueOutput3 returns the union data inside the JsonValueOutput as a JsonValueOutput3
+func (t JsonValueOutput) AsJsonValueOutput3() (JsonValueOutput3, error) {
+	var body JsonValueOutput3
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromJsonValueOutput3 overwrites any union data inside the JsonValueOutput as the provided JsonValueOutput3
+func (t *JsonValueOutput) FromJsonValueOutput3(v JsonValueOutput3) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeJsonValueOutput3 performs a merge with any union data inside the JsonValueOutput, using the provided JsonValueOutput3
+func (t *JsonValueOutput) MergeJsonValueOutput3(v JsonValueOutput3) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsJsonValueOutput4 returns the union data inside the JsonValueOutput as a JsonValueOutput4
+func (t JsonValueOutput) AsJsonValueOutput4() (JsonValueOutput4, error) {
+	var body JsonValueOutput4
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromJsonValueOutput4 overwrites any union data inside the JsonValueOutput as the provided JsonValueOutput4
+func (t *JsonValueOutput) FromJsonValueOutput4(v JsonValueOutput4) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeJsonValueOutput4 performs a merge with any union data inside the JsonValueOutput, using the provided JsonValueOutput4
+func (t *JsonValueOutput) MergeJsonValueOutput4(v JsonValueOutput4) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsJsonValueOutput5 returns the union data inside the JsonValueOutput as a JsonValueOutput5
+func (t JsonValueOutput) AsJsonValueOutput5() (JsonValueOutput5, error) {
+	var body JsonValueOutput5
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromJsonValueOutput5 overwrites any union data inside the JsonValueOutput as the provided JsonValueOutput5
+func (t *JsonValueOutput) FromJsonValueOutput5(v JsonValueOutput5) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeJsonValueOutput5 performs a merge with any union data inside the JsonValueOutput, using the provided JsonValueOutput5
+func (t *JsonValueOutput) MergeJsonValueOutput5(v JsonValueOutput5) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t JsonValueOutput) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *JsonValueOutput) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }
@@ -17333,6 +17938,484 @@ func (t *ProfilePackSupport_Unsupported_Item) UnmarshalJSON(b []byte) error {
 	return err
 }
 
+// AsPromptScheduleAction returns the union data inside the ScheduleCreate_Action as a PromptScheduleAction
+func (t ScheduleCreate_Action) AsPromptScheduleAction() (PromptScheduleAction, error) {
+	var body PromptScheduleAction
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPromptScheduleAction overwrites any union data inside the ScheduleCreate_Action as the provided PromptScheduleAction
+func (t *ScheduleCreate_Action) FromPromptScheduleAction(v PromptScheduleAction) error {
+	v.Kind = "prompt"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePromptScheduleAction performs a merge with any union data inside the ScheduleCreate_Action, using the provided PromptScheduleAction
+func (t *ScheduleCreate_Action) MergePromptScheduleAction(v PromptScheduleAction) error {
+	v.Kind = "prompt"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsCommandScheduleAction returns the union data inside the ScheduleCreate_Action as a CommandScheduleAction
+func (t ScheduleCreate_Action) AsCommandScheduleAction() (CommandScheduleAction, error) {
+	var body CommandScheduleAction
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromCommandScheduleAction overwrites any union data inside the ScheduleCreate_Action as the provided CommandScheduleAction
+func (t *ScheduleCreate_Action) FromCommandScheduleAction(v CommandScheduleAction) error {
+	v.Kind = "command"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeCommandScheduleAction performs a merge with any union data inside the ScheduleCreate_Action, using the provided CommandScheduleAction
+func (t *ScheduleCreate_Action) MergeCommandScheduleAction(v CommandScheduleAction) error {
+	v.Kind = "command"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t ScheduleCreate_Action) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"kind"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t ScheduleCreate_Action) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "command":
+		return t.AsCommandScheduleAction()
+	case "prompt":
+		return t.AsPromptScheduleAction()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t ScheduleCreate_Action) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *ScheduleCreate_Action) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsCronScheduleSpec returns the union data inside the ScheduleCreate_Schedule as a CronScheduleSpec
+func (t ScheduleCreate_Schedule) AsCronScheduleSpec() (CronScheduleSpec, error) {
+	var body CronScheduleSpec
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromCronScheduleSpec overwrites any union data inside the ScheduleCreate_Schedule as the provided CronScheduleSpec
+func (t *ScheduleCreate_Schedule) FromCronScheduleSpec(v CronScheduleSpec) error {
+	v.Kind = "cron"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeCronScheduleSpec performs a merge with any union data inside the ScheduleCreate_Schedule, using the provided CronScheduleSpec
+func (t *ScheduleCreate_Schedule) MergeCronScheduleSpec(v CronScheduleSpec) error {
+	v.Kind = "cron"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsIntervalScheduleSpec returns the union data inside the ScheduleCreate_Schedule as a IntervalScheduleSpec
+func (t ScheduleCreate_Schedule) AsIntervalScheduleSpec() (IntervalScheduleSpec, error) {
+	var body IntervalScheduleSpec
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromIntervalScheduleSpec overwrites any union data inside the ScheduleCreate_Schedule as the provided IntervalScheduleSpec
+func (t *ScheduleCreate_Schedule) FromIntervalScheduleSpec(v IntervalScheduleSpec) error {
+	v.Kind = "interval"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeIntervalScheduleSpec performs a merge with any union data inside the ScheduleCreate_Schedule, using the provided IntervalScheduleSpec
+func (t *ScheduleCreate_Schedule) MergeIntervalScheduleSpec(v IntervalScheduleSpec) error {
+	v.Kind = "interval"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsRRuleScheduleSpec returns the union data inside the ScheduleCreate_Schedule as a RRuleScheduleSpec
+func (t ScheduleCreate_Schedule) AsRRuleScheduleSpec() (RRuleScheduleSpec, error) {
+	var body RRuleScheduleSpec
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromRRuleScheduleSpec overwrites any union data inside the ScheduleCreate_Schedule as the provided RRuleScheduleSpec
+func (t *ScheduleCreate_Schedule) FromRRuleScheduleSpec(v RRuleScheduleSpec) error {
+	v.Kind = "rrule"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeRRuleScheduleSpec performs a merge with any union data inside the ScheduleCreate_Schedule, using the provided RRuleScheduleSpec
+func (t *ScheduleCreate_Schedule) MergeRRuleScheduleSpec(v RRuleScheduleSpec) error {
+	v.Kind = "rrule"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t ScheduleCreate_Schedule) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"kind"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t ScheduleCreate_Schedule) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "cron":
+		return t.AsCronScheduleSpec()
+	case "interval":
+		return t.AsIntervalScheduleSpec()
+	case "rrule":
+		return t.AsRRuleScheduleSpec()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t ScheduleCreate_Schedule) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *ScheduleCreate_Schedule) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsPromptScheduleAction returns the union data inside the ScheduleResponse_Action as a PromptScheduleAction
+func (t ScheduleResponse_Action) AsPromptScheduleAction() (PromptScheduleAction, error) {
+	var body PromptScheduleAction
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPromptScheduleAction overwrites any union data inside the ScheduleResponse_Action as the provided PromptScheduleAction
+func (t *ScheduleResponse_Action) FromPromptScheduleAction(v PromptScheduleAction) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePromptScheduleAction performs a merge with any union data inside the ScheduleResponse_Action, using the provided PromptScheduleAction
+func (t *ScheduleResponse_Action) MergePromptScheduleAction(v PromptScheduleAction) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsCommandScheduleAction returns the union data inside the ScheduleResponse_Action as a CommandScheduleAction
+func (t ScheduleResponse_Action) AsCommandScheduleAction() (CommandScheduleAction, error) {
+	var body CommandScheduleAction
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromCommandScheduleAction overwrites any union data inside the ScheduleResponse_Action as the provided CommandScheduleAction
+func (t *ScheduleResponse_Action) FromCommandScheduleAction(v CommandScheduleAction) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeCommandScheduleAction performs a merge with any union data inside the ScheduleResponse_Action, using the provided CommandScheduleAction
+func (t *ScheduleResponse_Action) MergeCommandScheduleAction(v CommandScheduleAction) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t ScheduleResponse_Action) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *ScheduleResponse_Action) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsPromptScheduleAction returns the union data inside the ScheduleUpdateInput_Action as a PromptScheduleAction
+func (t ScheduleUpdateInput_Action) AsPromptScheduleAction() (PromptScheduleAction, error) {
+	var body PromptScheduleAction
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPromptScheduleAction overwrites any union data inside the ScheduleUpdateInput_Action as the provided PromptScheduleAction
+func (t *ScheduleUpdateInput_Action) FromPromptScheduleAction(v PromptScheduleAction) error {
+	v.Kind = "prompt"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePromptScheduleAction performs a merge with any union data inside the ScheduleUpdateInput_Action, using the provided PromptScheduleAction
+func (t *ScheduleUpdateInput_Action) MergePromptScheduleAction(v PromptScheduleAction) error {
+	v.Kind = "prompt"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsCommandScheduleAction returns the union data inside the ScheduleUpdateInput_Action as a CommandScheduleAction
+func (t ScheduleUpdateInput_Action) AsCommandScheduleAction() (CommandScheduleAction, error) {
+	var body CommandScheduleAction
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromCommandScheduleAction overwrites any union data inside the ScheduleUpdateInput_Action as the provided CommandScheduleAction
+func (t *ScheduleUpdateInput_Action) FromCommandScheduleAction(v CommandScheduleAction) error {
+	v.Kind = "command"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeCommandScheduleAction performs a merge with any union data inside the ScheduleUpdateInput_Action, using the provided CommandScheduleAction
+func (t *ScheduleUpdateInput_Action) MergeCommandScheduleAction(v CommandScheduleAction) error {
+	v.Kind = "command"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t ScheduleUpdateInput_Action) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"kind"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t ScheduleUpdateInput_Action) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "command":
+		return t.AsCommandScheduleAction()
+	case "prompt":
+		return t.AsPromptScheduleAction()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t ScheduleUpdateInput_Action) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *ScheduleUpdateInput_Action) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsCronScheduleSpec returns the union data inside the ScheduleUpdateInput_Schedule as a CronScheduleSpec
+func (t ScheduleUpdateInput_Schedule) AsCronScheduleSpec() (CronScheduleSpec, error) {
+	var body CronScheduleSpec
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromCronScheduleSpec overwrites any union data inside the ScheduleUpdateInput_Schedule as the provided CronScheduleSpec
+func (t *ScheduleUpdateInput_Schedule) FromCronScheduleSpec(v CronScheduleSpec) error {
+	v.Kind = "cron"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeCronScheduleSpec performs a merge with any union data inside the ScheduleUpdateInput_Schedule, using the provided CronScheduleSpec
+func (t *ScheduleUpdateInput_Schedule) MergeCronScheduleSpec(v CronScheduleSpec) error {
+	v.Kind = "cron"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsIntervalScheduleSpec returns the union data inside the ScheduleUpdateInput_Schedule as a IntervalScheduleSpec
+func (t ScheduleUpdateInput_Schedule) AsIntervalScheduleSpec() (IntervalScheduleSpec, error) {
+	var body IntervalScheduleSpec
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromIntervalScheduleSpec overwrites any union data inside the ScheduleUpdateInput_Schedule as the provided IntervalScheduleSpec
+func (t *ScheduleUpdateInput_Schedule) FromIntervalScheduleSpec(v IntervalScheduleSpec) error {
+	v.Kind = "interval"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeIntervalScheduleSpec performs a merge with any union data inside the ScheduleUpdateInput_Schedule, using the provided IntervalScheduleSpec
+func (t *ScheduleUpdateInput_Schedule) MergeIntervalScheduleSpec(v IntervalScheduleSpec) error {
+	v.Kind = "interval"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsRRuleScheduleSpec returns the union data inside the ScheduleUpdateInput_Schedule as a RRuleScheduleSpec
+func (t ScheduleUpdateInput_Schedule) AsRRuleScheduleSpec() (RRuleScheduleSpec, error) {
+	var body RRuleScheduleSpec
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromRRuleScheduleSpec overwrites any union data inside the ScheduleUpdateInput_Schedule as the provided RRuleScheduleSpec
+func (t *ScheduleUpdateInput_Schedule) FromRRuleScheduleSpec(v RRuleScheduleSpec) error {
+	v.Kind = "rrule"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeRRuleScheduleSpec performs a merge with any union data inside the ScheduleUpdateInput_Schedule, using the provided RRuleScheduleSpec
+func (t *ScheduleUpdateInput_Schedule) MergeRRuleScheduleSpec(v RRuleScheduleSpec) error {
+	v.Kind = "rrule"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t ScheduleUpdateInput_Schedule) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"kind"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t ScheduleUpdateInput_Schedule) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "cron":
+		return t.AsCronScheduleSpec()
+	case "interval":
+		return t.AsIntervalScheduleSpec()
+	case "rrule":
+		return t.AsRRuleScheduleSpec()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t ScheduleUpdateInput_Schedule) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *ScheduleUpdateInput_Schedule) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
 // AsToolsConfigElevatedAllowFrom0 returns the union data inside the ToolsConfig_ElevatedAllowFrom_Item as a ToolsConfigElevatedAllowFrom0
 func (t ToolsConfig_ElevatedAllowFrom_Item) AsToolsConfigElevatedAllowFrom0() (ToolsConfigElevatedAllowFrom0, error) {
 	var body ToolsConfigElevatedAllowFrom0
@@ -17391,172 +18474,6 @@ func (t ToolsConfig_ElevatedAllowFrom_Item) MarshalJSON() ([]byte, error) {
 }
 
 func (t *ToolsConfig_ElevatedAllowFrom_Item) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsBotyardCoreTypesJsonValueOutput0 returns the union data inside the BotyardCoreTypesJsonValueOutput as a BotyardCoreTypesJsonValueOutput0
-func (t BotyardCoreTypesJsonValueOutput) AsBotyardCoreTypesJsonValueOutput0() (BotyardCoreTypesJsonValueOutput0, error) {
-	var body BotyardCoreTypesJsonValueOutput0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromBotyardCoreTypesJsonValueOutput0 overwrites any union data inside the BotyardCoreTypesJsonValueOutput as the provided BotyardCoreTypesJsonValueOutput0
-func (t *BotyardCoreTypesJsonValueOutput) FromBotyardCoreTypesJsonValueOutput0(v BotyardCoreTypesJsonValueOutput0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeBotyardCoreTypesJsonValueOutput0 performs a merge with any union data inside the BotyardCoreTypesJsonValueOutput, using the provided BotyardCoreTypesJsonValueOutput0
-func (t *BotyardCoreTypesJsonValueOutput) MergeBotyardCoreTypesJsonValueOutput0(v BotyardCoreTypesJsonValueOutput0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsBotyardCoreTypesJsonValueOutput1 returns the union data inside the BotyardCoreTypesJsonValueOutput as a BotyardCoreTypesJsonValueOutput1
-func (t BotyardCoreTypesJsonValueOutput) AsBotyardCoreTypesJsonValueOutput1() (BotyardCoreTypesJsonValueOutput1, error) {
-	var body BotyardCoreTypesJsonValueOutput1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromBotyardCoreTypesJsonValueOutput1 overwrites any union data inside the BotyardCoreTypesJsonValueOutput as the provided BotyardCoreTypesJsonValueOutput1
-func (t *BotyardCoreTypesJsonValueOutput) FromBotyardCoreTypesJsonValueOutput1(v BotyardCoreTypesJsonValueOutput1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeBotyardCoreTypesJsonValueOutput1 performs a merge with any union data inside the BotyardCoreTypesJsonValueOutput, using the provided BotyardCoreTypesJsonValueOutput1
-func (t *BotyardCoreTypesJsonValueOutput) MergeBotyardCoreTypesJsonValueOutput1(v BotyardCoreTypesJsonValueOutput1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsBotyardCoreTypesJsonValueOutput2 returns the union data inside the BotyardCoreTypesJsonValueOutput as a BotyardCoreTypesJsonValueOutput2
-func (t BotyardCoreTypesJsonValueOutput) AsBotyardCoreTypesJsonValueOutput2() (BotyardCoreTypesJsonValueOutput2, error) {
-	var body BotyardCoreTypesJsonValueOutput2
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromBotyardCoreTypesJsonValueOutput2 overwrites any union data inside the BotyardCoreTypesJsonValueOutput as the provided BotyardCoreTypesJsonValueOutput2
-func (t *BotyardCoreTypesJsonValueOutput) FromBotyardCoreTypesJsonValueOutput2(v BotyardCoreTypesJsonValueOutput2) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeBotyardCoreTypesJsonValueOutput2 performs a merge with any union data inside the BotyardCoreTypesJsonValueOutput, using the provided BotyardCoreTypesJsonValueOutput2
-func (t *BotyardCoreTypesJsonValueOutput) MergeBotyardCoreTypesJsonValueOutput2(v BotyardCoreTypesJsonValueOutput2) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsBotyardCoreTypesJsonValueOutput3 returns the union data inside the BotyardCoreTypesJsonValueOutput as a BotyardCoreTypesJsonValueOutput3
-func (t BotyardCoreTypesJsonValueOutput) AsBotyardCoreTypesJsonValueOutput3() (BotyardCoreTypesJsonValueOutput3, error) {
-	var body BotyardCoreTypesJsonValueOutput3
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromBotyardCoreTypesJsonValueOutput3 overwrites any union data inside the BotyardCoreTypesJsonValueOutput as the provided BotyardCoreTypesJsonValueOutput3
-func (t *BotyardCoreTypesJsonValueOutput) FromBotyardCoreTypesJsonValueOutput3(v BotyardCoreTypesJsonValueOutput3) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeBotyardCoreTypesJsonValueOutput3 performs a merge with any union data inside the BotyardCoreTypesJsonValueOutput, using the provided BotyardCoreTypesJsonValueOutput3
-func (t *BotyardCoreTypesJsonValueOutput) MergeBotyardCoreTypesJsonValueOutput3(v BotyardCoreTypesJsonValueOutput3) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsBotyardCoreTypesJsonValueOutput4 returns the union data inside the BotyardCoreTypesJsonValueOutput as a BotyardCoreTypesJsonValueOutput4
-func (t BotyardCoreTypesJsonValueOutput) AsBotyardCoreTypesJsonValueOutput4() (BotyardCoreTypesJsonValueOutput4, error) {
-	var body BotyardCoreTypesJsonValueOutput4
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromBotyardCoreTypesJsonValueOutput4 overwrites any union data inside the BotyardCoreTypesJsonValueOutput as the provided BotyardCoreTypesJsonValueOutput4
-func (t *BotyardCoreTypesJsonValueOutput) FromBotyardCoreTypesJsonValueOutput4(v BotyardCoreTypesJsonValueOutput4) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeBotyardCoreTypesJsonValueOutput4 performs a merge with any union data inside the BotyardCoreTypesJsonValueOutput, using the provided BotyardCoreTypesJsonValueOutput4
-func (t *BotyardCoreTypesJsonValueOutput) MergeBotyardCoreTypesJsonValueOutput4(v BotyardCoreTypesJsonValueOutput4) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsBotyardCoreTypesJsonValueOutput5 returns the union data inside the BotyardCoreTypesJsonValueOutput as a BotyardCoreTypesJsonValueOutput5
-func (t BotyardCoreTypesJsonValueOutput) AsBotyardCoreTypesJsonValueOutput5() (BotyardCoreTypesJsonValueOutput5, error) {
-	var body BotyardCoreTypesJsonValueOutput5
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromBotyardCoreTypesJsonValueOutput5 overwrites any union data inside the BotyardCoreTypesJsonValueOutput as the provided BotyardCoreTypesJsonValueOutput5
-func (t *BotyardCoreTypesJsonValueOutput) FromBotyardCoreTypesJsonValueOutput5(v BotyardCoreTypesJsonValueOutput5) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeBotyardCoreTypesJsonValueOutput5 performs a merge with any union data inside the BotyardCoreTypesJsonValueOutput, using the provided BotyardCoreTypesJsonValueOutput5
-func (t *BotyardCoreTypesJsonValueOutput) MergeBotyardCoreTypesJsonValueOutput5(v BotyardCoreTypesJsonValueOutput5) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t BotyardCoreTypesJsonValueOutput) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *BotyardCoreTypesJsonValueOutput) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }
@@ -17707,6 +18624,25 @@ type ClientInterface interface {
 
 	// ResumeBotV1OrgsOrgIdBotsBotSlugResumePost request
 	ResumeBotV1OrgsOrgIdBotsBotSlugResumePost(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListSchedulesV1OrgsOrgIdBotsBotSlugSchedulesGet request
+	ListSchedulesV1OrgsOrgIdBotsBotSlugSchedulesGet(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPostWithBody request with any body
+	CreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPostWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPost(ctx context.Context, orgId string, botSlug string, body CreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdDelete request
+	DeleteScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdDelete(ctx context.Context, orgId string, botSlug string, scheduleId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdGet request
+	GetScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdGet(ctx context.Context, orgId string, botSlug string, scheduleId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatchWithBody request with any body
+	UpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatchWithBody(ctx context.Context, orgId string, botSlug string, scheduleId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatch(ctx context.Context, orgId string, botSlug string, scheduleId string, body UpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// UnassignSkillsV1OrgsOrgIdBotsBotSlugSkillsDeleteWithBody request with any body
 	UnassignSkillsV1OrgsOrgIdBotsBotSlugSkillsDeleteWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -18421,6 +19357,90 @@ func (c *Client) RestartBotV1OrgsOrgIdBotsBotSlugRestartPost(ctx context.Context
 
 func (c *Client) ResumeBotV1OrgsOrgIdBotsBotSlugResumePost(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewResumeBotV1OrgsOrgIdBotsBotSlugResumePostRequest(c.Server, orgId, botSlug)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListSchedulesV1OrgsOrgIdBotsBotSlugSchedulesGet(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListSchedulesV1OrgsOrgIdBotsBotSlugSchedulesGetRequest(c.Server, orgId, botSlug)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPostWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPostRequestWithBody(c.Server, orgId, botSlug, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPost(ctx context.Context, orgId string, botSlug string, body CreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPostRequest(c.Server, orgId, botSlug, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdDelete(ctx context.Context, orgId string, botSlug string, scheduleId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdDeleteRequest(c.Server, orgId, botSlug, scheduleId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdGet(ctx context.Context, orgId string, botSlug string, scheduleId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdGetRequest(c.Server, orgId, botSlug, scheduleId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatchWithBody(ctx context.Context, orgId string, botSlug string, scheduleId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatchRequestWithBody(c.Server, orgId, botSlug, scheduleId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatch(ctx context.Context, orgId string, botSlug string, scheduleId string, body UpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatchRequest(c.Server, orgId, botSlug, scheduleId, body)
 	if err != nil {
 		return nil, err
 	}
@@ -21167,6 +22187,258 @@ func NewResumeBotV1OrgsOrgIdBotsBotSlugResumePostRequest(server string, orgId st
 	if err != nil {
 		return nil, err
 	}
+
+	return req, nil
+}
+
+// NewListSchedulesV1OrgsOrgIdBotsBotSlugSchedulesGetRequest generates requests for ListSchedulesV1OrgsOrgIdBotsBotSlugSchedulesGet
+func NewListSchedulesV1OrgsOrgIdBotsBotSlugSchedulesGetRequest(server string, orgId string, botSlug string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "bot_slug", runtime.ParamLocationPath, botSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/bots/%s/schedules", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPostRequest calls the generic CreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPost builder with application/json body
+func NewCreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPostRequest(server string, orgId string, botSlug string, body CreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPostRequestWithBody(server, orgId, botSlug, "application/json", bodyReader)
+}
+
+// NewCreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPostRequestWithBody generates requests for CreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPost with any type of body
+func NewCreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPostRequestWithBody(server string, orgId string, botSlug string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "bot_slug", runtime.ParamLocationPath, botSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/bots/%s/schedules", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdDeleteRequest generates requests for DeleteScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdDelete
+func NewDeleteScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdDeleteRequest(server string, orgId string, botSlug string, scheduleId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "bot_slug", runtime.ParamLocationPath, botSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam2 string
+
+	pathParam2, err = runtime.StyleParamWithLocation("simple", false, "schedule_id", runtime.ParamLocationPath, scheduleId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/bots/%s/schedules/%s", pathParam0, pathParam1, pathParam2)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdGetRequest generates requests for GetScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdGet
+func NewGetScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdGetRequest(server string, orgId string, botSlug string, scheduleId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "bot_slug", runtime.ParamLocationPath, botSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam2 string
+
+	pathParam2, err = runtime.StyleParamWithLocation("simple", false, "schedule_id", runtime.ParamLocationPath, scheduleId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/bots/%s/schedules/%s", pathParam0, pathParam1, pathParam2)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatchRequest calls the generic UpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatch builder with application/json body
+func NewUpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatchRequest(server string, orgId string, botSlug string, scheduleId string, body UpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatchJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatchRequestWithBody(server, orgId, botSlug, scheduleId, "application/json", bodyReader)
+}
+
+// NewUpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatchRequestWithBody generates requests for UpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatch with any type of body
+func NewUpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatchRequestWithBody(server string, orgId string, botSlug string, scheduleId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "bot_slug", runtime.ParamLocationPath, botSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam2 string
+
+	pathParam2, err = runtime.StyleParamWithLocation("simple", false, "schedule_id", runtime.ParamLocationPath, scheduleId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/bots/%s/schedules/%s", pathParam0, pathParam1, pathParam2)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PATCH", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
 
 	return req, nil
 }
@@ -26326,6 +27598,25 @@ type ClientWithResponsesInterface interface {
 	// ResumeBotV1OrgsOrgIdBotsBotSlugResumePostWithResponse request
 	ResumeBotV1OrgsOrgIdBotsBotSlugResumePostWithResponse(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*ResumeBotV1OrgsOrgIdBotsBotSlugResumePostResponse, error)
 
+	// ListSchedulesV1OrgsOrgIdBotsBotSlugSchedulesGetWithResponse request
+	ListSchedulesV1OrgsOrgIdBotsBotSlugSchedulesGetWithResponse(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*ListSchedulesV1OrgsOrgIdBotsBotSlugSchedulesGetResponse, error)
+
+	// CreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPostWithBodyWithResponse request with any body
+	CreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPostWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPostResponse, error)
+
+	CreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPostWithResponse(ctx context.Context, orgId string, botSlug string, body CreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPostJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPostResponse, error)
+
+	// DeleteScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdDeleteWithResponse request
+	DeleteScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdDeleteWithResponse(ctx context.Context, orgId string, botSlug string, scheduleId string, reqEditors ...RequestEditorFn) (*DeleteScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdDeleteResponse, error)
+
+	// GetScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdGetWithResponse request
+	GetScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdGetWithResponse(ctx context.Context, orgId string, botSlug string, scheduleId string, reqEditors ...RequestEditorFn) (*GetScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdGetResponse, error)
+
+	// UpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatchWithBodyWithResponse request with any body
+	UpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatchWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, scheduleId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatchResponse, error)
+
+	UpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatchWithResponse(ctx context.Context, orgId string, botSlug string, scheduleId string, body UpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatchResponse, error)
+
 	// UnassignSkillsV1OrgsOrgIdBotsBotSlugSkillsDeleteWithBodyWithResponse request with any body
 	UnassignSkillsV1OrgsOrgIdBotsBotSlugSkillsDeleteWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UnassignSkillsV1OrgsOrgIdBotsBotSlugSkillsDeleteResponse, error)
 
@@ -27194,6 +28485,120 @@ func (r ResumeBotV1OrgsOrgIdBotsBotSlugResumePostResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r ResumeBotV1OrgsOrgIdBotsBotSlugResumePostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListSchedulesV1OrgsOrgIdBotsBotSlugSchedulesGetResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *ScheduleListResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r ListSchedulesV1OrgsOrgIdBotsBotSlugSchedulesGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListSchedulesV1OrgsOrgIdBotsBotSlugSchedulesGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPostResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON201                       *ScheduleResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdDeleteResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdDeleteResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdDeleteResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdGetResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *ScheduleResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r GetScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatchResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *ScheduleResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatchResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatchResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -29741,6 +31146,67 @@ func (c *ClientWithResponses) ResumeBotV1OrgsOrgIdBotsBotSlugResumePostWithRespo
 	return ParseResumeBotV1OrgsOrgIdBotsBotSlugResumePostResponse(rsp)
 }
 
+// ListSchedulesV1OrgsOrgIdBotsBotSlugSchedulesGetWithResponse request returning *ListSchedulesV1OrgsOrgIdBotsBotSlugSchedulesGetResponse
+func (c *ClientWithResponses) ListSchedulesV1OrgsOrgIdBotsBotSlugSchedulesGetWithResponse(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*ListSchedulesV1OrgsOrgIdBotsBotSlugSchedulesGetResponse, error) {
+	rsp, err := c.ListSchedulesV1OrgsOrgIdBotsBotSlugSchedulesGet(ctx, orgId, botSlug, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListSchedulesV1OrgsOrgIdBotsBotSlugSchedulesGetResponse(rsp)
+}
+
+// CreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPostWithBodyWithResponse request with arbitrary body returning *CreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPostResponse
+func (c *ClientWithResponses) CreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPostWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPostResponse, error) {
+	rsp, err := c.CreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPostWithBody(ctx, orgId, botSlug, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPostResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPostWithResponse(ctx context.Context, orgId string, botSlug string, body CreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPostJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPostResponse, error) {
+	rsp, err := c.CreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPost(ctx, orgId, botSlug, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPostResponse(rsp)
+}
+
+// DeleteScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdDeleteWithResponse request returning *DeleteScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdDeleteResponse
+func (c *ClientWithResponses) DeleteScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdDeleteWithResponse(ctx context.Context, orgId string, botSlug string, scheduleId string, reqEditors ...RequestEditorFn) (*DeleteScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdDeleteResponse, error) {
+	rsp, err := c.DeleteScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdDelete(ctx, orgId, botSlug, scheduleId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdDeleteResponse(rsp)
+}
+
+// GetScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdGetWithResponse request returning *GetScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdGetResponse
+func (c *ClientWithResponses) GetScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdGetWithResponse(ctx context.Context, orgId string, botSlug string, scheduleId string, reqEditors ...RequestEditorFn) (*GetScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdGetResponse, error) {
+	rsp, err := c.GetScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdGet(ctx, orgId, botSlug, scheduleId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdGetResponse(rsp)
+}
+
+// UpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatchWithBodyWithResponse request with arbitrary body returning *UpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatchResponse
+func (c *ClientWithResponses) UpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatchWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, scheduleId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatchResponse, error) {
+	rsp, err := c.UpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatchWithBody(ctx, orgId, botSlug, scheduleId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatchResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatchWithResponse(ctx context.Context, orgId string, botSlug string, scheduleId string, body UpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatchResponse, error) {
+	rsp, err := c.UpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatch(ctx, orgId, botSlug, scheduleId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatchResponse(rsp)
+}
+
 // UnassignSkillsV1OrgsOrgIdBotsBotSlugSkillsDeleteWithBodyWithResponse request with arbitrary body returning *UnassignSkillsV1OrgsOrgIdBotsBotSlugSkillsDeleteResponse
 func (c *ClientWithResponses) UnassignSkillsV1OrgsOrgIdBotsBotSlugSkillsDeleteWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UnassignSkillsV1OrgsOrgIdBotsBotSlugSkillsDeleteResponse, error) {
 	rsp, err := c.UnassignSkillsV1OrgsOrgIdBotsBotSlugSkillsDeleteWithBody(ctx, orgId, botSlug, contentType, body, reqEditors...)
@@ -31733,6 +33199,164 @@ func ParseResumeBotV1OrgsOrgIdBotsBotSlugResumePostResponse(rsp *http.Response) 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest BotResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListSchedulesV1OrgsOrgIdBotsBotSlugSchedulesGetResponse parses an HTTP response from a ListSchedulesV1OrgsOrgIdBotsBotSlugSchedulesGetWithResponse call
+func ParseListSchedulesV1OrgsOrgIdBotsBotSlugSchedulesGetResponse(rsp *http.Response) (*ListSchedulesV1OrgsOrgIdBotsBotSlugSchedulesGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListSchedulesV1OrgsOrgIdBotsBotSlugSchedulesGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ScheduleListResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPostResponse parses an HTTP response from a CreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPostWithResponse call
+func ParseCreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPostResponse(rsp *http.Response) (*CreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest ScheduleResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdDeleteResponse parses an HTTP response from a DeleteScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdDeleteWithResponse call
+func ParseDeleteScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdDeleteResponse(rsp *http.Response) (*DeleteScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdDeleteResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdDeleteResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdGetResponse parses an HTTP response from a GetScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdGetWithResponse call
+func ParseGetScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdGetResponse(rsp *http.Response) (*GetScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ScheduleResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatchResponse parses an HTTP response from a UpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatchWithResponse call
+func ParseUpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatchResponse(rsp *http.Response) (*UpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatchResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateScheduleV1OrgsOrgIdBotsBotSlugSchedulesScheduleIdPatchResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ScheduleResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}

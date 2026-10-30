@@ -14632,143 +14632,6 @@
         }
       }
     },
-    "/v1/orgs/{org_id}/bots/{bot_slug}/host-approvals": {
-      "get": {
-        "tags": [
-          "host-approvals"
-        ],
-        "summary": "List Host Approvals",
-        "description": "List pending exact invocations for a bot owner to decide.",
-        "operationId": "list_host_approvals_v1_orgs__org_id__bots__bot_slug__host_approvals_get",
-        "parameters": [
-          {
-            "name": "org_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Org Id"
-            }
-          },
-          {
-            "name": "bot_slug",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Bot Slug"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/HostApprovalResponse"
-                  },
-                  "title": "Response List Host Approvals V1 Orgs  Org Id  Bots  Bot Slug  Host Approvals Get"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "RFC 9457 Problem Details error response",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/orgs/{org_id}/bots/{bot_slug}/host-approvals/{approval_id}": {
-      "put": {
-        "tags": [
-          "host-approvals"
-        ],
-        "summary": "Decide Host Approval",
-        "description": "Approve or deny one exact invocation once; never run it here.",
-        "operationId": "decide_host_approval_v1_orgs__org_id__bots__bot_slug__host_approvals__approval_id__put",
-        "parameters": [
-          {
-            "name": "org_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Org Id"
-            }
-          },
-          {
-            "name": "bot_slug",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Bot Slug"
-            }
-          },
-          {
-            "name": "approval_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Approval Id"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/HostApprovalDecisionRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HostApprovalResponse"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "RFC 9457 Problem Details error response",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/v1/orgs/{org_id}/workforces": {
       "get": {
         "tags": [
@@ -16918,7 +16781,7 @@
           "users"
         ],
         "summary": "Delete Current User",
-        "description": "Deactivate the current user's internal Botyard profile after IdP deletion.",
+        "description": "Delete the workspaces that go with the caller's account (PlatDev #4423).\n\nCalled by the auth service's better-auth ``beforeDelete`` hook, after the\nperson has re-authenticated and just before the login itself is deleted.\nWorkspaces the caller is the only member of are deleted, through the same\ncascade as ``DELETE /v1/orgs/{id}``. Refused with 409 when the caller is the\nonly owner of a workspace that has other members; then nothing changes and\nthe auth service keeps the login.\n\nThe caller's identity and memberships are left alone: the auth service's\n``afterDelete`` strips and anonymizes them once the login is gone. Each\nworkspace commits on its own, because ending its subscription is a\nbilling-provider call no rollback can undo; if one fails, the ones before\nit stay deleted, the error is returned, the auth service keeps the login,\nand a retry carries on with what is left. Singleton by nature: it acts on\nthe caller's own account only.",
         "operationId": "delete_current_user_v1_users_me_delete",
         "responses": {
           "204": {
@@ -16965,6 +16828,43 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CurrentUserResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "RFC 9457 Problem Details error response",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/users/me/account-deletion": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Preview Account Deletion",
+        "description": "What deleting the caller's account would delete, or what blocks it (PlatDev #4423).\n\nThe account-deletion dialogs (web and mobile) show this before the person\nconfirms. Singleton by nature: it describes the caller's own account only.",
+        "operationId": "preview_account_deletion_v1_users_me_account_deletion_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountDeletionPreviewResponse"
                 }
               }
             }
@@ -23790,6 +23690,86 @@
         ],
         "title": "AcceptSuggestionsResponse",
         "description": "The catalogue items newly assigned by an accept call.\n\nOnly *newly-created* assignments are reported; ids that were already assigned\nto the bot are silently skipped and omitted here."
+      },
+      "AccountDeletionBlocker": {
+        "properties": {
+          "org_id": {
+            "type": "string",
+            "title": "Org Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "other_member_count": {
+            "type": "integer",
+            "title": "Other Member Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "org_id",
+          "name",
+          "other_member_count"
+        ],
+        "title": "AccountDeletionBlocker",
+        "description": "A workspace that stops the caller deleting their account.\n\nThe caller is its only owner and it has other members. Deletion is refused\nuntil another member is made an owner or the workspace is deleted."
+      },
+      "AccountDeletionPreviewResponse": {
+        "properties": {
+          "workspaces_deleted": {
+            "items": {
+              "$ref": "#/components/schemas/AccountDeletionWorkspace"
+            },
+            "type": "array",
+            "title": "Workspaces Deleted"
+          },
+          "blocking_workspaces": {
+            "items": {
+              "$ref": "#/components/schemas/AccountDeletionBlocker"
+            },
+            "type": "array",
+            "title": "Blocking Workspaces"
+          }
+        },
+        "type": "object",
+        "required": [
+          "workspaces_deleted",
+          "blocking_workspaces"
+        ],
+        "title": "AccountDeletionPreviewResponse",
+        "description": "What ``DELETE /v1/users/me`` would do for the caller right now.\n\nWorkspaces the caller belongs to that appear in neither list keep running\nwithout them. Deletion is refused while ``blocking_workspaces`` is\nnon-empty."
+      },
+      "AccountDeletionWorkspace": {
+        "properties": {
+          "org_id": {
+            "type": "string",
+            "title": "Org Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "bot_count": {
+            "type": "integer",
+            "title": "Bot Count",
+            "description": "Bots in the workspace that are torn down with it."
+          },
+          "has_paid_subscription": {
+            "type": "boolean",
+            "title": "Has Paid Subscription",
+            "description": "The workspace has a paid subscription, which deleting it cancels at once with no refund for the current period. False on the Free plan."
+          }
+        },
+        "type": "object",
+        "required": [
+          "org_id",
+          "name",
+          "bot_count",
+          "has_paid_subscription"
+        ],
+        "title": "AccountDeletionWorkspace",
+        "description": "A workspace that is deleted together with the caller's account."
       },
       "Action": {
         "type": "string",
@@ -36317,7 +36297,7 @@
           "approved"
         ],
         "title": "BotRuntimeHostApprovalDecidedContent",
-        "description": "Human decision on one exact external-host invocation."
+        "description": "Human decision on one exact external-host invocation.\n\nRetained for backward compatibility with historical audit rows. Nothing\nwrites it since #4425 retired per-invocation sudo approval."
       },
       "BotRuntimeOomDetectedContent": {
         "properties": {
@@ -51567,127 +51547,6 @@
         "title": "HeartbeatConfigPatch",
         "description": "Patchable fields for heartbeat configuration."
       },
-      "HostApprovalDecisionRequest": {
-        "properties": {
-          "approved": {
-            "type": "boolean",
-            "title": "Approved",
-            "description": "Approve or deny this one exact invocation."
-          },
-          "input_hash": {
-            "type": "string",
-            "maxLength": 64,
-            "minLength": 64,
-            "title": "Input Hash",
-            "description": "Hash displayed with the invocation; stale/mismatched decisions are refused."
-          }
-        },
-        "type": "object",
-        "required": [
-          "approved",
-          "input_hash"
-        ],
-        "title": "HostApprovalDecisionRequest",
-        "description": "A human decision on the invocation exactly as displayed."
-      },
-      "HostApprovalResponse": {
-        "properties": {
-          "host_approval_id": {
-            "type": "string",
-            "title": "Host Approval Id",
-            "description": "Opaque approval record identifier."
-          },
-          "bot_runtime_id": {
-            "type": "string",
-            "title": "Bot Runtime Id",
-            "description": "Enrolled runtime requesting approval."
-          },
-          "input_hash": {
-            "type": "string",
-            "title": "Input Hash",
-            "description": "Exact invocation binding shown to the human."
-          },
-          "invocation": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/pydantic__types__JsonValue"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Exact command, argv, working directory and timeout; absent after denial/consumption."
-          },
-          "state": {
-            "$ref": "#/components/schemas/HostApprovalState",
-            "description": "Monotonic approval lifecycle state."
-          },
-          "expires_at": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Expires At",
-            "description": "Deadline after which approval cannot execute."
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Created At",
-            "description": "When the daemon requested approval."
-          },
-          "decided_at": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "date-time"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Decided At",
-            "description": "When a human decided."
-          },
-          "consumed_at": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "date-time"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Consumed At",
-            "description": "When the runtime consumed approval; not proof of execution."
-          }
-        },
-        "type": "object",
-        "required": [
-          "host_approval_id",
-          "bot_runtime_id",
-          "input_hash",
-          "invocation",
-          "state",
-          "expires_at",
-          "created_at",
-          "decided_at",
-          "consumed_at"
-        ],
-        "title": "HostApprovalResponse",
-        "description": "One exact pending or completed host-command decision."
-      },
-      "HostApprovalState": {
-        "type": "string",
-        "enum": [
-          "pending",
-          "approved",
-          "denied",
-          "consumed",
-          "cancelled"
-        ],
-        "title": "HostApprovalState",
-        "description": "One exact invocation's human decision; consumed decisions never reopen."
-      },
       "HostingPair": {
         "properties": {
           "hosting_type": {
@@ -54765,6 +54624,37 @@
           {
             "additionalProperties": {
               "$ref": "#/components/schemas/JsonValue-Input"
+            },
+            "type": "object"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "JsonValue-Output": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "integer"
+          },
+          {
+            "type": "number"
+          },
+          {
+            "type": "boolean"
+          },
+          {
+            "items": {
+              "$ref": "#/components/schemas/JsonValue-Output"
+            },
+            "type": "array"
+          },
+          {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/JsonValue-Output"
             },
             "type": "object"
           },
@@ -69173,7 +69063,7 @@
             "description": "The setting's dotted path, e.g. 'tool_search.mode'."
           },
           "value": {
-            "$ref": "#/components/schemas/botyard_core__types__JsonValue-Output",
+            "$ref": "#/components/schemas/JsonValue-Output",
             "description": "The value the install writes: the pack's, or the request's custom one. For an unsupported setting, the pack's value that is not written."
           }
         },
@@ -85350,38 +85240,6 @@
         "type": "object",
         "title": "WorkspaceStorageMetrics"
       },
-      "botyard_core__types__JsonValue-Output": {
-        "anyOf": [
-          {
-            "type": "string"
-          },
-          {
-            "type": "integer"
-          },
-          {
-            "type": "number"
-          },
-          {
-            "type": "boolean"
-          },
-          {
-            "items": {
-              "$ref": "#/components/schemas/botyard_core__types__JsonValue-Output"
-            },
-            "type": "array"
-          },
-          {
-            "additionalProperties": {
-              "$ref": "#/components/schemas/botyard_core__types__JsonValue-Output"
-            },
-            "type": "object"
-          },
-          {
-            "type": "null"
-          }
-        ]
-      },
-      "pydantic__types__JsonValue": {},
       "AssistantAbortedEvent": {
         "description": "The in-flight assistant turn was aborted by a /stop (or one of the\nother abort triggers \u2014 bare ``stop``, ``abort``, ``cancel``, etc.).\n\nNon-terminal \u2014 a follow-up ``assistant.error`` (or ``assistant.end``)\ncloses the turn out for real. The dedicated event exists so clients\ncan distinguish \"stopped on purpose\" from \"network failure / timeout\"\nand render a \"Stopped\" badge instead of an error toast.\n\n``request_id`` identifies the message being aborted (NOT the /stop\nmessage that triggered the abort). The /stop message is its own\nchat.request with its own request_id.",
         "properties": {
@@ -89138,9 +88996,6 @@
     },
     {
       "name": "device-enrollment"
-    },
-    {
-      "name": "host-approvals"
     },
     {
       "name": "workforces"
