@@ -12,6 +12,8 @@ a version.
 
 ## [Unreleased]
 
+## [0.7.1] - 2026-10-30
+
 ### Added
 
 - **New resource `botyard_bot_schedule`: a recurring schedule on a bot.** Set when it fires with exactly one of `cron`, `interval` or `rrule`, and what it does with exactly one of `prompt` (wake the bot) or `command` (run a command on its runtime, with exit-code classes, a recheck `window` and per-outcome routing). (#48)
@@ -233,7 +235,8 @@ a version.
 
 - Bumped `google.golang.org/grpc` (GO-2026-4762) and `golang.org/x/net` (GO-2026-5026), and pinned a patched Go toolchain. (#6)
 
-[Unreleased]: https://github.com/Botyard-AI/terraform-provider-botyard/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/Botyard-AI/terraform-provider-botyard/compare/v0.7.1...HEAD
+[0.7.1]: https://github.com/Botyard-AI/terraform-provider-botyard/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/Botyard-AI/terraform-provider-botyard/compare/v0.6.1...v0.7.0
 [0.6.1]: https://github.com/Botyard-AI/terraform-provider-botyard/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/Botyard-AI/terraform-provider-botyard/compare/v0.5.1...v0.6.0
