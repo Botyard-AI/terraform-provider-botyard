@@ -5,7 +5,7 @@ subcategory: ""
 description: |-
   Manages a Botyard bot's desired-state record within the configured organization. Creating the resource persists the bot and triggers provisioner reconciliation best-effort. It manages the bot's core identity (name, description, avatar), its OpenClaw config overrides and its runtime settings (auto_suspend_enabled, runtime_privilege_mode, resources), and exposes runtime placement and control-plane state as read-only attributes; the bot's skill/tool/credential assignments are managed separately.
   Bot ownership. An API key owns only the bots it created, even when its organization role is owner. For a bot created in the Botyard app or with another key, import, refresh and planning are supported, but updates and deletion require the API key that created the bot, and fail with a "Not the bot's owner" error.
-  suggestions_opt_out is also unreadable on such a bot: Terraform keeps the last value it knew (none after an import), and changing it fails with a "Not the bot's owner" error.
+  On such a bot suggestions_opt_out is read normally, but changing it fails with a "Not the bot's owner" error.
   See Getting started https://docs.botyard.io/docs/getting-started in the Botyard docs.
 ---
 
@@ -15,7 +15,7 @@ Manages a Botyard bot's desired-state record within the configured organization.
 
 **Bot ownership.** An API key owns only the bots it created, even when its organization role is owner. For a bot created in the Botyard app or with another key, import, refresh and planning are supported, but updates and deletion require the API key that created the bot, and fail with a "Not the bot's owner" error.
 
-`suggestions_opt_out` is also unreadable on such a bot: Terraform keeps the last value it knew (none after an import), and changing it fails with a "Not the bot's owner" error.
+On such a bot `suggestions_opt_out` is read normally, but changing it fails with a "Not the bot's owner" error.
 
 See [Getting started](https://docs.botyard.io/docs/getting-started) in the Botyard docs.
 
@@ -247,7 +247,7 @@ Requests follow their limits unless you set them: when `cpu_limit` or `memory_li
 `privileged` requires a plan with privileged runtimes and moves the bot onto a Kata runtime class if it is not on one already. **Changing it restarts the bot.**
 - `suggestions_opt_out` (Boolean) Opt the bot out of skill **and** tool suggestions. One platform flag covers both. `true` hides the suggestions banner for this bot; `false` turns suggestions back on. When omitted, Terraform reads the current value and leaves it alone.
 
-Reading and changing it require bot ownership, and an API key owns only the bots it created. On a bot created in the Botyard app or with another key, Terraform cannot read the flag: it keeps the last value it knew (none after an import), so a refresh or plan is unaffected, and changing it fails with a "Not the bot's owner" error.
+Changing it requires bot ownership, and an API key owns only the bots it created. On a bot created in the Botyard app or with another key, Terraform reads the flag but changing it fails with a "Not the bot's owner" error.
 
 ### Read-Only
 

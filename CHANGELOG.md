@@ -23,6 +23,12 @@ a version.
   - The next fire time is not stored in state, because it changes on every read.
 - **New data source `botyard_bot_schedules`** lists every recurring schedule on a bot, including ones the bot created itself, with each one's `next_fire_at`. (#48)
 
+### Changed
+
+- **`botyard_bot`: refreshing `suggestions_opt_out` no longer calls the suggestions endpoint.** The flag is now read from the bot itself, so a refresh skips the suggestion computation it never used. Requires Botyard API v1.7.2256 or later; against an older API the provider falls back to the previous read. (#49)
+  - The flag is now readable on bots the API key doesn't own (created in the Botyard app or with another key), so refresh and import show the real value instead of keeping the last known one. Changing it on such a bot still fails with "Not the bot's owner".
+- **`botyard_bot_skill_assignment` and `botyard_bot_tool_assignment`: the pack-item check uses a lighter read.** It reads only the installed items and skips the Composio connection checks it never used. Warnings are unchanged. (#49)
+
 ## [0.7.0] - 2026-10-29
 
 **This release has breaking changes.** See **Removed** for the upgrade steps: delete the removed keys from your configuration, then run one `terraform apply`.

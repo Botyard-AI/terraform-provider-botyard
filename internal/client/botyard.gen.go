@@ -481,6 +481,7 @@ const (
 	DomainCredential     Domain = "credential"
 	DomainGithub         Domain = "github"
 	DomainGithubWorkflow Domain = "github_workflow"
+	DomainIdentity       Domain = "identity"
 	DomainInbox          Domain = "inbox"
 	DomainIntegration    Domain = "integration"
 	DomainMcpServer      Domain = "mcp_server"
@@ -1391,12 +1392,16 @@ const (
 	ResourceRuntime              Resource = "runtime"
 	ResourceSchedule             Resource = "schedule"
 	ResourceScheduleCommand      Resource = "schedule_command"
+	ResourceScimConnection       Resource = "scim_connection"
+	ResourceScimGroupRoleMapping Resource = "scim_group_role_mapping"
 	ResourceSecret               Resource = "secret"
 	ResourceSecretLease          Resource = "secret_lease"
 	ResourceSecretPolicy         Resource = "secret_policy"
 	ResourceService              Resource = "service"
 	ResourceSettings             Resource = "settings"
+	ResourceSignInPolicy         Resource = "sign_in_policy"
 	ResourceSkill                Resource = "skill"
+	ResourceSsoConnection        Resource = "sso_connection"
 	ResourceSubscription         Resource = "subscription"
 	ResourceTask                 Resource = "task"
 	ResourceTaskFile             Resource = "task_file"
@@ -2385,6 +2390,9 @@ type BotListItem struct {
 	// Slug URL-friendly bot identifier
 	Slug string `json:"slug"`
 
+	// SuggestionsOptOut Whether skill and tool suggestions are disabled for this bot.
+	SuggestionsOptOut *bool `json:"suggestions_opt_out,omitempty"`
+
 	// Tier Bot subscription tier.
 	Tier      BotTier   `json:"tier"`
 	UpdatedAt time.Time `json:"updated_at"`
@@ -2700,6 +2708,9 @@ type BotResponse struct {
 	// CLUSTER_DEFAULT defers to the adapter-level configured default. Only the
 	// classes currently in active use are enumerated — extend as needed.
 	StorageClass BotStorageClass `json:"storage_class"`
+
+	// SuggestionsOptOut Whether skill and tool suggestions are disabled for this bot.
+	SuggestionsOptOut *bool `json:"suggestions_opt_out,omitempty"`
 
 	// SuspensionReason Why the bot is suspended. Inactivity suspension auto-wakes from the next human message; manual suspension never does.
 	SuspensionReason *SuspensionReason `json:"suspension_reason"`
@@ -7597,6 +7608,9 @@ type OrgBotPackInstalls struct {
 	// Bots One entry per readable bot, in request order. Empty installs until P2.
 	Bots []BotPacks `json:"bots"`
 
+	// ConnectionHealthIncluded Whether connection status and health were evaluated for this response. When false, connections and pending_connections are empty because they were not evaluated, not because no connections exist.
+	ConnectionHealthIncluded *bool `json:"connection_health_included,omitempty"`
+
 	// NotFound Requested bot ids that are malformed, unknown, deleted, in another org, or not readable by the caller. The cases are not distinguished.
 	NotFound []string `json:"not_found"`
 }
@@ -11115,6 +11129,9 @@ type UninstallPacksV1OrgsOrgIdPacksInstallsDeleteParams struct {
 type ListBotPackInstallsV1OrgsOrgIdPacksInstallsGetParams struct {
 	// BotIds Bots to read, each at most once.
 	BotIds []openapi_types.UUID `form:"bot_ids" json:"bot_ids"`
+
+	// IncludeConnectionHealth Include connection status and revalidate bound Composio authorisations. Set false for a cheap metadata/items read: connections and pending_connections are empty because they were not evaluated, not because every connection is healthy or complete.
+	IncludeConnectionHealth *bool `form:"include_connection_health,omitempty" json:"include_connection_health,omitempty"`
 }
 
 // GetPackVersionsV1OrgsOrgIdPacksVersionsGetParams defines parameters for GetPackVersionsV1OrgsOrgIdPacksVersionsGet.
@@ -24807,6 +24824,22 @@ func NewListBotPackInstallsV1OrgsOrgIdPacksInstallsGetRequest(server string, org
 					queryValues.Add(k, v2)
 				}
 			}
+		}
+
+		if params.IncludeConnectionHealth != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "include_connection_health", runtime.ParamLocationQuery, *params.IncludeConnectionHealth); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
 		}
 
 		queryURL.RawQuery = queryValues.Encode()
