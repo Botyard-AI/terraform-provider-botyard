@@ -12,9 +12,11 @@ a version.
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-11-01
+
 ### Added
 
-- `botyard_bot_soul` manages a hosted native bot's complete soul via the bot-files API. Supports `content = file("${path.module}/SOUL.md")`, drift detection, in-place updates and import by bot slug. Removal preserves the live soul and revision history. Native souls must contain non-whitespace text; blank content is rejected at plan time.
+- `botyard_bot_soul` manages a hosted native bot's complete soul via the bot-files API. Supports `content = file("${path.module}/SOUL.md")`, drift detection, in-place updates and import by bot slug. Removal preserves the live soul and revision history. Native souls must contain non-whitespace text; blank content is rejected at plan time. (#52)
 
 ## [0.7.1] - 2026-10-30
 
@@ -239,7 +241,8 @@ a version.
 
 - Bumped `google.golang.org/grpc` (GO-2026-4762) and `golang.org/x/net` (GO-2026-5026), and pinned a patched Go toolchain. (#6)
 
-[Unreleased]: https://github.com/Botyard-AI/terraform-provider-botyard/compare/v0.7.1...HEAD
+[Unreleased]: https://github.com/Botyard-AI/terraform-provider-botyard/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/Botyard-AI/terraform-provider-botyard/compare/v0.7.1...v0.8.0
 [0.7.1]: https://github.com/Botyard-AI/terraform-provider-botyard/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/Botyard-AI/terraform-provider-botyard/compare/v0.6.1...v0.7.0
 [0.6.1]: https://github.com/Botyard-AI/terraform-provider-botyard/compare/v0.6.0...v0.6.1
