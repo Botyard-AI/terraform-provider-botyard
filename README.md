@@ -19,6 +19,7 @@ walks through a first configuration.
 
 | Resource | Manages | Concept docs |
 | --- | --- | --- |
+| `botyard_bot_soul` | A hosted native bot's complete soul (instructions), with non-destructive removal | — |
 | `botyard_bot` | A bot's identity and configuration overrides | [Getting started](https://docs.botyard.io/docs/getting-started) |
 | `botyard_bot_credential_assignment` | Which organization credentials a bot uses, per scope | [Provider credentials](https://docs.botyard.io/docs/provider-credentials) |
 | `botyard_bot_skill_assignment` | Which skills are assigned to a bot | — |

@@ -142,6 +142,7 @@ resource "botyard_bot" "triage" {
   harness      = "botyard_native"
 
   # A native bot's instructions (its soul) live in its bot files, not here.
+  # Manage them with botyard_bot_soul and content = file("${path.module}/SOUL.md").
   native_config = {
     tool_search = {
       mode                   = "auto"
