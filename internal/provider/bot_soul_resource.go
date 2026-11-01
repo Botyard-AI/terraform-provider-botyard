@@ -2,8 +2,12 @@ package provider
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"net"
 	"net/http"
+	"strings"
+	"unicode"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
@@ -49,7 +53,7 @@ func (r *BotSoulResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 			"Edits made outside Terraform are detected on refresh and overwritten on the next apply. " +
 			"Pack soul changes are also outside edits: this resource owns the **whole** soul, including any pack text.\n\n" +
 			"**Removal is non-destructive:** destroying this resource or changing `bot_slug` leaves the previous bot's soul and revision history intact. " +
-			"To clear the soul explicitly, apply `content = \"\"` before removing the resource. " +
+			"Native souls must contain non-whitespace text; empty content is not supported. " +
 			"Writes create a revision only when content differs and take effect for subsequent native turns. " +
 			"This is a separate resource applied after bot creation; the bot initially has its platform/pack soul.\n\n" +
 			"Requires API key permissions `bot:file.read`, `bot:file.update`, and permission to read the bot. " +
@@ -57,7 +61,7 @@ func (r *BotSoulResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 		Attributes: map[string]schema.Attribute{
 			"id":       schema.StringAttribute{Computed: true, MarkdownDescription: "The bot slug.", PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()}},
 			"bot_slug": schema.StringAttribute{Required: true, MarkdownDescription: "Slug of the hosted native bot. Changing it forces replacement; the old soul is preserved.", Validators: []validator.String{stringvalidator.LengthAtLeast(1)}, PlanModifiers: []planmodifier.String{stringplanmodifier.RequiresReplace()}},
-			"content":  schema.StringAttribute{Required: true, MarkdownDescription: "Complete soul markdown, for example `file(\"${path.module}/SOUL.md\")`. Maximum 102400 characters. An empty string explicitly clears the soul. Never include secrets.", Validators: []validator.String{stringvalidator.LengthAtMost(102400)}},
+			"content":  schema.StringAttribute{Required: true, MarkdownDescription: "Complete soul markdown, for example `file(\"${path.module}/SOUL.md\")`. Maximum 102400 characters. Must contain non-whitespace text; empty or whitespace-only content is rejected at plan time. Never include secrets.", Validators: []validator.String{stringvalidator.LengthAtMost(102400), nativeSoulContentValidator{}}},
 			"version":  schema.Int64Attribute{Computed: true, MarkdownDescription: "Current platform soul revision number."},
 		},
 	}
@@ -143,7 +147,7 @@ func (r *BotSoulResource) ImportState(ctx context.Context, req resource.ImportSt
 func (r *BotSoulResource) nativeBot(ctx context.Context, slug string, allowMissing bool, diags *diag.Diagnostics) bool {
 	bot, err := r.data.client.GetBotV1OrgsOrgIdBotsBotSlugGetWithResponse(ctx, r.data.orgID, slug)
 	if err != nil {
-		diags.AddError("Error reading soul's bot", err.Error())
+		soulRequestError(diags, "reading the bot", err)
 		return false
 	}
 	if allowMissing && bot.StatusCode() == http.StatusNotFound {
@@ -163,7 +167,7 @@ func (r *BotSoulResource) nativeBot(ctx context.Context, slug string, allowMissi
 func (r *BotSoulResource) readSoul(ctx context.Context, slug string, diags *diag.Diagnostics) (*client.BotFileResponse, bool) {
 	resp, err := r.data.client.ListBotFilesV1OrgsOrgIdBotsBotSlugFilesGetWithResponse(ctx, r.data.orgID, slug)
 	if err != nil {
-		diags.AddError("Error reading bot soul", err.Error())
+		soulRequestError(diags, "reading soul files", err)
 		return nil, false
 	}
 	if resp.StatusCode() == http.StatusNotFound {
@@ -192,6 +196,10 @@ func findSoul(files []client.BotFileResponse, diags *diag.Diagnostics) *client.B
 }
 
 func (r *BotSoulResource) apply(ctx context.Context, plan *BotSoulResourceModel, diags *diag.Diagnostics) {
+	if nativeSoulIsBlank(plan.Content.ValueString()) {
+		diags.AddAttributeError(path.Root("content"), "Invalid native soul content", "A native soul must contain non-whitespace text.")
+		return
+	}
 	slug := plan.BotSlug.ValueString()
 	if !r.nativeBot(ctx, slug, false, diags) {
 		return
@@ -208,7 +216,7 @@ func (r *BotSoulResource) apply(ctx context.Context, plan *BotSoulResourceModel,
 		resp, err := r.data.client.UpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPutWithResponse(ctx, r.data.orgID, slug,
 			client.BotFileUpdateRequest{Files: []client.BotFileEntry{{FileType: client.BotFileTypeSoul, Content: plan.Content.ValueString()}}})
 		if err != nil {
-			diags.AddError("Error writing bot soul", err.Error())
+			soulRequestError(diags, "writing the soul", err)
 			return
 		}
 		if resp.JSON201 == nil {
@@ -231,4 +239,49 @@ func (r *BotSoulResource) apply(ctx context.Context, plan *BotSoulResourceModel,
 // Do not echo error response bodies: validation errors can contain the soul.
 func soulAPIError(diags *diag.Diagnostics, operation string, status int) {
 	diags.AddError("Error managing bot soul", fmt.Sprintf("API returned HTTP %d while %s. Check the bot slug and API key permissions (bot read, bot:file.read, bot:file.update). Response body omitted to protect soul content.", status, operation))
+}
+
+// Python str.strip() includes Unicode whitespace plus U+001C through U+001F;
+// Go's unicode.IsSpace alone omits those four separators. Match the native
+// server's not content.strip() invariant without normalizing the stored text.
+func nativeSoulIsBlank(content string) bool {
+	return strings.TrimFunc(content, func(r rune) bool {
+		return unicode.IsSpace(r) || (r >= '\u001c' && r <= '\u001f')
+	}) == ""
+}
+
+type nativeSoulContentValidator struct{}
+
+func (nativeSoulContentValidator) Description(context.Context) string {
+	return "Native soul content must contain non-whitespace text."
+}
+
+func (v nativeSoulContentValidator) MarkdownDescription(ctx context.Context) string {
+	return v.Description(ctx)
+}
+
+func (nativeSoulContentValidator) ValidateString(_ context.Context, req validator.StringRequest, resp *validator.StringResponse) {
+	if req.ConfigValue.IsNull() || req.ConfigValue.IsUnknown() {
+		return
+	}
+	if nativeSoulIsBlank(req.ConfigValue.ValueString()) {
+		resp.Diagnostics.AddAttributeError(req.Path, "Invalid native soul content", "A native soul must contain non-whitespace text.")
+	}
+}
+
+// Generated WithResponse calls return decoder errors as well as transport
+// errors. Their text may quote server-controlled values (e.g. an invalid
+// timestamp), so expose only safe categories, never err.Error().
+func soulRequestError(diags *diag.Diagnostics, operation string, err error) {
+	category := "request or response decoding failure"
+	var networkError net.Error
+	switch {
+	case errors.Is(err, context.Canceled):
+		category = "request canceled"
+	case errors.Is(err, context.DeadlineExceeded):
+		category = "request deadline exceeded"
+	case errors.As(err, &networkError):
+		category = "network request failed"
+	}
+	diags.AddError("Error managing bot soul", fmt.Sprintf("%s while %s. Details omitted to protect soul content. Refresh before retrying; a write may have committed.", category, operation))
 }

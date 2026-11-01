@@ -12,4 +12,4 @@ resource "botyard_bot_soul" "assistant" {
 }
 
 # Removing this resource leaves the live soul and its history intact.
-# To clear the soul explicitly, apply content = "" before removal.
+# Native soul content must contain non-whitespace text; it cannot be cleared.

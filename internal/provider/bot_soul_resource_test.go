@@ -12,9 +12,12 @@ import (
 	"strings"
 	"sync"
 	"testing"
+	"unicode"
 
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	fwresource "github.com/hashicorp/terraform-plugin-framework/resource"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
@@ -34,6 +37,7 @@ type soulAPI struct {
 	hosting                            string
 	botStatus, readStatus, writeStatus int
 	noSoul, duplicate, badWrite        bool
+	malformedOn                        string
 }
 
 func newSoulAPI(t *testing.T) (*soulAPI, *httptest.Server, *BotSoulResource) {
@@ -45,6 +49,10 @@ func newSoulAPI(t *testing.T) (*soulAPI, *httptest.Server, *BotSoulResource) {
 		w.Header().Set("Content-Type", "application/json")
 		if req.URL.Path == "/v1/orgs/org-1/bots/bot-1" && req.Method == http.MethodGet {
 			w.WriteHeader(api.botStatus)
+			if api.malformedOn == "bot" {
+				_, _ = w.Write([]byte(`{"created_at":"private-soul-marker"}`))
+				return
+			}
 			_, _ = fmt.Fprintf(w, `{"harness":%q,"hosting_type":%q}`, api.harness, api.hosting)
 			return
 		}
@@ -67,6 +75,12 @@ func newSoulAPI(t *testing.T) (*soulAPI, *httptest.Server, *BotSoulResource) {
 				return
 			}
 			api.writes++
+			// Mirror write_native_soul's native-only nonblank invariant.
+			if strings.TrimFunc(body.Files[0].Content, func(r rune) bool { return unicode.IsSpace(r) || (r >= 0x1c && r <= 0x1f) }) == "" {
+				w.WriteHeader(422)
+				_, _ = w.Write([]byte(`{"detail":"A native agent's soul cannot be empty."}`))
+				return
+			}
 			w.WriteHeader(api.writeStatus)
 			if api.writeStatus != 201 {
 				_, _ = w.Write([]byte(`{"detail":"private soul content must not leak"}`))
@@ -78,6 +92,10 @@ func newSoulAPI(t *testing.T) (*soulAPI, *httptest.Server, *BotSoulResource) {
 		default:
 			t.Errorf("unexpected method %s", req.Method)
 			w.WriteHeader(405)
+			return
+		}
+		if (api.malformedOn == "read" && req.Method == http.MethodGet) || (api.malformedOn == "write" && req.Method == http.MethodPut) {
+			_, _ = w.Write([]byte(`{"files":[{"file_type":"soul","created_at":"private-soul-marker"}]}`))
 			return
 		}
 		files := []client.BotFileResponse{{FileType: client.BotFileTypeSoul, Content: api.content, Version: api.version, DeployStatus: client.DeployStatusDeployed}}
@@ -112,7 +130,7 @@ func TestBotSoulApply(t *testing.T) {
 	}{
 		{"adopt unchanged", "platform default", false, 0},
 		{"replace", "# Soul\nBe useful. 🛠️\n", false, 1},
-		{"clear", "", false, 1},
+		{"keep surrounding whitespace", " \n🛠️\t ", false, 1},
 		{"missing soul", "new", true, 1},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
@@ -263,7 +281,7 @@ func TestBotSoulTerraformLifecycle(t *testing.T) {
 		CheckDestroy: func(_ *terraform.State) error {
 			api.mu.Lock()
 			defer api.mu.Unlock()
-			if api.content != "" || api.writes != 4 {
+			if api.content != "updated" || api.writes != 3 {
 				return fmt.Errorf("destroy changed soul or unexpected writes: content=%q writes=%d", api.content, api.writes)
 			}
 			return nil
@@ -274,7 +292,6 @@ func TestBotSoulTerraformLifecycle(t *testing.T) {
 			{ResourceName: "botyard_bot_soul.test", ImportState: true, ImportStateId: "bot-1", ImportStateVerify: true},
 			{PreConfig: func() { api.mu.Lock(); defer api.mu.Unlock(); api.content = "outside edit"; api.version++ }, Config: cfg, Check: resource.TestCheckResourceAttr("botyard_bot_soul.test", "content", soul)},
 			{Config: soulTestConfig(srv.URL, `"updated"`)},
-			{Config: soulTestConfig(srv.URL, `""`), Check: resource.TestCheckResourceAttr("botyard_bot_soul.test", "content", "")},
 		},
 	})
 }
@@ -292,5 +309,98 @@ func TestBotSoulDeletePreservesInstructions(t *testing.T) {
 	r.Delete(context.Background(), fwresource.DeleteRequest{}, &fwresource.DeleteResponse{})
 	if api.content != "platform default" || api.writes != 0 {
 		t.Fatal("destroy modified the live soul")
+	}
+}
+
+func TestNativeSoulContentValidator(t *testing.T) {
+	for _, tc := range []struct {
+		name    string
+		value   types.String
+		invalid bool
+	}{
+		{"empty", types.StringValue(""), true},
+		{"ascii whitespace", types.StringValue(" \t\n\r\v\f"), true},
+		{"python separators", types.StringValue("\u001c\u001d\u001e\u001f"), true},
+		{"unicode whitespace", types.StringValue("\u0085\u00a0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u2028\u2029\u202f\u205f\u3000"), true},
+		{"text preserved", types.StringValue(" \n# Soul 🛠️\t "), false},
+		{"zero width not Python whitespace", types.StringValue("\u200b\ufeff"), false},
+		{"unknown deferred", types.StringUnknown(), false},
+		{"null handled by required schema", types.StringNull(), false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			var resp validator.StringResponse
+			nativeSoulContentValidator{}.ValidateString(context.Background(), validator.StringRequest{Path: path.Root("content"), ConfigValue: tc.value}, &resp)
+			if resp.Diagnostics.HasError() != tc.invalid {
+				t.Fatalf("diagnostics: %v", resp.Diagnostics)
+			}
+		})
+	}
+}
+
+func TestBotSoulRejectsBlankWithoutWriting(t *testing.T) {
+	for _, content := range []string{"", " \t\n", "\u00a0\u001c"} {
+		t.Run(fmt.Sprintf("%q", content), func(t *testing.T) {
+			api, _, r := newSoulAPI(t)
+			p := soulPlan(content)
+			var d diag.Diagnostics
+			r.apply(context.Background(), &p, &d)
+			if !d.HasError() || api.writes != 0 || api.content != "platform default" {
+				t.Fatalf("diags=%v writes=%d", d, api.writes)
+			}
+			// Bypass provider validation to prove the fake mirrors native API refusal.
+			resp, err := r.data.client.UpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPutWithResponse(context.Background(), "org-1", "bot-1", client.BotFileUpdateRequest{Files: []client.BotFileEntry{{FileType: client.BotFileTypeSoul, Content: content}}})
+			if err != nil || resp.StatusCode() != 422 || api.content != "platform default" || api.version != 1 {
+				t.Fatalf("blank API write: resp=%v err=%v", resp, err)
+			}
+		})
+	}
+}
+
+func TestBotSoulTerraformRejectsBlank(t *testing.T) {
+	for _, content := range []string{"", " \t\n", "\u00a0\u001c"} {
+		t.Run(fmt.Sprintf("%q", content), func(t *testing.T) {
+			api, srv, _ := newSoulAPI(t)
+			expr, err := json.Marshal(content)
+			if err != nil {
+				t.Fatal(err)
+			}
+			resource.UnitTest(t, resource.TestCase{
+				ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+				Steps:                    []resource.TestStep{{Config: soulTestConfig(srv.URL, string(expr)), ExpectError: regexp.MustCompile("must contain non-whitespace text")}},
+			})
+			if api.writes != 0 {
+				t.Fatal("blank plan reached the write API")
+			}
+		})
+	}
+}
+
+func TestBotSoulDecoderErrorsDoNotLeak(t *testing.T) {
+	for _, operation := range []string{"bot", "read", "write"} {
+		t.Run(operation, func(t *testing.T) {
+			api, _, r := newSoulAPI(t)
+			api.malformedOn = operation
+			ctx := context.Background()
+			var err error
+			// Positive control: the generated client's actual decoder error echoes
+			// the untrusted timestamp. Do not accidentally test a harmless error.
+			switch operation {
+			case "bot":
+				_, err = r.data.client.GetBotV1OrgsOrgIdBotsBotSlugGetWithResponse(ctx, "org-1", "bot-1")
+			case "read":
+				_, err = r.data.client.ListBotFilesV1OrgsOrgIdBotsBotSlugFilesGetWithResponse(ctx, "org-1", "bot-1")
+			case "write":
+				_, err = r.data.client.UpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPutWithResponse(ctx, "org-1", "bot-1", client.BotFileUpdateRequest{Files: []client.BotFileEntry{{FileType: client.BotFileTypeSoul, Content: "probe"}}})
+			}
+			if err == nil || !strings.Contains(err.Error(), "private-soul-marker") {
+				t.Fatalf("positive control failed: %v", err)
+			}
+			p := soulPlan("desired")
+			var d diag.Diagnostics
+			r.apply(ctx, &p, &d)
+			if !d.HasError() || strings.Contains(fmt.Sprint(d), "private-soul-marker") {
+				t.Fatalf("unsafe diagnostics: %v", d)
+			}
+		})
 	}
 }
