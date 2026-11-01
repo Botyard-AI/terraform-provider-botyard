@@ -14,7 +14,7 @@ CLIENT_DIR="$ROOT/internal/client"
 SPEC="$CLIENT_DIR/openapi.json"
 
 # Tags the generated client covers. Widen as resources are added.
-KEEP_TAGS=(bots mcp-servers secret-policies skills bot-tools credentials tools bot-templates workforces suggestions packs schedules)
+KEEP_TAGS=(bots mcp-servers secret-policies skills bot-tools credentials tools bot-templates workforces suggestions packs schedules bot-files)
 
 # Paths dropped even though their tag is kept:
 #   - The MCP catalog endpoints pull in McpCatalogFormField schemas whose inline
@@ -44,7 +44,12 @@ KEEP_TAGS=(bots mcp-servers secret-policies skills bot-tools credentials tools b
 #     endpoints — preview, pause/resume, trigger, run history/summaries and the
 #     command-run trigger/listing — are actions, not desired state, so they are
 #     dropped.
+# Soul management needs only the batch files read/write path; history and
+# rollback are imperative, and a singular read is unnecessary.
 EXCLUDE_PATHS=(
+  "/v1/orgs/{org_id}/bots/{bot_slug}/files/{file_type}"
+  "/v1/orgs/{org_id}/bots/{bot_slug}/files/{file_type}/history"
+  "/v1/orgs/{org_id}/bots/{bot_slug}/files/{file_type}/rollback"
   "/v1/orgs/{org_id}/mcp-servers/catalog"
   "/v1/orgs/{org_id}/mcp-servers/from-catalog"
   "/v1/orgs/{org_id}/bots/{bot_slug}/secret-policies"

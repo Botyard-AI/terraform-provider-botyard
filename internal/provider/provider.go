@@ -172,6 +172,7 @@ func (p *BotyardProvider) Resources(_ context.Context) []func() resource.Resourc
 	return []func() resource.Resource{
 		NewBotResource,
 		NewBotScheduleResource,
+		NewBotSoulResource,
 		NewBotCredentialAssignmentResource,
 		NewBotSkillAssignmentResource,
 		NewBotToolAssignmentResource,

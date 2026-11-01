@@ -12,6 +12,10 @@ a version.
 
 ## [Unreleased]
 
+### Added
+
+- `botyard_bot_soul` manages a hosted native bot's complete soul via the bot-files API. Supports `content = file("${path.module}/SOUL.md")`, drift detection, in-place updates and import by bot slug. Removal preserves the live soul and revision history. Native souls must contain non-whitespace text; blank content is rejected at plan time.
+
 ## [0.7.1] - 2026-10-30
 
 ### Added

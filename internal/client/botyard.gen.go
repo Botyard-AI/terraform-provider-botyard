@@ -111,6 +111,32 @@ const (
 	BotAccessRestricted BotAccess = "restricted"
 )
 
+// Defines values for BotFileActorType.
+const (
+	BotFileActorTypeApiKey BotFileActorType = "api_key"
+	BotFileActorTypeBot    BotFileActorType = "bot"
+	BotFileActorTypeUser   BotFileActorType = "user"
+)
+
+// Defines values for BotFileSource.
+const (
+	BotFileSourceBackfill      BotFileSource = "backfill"
+	BotFileSourcePackInstall   BotFileSource = "pack_install"
+	BotFileSourcePackUninstall BotFileSource = "pack_uninstall"
+	BotFileSourcePackUpdate    BotFileSource = "pack_update"
+	BotFileSourceRollout       BotFileSource = "rollout"
+	BotFileSourceUser          BotFileSource = "user"
+)
+
+// Defines values for BotFileType.
+const (
+	BotFileTypeAgents    BotFileType = "agents"
+	BotFileTypeHeartbeat BotFileType = "heartbeat"
+	BotFileTypeSoul      BotFileType = "soul"
+	BotFileTypeTools     BotFileType = "tools"
+	BotFileTypeUser      BotFileType = "user"
+)
+
 // Defines values for BotFilterField.
 const (
 	BotFilterFieldCreatedAt     BotFilterField = "created_at"
@@ -2247,6 +2273,89 @@ type BotCredentialAssignmentResponse struct {
 // BotCredentialAssignmentResponse_NativeLane How native owned mode treats this credential: the lane it serves it on, or why it refuses it (a native bot's chain must be all served). A fact about the credential, so it is set on every bot; the app shows it on native bots. Null unless the assignment is an LLM credential with an API protocol.
 type BotCredentialAssignmentResponse_NativeLane struct {
 	union json.RawMessage
+}
+
+// BotFileActor The principal that wrote a bot file revision.
+type BotFileActor struct {
+	// Id The principal's id
+	Id string `json:"id"`
+
+	// Name Display name, or null when the principal no longer resolves
+	Name *string `json:"name"`
+
+	// Type Kind of principal: user, api_key or bot
+	Type BotFileActorType `json:"type"`
+}
+
+// BotFileActorType Kind of principal: user, api_key or bot
+type BotFileActorType string
+
+// BotFileEntry A single file in a batch update request.
+type BotFileEntry struct {
+	// Content File content (markdown)
+	Content string `json:"content"`
+
+	// FileType Type of workspace file managed by the platform.
+	FileType BotFileType `json:"file_type"`
+}
+
+// BotFileListResponse Response listing current files (latest revision per type).
+type BotFileListResponse struct {
+	Files []BotFileResponse `json:"files"`
+}
+
+// BotFileResponse Response for a single bot file revision.
+type BotFileResponse struct {
+	// Actor Who wrote this revision. Null for backfill, platform writes, revisions written before provenance was recorded, and deleted principals.
+	Actor     *BotFileActor `json:"actor"`
+	Content   string        `json:"content"`
+	CreatedAt time.Time     `json:"created_at"`
+	CreatedBy *string       `json:"created_by"`
+
+	// DeployError Error message on deployment failure
+	DeployError *string `json:"deploy_error"`
+
+	// DeployStatus Deployment status for any deployable entity (skills, bot files, etc.).
+	DeployStatus DeployStatus `json:"deploy_status"`
+
+	// DeployedAt Last successful deployment
+	DeployedAt *time.Time `json:"deployed_at"`
+
+	// FileType Type of workspace file managed by the platform.
+	FileType BotFileType `json:"file_type"`
+	Id       string      `json:"id"`
+
+	// Source What wrote this revision: user, pack_install, pack_update, pack_uninstall, rollout or backfill. Null on revisions written before provenance was recorded.
+	Source  *BotFileSource `json:"source"`
+	Version int            `json:"version"`
+}
+
+// BotFileSource What wrote a “bot_files“ revision (bot catalogue D32, PlatDev #3684).
+//
+// Lets later phases (D2/D17) tell a principal's edit apart from text a pack
+// wrote. *Who* the principal was is recorded separately in the actor columns
+// (“actor_user_id“ / “actor_api_key_id“ / “actor_bot_id“).
+//
+//   - “USER“ — an edit by a principal: a person, an org API key, or a bot
+//     editing itself (MCP “update_config“ / “update_files“).
+//   - “PACK_INSTALL“ / “PACK_UPDATE“ — a pack install or update wrote the
+//     file; “pack_version_id“ is set (bot catalogue P2).
+//   - “PACK_UNINSTALL“ — uninstalling a pack restored the file it had
+//     replaced; “pack_version_id“ names the version being removed (D11).
+//   - “ROLLOUT“ — a platform rollout rewrote it (bot catalogue P6).
+//   - “BACKFILL“ — the content already in place when provenance began,
+//     recorded by the migration or, for a bot that missed it, on first write.
+//
+// NULL on rows written before provenance existed.
+type BotFileSource string
+
+// BotFileType Type of workspace file managed by the platform.
+type BotFileType string
+
+// BotFileUpdateRequest Request body for creating/updating bot file revisions.
+type BotFileUpdateRequest struct {
+	// Files Files to create or update
+	Files []BotFileEntry `json:"files"`
 }
 
 // BotFilterField Fields filterable via the bot search endpoint.
@@ -11209,6 +11318,9 @@ type CopyBotV1OrgsOrgIdBotsBotSlugCopyPostJSONRequestBody = BotCopyRequest
 // AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutJSONRequestBody defines body for AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPut for application/json ContentType.
 type AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutJSONRequestBody = BotCredentialAssign
 
+// UpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPutJSONRequestBody defines body for UpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPut for application/json ContentType.
+type UpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPutJSONRequestBody = BotFileUpdateRequest
+
 // CreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPostJSONRequestBody defines body for CreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPost for application/json ContentType.
 type CreateScheduleV1OrgsOrgIdBotsBotSlugSchedulesPostJSONRequestBody = ScheduleCreate
 
@@ -18630,6 +18742,14 @@ type ClientInterface interface {
 	// UnassignCredentialV1OrgsOrgIdBotsBotSlugCredentialsCredentialIdDelete request
 	UnassignCredentialV1OrgsOrgIdBotsBotSlugCredentialsCredentialIdDelete(ctx context.Context, orgId string, botSlug string, credentialId string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// ListBotFilesV1OrgsOrgIdBotsBotSlugFilesGet request
+	ListBotFilesV1OrgsOrgIdBotsBotSlugFilesGet(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPutWithBody request with any body
+	UpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPutWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPut(ctx context.Context, orgId string, botSlug string, body UpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// FinishBotOnboardingRouteV1OrgsOrgIdBotsBotSlugFinishOnboardingPost request
 	FinishBotOnboardingRouteV1OrgsOrgIdBotsBotSlugFinishOnboardingPost(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -19326,6 +19446,42 @@ func (c *Client) AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPut(ctx conte
 
 func (c *Client) UnassignCredentialV1OrgsOrgIdBotsBotSlugCredentialsCredentialIdDelete(ctx context.Context, orgId string, botSlug string, credentialId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUnassignCredentialV1OrgsOrgIdBotsBotSlugCredentialsCredentialIdDeleteRequest(c.Server, orgId, botSlug, credentialId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListBotFilesV1OrgsOrgIdBotsBotSlugFilesGet(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListBotFilesV1OrgsOrgIdBotsBotSlugFilesGetRequest(c.Server, orgId, botSlug)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPutWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPutRequestWithBody(c.Server, orgId, botSlug, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPut(ctx context.Context, orgId string, botSlug string, body UpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPutRequest(c.Server, orgId, botSlug, body)
 	if err != nil {
 		return nil, err
 	}
@@ -22040,6 +22196,101 @@ func NewUnassignCredentialV1OrgsOrgIdBotsBotSlugCredentialsCredentialIdDeleteReq
 	if err != nil {
 		return nil, err
 	}
+
+	return req, nil
+}
+
+// NewListBotFilesV1OrgsOrgIdBotsBotSlugFilesGetRequest generates requests for ListBotFilesV1OrgsOrgIdBotsBotSlugFilesGet
+func NewListBotFilesV1OrgsOrgIdBotsBotSlugFilesGetRequest(server string, orgId string, botSlug string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "bot_slug", runtime.ParamLocationPath, botSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/bots/%s/files", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPutRequest calls the generic UpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPut builder with application/json body
+func NewUpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPutRequest(server string, orgId string, botSlug string, body UpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPutJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPutRequestWithBody(server, orgId, botSlug, "application/json", bodyReader)
+}
+
+// NewUpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPutRequestWithBody generates requests for UpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPut with any type of body
+func NewUpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPutRequestWithBody(server string, orgId string, botSlug string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "bot_slug", runtime.ParamLocationPath, botSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/bots/%s/files", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
 
 	return req, nil
 }
@@ -27619,6 +27870,14 @@ type ClientWithResponsesInterface interface {
 	// UnassignCredentialV1OrgsOrgIdBotsBotSlugCredentialsCredentialIdDeleteWithResponse request
 	UnassignCredentialV1OrgsOrgIdBotsBotSlugCredentialsCredentialIdDeleteWithResponse(ctx context.Context, orgId string, botSlug string, credentialId string, reqEditors ...RequestEditorFn) (*UnassignCredentialV1OrgsOrgIdBotsBotSlugCredentialsCredentialIdDeleteResponse, error)
 
+	// ListBotFilesV1OrgsOrgIdBotsBotSlugFilesGetWithResponse request
+	ListBotFilesV1OrgsOrgIdBotsBotSlugFilesGetWithResponse(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*ListBotFilesV1OrgsOrgIdBotsBotSlugFilesGetResponse, error)
+
+	// UpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPutWithBodyWithResponse request with any body
+	UpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPutWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPutResponse, error)
+
+	UpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPutWithResponse(ctx context.Context, orgId string, botSlug string, body UpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPutJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPutResponse, error)
+
 	// FinishBotOnboardingRouteV1OrgsOrgIdBotsBotSlugFinishOnboardingPostWithResponse request
 	FinishBotOnboardingRouteV1OrgsOrgIdBotsBotSlugFinishOnboardingPostWithResponse(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*FinishBotOnboardingRouteV1OrgsOrgIdBotsBotSlugFinishOnboardingPostResponse, error)
 
@@ -28426,6 +28685,52 @@ func (r UnassignCredentialV1OrgsOrgIdBotsBotSlugCredentialsCredentialIdDeleteRes
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r UnassignCredentialV1OrgsOrgIdBotsBotSlugCredentialsCredentialIdDeleteResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListBotFilesV1OrgsOrgIdBotsBotSlugFilesGetResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *BotFileListResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r ListBotFilesV1OrgsOrgIdBotsBotSlugFilesGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListBotFilesV1OrgsOrgIdBotsBotSlugFilesGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPutResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON201                       *BotFileListResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPutResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPutResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -31143,6 +31448,32 @@ func (c *ClientWithResponses) UnassignCredentialV1OrgsOrgIdBotsBotSlugCredential
 	return ParseUnassignCredentialV1OrgsOrgIdBotsBotSlugCredentialsCredentialIdDeleteResponse(rsp)
 }
 
+// ListBotFilesV1OrgsOrgIdBotsBotSlugFilesGetWithResponse request returning *ListBotFilesV1OrgsOrgIdBotsBotSlugFilesGetResponse
+func (c *ClientWithResponses) ListBotFilesV1OrgsOrgIdBotsBotSlugFilesGetWithResponse(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*ListBotFilesV1OrgsOrgIdBotsBotSlugFilesGetResponse, error) {
+	rsp, err := c.ListBotFilesV1OrgsOrgIdBotsBotSlugFilesGet(ctx, orgId, botSlug, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListBotFilesV1OrgsOrgIdBotsBotSlugFilesGetResponse(rsp)
+}
+
+// UpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPutWithBodyWithResponse request with arbitrary body returning *UpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPutResponse
+func (c *ClientWithResponses) UpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPutWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPutResponse, error) {
+	rsp, err := c.UpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPutWithBody(ctx, orgId, botSlug, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPutResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPutWithResponse(ctx context.Context, orgId string, botSlug string, body UpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPutJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPutResponse, error) {
+	rsp, err := c.UpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPut(ctx, orgId, botSlug, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPutResponse(rsp)
+}
+
 // FinishBotOnboardingRouteV1OrgsOrgIdBotsBotSlugFinishOnboardingPostWithResponse request returning *FinishBotOnboardingRouteV1OrgsOrgIdBotsBotSlugFinishOnboardingPostResponse
 func (c *ClientWithResponses) FinishBotOnboardingRouteV1OrgsOrgIdBotsBotSlugFinishOnboardingPostWithResponse(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*FinishBotOnboardingRouteV1OrgsOrgIdBotsBotSlugFinishOnboardingPostResponse, error) {
 	rsp, err := c.FinishBotOnboardingRouteV1OrgsOrgIdBotsBotSlugFinishOnboardingPost(ctx, orgId, botSlug, reqEditors...)
@@ -33104,6 +33435,72 @@ func ParseUnassignCredentialV1OrgsOrgIdBotsBotSlugCredentialsCredentialIdDeleteR
 			return nil, err
 		}
 		response.ApplicationproblemJSON422 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListBotFilesV1OrgsOrgIdBotsBotSlugFilesGetResponse parses an HTTP response from a ListBotFilesV1OrgsOrgIdBotsBotSlugFilesGetWithResponse call
+func ParseListBotFilesV1OrgsOrgIdBotsBotSlugFilesGetResponse(rsp *http.Response) (*ListBotFilesV1OrgsOrgIdBotsBotSlugFilesGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListBotFilesV1OrgsOrgIdBotsBotSlugFilesGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest BotFileListResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPutResponse parses an HTTP response from a UpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPutWithResponse call
+func ParseUpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPutResponse(rsp *http.Response) (*UpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPutResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPutResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest BotFileListResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest ProblemDetails
