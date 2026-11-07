@@ -15,9 +15,15 @@ a version.
 ### Added
 
 - `botyard_pack_version` / `botyard_pack_versions` skills gain `version_mode`: `fixed` when the pack pins one skill version, `latest` when it follows the skill's latest version. For `latest`, `skill_version_id`, `version_no` and `version_name` are null. A skill kind the provider does not know fails the read with an upgrade hint instead of being dropped from `skill_ids`.
+- **New resources `botyard_bot_member` and `botyard_bot_member_bot`: one person, or one bot, on a bot's member list.** A `restricted` bot can be used only by its members; owners also manage its access and members.
+  - Non-authoritative: each resource manages exactly its own row, so members added in the Botyard app, the creator's row and pending invitations are never drift. Several resources on one bot apply safely in parallel, because each write is a per-member `PATCH` that changes only its own row.
+  - Creating a resource for an existing member adopts that row and sets its `role`. Destroying it removes the row.
+  - Botyard refuses a change that would leave a bot without an owner; the error names the remedy.
+  - Requires the Botyard API with per-member `PATCH /members` and `PATCH /member-bots`.
 
 ### Changed
 
+- **`botyard_bot.access` is now settable** (`open` or `restricted`). When omitted, Terraform adopts the bot's current mode and never plans a change. Setting it requires the provider's API key to own the bot (a key owns only the bots it created); a refusal names that rule.
 - Vendored API spec and generated client synced to the current Botyard API. Earlier provider versions read a skill that follows the latest version with empty version fields instead of reporting it as such.
 
 ## [0.8.0] - 2026-11-01

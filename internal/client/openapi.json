@@ -4089,6 +4089,75 @@
             }
           }
         }
+      },
+      "patch": {
+        "tags": [
+          "bot-access"
+        ],
+        "summary": "Patch Bot Members",
+        "description": "Add, re-role or remove individual human members. Bot owners only.\n\nThe per-member form of ``PUT /members``, with the same authority (a bot\nowner, or an org owner when the bot has no owner left) and the same rules\nfor the resulting list. Callers that manage one membership each, such as\nthe Terraform provider, use it so they never overwrite one another's\nchanges. All or nothing; returns the whole resulting list.",
+        "operationId": "patch_bot_members_v1_orgs__org_id__bots__bot_slug__members_patch",
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Org Id"
+            }
+          },
+          {
+            "name": "bot_slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Bot Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BotMembersPatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BotMemberResponse"
+                  },
+                  "title": "Response Patch Bot Members V1 Orgs  Org Id  Bots  Bot Slug  Members Patch"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "RFC 9457 Problem Details error response",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/v1/orgs/{org_id}/bots/{bot_slug}/audience": {
@@ -4331,6 +4400,75 @@
                     "$ref": "#/components/schemas/BotMemberBotResponse"
                   },
                   "title": "Response Set Bot Member Bots V1 Orgs  Org Id  Bots  Bot Slug  Member Bots Put"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "RFC 9457 Problem Details error response",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "bot-access"
+        ],
+        "summary": "Patch Bot Member Bots",
+        "description": "Add, re-role or remove individual member bots. Bot owners only.\n\nThe per-member form of ``PUT /member-bots``: same authority, same rules for\neach bot added. All or nothing; returns the whole resulting list.",
+        "operationId": "patch_bot_member_bots_v1_orgs__org_id__bots__bot_slug__member_bots_patch",
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Org Id"
+            }
+          },
+          {
+            "name": "bot_slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Bot Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BotMemberBotsPatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BotMemberBotResponse"
+                  },
+                  "title": "Response Patch Bot Member Bots V1 Orgs  Org Id  Bots  Bot Slug  Member Bots Patch"
                 }
               }
             }
@@ -38571,6 +38709,32 @@
         "title": "BotMemberBotResponse",
         "description": "A bot that is a member of another bot (platform-development #4409)."
       },
+      "BotMemberBotsPatch": {
+        "properties": {
+          "upsert": {
+            "items": {
+              "$ref": "#/components/schemas/BotMemberBotEntry"
+            },
+            "type": "array",
+            "maxItems": 200,
+            "title": "Upsert",
+            "description": "Bots to add, or whose role to change"
+          },
+          "remove": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 200,
+            "title": "Remove",
+            "description": "Member bot IDs to remove. A bot not on the list is ignored"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "BotMemberBotsPatch",
+        "description": "Per-member change to the bots that are members of a bot. All or nothing.\n\n``upsert`` adds bots or changes their role, under the same rules as a full\nreplacement; ``remove`` takes bots off, and removing a bot not on the list\ndoes nothing. A bot ID may appear at most once across both lists, and at\nleast one entry is required."
+      },
       "BotMemberBotsUpdate": {
         "properties": {
           "members": {
@@ -38671,6 +38835,32 @@
         ],
         "title": "BotMemberRole",
         "description": "Role of a user on a bot membership.\n\nOwners manage the bot's access mode and member list; members get\nuse access (see + chat) when the bot is restricted."
+      },
+      "BotMembersPatch": {
+        "properties": {
+          "upsert": {
+            "items": {
+              "$ref": "#/components/schemas/BotMemberEntry"
+            },
+            "type": "array",
+            "maxItems": 200,
+            "title": "Upsert",
+            "description": "Users to add, or whose role to change. Each must be an org member"
+          },
+          "remove": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 200,
+            "title": "Remove",
+            "description": "User IDs to remove. A user not on the list is ignored"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "BotMembersPatch",
+        "description": "Per-member change to a bot's human member list. All or nothing.\n\n``upsert`` adds users or changes their role; ``remove`` takes users off, and\nremoving someone not on the list does nothing. A user may appear at most once\nacross both lists, and at least one entry is required. The resulting list\nmust keep at least one owner, exactly as a full replacement must. Pending\ninvitations are never changed."
       },
       "BotMembersUpdate": {
         "properties": {

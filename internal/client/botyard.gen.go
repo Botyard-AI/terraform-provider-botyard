@@ -176,6 +176,18 @@ const (
 	BotHostingTypeSelfHosted BotHostingType = "self_hosted"
 )
 
+// Defines values for BotMemberBotEntryRole.
+const (
+	BotMemberBotEntryRoleMember BotMemberBotEntryRole = "member"
+	BotMemberBotEntryRoleOwner  BotMemberBotEntryRole = "owner"
+)
+
+// Defines values for BotMemberBotResponseRole.
+const (
+	BotMemberBotResponseRoleMember BotMemberBotResponseRole = "member"
+	BotMemberBotResponseRoleOwner  BotMemberBotResponseRole = "owner"
+)
+
 // Defines values for BotMemberRole.
 const (
 	BotMemberRoleMember BotMemberRole = "member"
@@ -2146,6 +2158,12 @@ type BearerHeaderScheme struct {
 // BotAccess Bot visibility within its organization.
 type BotAccess string
 
+// BotAccessUpdate Change a bot's access mode.
+type BotAccessUpdate struct {
+	// Access Bot visibility within its organization.
+	Access BotAccess `json:"access"`
+}
+
 // BotChatCommands The chat commands one bot offers.
 type BotChatCommands struct {
 	// BotId The bot these commands belong to.
@@ -2600,11 +2618,112 @@ type BotListItem struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
+// BotMemberBotEntry One bot on a bot's member-bot list, with the role it holds.
+type BotMemberBotEntry struct {
+	// BotId Member bot ID
+	BotId string `json:"bot_id"`
+
+	// Role Role the bot holds
+	Role *BotMemberBotEntryRole `json:"role,omitempty"`
+}
+
+// BotMemberBotEntryRole Role the bot holds
+type BotMemberBotEntryRole string
+
+// BotMemberBotResponse A bot that is a member of another bot (platform-development #4409).
+type BotMemberBotResponse struct {
+	// AvatarUrl Member bot avatar URL
+	AvatarUrl *string `json:"avatar_url"`
+
+	// BotId Member bot ID
+	BotId string `json:"bot_id"`
+
+	// CreatedAt When the membership was created
+	CreatedAt time.Time `json:"created_at"`
+
+	// Name Member bot display name
+	Name string `json:"name"`
+
+	// Role Role the bot holds on this bot. Stored only: neither role confers any permission yet
+	Role BotMemberBotResponseRole `json:"role"`
+
+	// Slug Member bot slug
+	Slug string `json:"slug"`
+}
+
+// BotMemberBotResponseRole Role the bot holds on this bot. Stored only: neither role confers any permission yet
+type BotMemberBotResponseRole string
+
+// BotMemberBotsPatch Per-member change to the bots that are members of a bot. All or nothing.
+//
+// “upsert“ adds bots or changes their role, under the same rules as a full
+// replacement; “remove“ takes bots off, and removing a bot not on the list
+// does nothing. A bot ID may appear at most once across both lists, and at
+// least one entry is required.
+type BotMemberBotsPatch struct {
+	// Remove Member bot IDs to remove. A bot not on the list is ignored
+	Remove *[]string `json:"remove,omitempty"`
+
+	// Upsert Bots to add, or whose role to change
+	Upsert *[]BotMemberBotEntry `json:"upsert,omitempty"`
+}
+
+// BotMemberEntry One entry of a full-replacement bot member list update.
+type BotMemberEntry struct {
+	// RoleId Role of a user on a bot membership.
+	//
+	// Owners manage the bot's access mode and member list; members get
+	// use access (see + chat) when the bot is restricted.
+	RoleId *BotMemberRole `json:"role_id,omitempty"`
+
+	// UserId Member user ID — must be an org member
+	UserId string `json:"user_id"`
+}
+
+// BotMemberResponse A user with a role on a bot.
+type BotMemberResponse struct {
+	// AvatarUrl Member avatar URL
+	AvatarUrl *string `json:"avatar_url"`
+
+	// CreatedAt When the membership was created
+	CreatedAt time.Time `json:"created_at"`
+
+	// Email Member email
+	Email string `json:"email"`
+
+	// Name Member display name
+	Name string `json:"name"`
+
+	// RoleId Role of a user on a bot membership.
+	//
+	// Owners manage the bot's access mode and member list; members get
+	// use access (see + chat) when the bot is restricted.
+	RoleId BotMemberRole `json:"role_id"`
+
+	// UserId Member user ID
+	UserId string `json:"user_id"`
+}
+
 // BotMemberRole Role of a user on a bot membership.
 //
 // Owners manage the bot's access mode and member list; members get
 // use access (see + chat) when the bot is restricted.
 type BotMemberRole string
+
+// BotMembersPatch Per-member change to a bot's human member list. All or nothing.
+//
+// “upsert“ adds users or changes their role; “remove“ takes users off, and
+// removing someone not on the list does nothing. A user may appear at most once
+// across both lists, and at least one entry is required. The resulting list
+// must keep at least one owner, exactly as a full replacement must. Pending
+// invitations are never changed.
+type BotMembersPatch struct {
+	// Remove User IDs to remove. A user not on the list is ignored
+	Remove *[]string `json:"remove,omitempty"`
+
+	// Upsert Users to add, or whose role to change. Each must be an org member
+	Upsert *[]BotMemberEntry `json:"upsert,omitempty"`
+}
 
 // BotModelSourceResponse What the update did to the bot.
 //
@@ -11848,6 +11967,9 @@ type SearchBotsV1OrgsOrgIdBotsSearchPostJSONRequestBody = BotSearchRequest
 // UpdateBotV1OrgsOrgIdBotsBotSlugPatchJSONRequestBody defines body for UpdateBotV1OrgsOrgIdBotsBotSlugPatch for application/json ContentType.
 type UpdateBotV1OrgsOrgIdBotsBotSlugPatchJSONRequestBody = BotUpdate
 
+// SetBotAccessV1OrgsOrgIdBotsBotSlugAccessPutJSONRequestBody defines body for SetBotAccessV1OrgsOrgIdBotsBotSlugAccessPut for application/json ContentType.
+type SetBotAccessV1OrgsOrgIdBotsBotSlugAccessPutJSONRequestBody = BotAccessUpdate
+
 // UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchJSONRequestBody defines body for UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatch for application/json ContentType.
 type UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchJSONRequestBody = BotConfigUpdate
 
@@ -11859,6 +11981,12 @@ type AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutJSONRequestBody = BotC
 
 // UpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPutJSONRequestBody defines body for UpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPut for application/json ContentType.
 type UpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPutJSONRequestBody = BotFileUpdateRequest
+
+// PatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatchJSONRequestBody defines body for PatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatch for application/json ContentType.
+type PatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatchJSONRequestBody = BotMemberBotsPatch
+
+// PatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatchJSONRequestBody defines body for PatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatch for application/json ContentType.
+type PatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatchJSONRequestBody = BotMembersPatch
 
 // PutBotModelSourceV1OrgsOrgIdBotsBotSlugModelSourcePutJSONRequestBody defines body for PutBotModelSourceV1OrgsOrgIdBotsBotSlugModelSourcePut for application/json ContentType.
 type PutBotModelSourceV1OrgsOrgIdBotsBotSlugModelSourcePutJSONRequestBody = BotModelSourceUpdate
@@ -19662,6 +19790,11 @@ type ClientInterface interface {
 
 	UpdateBotV1OrgsOrgIdBotsBotSlugPatch(ctx context.Context, orgId string, botSlug string, body UpdateBotV1OrgsOrgIdBotsBotSlugPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// SetBotAccessV1OrgsOrgIdBotsBotSlugAccessPutWithBody request with any body
+	SetBotAccessV1OrgsOrgIdBotsBotSlugAccessPutWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	SetBotAccessV1OrgsOrgIdBotsBotSlugAccessPut(ctx context.Context, orgId string, botSlug string, body SetBotAccessV1OrgsOrgIdBotsBotSlugAccessPutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetBotChatReadinessV1OrgsOrgIdBotsBotSlugChatReadinessGet request
 	GetBotChatReadinessV1OrgsOrgIdBotsBotSlugChatReadinessGet(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -19696,6 +19829,22 @@ type ClientInterface interface {
 
 	// FinishBotOnboardingRouteV1OrgsOrgIdBotsBotSlugFinishOnboardingPost request
 	FinishBotOnboardingRouteV1OrgsOrgIdBotsBotSlugFinishOnboardingPost(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsGet request
+	ListBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsGet(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatchWithBody request with any body
+	PatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatchWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatch(ctx context.Context, orgId string, botSlug string, body PatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListBotMembersV1OrgsOrgIdBotsBotSlugMembersGet request
+	ListBotMembersV1OrgsOrgIdBotsBotSlugMembersGet(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatchWithBody request with any body
+	PatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatchWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatch(ctx context.Context, orgId string, botSlug string, body PatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// PutBotModelSourceV1OrgsOrgIdBotsBotSlugModelSourcePutWithBody request with any body
 	PutBotModelSourceV1OrgsOrgIdBotsBotSlugModelSourcePutWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -20332,6 +20481,30 @@ func (c *Client) UpdateBotV1OrgsOrgIdBotsBotSlugPatch(ctx context.Context, orgId
 	return c.Client.Do(req)
 }
 
+func (c *Client) SetBotAccessV1OrgsOrgIdBotsBotSlugAccessPutWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSetBotAccessV1OrgsOrgIdBotsBotSlugAccessPutRequestWithBody(c.Server, orgId, botSlug, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) SetBotAccessV1OrgsOrgIdBotsBotSlugAccessPut(ctx context.Context, orgId string, botSlug string, body SetBotAccessV1OrgsOrgIdBotsBotSlugAccessPutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSetBotAccessV1OrgsOrgIdBotsBotSlugAccessPutRequest(c.Server, orgId, botSlug, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) GetBotChatReadinessV1OrgsOrgIdBotsBotSlugChatReadinessGet(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetBotChatReadinessV1OrgsOrgIdBotsBotSlugChatReadinessGetRequest(c.Server, orgId, botSlug)
 	if err != nil {
@@ -20478,6 +20651,78 @@ func (c *Client) UpdateBotFilesV1OrgsOrgIdBotsBotSlugFilesPut(ctx context.Contex
 
 func (c *Client) FinishBotOnboardingRouteV1OrgsOrgIdBotsBotSlugFinishOnboardingPost(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewFinishBotOnboardingRouteV1OrgsOrgIdBotsBotSlugFinishOnboardingPostRequest(c.Server, orgId, botSlug)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsGet(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsGetRequest(c.Server, orgId, botSlug)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatchWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatchRequestWithBody(c.Server, orgId, botSlug, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatch(ctx context.Context, orgId string, botSlug string, body PatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatchRequest(c.Server, orgId, botSlug, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListBotMembersV1OrgsOrgIdBotsBotSlugMembersGet(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListBotMembersV1OrgsOrgIdBotsBotSlugMembersGetRequest(c.Server, orgId, botSlug)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatchWithBody(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatchRequestWithBody(c.Server, orgId, botSlug, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatch(ctx context.Context, orgId string, botSlug string, body PatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatchRequest(c.Server, orgId, botSlug, body)
 	if err != nil {
 		return nil, err
 	}
@@ -23054,6 +23299,60 @@ func NewUpdateBotV1OrgsOrgIdBotsBotSlugPatchRequestWithBody(server string, orgId
 	return req, nil
 }
 
+// NewSetBotAccessV1OrgsOrgIdBotsBotSlugAccessPutRequest calls the generic SetBotAccessV1OrgsOrgIdBotsBotSlugAccessPut builder with application/json body
+func NewSetBotAccessV1OrgsOrgIdBotsBotSlugAccessPutRequest(server string, orgId string, botSlug string, body SetBotAccessV1OrgsOrgIdBotsBotSlugAccessPutJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewSetBotAccessV1OrgsOrgIdBotsBotSlugAccessPutRequestWithBody(server, orgId, botSlug, "application/json", bodyReader)
+}
+
+// NewSetBotAccessV1OrgsOrgIdBotsBotSlugAccessPutRequestWithBody generates requests for SetBotAccessV1OrgsOrgIdBotsBotSlugAccessPut with any type of body
+func NewSetBotAccessV1OrgsOrgIdBotsBotSlugAccessPutRequestWithBody(server string, orgId string, botSlug string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "bot_slug", runtime.ParamLocationPath, botSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/bots/%s/access", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewGetBotChatReadinessV1OrgsOrgIdBotsBotSlugChatReadinessGetRequest generates requests for GetBotChatReadinessV1OrgsOrgIdBotsBotSlugChatReadinessGet
 func NewGetBotChatReadinessV1OrgsOrgIdBotsBotSlugChatReadinessGetRequest(server string, orgId string, botSlug string) (*http.Request, error) {
 	var err error
@@ -23500,6 +23799,196 @@ func NewFinishBotOnboardingRouteV1OrgsOrgIdBotsBotSlugFinishOnboardingPostReques
 	if err != nil {
 		return nil, err
 	}
+
+	return req, nil
+}
+
+// NewListBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsGetRequest generates requests for ListBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsGet
+func NewListBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsGetRequest(server string, orgId string, botSlug string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "bot_slug", runtime.ParamLocationPath, botSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/bots/%s/member-bots", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatchRequest calls the generic PatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatch builder with application/json body
+func NewPatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatchRequest(server string, orgId string, botSlug string, body PatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatchJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatchRequestWithBody(server, orgId, botSlug, "application/json", bodyReader)
+}
+
+// NewPatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatchRequestWithBody generates requests for PatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatch with any type of body
+func NewPatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatchRequestWithBody(server string, orgId string, botSlug string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "bot_slug", runtime.ParamLocationPath, botSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/bots/%s/member-bots", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PATCH", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewListBotMembersV1OrgsOrgIdBotsBotSlugMembersGetRequest generates requests for ListBotMembersV1OrgsOrgIdBotsBotSlugMembersGet
+func NewListBotMembersV1OrgsOrgIdBotsBotSlugMembersGetRequest(server string, orgId string, botSlug string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "bot_slug", runtime.ParamLocationPath, botSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/bots/%s/members", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatchRequest calls the generic PatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatch builder with application/json body
+func NewPatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatchRequest(server string, orgId string, botSlug string, body PatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatchJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatchRequestWithBody(server, orgId, botSlug, "application/json", bodyReader)
+}
+
+// NewPatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatchRequestWithBody generates requests for PatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatch with any type of body
+func NewPatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatchRequestWithBody(server string, orgId string, botSlug string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "org_id", runtime.ParamLocationPath, orgId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "bot_slug", runtime.ParamLocationPath, botSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/orgs/%s/bots/%s/members", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PATCH", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
 
 	return req, nil
 }
@@ -29328,6 +29817,11 @@ type ClientWithResponsesInterface interface {
 
 	UpdateBotV1OrgsOrgIdBotsBotSlugPatchWithResponse(ctx context.Context, orgId string, botSlug string, body UpdateBotV1OrgsOrgIdBotsBotSlugPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateBotV1OrgsOrgIdBotsBotSlugPatchResponse, error)
 
+	// SetBotAccessV1OrgsOrgIdBotsBotSlugAccessPutWithBodyWithResponse request with any body
+	SetBotAccessV1OrgsOrgIdBotsBotSlugAccessPutWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SetBotAccessV1OrgsOrgIdBotsBotSlugAccessPutResponse, error)
+
+	SetBotAccessV1OrgsOrgIdBotsBotSlugAccessPutWithResponse(ctx context.Context, orgId string, botSlug string, body SetBotAccessV1OrgsOrgIdBotsBotSlugAccessPutJSONRequestBody, reqEditors ...RequestEditorFn) (*SetBotAccessV1OrgsOrgIdBotsBotSlugAccessPutResponse, error)
+
 	// GetBotChatReadinessV1OrgsOrgIdBotsBotSlugChatReadinessGetWithResponse request
 	GetBotChatReadinessV1OrgsOrgIdBotsBotSlugChatReadinessGetWithResponse(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*GetBotChatReadinessV1OrgsOrgIdBotsBotSlugChatReadinessGetResponse, error)
 
@@ -29362,6 +29856,22 @@ type ClientWithResponsesInterface interface {
 
 	// FinishBotOnboardingRouteV1OrgsOrgIdBotsBotSlugFinishOnboardingPostWithResponse request
 	FinishBotOnboardingRouteV1OrgsOrgIdBotsBotSlugFinishOnboardingPostWithResponse(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*FinishBotOnboardingRouteV1OrgsOrgIdBotsBotSlugFinishOnboardingPostResponse, error)
+
+	// ListBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsGetWithResponse request
+	ListBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsGetWithResponse(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*ListBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsGetResponse, error)
+
+	// PatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatchWithBodyWithResponse request with any body
+	PatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatchWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatchResponse, error)
+
+	PatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatchWithResponse(ctx context.Context, orgId string, botSlug string, body PatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*PatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatchResponse, error)
+
+	// ListBotMembersV1OrgsOrgIdBotsBotSlugMembersGetWithResponse request
+	ListBotMembersV1OrgsOrgIdBotsBotSlugMembersGetWithResponse(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*ListBotMembersV1OrgsOrgIdBotsBotSlugMembersGetResponse, error)
+
+	// PatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatchWithBodyWithResponse request with any body
+	PatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatchWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatchResponse, error)
+
+	PatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatchWithResponse(ctx context.Context, orgId string, botSlug string, body PatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*PatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatchResponse, error)
 
 	// PutBotModelSourceV1OrgsOrgIdBotsBotSlugModelSourcePutWithBodyWithResponse request with any body
 	PutBotModelSourceV1OrgsOrgIdBotsBotSlugModelSourcePutWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutBotModelSourceV1OrgsOrgIdBotsBotSlugModelSourcePutResponse, error)
@@ -30075,6 +30585,29 @@ func (r UpdateBotV1OrgsOrgIdBotsBotSlugPatchResponse) StatusCode() int {
 	return 0
 }
 
+type SetBotAccessV1OrgsOrgIdBotsBotSlugAccessPutResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *BotResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r SetBotAccessV1OrgsOrgIdBotsBotSlugAccessPutResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r SetBotAccessV1OrgsOrgIdBotsBotSlugAccessPutResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type GetBotChatReadinessV1OrgsOrgIdBotsBotSlugChatReadinessGetResponse struct {
 	Body                          []byte
 	HTTPResponse                  *http.Response
@@ -30287,6 +30820,98 @@ func (r FinishBotOnboardingRouteV1OrgsOrgIdBotsBotSlugFinishOnboardingPostRespon
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r FinishBotOnboardingRouteV1OrgsOrgIdBotsBotSlugFinishOnboardingPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsGetResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *[]BotMemberBotResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r ListBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatchResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *[]BotMemberBotResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r PatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatchResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatchResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListBotMembersV1OrgsOrgIdBotsBotSlugMembersGetResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *[]BotMemberResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r ListBotMembersV1OrgsOrgIdBotsBotSlugMembersGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListBotMembersV1OrgsOrgIdBotsBotSlugMembersGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatchResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *[]BotMemberResponse
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r PatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatchResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatchResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -33049,6 +33674,23 @@ func (c *ClientWithResponses) UpdateBotV1OrgsOrgIdBotsBotSlugPatchWithResponse(c
 	return ParseUpdateBotV1OrgsOrgIdBotsBotSlugPatchResponse(rsp)
 }
 
+// SetBotAccessV1OrgsOrgIdBotsBotSlugAccessPutWithBodyWithResponse request with arbitrary body returning *SetBotAccessV1OrgsOrgIdBotsBotSlugAccessPutResponse
+func (c *ClientWithResponses) SetBotAccessV1OrgsOrgIdBotsBotSlugAccessPutWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SetBotAccessV1OrgsOrgIdBotsBotSlugAccessPutResponse, error) {
+	rsp, err := c.SetBotAccessV1OrgsOrgIdBotsBotSlugAccessPutWithBody(ctx, orgId, botSlug, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSetBotAccessV1OrgsOrgIdBotsBotSlugAccessPutResponse(rsp)
+}
+
+func (c *ClientWithResponses) SetBotAccessV1OrgsOrgIdBotsBotSlugAccessPutWithResponse(ctx context.Context, orgId string, botSlug string, body SetBotAccessV1OrgsOrgIdBotsBotSlugAccessPutJSONRequestBody, reqEditors ...RequestEditorFn) (*SetBotAccessV1OrgsOrgIdBotsBotSlugAccessPutResponse, error) {
+	rsp, err := c.SetBotAccessV1OrgsOrgIdBotsBotSlugAccessPut(ctx, orgId, botSlug, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSetBotAccessV1OrgsOrgIdBotsBotSlugAccessPutResponse(rsp)
+}
+
 // GetBotChatReadinessV1OrgsOrgIdBotsBotSlugChatReadinessGetWithResponse request returning *GetBotChatReadinessV1OrgsOrgIdBotsBotSlugChatReadinessGetResponse
 func (c *ClientWithResponses) GetBotChatReadinessV1OrgsOrgIdBotsBotSlugChatReadinessGetWithResponse(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*GetBotChatReadinessV1OrgsOrgIdBotsBotSlugChatReadinessGetResponse, error) {
 	rsp, err := c.GetBotChatReadinessV1OrgsOrgIdBotsBotSlugChatReadinessGet(ctx, orgId, botSlug, reqEditors...)
@@ -33160,6 +33802,58 @@ func (c *ClientWithResponses) FinishBotOnboardingRouteV1OrgsOrgIdBotsBotSlugFini
 		return nil, err
 	}
 	return ParseFinishBotOnboardingRouteV1OrgsOrgIdBotsBotSlugFinishOnboardingPostResponse(rsp)
+}
+
+// ListBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsGetWithResponse request returning *ListBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsGetResponse
+func (c *ClientWithResponses) ListBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsGetWithResponse(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*ListBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsGetResponse, error) {
+	rsp, err := c.ListBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsGet(ctx, orgId, botSlug, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsGetResponse(rsp)
+}
+
+// PatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatchWithBodyWithResponse request with arbitrary body returning *PatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatchResponse
+func (c *ClientWithResponses) PatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatchWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatchResponse, error) {
+	rsp, err := c.PatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatchWithBody(ctx, orgId, botSlug, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatchResponse(rsp)
+}
+
+func (c *ClientWithResponses) PatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatchWithResponse(ctx context.Context, orgId string, botSlug string, body PatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*PatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatchResponse, error) {
+	rsp, err := c.PatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatch(ctx, orgId, botSlug, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatchResponse(rsp)
+}
+
+// ListBotMembersV1OrgsOrgIdBotsBotSlugMembersGetWithResponse request returning *ListBotMembersV1OrgsOrgIdBotsBotSlugMembersGetResponse
+func (c *ClientWithResponses) ListBotMembersV1OrgsOrgIdBotsBotSlugMembersGetWithResponse(ctx context.Context, orgId string, botSlug string, reqEditors ...RequestEditorFn) (*ListBotMembersV1OrgsOrgIdBotsBotSlugMembersGetResponse, error) {
+	rsp, err := c.ListBotMembersV1OrgsOrgIdBotsBotSlugMembersGet(ctx, orgId, botSlug, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListBotMembersV1OrgsOrgIdBotsBotSlugMembersGetResponse(rsp)
+}
+
+// PatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatchWithBodyWithResponse request with arbitrary body returning *PatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatchResponse
+func (c *ClientWithResponses) PatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatchWithBodyWithResponse(ctx context.Context, orgId string, botSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatchResponse, error) {
+	rsp, err := c.PatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatchWithBody(ctx, orgId, botSlug, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatchResponse(rsp)
+}
+
+func (c *ClientWithResponses) PatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatchWithResponse(ctx context.Context, orgId string, botSlug string, body PatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*PatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatchResponse, error) {
+	rsp, err := c.PatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatch(ctx, orgId, botSlug, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatchResponse(rsp)
 }
 
 // PutBotModelSourceV1OrgsOrgIdBotsBotSlugModelSourcePutWithBodyWithResponse request with arbitrary body returning *PutBotModelSourceV1OrgsOrgIdBotsBotSlugModelSourcePutResponse
@@ -35015,6 +35709,39 @@ func ParseUpdateBotV1OrgsOrgIdBotsBotSlugPatchResponse(rsp *http.Response) (*Upd
 	return response, nil
 }
 
+// ParseSetBotAccessV1OrgsOrgIdBotsBotSlugAccessPutResponse parses an HTTP response from a SetBotAccessV1OrgsOrgIdBotsBotSlugAccessPutWithResponse call
+func ParseSetBotAccessV1OrgsOrgIdBotsBotSlugAccessPutResponse(rsp *http.Response) (*SetBotAccessV1OrgsOrgIdBotsBotSlugAccessPutResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &SetBotAccessV1OrgsOrgIdBotsBotSlugAccessPutResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest BotResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseGetBotChatReadinessV1OrgsOrgIdBotsBotSlugChatReadinessGetResponse parses an HTTP response from a GetBotChatReadinessV1OrgsOrgIdBotsBotSlugChatReadinessGetWithResponse call
 func ParseGetBotChatReadinessV1OrgsOrgIdBotsBotSlugChatReadinessGetResponse(rsp *http.Response) (*GetBotChatReadinessV1OrgsOrgIdBotsBotSlugChatReadinessGetResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -35336,6 +36063,138 @@ func ParseFinishBotOnboardingRouteV1OrgsOrgIdBotsBotSlugFinishOnboardingPostResp
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest BotResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsGetResponse parses an HTTP response from a ListBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsGetWithResponse call
+func ParseListBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsGetResponse(rsp *http.Response) (*ListBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []BotMemberBotResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatchResponse parses an HTTP response from a PatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatchWithResponse call
+func ParsePatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatchResponse(rsp *http.Response) (*PatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatchResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PatchBotMemberBotsV1OrgsOrgIdBotsBotSlugMemberBotsPatchResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []BotMemberBotResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListBotMembersV1OrgsOrgIdBotsBotSlugMembersGetResponse parses an HTTP response from a ListBotMembersV1OrgsOrgIdBotsBotSlugMembersGetWithResponse call
+func ParseListBotMembersV1OrgsOrgIdBotsBotSlugMembersGetResponse(rsp *http.Response) (*ListBotMembersV1OrgsOrgIdBotsBotSlugMembersGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListBotMembersV1OrgsOrgIdBotsBotSlugMembersGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []BotMemberResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatchResponse parses an HTTP response from a PatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatchWithResponse call
+func ParsePatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatchResponse(rsp *http.Response) (*PatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatchResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PatchBotMembersV1OrgsOrgIdBotsBotSlugMembersPatchResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []BotMemberResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}

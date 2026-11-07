@@ -14,7 +14,7 @@ CLIENT_DIR="$ROOT/internal/client"
 SPEC="$CLIENT_DIR/openapi.json"
 
 # Tags the generated client covers. Widen as resources are added.
-KEEP_TAGS=(bots mcp-servers secret-policies skills bot-tools credentials tools bot-templates workforces suggestions packs schedules bot-files)
+KEEP_TAGS=(bots mcp-servers secret-policies skills bot-tools credentials tools bot-templates workforces suggestions packs schedules bot-files bot-access)
 
 # Paths dropped even though their tag is kept:
 #   - The MCP catalog endpoints pull in McpCatalogFormField schemas whose inline
@@ -73,7 +73,15 @@ EXCLUDE_PATHS=(
   "/v1/orgs/{org_id}/bots/{bot_slug}/schedules/{schedule_id}/trigger"
   "/v1/orgs/{org_id}/bots/{bot_slug}/schedules/{schedule_id}/runs"
   "/v1/orgs/{org_id}/bots/{bot_slug}/schedules/{schedule_id}/command-runs"
+  "/v1/orgs/{org_id}/bots/{bot_slug}/members/pending"
+  "/v1/orgs/{org_id}/bots/{bot_slug}/audience"
 )
+# The bot-access tag backs botyard_bot_member, botyard_bot_member_bot and the
+# settable botyard_bot `access`. Pending invitations and the audience view are
+# not desired state, so their paths are dropped above. The whole-list PUT
+# /members and PUT /member-bots are dropped below: the member resources write
+# one row each through PATCH, and a whole-list replace from the provider would
+# overwrite members added in the app or by a parallel resource.
 
 # Write operations dropped from an otherwise-kept path: the credential
 # discovery data sources read the /credentials list endpoint (GET) but never
@@ -82,6 +90,8 @@ EXCLUDE_PATHS=(
 # CredentialCreate schema).
 EXCLUDE_OPERATIONS=(
   "create_credentials_v1_orgs__org_id__credentials_post"
+  "set_bot_members_v1_orgs__org_id__bots__bot_slug__members_put"
+  "set_bot_member_bots_v1_orgs__org_id__bots__bot_slug__member_bots_put"
 )
 
 # Optional nullable request fields generated as nullable.Nullable[T], so a
