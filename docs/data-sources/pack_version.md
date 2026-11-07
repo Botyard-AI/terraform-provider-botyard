@@ -65,7 +65,7 @@ resource "botyard_bot_skill_assignment" "example" {
 - `recommended_model` (Attributes) The model the pack recommends. Null when it recommends none. (see [below for nested schema](#nestedatt--recommended_model))
 - `settings` (Attributes) Bot settings the pack applies. A null field means the pack does not set it. (see [below for nested schema](#nestedatt--settings))
 - `skill_ids` (Set of String) Ids of every skill in `skills`.
-- `skills` (Attributes List) Skills the version includes, each pinned to a skill version. (see [below for nested schema](#nestedatt--skills))
+- `skills` (Attributes List) Skills the version includes. Each is either pinned to one skill version or follows the skill's latest version (see `version_mode`). (see [below for nested schema](#nestedatt--skills))
 - `soul` (String) The soul (system instructions) the pack gives a bot.
 - `start_with_default_tools` (Boolean) Whether a bot created from this version also gets the platform's suggested default tools. No effect when installing onto an existing bot.
 - `summary` (String) One-line summary of this version.
@@ -157,9 +157,10 @@ Read-Only:
 - `skill_id` (String) Skill id. Use with `botyard_bot_skill_assignment`.
 - `skill_name` (String) Skill name.
 - `skill_slug` (String) Skill slug.
-- `skill_version_id` (String) Id of the pinned skill version.
-- `version_name` (String) Name of the pinned skill version.
-- `version_no` (Number) Number of the pinned skill version.
+- `skill_version_id` (String) Id of the pinned skill version. Null when `version_mode` is `latest`.
+- `version_mode` (String) `fixed` when the pack pins one skill version, `latest` when it follows the skill's latest version. For `latest`, `skill_version_id`, `version_no` and `version_name` are null.
+- `version_name` (String) Name of the pinned skill version. Null when `version_mode` is `latest`.
+- `version_no` (Number) Number of the pinned skill version. Null when `version_mode` is `latest`.
 
 
 <a id="nestedatt--tools"></a>
