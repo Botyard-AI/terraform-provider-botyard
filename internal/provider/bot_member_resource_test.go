@@ -458,7 +458,7 @@ func TestBotMember_ForbiddenNamesTheKeyOwnershipRule(t *testing.T) {
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{{
 			Config:      botMemberTestConfig(srv.URL, userMemberHCL("alice", "user-alice", "")),
-			ExpectError: regexp.MustCompile(`An API key owns only the bots it created`),
+			ExpectError: regexp.MustCompile(`An API key\s+owns\s+only\s+the\s+bots\s+it\s+created`),
 		}},
 	})
 }

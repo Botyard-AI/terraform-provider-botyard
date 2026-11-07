@@ -226,6 +226,7 @@ output "triage_host_policy" {
 
 ### Optional
 
+- `access` (String) Who may use this bot within its organization: `restricted` (only its members — see `botyard_bot_member` and `botyard_bot_member_bot`) or `open` (every member of the organization). When omitted, Terraform adopts whatever the bot has and never plans a change. Setting it requires the provider's API key to be an owner of the bot: a key owns only the bots it created. On create the bot briefly exists with the API's default access mode before the declared one is applied.
 - `auto_suspend_enabled` (Boolean) Whether the platform may suspend the bot after a period without human activity. When omitted, Terraform reads the current value and leaves it alone.
 
 Setting it to `false` requires a plan that allows opting out of auto-suspend; on other plans the API refuses the change. This is the owner's stored preference: a plan that enforces auto-suspend still suspends the bot.
@@ -252,7 +253,6 @@ Changing it requires bot ownership, and an API key owns only the bots it created
 
 ### Read-Only
 
-- `access` (String) Bot visibility within its organization (`open` or `restricted`).
 - `config_generation` (Number) Monotonic config generation counter.
 - `created_at` (String) Creation timestamp (RFC 3339).
 - `desired_state` (String) Control-plane desired lifecycle state.
