@@ -388,6 +388,7 @@ type PackSkillModel struct {
 	SkillID        types.String `tfsdk:"skill_id"`
 	SkillSlug      types.String `tfsdk:"skill_slug"`
 	SkillName      types.String `tfsdk:"skill_name"`
+	VersionMode    types.String `tfsdk:"version_mode"`
 	SkillVersionID types.String `tfsdk:"skill_version_id"`
 	VersionNo      types.Int64  `tfsdk:"version_no"`
 	VersionName    types.String `tfsdk:"version_name"`
@@ -590,14 +591,16 @@ func (d *PackVersionDataSource) Schema(_ context.Context, _ datasource.SchemaReq
 			},
 			"skills": schema.ListNestedAttribute{
 				Computed:            true,
-				MarkdownDescription: "Skills the version includes, each pinned to a skill version.",
+				MarkdownDescription: "Skills the version includes. Each is either pinned to one skill version or follows the skill's latest version (see `version_mode`).",
 				NestedObject: schema.NestedAttributeObject{Attributes: map[string]schema.Attribute{
-					"skill_id":         str("Skill id. Use with `botyard_bot_skill_assignment`."),
-					"skill_slug":       str("Skill slug."),
-					"skill_name":       str("Skill name."),
-					"skill_version_id": str("Id of the pinned skill version."),
-					"version_no":       schema.Int64Attribute{Computed: true, MarkdownDescription: "Number of the pinned skill version."},
-					"version_name":     str("Name of the pinned skill version."),
+					"skill_id":   str("Skill id. Use with `botyard_bot_skill_assignment`."),
+					"skill_slug": str("Skill slug."),
+					"skill_name": str("Skill name."),
+					"version_mode": str("`fixed` when the pack pins one skill version, `latest` when it follows the " +
+						"skill's latest version. For `latest`, `skill_version_id`, `version_no` and `version_name` are null."),
+					"skill_version_id": str("Id of the pinned skill version. Null when `version_mode` is `latest`."),
+					"version_no":       schema.Int64Attribute{Computed: true, MarkdownDescription: "Number of the pinned skill version. Null when `version_mode` is `latest`."},
+					"version_name":     str("Name of the pinned skill version. Null when `version_mode` is `latest`."),
 					"required":         boolean("Whether the pack needs this skill."),
 				}},
 			},
@@ -775,17 +778,14 @@ func packVersionToModel(v client.OrgPackVersion) (PackVersionDataSourceModel, di
 			Model:    types.StringValue(v.RecommendedModel.Model),
 		}
 	}
-	for _, s := range v.Skills {
-		m.Skills = append(m.Skills, PackSkillModel{
-			SkillID:        types.StringValue(s.Skill.SkillId),
-			SkillSlug:      types.StringValue(s.Skill.SkillSlug),
-			SkillName:      types.StringValue(s.Skill.SkillName),
-			SkillVersionID: types.StringValue(s.Skill.SkillVersionId),
-			VersionNo:      types.Int64Value(int64(s.Skill.VersionNo)),
-			VersionName:    types.StringValue(s.Skill.VersionName),
-			Required:       types.BoolValue(s.Required),
-		})
-		m.SkillIDs = append(m.SkillIDs, s.Skill.SkillId)
+	for i, s := range v.Skills {
+		sm, err := packSkillToModel(s)
+		if err != nil {
+			diags.AddError("Unsupported pack skill", unknownVariantDetail(v, fmt.Sprintf("skills[%d]", i), err))
+			continue
+		}
+		m.Skills = append(m.Skills, sm)
+		m.SkillIDs = append(m.SkillIDs, sm.SkillID.ValueString())
 	}
 	for i, t := range v.Tools {
 		tm, err := packToolToModel(t)
@@ -815,6 +815,39 @@ func unknownVariantDetail(v client.OrgPackVersion, where string, err error) stri
 			"Upgrade the Botyard provider. Refusing to read the version rather than leave the item out."
 	}
 	return msg
+}
+
+func packSkillToModel(s client.NamedPackSkill) (PackSkillModel, error) {
+	skill, err := client.DecodePackSkill(s.Skill)
+	if err != nil {
+		return PackSkillModel{}, err
+	}
+	switch v := skill.(type) {
+	case *client.PackSkillFixed:
+		return PackSkillModel{
+			SkillID:        types.StringValue(v.Ref.SkillId),
+			SkillSlug:      types.StringValue(v.Ref.SkillSlug),
+			SkillName:      types.StringValue(v.Ref.SkillName),
+			VersionMode:    types.StringValue(v.Kind()),
+			SkillVersionID: types.StringValue(v.Ref.SkillVersionId),
+			VersionNo:      types.Int64Value(int64(v.Ref.VersionNo)),
+			VersionName:    types.StringValue(v.Ref.VersionName),
+			Required:       types.BoolValue(s.Required),
+		}, nil
+	case *client.PackSkillLatest:
+		return PackSkillModel{
+			SkillID:        types.StringValue(v.Ref.SkillId),
+			SkillSlug:      types.StringValue(v.Ref.SkillSlug),
+			SkillName:      types.StringValue(v.Ref.SkillName),
+			VersionMode:    types.StringValue(v.Kind()),
+			SkillVersionID: types.StringNull(),
+			VersionNo:      types.Int64Null(),
+			VersionName:    types.StringNull(),
+			Required:       types.BoolValue(s.Required),
+		}, nil
+	default:
+		return PackSkillModel{}, fmt.Errorf("unhandled pack skill variant %T (kind %q)", skill, skill.Kind())
+	}
 }
 
 func packToolToModel(t client.NamedPackTool) (PackToolModel, error) {

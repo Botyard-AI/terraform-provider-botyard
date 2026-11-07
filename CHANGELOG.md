@@ -12,6 +12,14 @@ a version.
 
 ## [Unreleased]
 
+### Added
+
+- `botyard_pack_version` / `botyard_pack_versions` skills gain `version_mode`: `fixed` when the pack pins one skill version, `latest` when it follows the skill's latest version. For `latest`, `skill_version_id`, `version_no` and `version_name` are null. A skill kind the provider does not know fails the read with an upgrade hint instead of being dropped from `skill_ids`.
+
+### Changed
+
+- Vendored API spec and generated client synced to the current Botyard API. Earlier provider versions read a skill that follows the latest version with empty version fields instead of reporting it as such.
+
 ## [0.8.0] - 2026-11-01
 
 ### Added

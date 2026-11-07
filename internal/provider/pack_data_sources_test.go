@@ -2,6 +2,7 @@ package provider
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -13,6 +14,8 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
+
+	"github.com/Botyard-AI/terraform-provider-botyard/internal/client"
 )
 
 // --- fixtures ---------------------------------------------------------------
@@ -71,8 +74,8 @@ func orgPackVersionJSON(id, slug string, versionNo int, archived, latest bool, s
 }
 
 const (
-	fxSkill      = `{"required":true,"skill":{"skill_id":"sk-1","skill_slug":"crm-notes","skill_name":"CRM notes","skill_version_id":"skv-1","version_no":2,"version_name":"v2"}}`
-	fxSkill2     = `{"required":false,"skill":{"skill_id":"sk-2","skill_slug":"tone","skill_name":"Tone","skill_version_id":"skv-2","version_no":1,"version_name":"v1"}}`
+	fxSkill      = `{"required":true,"skill":{"kind":"fixed","skill_id":"sk-1","skill_slug":"crm-notes","skill_name":"CRM notes","skill_version_id":"skv-1","version_no":2,"version_name":"v2"}}`
+	fxSkill2     = `{"required":false,"skill":{"kind":"latest","skill_id":"sk-2","skill_slug":"tone","skill_name":"Tone"}}`
 	fxToolMcp    = `{"required":true,"tool":{"runtime":"mcp","tool_id":"t-mcp","slug":"hubspot_search","name":"search","title":null,"mcp_server":"hubspot"}}`
 	fxToolClaw   = `{"required":false,"tool":{"runtime":"openclaw","tool_id":"t-claw","slug":"web_fetch","name":"web_fetch","title":"Web fetch"}}`
 	fxToolNative = `{"required":false,"tool":{"runtime":"native","tool_id":"t-nat","slug":"bash","name":"bash","title":null}}`
@@ -383,6 +386,12 @@ func TestPackVersionDataSource_ByID(t *testing.T) {
 			resource.TestCheckResourceAttr(n, "skills.0.version_no", "2"),
 			resource.TestCheckResourceAttr(n, "skills.0.required", "true"),
 			resource.TestCheckResourceAttr(n, "skills.1.required", "false"),
+			resource.TestCheckResourceAttr(n, "skills.0.version_mode", "fixed"),
+			resource.TestCheckResourceAttr(n, "skills.1.version_mode", "latest"),
+			resource.TestCheckResourceAttr(n, "skills.1.skill_id", "sk-2"),
+			resource.TestCheckNoResourceAttr(n, "skills.1.skill_version_id"),
+			resource.TestCheckNoResourceAttr(n, "skills.1.version_no"),
+			resource.TestCheckNoResourceAttr(n, "skills.1.version_name"),
 			resource.TestCheckTypeSetElemAttr(n, "skill_ids.*", "sk-1"),
 			resource.TestCheckTypeSetElemAttr(n, "skill_ids.*", "sk-2"),
 			// tools: every runtime variant dispatched.
@@ -607,4 +616,23 @@ func TestPacksDataSource_SameSlugAcrossPages(t *testing.T) {
 			resource.TestCheckResourceAttr("data.botyard_packs.crm", "packs.1.publisher_org_id", "org-1"),
 		),
 	})
+}
+
+// A skill kind this provider does not know is an error naming the kind, never
+// a skill silently dropped from `skill_ids`.
+func TestPackSkillToModel_UnknownKind(t *testing.T) {
+	for raw, want := range map[string]string{
+		`{"kind":"range","skill_id":"sk-9","skill_slug":"x","skill_name":"X"}`: `unknown kind "range"`,
+		`{"skill_id":"sk-9","skill_slug":"x","skill_name":"X"}`:                `has no "kind" discriminator`,
+	} {
+		var s client.NamedPackSkill
+		if err := json.Unmarshal([]byte(`{"required":true,"skill":`+raw+`}`), &s); err != nil {
+			t.Fatalf("fixture: %v", err)
+		}
+		_, err := packSkillToModel(s)
+		var unknown *client.UnknownDiscriminatorError
+		if !errors.As(err, &unknown) || !strings.Contains(err.Error(), want) {
+			t.Errorf("packSkillToModel(%s) error = %v, want UnknownDiscriminatorError containing %q", raw, err, want)
+		}
+	}
 }
