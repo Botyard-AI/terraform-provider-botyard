@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -14,6 +15,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	"github.com/Botyard-AI/terraform-provider-botyard/internal/client"
@@ -225,7 +227,19 @@ func (r *BotResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *
 				PlanModifiers:       []planmodifier.Bool{boolplanmodifier.UseStateForUnknown()},
 			},
 
-			"access":            liveComputedString("Bot visibility within its organization (`open` or `restricted`)."),
+			"access": schema.StringAttribute{
+				Optional: true,
+				Computed: true,
+				MarkdownDescription: "Who may use this bot within its organization: `restricted` (only its " +
+					"members — see `botyard_bot_member` and `botyard_bot_member_bot`) or `open` (every member " +
+					"of the organization). When omitted, Terraform adopts whatever the bot has and never plans " +
+					"a change. Setting it requires the provider's API key to be an owner of the bot: a key owns " +
+					"only the bots it created. On create the bot briefly exists with the API's default access " +
+					"mode before the declared one is applied.",
+				Validators: []validator.String{stringvalidator.OneOf(
+					string(client.BotAccessOpen), string(client.BotAccessRestricted))},
+				PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
+			},
 			"desired_state":     liveComputedString("Control-plane desired lifecycle state."),
 			"health_status":     liveComputedString("Bot health monitoring status."),
 			"onboarding_state":  liveComputedString("Guided-setup lifecycle state of the bot."),
@@ -318,11 +332,20 @@ func (r *BotResource) Create(ctx context.Context, req resource.CreateRequest, re
 		return
 	}
 
+	// The bot is created with the API's default access mode; a declared
+	// `access` is applied afterwards through PUT /access, on both create paths.
+	desiredAccess := plan.Access
 	if plan.Pack != nil {
 		r.createFromPack(ctx, plan, resp)
-		return
+	} else {
+		r.createPlain(ctx, plan, resp)
 	}
+	r.applyAccessAfterCreate(ctx, desiredAccess, resp)
+}
 
+// createPlain creates a bot without a pack (POST /bots), then settles the
+// runtime settings and the suggestions opt-out the POST cannot carry.
+func (r *BotResource) createPlain(ctx context.Context, plan BotResourceModel, resp *resource.CreateResponse) {
 	want := plannedRuntimeSettings(plan)
 	body, diags := buildBotCreateBody(plan)
 	resp.Diagnostics.Append(diags...)
@@ -490,6 +513,23 @@ func (r *BotResource) Update(ctx context.Context, req resource.UpdateRequest, re
 			return
 		}
 		final = cfgResp
+	}
+
+	// Access has its own owner-gated route (PUT /access) and goes last, after
+	// every other write has been checkpointed: a refusal here leaves the prior
+	// access mode in state, which is what the server still holds.
+	desiredAccess := plan.Access
+	if accessNeedsPut(desiredAccess, state.Access) {
+		checkpoint = checkpointRuntimeSettings(checkpoint, plan, final)
+		resp.Diagnostics.Append(resp.State.Set(ctx, &checkpoint)...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
+		updated, ok := r.setBotAccess(ctx, state.Slug.ValueString(), desiredAccess.ValueString(), &resp.Diagnostics)
+		if !ok {
+			return
+		}
+		final = updated
 	}
 
 	declaredAvatar := plan.AvatarURL
