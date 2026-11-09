@@ -12,11 +12,12 @@ a version.
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-11-09
+
 ### Changed
 
-- **`botyard_bot`: new hosted bots default to the Botyard native runtime.** Use `native_config` for native settings; creating OpenClaw bots or supplying an OpenClaw-only `config` for a new native bot is refused. Existing and imported OpenClaw bots retain their runtime and `config` management when upgrading. Replacement of existing OpenClaw bots is refused. Legacy deletion is protected by default, including tainted replacement; deliberate deletion requires setting `allow_legacy_deletion = true` and applying it before a separate deletion operation. Native and external deletion is unchanged. Deletion fails closed for absent, unknown, or unrecognized saved harness values, even with the legacy opt-in; refresh to classify older state before intentional deletion.
-- Pack-version reads understand fixed skill pins and skills following latest edits. Latest skills have null computed version fields rather than a fabricated pin; older fixed-reference responses remain readable. The vendored public API and generated client are refreshed canonically.
-- The next planned provider release for this change is the minor version **0.9.0**. Release publication remains a separate manual action; its dated changelog section is prepared when the release date is set.
+- **`botyard_bot`: new hosted bots default to the Botyard native runtime.** Use `native_config` for native settings; creating OpenClaw bots or supplying an OpenClaw-only `config` for a new native bot is refused. Existing and imported OpenClaw bots retain their runtime and `config` management when upgrading. Replacement of existing OpenClaw bots is refused. Legacy deletion is protected by default, including tainted replacement; deliberate deletion requires setting `allow_legacy_deletion = true` and applying it before a separate deletion operation. Native and external deletion is unchanged. Deletion fails closed for absent, unknown, or unrecognized saved harness values, even with the legacy opt-in; refresh to classify older state before intentional deletion. (#57)
+- Pack-version reads understand fixed skill pins and skills following latest edits. Latest skills have null computed version fields rather than a fabricated pin; older fixed-reference responses remain readable. The vendored public API and generated client are refreshed canonically. (#57)
 
 ## [0.8.0] - 2026-11-01
 
@@ -247,7 +248,8 @@ a version.
 
 - Bumped `google.golang.org/grpc` (GO-2026-4762) and `golang.org/x/net` (GO-2026-5026), and pinned a patched Go toolchain. (#6)
 
-[Unreleased]: https://github.com/Botyard-AI/terraform-provider-botyard/compare/v0.8.0...HEAD
+[Unreleased]: https://github.com/Botyard-AI/terraform-provider-botyard/compare/v0.9.0...HEAD
+[0.9.0]: https://github.com/Botyard-AI/terraform-provider-botyard/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/Botyard-AI/terraform-provider-botyard/compare/v0.7.1...v0.8.0
 [0.7.1]: https://github.com/Botyard-AI/terraform-provider-botyard/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/Botyard-AI/terraform-provider-botyard/compare/v0.6.1...v0.7.0
