@@ -129,7 +129,7 @@ func TestWorkforceMember_ReadErrorsPreserveState(t *testing.T) {
 			api, srv := newWorkforceMemberAPI(t)
 			api.change(tc.change)
 			r := workforceResourceFor(t, srv.URL)
-			state := workforceState(t, workforceModel("member"))
+			state := workforceState(t, workforceModel())
 			response := fwresource.ReadResponse{State: state}
 			r.Read(context.Background(), fwresource.ReadRequest{State: state}, &response)
 			if !response.Diagnostics.HasError() || !response.State.Raw.Equal(state.Raw) {
@@ -142,7 +142,7 @@ func TestWorkforceMember_ReadErrorsPreserveState(t *testing.T) {
 func TestWorkforceMember_LastOwnerDiagnostics(t *testing.T) {
 	api, srv := newWorkforceMemberAPI(t)
 	r := workforceResourceFor(t, srv.URL)
-	model := workforceModel("member")
+	model := workforceModel()
 	model.ActorType = types.StringValue("api_key")
 	model.ActorID = types.StringValue("creator")
 	model.ID = types.StringValue("wf-1/api_key/creator")
@@ -184,7 +184,7 @@ func TestWorkforceMember_LostWriteResponseIsNotRetried(t *testing.T) {
 		t.Fatal(err)
 	}
 	r := &WorkforceMemberResource{data: &providerData{client: c, orgID: "org-1"}}
-	model := workforceModel("member")
+	model := workforceModel()
 	var response fwresource.CreateResponse
 	r.put(context.Background(), &model, &response.Diagnostics)
 	assertDiag(t, response.Diagnostics.Errors(), "may have been written", "No automatic retry")
@@ -198,7 +198,7 @@ func TestWorkforceMember_LostWriteResponseIsNotRetried(t *testing.T) {
 func TestWorkforceMember_CancelledRequestDoesNotWrite(t *testing.T) {
 	api, srv := newWorkforceMemberAPI(t)
 	r := workforceResourceFor(t, srv.URL)
-	model := workforceModel("member")
+	model := workforceModel()
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
 	var response fwresource.CreateResponse

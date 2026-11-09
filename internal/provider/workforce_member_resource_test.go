@@ -355,8 +355,8 @@ func workforceResourceFor(t *testing.T, endpoint string) *WorkforceMemberResourc
 	return &WorkforceMemberResource{data: &providerData{client: newBotClient(t, endpoint, "byk_test"), orgID: "org-1"}}
 }
 
-func workforceModel(role string) WorkforceMemberResourceModel {
-	return WorkforceMemberResourceModel{ID: types.StringValue("wf-1/bot/bot-1"), WorkforceID: types.StringValue("wf-1"), WorkforceSlug: types.StringValue("platform-development"), ActorType: types.StringValue("bot"), ActorID: types.StringValue("bot-1"), Role: types.StringValue(role), CreatedAt: types.StringValue(fakeTime.Format("2006-01-02T15:04:05Z07:00"))}
+func workforceModel() WorkforceMemberResourceModel {
+	return WorkforceMemberResourceModel{ID: types.StringValue("wf-1/bot/bot-1"), WorkforceID: types.StringValue("wf-1"), WorkforceSlug: types.StringValue("platform-development"), ActorType: types.StringValue("bot"), ActorID: types.StringValue("bot-1"), Role: types.StringValue("member"), CreatedAt: types.StringValue(fakeTime.Format("2006-01-02T15:04:05Z07:00"))}
 }
 
 func workforceState(t *testing.T, model WorkforceMemberResourceModel) tfsdk.State {
@@ -394,7 +394,7 @@ func TestWorkforceMember_RefusesUnsafeWrites(t *testing.T) {
 			api, srv := newWorkforceMemberAPI(t)
 			api.change(tc.change)
 			r := workforceResourceFor(t, srv.URL)
-			model := workforceModel("member")
+			model := workforceModel()
 			var diags fwresource.CreateResponse
 			r.put(context.Background(), &model, &diags.Diagnostics)
 			assertDiag(t, diags.Diagnostics.Errors(), tc.want)
@@ -425,7 +425,7 @@ func TestWorkforceMember_InvalidWriteAcknowledgements(t *testing.T) {
 			api, srv := newWorkforceMemberAPI(t)
 			api.change(tc.change)
 			r := workforceResourceFor(t, srv.URL)
-			model := workforceModel("member")
+			model := workforceModel()
 			var response fwresource.CreateResponse
 			r.put(context.Background(), &model, &response.Diagnostics)
 			assertDiag(t, response.Diagnostics.Errors(), tc.want)
@@ -447,7 +447,7 @@ func TestWorkforceMember_ReadRenameAndAbsence(t *testing.T) {
 			a.replace("wf-1", workforceRow("bot", "bot-1", "member"))
 		})
 		r := workforceResourceFor(t, srv.URL)
-		state := workforceState(t, workforceModel("member"))
+		state := workforceState(t, workforceModel())
 		response := fwresource.ReadResponse{State: state}
 		r.Read(ctx, fwresource.ReadRequest{State: state}, &response)
 		if response.Diagnostics.HasError() {
@@ -473,7 +473,7 @@ func TestWorkforceMember_ReadRenameAndAbsence(t *testing.T) {
 				api.change(func(a *workforceMemberAPI) { a.boards = []client.WorkforceListItem{} })
 			}
 			r := workforceResourceFor(t, srv.URL)
-			state := workforceState(t, workforceModel("member"))
+			state := workforceState(t, workforceModel())
 			response := fwresource.ReadResponse{State: state}
 			r.Read(ctx, fwresource.ReadRequest{State: state}, &response)
 			if response.Diagnostics.HasError() || !response.State.Raw.IsNull() {
@@ -490,7 +490,7 @@ func TestWorkforceMember_Delete(t *testing.T) {
 		want      string
 		mutations int
 	}{
-		{"empty 204", func(a *workforceMemberAPI) {}, "", 1},
+		{"empty 204", func(_ *workforceMemberAPI) {}, "", 1},
 		{"already absent", func(a *workforceMemberAPI) { a.rows["wf-1"] = a.rows["wf-1"][:1] }, "", 0},
 		{"board absent", func(a *workforceMemberAPI) { a.boards = []client.WorkforceListItem{} }, "", 0},
 		{"old API", func(a *workforceMemberAPI) { a.ack = false }, "acknowledge workforce identity", 0},
@@ -506,7 +506,7 @@ func TestWorkforceMember_Delete(t *testing.T) {
 			api.change(func(a *workforceMemberAPI) { a.replace("wf-1", workforceRow("bot", "bot-1", "member")); tc.setup(a) })
 			r := workforceResourceFor(t, srv.URL)
 			response := fwresource.DeleteResponse{}
-			r.Delete(context.Background(), fwresource.DeleteRequest{State: workforceState(t, workforceModel("member"))}, &response)
+			r.Delete(context.Background(), fwresource.DeleteRequest{State: workforceState(t, workforceModel())}, &response)
 			if tc.want != "" {
 				assertDiag(t, response.Diagnostics.Errors(), tc.want)
 			} else if response.Diagnostics.HasError() {
