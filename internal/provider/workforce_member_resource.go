@@ -63,7 +63,9 @@ func (r *WorkforceMemberResource) Schema(_ context.Context, _ resource.SchemaReq
 			"The board's immutable ID is the identity; renaming its slug updates only computed metadata.\n\n" +
 			"**Adoption:** creating a resource for an existing member adopts the row and sets its configured role. Destroy removes that row, regardless of who originally added it. " +
 			"The API refuses removing or demoting the last owner; grant another principal owner first, or use `terraform state rm` to relinquish management without removing access. " +
-			"Removing a member does not necessarily revoke access to an `open` board. This resource does not change board access mode.\n\n" +
+			"Removing a member does not necessarily revoke access to an `open` board. This resource does not change board access mode. " +
+			"Demoting or removing the provider API key itself can revoke its ability to manage a restricted board. " +
+			"A board absent from the caller-visible list is treated as missing, including loss of visibility; use a key with appropriate visibility when managing memberships.\n\n" +
 			"Requires an API supporting `expected_workforce_id` and `X-Botyard-Workforce-Id` on membership operations. " +
 			"The provider verifies support with a guarded read before writing; every write also carries the ID in the strict request body, so old API replicas reject it rather than ignore it. " +
 			"No automatic write retries are made. A lost response may mean a write succeeded; refresh before retrying.\n\n" +
@@ -221,6 +223,12 @@ func (r *WorkforceMemberResource) members(ctx context.Context, id string, diags 
 		}
 		if !acknowledgeWorkforce(listed.HTTPResponse, id, diags) {
 			return "", nil, false
+		}
+		for _, row := range *listed.JSON200 {
+			if row.ActorId == "" || row.ActorType == "" || row.Role == "" || row.CreatedAt.IsZero() {
+				diags.AddError("Invalid workforce member response", "The API returned a membership without its required principal, role or creation timestamp. Existing state is preserved and no write is made.")
+				return "", nil, false
+			}
 		}
 		return slug, *listed.JSON200, false
 	}

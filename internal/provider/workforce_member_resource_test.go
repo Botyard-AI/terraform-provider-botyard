@@ -260,6 +260,7 @@ func (a *workforceMemberAPI) ownerCount(id string) int {
 func (a *workforceMemberAPI) replace(id string, row client.WorkforceMember) {
 	for i, existing := range a.rows[id] {
 		if existing.ActorType == row.ActorType && existing.ActorId == row.ActorId {
+			row.CreatedAt = existing.CreatedAt
 			a.rows[id][i] = row
 			return
 		}
