@@ -27,16 +27,27 @@ func TestWorkforceMember_AdoptionAndPrincipalNamespaces(t *testing.T) {
 		row.CreatedAt = created
 		a.replace("wf-1", row)
 	})
+	// Legacy state-check helpers cannot represent string-indexed for_each addresses.
+	// Keep all three same-ID principal namespaces explicit; no business assertion is dropped.
 	config := fmt.Sprintf(`
 provider "botyard" {
   endpoint = %q
   api_key = "byk_test"
   org_id = "org-1"
 }
-resource "botyard_workforce_member" "principal" {
-  for_each = toset(["user", "bot", "api_key"])
+resource "botyard_workforce_member" "bot" {
   workforce_id = "wf-1"
-  actor_type = each.key
+  actor_type = "bot"
+  actor_id = "same-id"
+}
+resource "botyard_workforce_member" "user" {
+  workforce_id = "wf-1"
+  actor_type = "user"
+  actor_id = "same-id"
+}
+resource "botyard_workforce_member" "api_key" {
+  workforce_id = "wf-1"
+  actor_type = "api_key"
   actor_id = "same-id"
 }
 `, srv.URL)
@@ -52,10 +63,10 @@ resource "botyard_workforce_member" "principal" {
 		},
 		Steps: []resource.TestStep{
 			{Config: config, Check: resource.ComposeAggregateTestCheckFunc(
-				resource.TestCheckResourceAttr(`botyard_workforce_member.principal["bot"]`, "created_at", created.Format(time.RFC3339)),
-				resource.TestCheckResourceAttr(`botyard_workforce_member.principal["bot"]`, "role", "member"),
-				resource.TestCheckResourceAttr(`botyard_workforce_member.principal["user"]`, "id", "wf-1/user/same-id"),
-				resource.TestCheckResourceAttr(`botyard_workforce_member.principal["api_key"]`, "id", "wf-1/api_key/same-id"),
+				resource.TestCheckResourceAttr(`botyard_workforce_member.bot`, "created_at", created.Format(time.RFC3339)),
+				resource.TestCheckResourceAttr(`botyard_workforce_member.bot`, "role", "member"),
+				resource.TestCheckResourceAttr(`botyard_workforce_member.user`, "id", "wf-1/user/same-id"),
+				resource.TestCheckResourceAttr(`botyard_workforce_member.api_key`, "id", "wf-1/api_key/same-id"),
 			)},
 			{Config: config, PlanOnly: true},
 		},
