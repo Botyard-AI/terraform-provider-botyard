@@ -3,10 +3,12 @@ package provider
 import (
 	"context"
 	"fmt"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"regexp"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
@@ -146,5 +148,63 @@ func TestWorkforceMember_UncertainTerraformCreate(t *testing.T) {
 				t.Fatalf("must leave untracked committed grant without retry: checked=%t puts=%d mutations=%d", checkedState, api.puts, api.mutations)
 			}
 		})
+	}
+}
+
+func TestWorkforceMember_WriteRedirectNeverReplayed(t *testing.T) {
+	for _, status := range []int{301, 302, 303, 307, 308} {
+		for _, method := range []string{http.MethodPut, http.MethodPost} {
+			t.Run(fmt.Sprintf("%s_%d", method, status), func(t *testing.T) {
+				api, _ := newWorkforceMemberAPI(t)
+				if method == http.MethodPost {
+					api.change(func(a *workforceMemberAPI) { a.replace("wf-1", workforceRow("bot", "bot-1", "member")) })
+				}
+				writes, redirected := 0, 0
+				srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+					if req.URL.Path == "/redirected" {
+						redirected++
+						w.WriteHeader(http.StatusOK)
+						return
+					}
+					if req.Method == method {
+						writes++
+						committed := httptest.NewRecorder()
+						api.serve(committed, req)
+						if committed.Code != http.StatusOK && committed.Code != http.StatusNoContent {
+							t.Errorf("write did not commit: %d", committed.Code)
+						}
+						w.Header().Set("Location", "/redirected")
+						w.WriteHeader(status)
+						return
+					}
+					api.serve(w, req)
+				}))
+				defer srv.Close()
+				r := workforceResourceFor(t, srv.URL)
+				if method == http.MethodPut {
+					plan := workforceModel()
+					var diagnostics diag.Diagnostics
+					r.put(context.Background(), &plan, &diagnostics)
+					if !diagnostics.HasError() || !strings.Contains(diagnostics.Errors()[0].Detail(), "may have been written") {
+						t.Fatalf("expected uncertain write diagnostic: %v", diagnostics)
+					}
+				} else {
+					state := workforceState(t, workforceModel())
+					response := fwresource.DeleteResponse{State: state}
+					r.Delete(context.Background(), fwresource.DeleteRequest{State: state}, &response)
+					if !response.Diagnostics.HasError() || !response.State.Raw.Equal(state.Raw) || !strings.Contains(response.Diagnostics.Errors()[0].Detail(), "may have succeeded") {
+						t.Fatalf("expected preserved state and uncertain removal diagnostic: %v", response.Diagnostics)
+					}
+				}
+				if writes != 1 || redirected != 0 {
+					t.Fatalf("write requests=%d redirected requests=%d; want 1/0", writes, redirected)
+				}
+				api.mu.Lock()
+				defer api.mu.Unlock()
+				if api.mutations != 1 {
+					t.Fatalf("mutations=%d; want exactly 1", api.mutations)
+				}
+			})
+		}
 	}
 }

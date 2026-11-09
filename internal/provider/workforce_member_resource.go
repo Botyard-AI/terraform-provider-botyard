@@ -259,9 +259,8 @@ func (r *WorkforceMemberResource) put(ctx context.Context, plan *WorkforceMember
 		return
 	}
 	role := plan.Role.ValueString()
-	written, err := r.data.client.SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutWithResponse(ctx,
-		r.data.orgID, slug, &client.SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutParams{ExpectedWorkforceId: &id},
-		client.WorkforceMembersSet{ExpectedWorkforceId: &id, Members: []client.WorkforceMemberSet{{ActorType: client.ActorType(plan.ActorType.ValueString()), ActorId: plan.ActorID.ValueString(), Role: &role}}})
+	written, err := r.data.client.SetWorkforceMember(ctx,
+		r.data.orgID, slug, id, client.ActorType(plan.ActorType.ValueString()), plan.ActorID.ValueString(), role)
 	if err != nil {
 		diags.AddError("Error setting workforce member", uncertainWorkforceWrite(plan)+"\n\n"+err.Error())
 		return
