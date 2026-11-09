@@ -534,6 +534,11 @@ func keepPackAvatar(m *BotResourceModel, declared types.String) {
 // ModifyPlan applies creation-only runtime defaults, pack guards and resource settings.
 func (r *BotResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
 	if req.Plan.Raw.IsNull() {
+		var state BotResourceModel
+		resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+		if !resp.Diagnostics.HasError() {
+			allowLegacyBotDeletion(state, &resp.Diagnostics)
+		}
 		return // destroy
 	}
 	var plan BotResourceModel

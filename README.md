@@ -92,15 +92,23 @@ for new bots. Upgrading the provider does not change an existing bot's runtime
 when `harness` and `hosting_type` are omitted; do not replace a legacy bot to
 upgrade. Immutable-attribute changes and `lifecycle.replace_triggered_by`
 replacements are refused at plan time, including `create_before_destroy`.
-Ordinary bot updates and deletion remain supported.
+Ordinary bot updates remain supported. **Deletion of existing OpenClaw bots is
+protected by default**, including deletion during a tainted replacement or after
+removing the resource block. The provider checks saved state before sending DELETE.
+Omitted, false, or unknown `allow_legacy_deletion` values do not permit deletion.
 
-Do not taint or force replacement of an OpenClaw bot. Terraform discards prior
-state and private data when planning a tainted resource; this provider cannot
-identify that plan as a legacy replacement. Applying it can delete the existing
-bot and, when the harness is omitted, attempt native creation. Review plans
-carefully and add `lifecycle { prevent_destroy = true }` to legacy resources
-that must not be deleted. This protection must remain in configuration to work;
-removing the resource block also removes its lifecycle protection.
+For an intentional deletion, keep the legacy resource block and its runtime
+unchanged, set `allow_legacy_deletion = true`, and **apply that change first**.
+Then review and run a separate destroy/removal operation. Adding the flag only
+when running destroy does not update saved state and cannot unlock deletion.
+If the resource is tainted, first verify that the existing bot is intact and
+untaint the resource before applying the opt-in. Setting the option back to false
+or removing it and applying restores protection. This option is provider-only;
+it is never sent to the API and does not enable OpenClaw creation or migration.
+Native and external bot deletion is unchanged. `prevent_destroy` may still be
+used as additional Terraform configuration protection, not as a replacement for
+the default provider guard.
+
 External self-hosted profiles remain separate from the hosted default.
 
 ### Authentication

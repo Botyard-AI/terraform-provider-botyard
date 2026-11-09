@@ -331,6 +331,14 @@ resource "botyard_bot" "native" {
 `, endpoint, configBody)
 }
 
+// Opt in with a separate apply before cleanup; old-provider configurations
+// deliberately cannot contain an attribute their released schema does not know.
+func legacyDeletionOptInConfig(endpoint string) string {
+	config := openClawTestConfig(endpoint, "")
+	config = strings.Replace(config, "  config = {\n    \n  }\n", "", 1)
+	return strings.Replace(config, `  name         = "native-probe"`, "  allow_legacy_deletion = true\n"+`  name         = "native-probe"`, 1)
+}
+
 // TestNativePromptRemoved_UpgradeFromV050 drives real Terraform core through
 // the upgrade a customer makes from v0.5.0, the last version that could hold a
 // NON-null prompt_template in state:
@@ -585,6 +593,7 @@ func TestConfigModelRemoved_UpgradeFromV060(t *testing.T) {
 				Config:                   without,
 				Check:                    resource.TestCheckNoResourceAttr(addr, "config.model.primary.model"),
 			},
+			{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: legacyDeletionOptInConfig(srv.URL)},
 		},
 	})
 
@@ -635,6 +644,7 @@ func TestConfigToolSearch_RoundTrip(t *testing.T) {
 				ExpectError:              regexp.MustCompile(`OpenClaw is existing-bots-only`),
 			},
 			{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: openClawTestConfig(srv.URL, `tool_search = { mode = "off" }`), PlanOnly: true},
+			{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: legacyDeletionOptInConfig(srv.URL)},
 		},
 	})
 }
@@ -688,6 +698,7 @@ func TestNativeDefault_TerraformLegacyUpgradeRefusesReplacement(t *testing.T) {
 							}
 						},
 					},
+					{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: legacyDeletionOptInConfig(srv.URL)},
 				},
 			})
 		})
@@ -732,6 +743,7 @@ func TestNativeDefault_TerraformLegacyReplaceTriggeredBy(t *testing.T) {
 								t.Errorf("lifecycle replacement changed legacy bot: exists=%v writes=%d deletes=%d", api.exists, api.writes, api.deletes)
 							}
 						}},
+						{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: legacyDeletionOptInConfig(srv.URL)},
 					},
 				})
 			})
@@ -739,10 +751,13 @@ func TestNativeDefault_TerraformLegacyReplaceTriggeredBy(t *testing.T) {
 	}
 }
 
-// Core drops prior state AND private data for tainted objects. Capture this
-// explicit operator-action limitation without applying the destructive plan.
-func TestNativeDefault_TerraformLegacyTaintedReplacementLimitation(t *testing.T) {
+// Core hides tainted state during planning, but Delete still receives it.
+// Exercise the actual failed apply, then untaint the intact fake bot before
+// explicitly applying the opt-in and deleting it.
+func TestNativeDefault_TerraformLegacyTaintedReplacementProtected(t *testing.T) {
 	t.Setenv("TF_ACC_PROVIDER_NAMESPACE", "botyard-ai")
+	testDir := t.TempDir()
+	t.Setenv("TF_ACC_TEMP_DIR", testDir)
 	api, srv := newFakeOpenClawBotAPI(t)
 	legacy := strings.Replace(openClawTestConfig(srv.URL, ""), "  config = {\n    \n  }\n", "", 1)
 	resource.UnitTest(t, resource.TestCase{
@@ -750,13 +765,31 @@ func TestNativeDefault_TerraformLegacyTaintedReplacementLimitation(t *testing.T)
 			api.mu.Lock()
 			defer api.mu.Unlock()
 			if api.exists || api.writes != 1 || api.deletes != 1 {
-				return fmt.Errorf("ordinary cleanup: exists=%v writes=%d deletes=%d", api.exists, api.writes, api.deletes)
+				return fmt.Errorf("explicit deletion: exists=%v writes=%d deletes=%d", api.exists, api.writes, api.deletes)
 			}
 			return nil
 		},
 		Steps: []resource.TestStep{
 			{ExternalProviders: map[string]resource.ExternalProvider{"botyard": {Source: "Botyard-AI/botyard", VersionConstraint: "0.8.0"}}, Config: legacy},
-			{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: legacy, Taint: []string{"botyard_bot.native"}, PlanOnly: true, ExpectNonEmptyPlan: true},
+			{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: legacy, Destroy: true, PlanOnly: true, ExpectError: regexp.MustCompile(`Legacy bot deletion is protected`)},
+			{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: legacy, Taint: []string{"botyard_bot.native"}, ExpectError: regexp.MustCompile(`Legacy bot deletion is protected`)},
+			{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: legacyDeletionOptInConfig(srv.URL), PreConfig: func() {
+				api.mu.Lock()
+				defer api.mu.Unlock()
+				if !api.exists || api.writes != 1 || api.deletes != 0 {
+					t.Errorf("tainted apply changed legacy bot: exists=%v writes=%d deletes=%d", api.exists, api.writes, api.deletes)
+				}
+				untaintLegacyTestBot(t, testDir)
+			}},
+			{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: legacyDeletionOptInConfig(srv.URL), Check: resource.TestCheckResourceAttr("botyard_bot.native", "allow_legacy_deletion", "true")},
+			// Removing or explicitly revoking a previously applied opt-in
+			// restores protection; the flag is provider state, not API config.
+			{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: legacy},
+			{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: legacy, Destroy: true, PlanOnly: true, ExpectError: regexp.MustCompile(`Legacy bot deletion is protected`)},
+			{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: strings.Replace(legacyDeletionOptInConfig(srv.URL), "allow_legacy_deletion = true", "allow_legacy_deletion = false", 1), Check: resource.TestCheckResourceAttr("botyard_bot.native", "allow_legacy_deletion", "false")},
+			{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: legacy, Destroy: true, PlanOnly: true, ExpectError: regexp.MustCompile(`Legacy bot deletion is protected`)},
+			{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: legacyDeletionOptInConfig(srv.URL)},
+			{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: legacyDeletionOptInConfig(srv.URL), Destroy: true},
 		},
 	})
 }
@@ -803,6 +836,7 @@ func TestConfigBlocks_AddedToExistingBot(t *testing.T) {
 					Check:                    resource.TestCheckResourceAttr(addr, "config.tool_search.auto_threshold_percent", "10"),
 				},
 				{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: openClawTestConfig(oc.URL, "thinking_default = \"high\"\n    tool_search = { mode = \"always\" }"), PlanOnly: true},
+				{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: legacyDeletionOptInConfig(oc.URL)},
 			},
 		})
 	})

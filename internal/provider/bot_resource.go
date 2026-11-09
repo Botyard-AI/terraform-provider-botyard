@@ -58,6 +58,9 @@ type BotResourceModel struct {
 	HostingType types.String `tfsdk:"hosting_type"`
 	Harness     types.String `tfsdk:"harness"`
 
+	// Provider-only safety opt-in, persisted before an intentional deletion.
+	AllowLegacyDeletion types.Bool `tfsdk:"allow_legacy_deletion"`
+
 	// Config overrides, one block per member of the API's BotConfig union. At
 	// most one may be declared (enforced at plan time in ValidateConfig); both
 	// are nil when the practitioner manages identity only. Managed via the
@@ -162,6 +165,12 @@ func (r *BotResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *
 					"stores no avatar when omitted. Removing it from the config clears the stored value (sends JSON null).",
 			},
 
+			"allow_legacy_deletion": schema.BoolAttribute{
+				Optional: true,
+				MarkdownDescription: "Explicit opt-in to delete an existing OpenClaw bot. Defaults to protected when omitted or false. " +
+					"Set true and apply that change before intentional deletion; merely adding it to a destroy command does not update saved state. " +
+					"This provider-only setting is never sent to the API. Native and external bot deletion is unchanged.",
+			},
 			"hosting_type": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
@@ -527,6 +536,9 @@ func (r *BotResource) Delete(ctx context.Context, req resource.DeleteRequest, re
 	var state BotResourceModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 	if resp.Diagnostics.HasError() {
+		return
+	}
+	if !allowLegacyBotDeletion(state, &resp.Diagnostics) {
 		return
 	}
 	apiResp, err := r.data.client.DeleteBotV1OrgsOrgIdBotsBotSlugDeleteWithResponse(ctx, r.data.orgID, state.Slug.ValueString())

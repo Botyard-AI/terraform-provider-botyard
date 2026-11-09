@@ -13,10 +13,21 @@ import (
 
 const legacyBotPlanKey = "botyard_existing_openclaw"
 
+// Delete receives the original state even when Core hides tainted state during
+// planning. Only a previously applied, known-true opt-in permits legacy deletion.
+func allowLegacyBotDeletion(state BotResourceModel, diags *diag.Diagnostics) bool {
+	if state.Harness.ValueString() == harnessOpenClaw && !state.AllowLegacyDeletion.ValueBool() {
+		diags.AddError("Legacy bot deletion is protected",
+			"Deletion of an existing OpenClaw bot is blocked by default, including deletion during replacement. For intentional deletion, set allow_legacy_deletion = true and apply that change first. If the resource is tainted, untaint it before applying the opt-in. This does not enable OpenClaw creation or migration.")
+		return false
+	}
+	return true
+}
+
 // Core replans replacements with null prior state but carries PlannedPrivate
 // from the first plan into PriorPrivate. Preserve the legacy identity across
 // that boundary so lifecycle-triggered replacements cannot look like new bots.
-// Ordinary destroy plans return before this hook and remain supported.
+// Ordinary destroy plans return before this hook and use the saved-state deletion guard.
 func protectLegacyBotReplacement(ctx context.Context, state *BotResourceModel, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
 	if state != nil {
 		if resp.Private != nil {
@@ -35,7 +46,7 @@ func protectLegacyBotReplacement(ctx context.Context, state *BotResourceModel, r
 	resp.Diagnostics.Append(diags...)
 	if len(marker) != 0 {
 		resp.Diagnostics.AddError("OpenClaw is existing-bots-only",
-			"Terraform requested replacement of an existing OpenClaw bot. Replacement is refused before deletion, including lifecycle-triggered replacements. Existing bot updates and ordinary deletion remain supported; create a separate native bot instead.")
+			"Terraform requested replacement of an existing OpenClaw bot. Replacement is refused before deletion, including lifecycle-triggered replacements. Existing bot updates remain supported; intentional deletion requires a previously applied allow_legacy_deletion opt-in. Create a separate native bot instead.")
 	}
 }
 
