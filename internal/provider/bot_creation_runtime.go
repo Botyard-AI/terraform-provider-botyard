@@ -1,13 +1,43 @@
 package provider
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/Botyard-AI/terraform-provider-botyard/internal/client"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
+	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
+
+const legacyBotPlanKey = "botyard_existing_openclaw"
+
+// Core replans replacements with null prior state but carries PlannedPrivate
+// from the first plan into PriorPrivate. Preserve the legacy identity across
+// that boundary so lifecycle-triggered replacements cannot look like new bots.
+// Ordinary destroy plans return before this hook and remain supported.
+func protectLegacyBotReplacement(ctx context.Context, state *BotResourceModel, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	if state != nil {
+		if resp.Private != nil {
+			var marker []byte
+			if state.Harness.ValueString() == harnessOpenClaw {
+				marker = []byte("true")
+			}
+			resp.Diagnostics.Append(resp.Private.SetKey(ctx, legacyBotPlanKey, marker)...)
+		}
+		return
+	}
+	if req.Private == nil {
+		return
+	}
+	marker, diags := req.Private.GetKey(ctx, legacyBotPlanKey)
+	resp.Diagnostics.Append(diags...)
+	if len(marker) != 0 {
+		resp.Diagnostics.AddError("OpenClaw is existing-bots-only",
+			"Terraform requested replacement of an existing OpenClaw bot. Replacement is refused before deletion, including lifecycle-triggered replacements. Existing bot updates and ordinary deletion remain supported; create a separate native bot instead.")
+	}
+}
 
 // Creation defaults are deliberately not schema defaults: Optional+Computed
 // runtime fields on existing/imported bots must keep their refreshed state.
@@ -16,7 +46,7 @@ func defaultBotCreationRuntime(plan *BotResourceModel, cfg BotResourceModel, sta
 		// Protect the existing bot, regardless of the requested replacement's
 		// runtime. Unknown immutable values can also force replacement, so
 		// fail closed until they can be shown to equal the existing state.
-		// Explicit CLI -replace remains an operator action.
+		// Core-triggered replacement is also checked through private plan data.
 		changed := !plan.Name.Equal(state.Name) ||
 			!plan.HostingType.Equal(state.HostingType) ||
 			!plan.Harness.Equal(state.Harness)

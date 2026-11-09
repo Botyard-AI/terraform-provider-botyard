@@ -90,10 +90,17 @@ Use `native_config` for native configuration. OpenClaw remains supported for
 existing or imported bots, including their `config` updates, but cannot be used
 for new bots. Upgrading the provider does not change an existing bot's runtime
 when `harness` and `hosting_type` are omitted; do not replace a legacy bot to
-upgrade. Configuration-driven legacy replacements are refused at plan time.
-Do not use `terraform -replace` on an OpenClaw bot: an explicit forced replacement
-may delete the existing bot before the new-creation refusal is reached. Review
-plans carefully; this provider cannot make a forced legacy recreation succeed.
+upgrade. Immutable-attribute changes and `lifecycle.replace_triggered_by`
+replacements are refused at plan time, including `create_before_destroy`.
+Ordinary bot updates and deletion remain supported.
+
+Do not taint or force replacement of an OpenClaw bot. Terraform discards prior
+state and private data when planning a tainted resource; this provider cannot
+identify that plan as a legacy replacement. Applying it can delete the existing
+bot and, when the harness is omitted, attempt native creation. Review plans
+carefully and add `lifecycle { prevent_destroy = true }` to legacy resources
+that must not be deleted. This protection must remain in configuration to work;
+removing the resource block also removes its lifecycle protection.
 External self-hosted profiles remain separate from the hosted default.
 
 ### Authentication

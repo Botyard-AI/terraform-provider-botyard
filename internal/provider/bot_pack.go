@@ -555,6 +555,10 @@ func (r *BotResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanReq
 	if resp.Diagnostics.HasError() {
 		return
 	}
+	protectLegacyBotReplacement(ctx, state, req, resp)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 	defaultBotCreationRuntime(&plan, cfg, state, &resp.Diagnostics)
 	if resp.Diagnostics.HasError() {
 		return

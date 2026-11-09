@@ -694,6 +694,92 @@ func TestNativeDefault_TerraformLegacyUpgradeRefusesReplacement(t *testing.T) {
 	}
 }
 
+// A lifecycle dependency can request replacement without changing immutable
+// bot attributes. Exercise that decision through real Terraform and v0.8 state.
+func TestNativeDefault_TerraformLegacyReplaceTriggeredBy(t *testing.T) {
+	t.Setenv("TF_ACC_PROVIDER_NAMESPACE", "botyard-ai")
+	for _, shape := range []string{"implicit", "config", "explicit"} {
+		for _, createFirst := range []bool{false, true} {
+			t.Run(fmt.Sprintf("%s/create_before_destroy=%v", shape, createFirst), func(t *testing.T) {
+				api, srv := newFakeOpenClawBotAPI(t)
+				legacy := openClawTestConfig(srv.URL, `thinking_default = "high"`)
+				if shape != "config" {
+					legacy = strings.Replace(legacy, "  config = {\n    thinking_default = \"high\"\n  }\n", "", 1)
+				}
+				lifecycle := fmt.Sprintf("  lifecycle {\n    replace_triggered_by = [terraform_data.trigger]\n    create_before_destroy = %v\n  }\n", createFirst)
+				if shape == "explicit" {
+					lifecycle += "  harness = \"openclaw\"\n"
+				}
+				legacy = strings.Replace(legacy, `  name         = "native-probe"`, lifecycle+`  name         = "native-probe"`, 1)
+				initial := legacy + "\nresource \"terraform_data\" \"trigger\" { input = \"before\" }\n"
+				changed := legacy + "\nresource \"terraform_data\" \"trigger\" { input = \"after\" }\n"
+				resource.UnitTest(t, resource.TestCase{
+					CheckDestroy: func(_ *terraform.State) error {
+						api.mu.Lock()
+						defer api.mu.Unlock()
+						if api.exists || api.writes != 1 || api.deletes != 1 {
+							return fmt.Errorf("ordinary cleanup: exists=%v writes=%d deletes=%d", api.exists, api.writes, api.deletes)
+						}
+						return nil
+					},
+					Steps: []resource.TestStep{
+						{ExternalProviders: map[string]resource.ExternalProvider{"botyard": {Source: "Botyard-AI/botyard", VersionConstraint: "0.8.0"}}, Config: initial},
+						{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: changed, PlanOnly: true, ExpectError: regexp.MustCompile(`OpenClaw is existing-bots-only`)},
+						{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: initial, PlanOnly: true, PreConfig: func() {
+							api.mu.Lock()
+							defer api.mu.Unlock()
+							if !api.exists || api.writes != 1 || api.deletes != 0 {
+								t.Errorf("lifecycle replacement changed legacy bot: exists=%v writes=%d deletes=%d", api.exists, api.writes, api.deletes)
+							}
+						}},
+					},
+				})
+			})
+		}
+	}
+}
+
+// Core drops prior state AND private data for tainted objects. Capture this
+// explicit operator-action limitation without applying the destructive plan.
+func TestNativeDefault_TerraformLegacyTaintedReplacementLimitation(t *testing.T) {
+	t.Setenv("TF_ACC_PROVIDER_NAMESPACE", "botyard-ai")
+	api, srv := newFakeOpenClawBotAPI(t)
+	legacy := strings.Replace(openClawTestConfig(srv.URL, ""), "  config = {\n    \n  }\n", "", 1)
+	resource.UnitTest(t, resource.TestCase{
+		CheckDestroy: func(_ *terraform.State) error {
+			api.mu.Lock()
+			defer api.mu.Unlock()
+			if api.exists || api.writes != 1 || api.deletes != 1 {
+				return fmt.Errorf("ordinary cleanup: exists=%v writes=%d deletes=%d", api.exists, api.writes, api.deletes)
+			}
+			return nil
+		},
+		Steps: []resource.TestStep{
+			{ExternalProviders: map[string]resource.ExternalProvider{"botyard": {Source: "Botyard-AI/botyard", VersionConstraint: "0.8.0"}}, Config: legacy},
+			{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: legacy, Taint: []string{"botyard_bot.native"}, PlanOnly: true, ExpectNonEmptyPlan: true},
+		},
+	})
+}
+
+// A native bot must remain replaceable; the private marker is legacy-only.
+func TestNativeDefault_TerraformNativeLifecycleReplacement(t *testing.T) {
+	t.Setenv("TF_ACC_PROVIDER_NAMESPACE", "botyard-ai")
+	api, srv := newFakeNativeBotAPI(t)
+	config := strings.Replace(nativePromptTestConfig(srv.URL, `tool_search = { mode = "off" }`),
+		`  name         = "native-probe"`, "  lifecycle { replace_triggered_by = [terraform_data.trigger] }\n"+`  name         = "native-probe"`, 1)
+	resource.UnitTest(t, resource.TestCase{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Steps: []resource.TestStep{
+		{Config: config + "\nresource \"terraform_data\" \"trigger\" { input = \"before\" }\n"},
+		{Config: config + "\nresource \"terraform_data\" \"trigger\" { input = \"after\" }\n", Check: func(_ *terraform.State) error {
+			api.mu.Lock()
+			defer api.mu.Unlock()
+			if !api.exists || api.writes != 2 || api.deletes != 1 {
+				return fmt.Errorf("native replacement: exists=%v writes=%d deletes=%d", api.exists, api.writes, api.deletes)
+			}
+			return nil
+		}},
+	}})
+}
+
 // TestConfigBlocks_AddedToExistingBot adds nested config blocks to a bot that
 // already exists. Their Optional+Computed leaves must plan as unknown, not as
 // the null copied from the absent parent: the server fills them in, and a
