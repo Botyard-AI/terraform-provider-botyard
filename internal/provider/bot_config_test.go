@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-framework/diag"
@@ -206,19 +207,19 @@ func TestMapBotConfig_NilCfgNoop(_ *testing.T) {
 	mapBotConfig(&client.OpenClawBotConfig{}, nil)
 }
 
-// TestBuildBotCreateBody_EmbedsConfig proves a declared config block is embedded
-// in the create POST, and an omitted block yields an empty config object.
+// TestBuildBotCreateBody_EmbedsConfig proves native overrides are embedded in
+// the create POST, and an omitted block yields an empty config object.
 func TestBuildBotCreateBody_EmbedsConfig(t *testing.T) {
 	model := botResourceModel()
-	model.Config = &botConfigModel{ThinkingDefault: types.StringValue("medium")}
+	model.NativeConfig = &botNativeConfigModel{ToolSearch: &botToolSearchModel{Mode: types.StringValue("auto")}}
 	body, diags := buildBotCreateBody(model)
 	if diags.HasError() {
 		t.Fatalf("diags: %v", diags)
 	}
 	m := decodeObj(t, body)
 	cfg := decodeSub(t, m["config"])
-	if jsonStr(t, cfg["thinking_default"]) != "medium" {
-		t.Errorf("embedded config thinking_default = %s", cfg["thinking_default"])
+	if jsonStr(t, cfg["bot_type"]) != "native" || jsonStr(t, decodeSub(t, cfg["tool_search"])["mode"]) != "auto" {
+		t.Errorf("embedded native config = %s", m["config"])
 	}
 
 	// Omitted config → empty object (Phase A behavior preserved).
@@ -322,13 +323,15 @@ func TestBotResource_CreateWithConfigRoundTrip(t *testing.T) {
 		gotBodyRaw, _ = io.ReadAll(r.Body)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		_, _ = w.Write([]byte(cannedBotWithConfigJSON))
+		nativeResponse := strings.Replace(cannedBotWithConfigJSON, `"harness": "openclaw"`, `"harness": "botyard_native"`, 1)
+		nativeResponse = strings.Replace(nativeResponse, `"thinking_default": "high", "system_prompt_mode": "openclaw"`, `"model": {"provider": "botyard", "model": "test"}, "tool_search": {"mode": "auto"}`, 1)
+		_, _ = w.Write([]byte(nativeResponse))
 	}))
 	defer srv.Close()
 
 	c := newBotClient(t, srv.URL, "byk_test")
 	plan := botResourceModel()
-	plan.Config = &botConfigModel{ThinkingDefault: types.StringValue("high")}
+	plan.NativeConfig = &botNativeConfigModel{ToolSearch: &botToolSearchModel{Mode: types.StringValue("auto")}}
 	body, diags := buildBotCreateBody(plan)
 	if diags.HasError() {
 		t.Fatalf("diags: %v", diags)
@@ -342,16 +345,16 @@ func TestBotResource_CreateWithConfigRoundTrip(t *testing.T) {
 		t.Fatalf("JSON201 nil (status %d)", resp.StatusCode())
 	}
 	sentCfg := decodeSub(t, decodeObj(t, gotBodyRaw)["config"])
-	if jsonStr(t, sentCfg["thinking_default"]) != "high" {
+	if jsonStr(t, sentCfg["bot_type"]) != "native" || jsonStr(t, decodeSub(t, sentCfg["tool_search"])["mode"]) != "auto" {
 		t.Errorf("create body config = %s", decodeObj(t, gotBodyRaw)["config"])
 	}
 	mapDiags := &diag.Diagnostics{}
-	mapBotDesiredConfig(resp.JSON201.Harness, &resp.JSON201.DesiredConfig, plan.Config, nil, mapDiags)
+	mapBotDesiredConfig(resp.JSON201.Harness, &resp.JSON201.DesiredConfig, nil, plan.NativeConfig, mapDiags)
 	if mapDiags.HasError() {
 		t.Fatalf("mapBotDesiredConfig: %v", mapDiags.Errors())
 	}
-	if plan.Config.ThinkingDefault.ValueString() != "high" {
-		t.Errorf("mapped thinking_default = %q", plan.Config.ThinkingDefault.ValueString())
+	if plan.NativeConfig.ToolSearch.Mode.ValueString() != "auto" {
+		t.Errorf("mapped tool_search.mode = %q", plan.NativeConfig.ToolSearch.Mode.ValueString())
 	}
 }
 

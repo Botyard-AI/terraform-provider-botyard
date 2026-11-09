@@ -1162,7 +1162,7 @@ func TestBotPack_ConfigFailureSavesUnsentResources(t *testing.T) {
 				Name:                 types.StringValue("pack-probe"),
 				Description:          types.StringNull(),
 				AvatarURL:            types.StringNull(),
-				HostingType:          types.StringUnknown(),
+				HostingType:          types.StringValue("hosted"),
 				Harness:              types.StringValue("botyard_native"),
 				SuggestionsOptOut:    types.BoolUnknown(),
 				AutoSuspendEnabled:   types.BoolUnknown(),

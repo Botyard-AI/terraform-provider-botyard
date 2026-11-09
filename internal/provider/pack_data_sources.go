@@ -519,7 +519,7 @@ func (d *PackVersionDataSource) Schema(_ context.Context, _ datasource.SchemaReq
 		return schema.BoolAttribute{Computed: true, MarkdownDescription: desc}
 	}
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Reads the full contents of one bot-pack version: its skills (with pinned skill versions), " +
+		MarkdownDescription: "Reads the full contents of one bot-pack version: its skills (pinned or following latest), " +
 			"tools, connections, settings and soul.\n\n" +
 			"Address the version by `pack_version_id`, or by `slug` for the pack's latest published version. " +
 			"The API cannot look up an older version by number, so pin an older version by its id.\n\n" +
@@ -590,14 +590,14 @@ func (d *PackVersionDataSource) Schema(_ context.Context, _ datasource.SchemaReq
 			},
 			"skills": schema.ListNestedAttribute{
 				Computed:            true,
-				MarkdownDescription: "Skills the version includes, each pinned to a skill version.",
+				MarkdownDescription: "Skills the version includes. A null skill_version_id means the skill follows latest edits.",
 				NestedObject: schema.NestedAttributeObject{Attributes: map[string]schema.Attribute{
 					"skill_id":         str("Skill id. Use with `botyard_bot_skill_assignment`."),
 					"skill_slug":       str("Skill slug."),
 					"skill_name":       str("Skill name."),
-					"skill_version_id": str("Id of the pinned skill version."),
-					"version_no":       schema.Int64Attribute{Computed: true, MarkdownDescription: "Number of the pinned skill version."},
-					"version_name":     str("Name of the pinned skill version."),
+					"skill_version_id": str("Id of the pinned skill version. Null when following latest."),
+					"version_no":       schema.Int64Attribute{Computed: true, MarkdownDescription: "Number of the pinned skill version. Null when following latest."},
+					"version_name":     str("Name of the pinned skill version. Null when following latest."),
 					"required":         boolean("Whether the pack needs this skill."),
 				}},
 			},
@@ -775,17 +775,14 @@ func packVersionToModel(v client.OrgPackVersion) (PackVersionDataSourceModel, di
 			Model:    types.StringValue(v.RecommendedModel.Model),
 		}
 	}
-	for _, s := range v.Skills {
-		m.Skills = append(m.Skills, PackSkillModel{
-			SkillID:        types.StringValue(s.Skill.SkillId),
-			SkillSlug:      types.StringValue(s.Skill.SkillSlug),
-			SkillName:      types.StringValue(s.Skill.SkillName),
-			SkillVersionID: types.StringValue(s.Skill.SkillVersionId),
-			VersionNo:      types.Int64Value(int64(s.Skill.VersionNo)),
-			VersionName:    types.StringValue(s.Skill.VersionName),
-			Required:       types.BoolValue(s.Required),
-		})
-		m.SkillIDs = append(m.SkillIDs, s.Skill.SkillId)
+	for i, s := range v.Skills {
+		sm, err := packSkillToModel(s)
+		if err != nil {
+			diags.AddError("Unsupported pack skill", unknownVariantDetail(v, fmt.Sprintf("skills[%d]", i), err))
+			continue
+		}
+		m.Skills = append(m.Skills, sm)
+		m.SkillIDs = append(m.SkillIDs, sm.SkillID.ValueString())
 	}
 	for i, t := range v.Tools {
 		tm, err := packToolToModel(t)
@@ -931,4 +928,48 @@ func int64PointerValue(v *int) types.Int64 {
 		return types.Int64Null()
 	}
 	return types.Int64Value(int64(*v))
+}
+
+// packSkillToModel projects the API's fixed/latest union into the existing
+// Terraform read-only fields. Latest has no pinned version; never invent one.
+func packSkillToModel(s client.NamedPackSkill) (PackSkillModel, error) {
+	kind, err := s.Skill.Discriminator()
+	if err != nil {
+		return PackSkillModel{}, err
+	}
+	m := PackSkillModel{Required: types.BoolValue(s.Required)}
+	switch kind {
+	case "fixed", "":
+		// Older APIs returned the fixed reference before kind was introduced.
+		v, err := s.Skill.AsSkillVersionRef()
+		if err != nil {
+			return m, err
+		}
+		if v.SkillId == "" || v.SkillVersionId == "" {
+			return m, fmt.Errorf("fixed skill reference lacks its id or pinned version")
+		}
+		m.SkillID = types.StringValue(v.SkillId)
+		m.SkillSlug = types.StringValue(v.SkillSlug)
+		m.SkillName = types.StringValue(v.SkillName)
+		m.SkillVersionID = types.StringValue(v.SkillVersionId)
+		m.VersionNo = types.Int64Value(int64(v.VersionNo))
+		m.VersionName = types.StringValue(v.VersionName)
+	case "latest":
+		v, err := s.Skill.AsLatestSkillRef()
+		if err != nil {
+			return m, err
+		}
+		if v.SkillId == "" {
+			return m, fmt.Errorf("latest skill reference lacks its id")
+		}
+		m.SkillID = types.StringValue(v.SkillId)
+		m.SkillSlug = types.StringValue(v.SkillSlug)
+		m.SkillName = types.StringValue(v.SkillName)
+		m.SkillVersionID = types.StringNull()
+		m.VersionNo = types.Int64Null()
+		m.VersionName = types.StringNull()
+	default:
+		return m, fmt.Errorf("unsupported skill reference kind %q", kind)
+	}
+	return m, nil
 }

@@ -40,6 +40,8 @@ type fakeNativeBotAPI struct {
 	mode     string
 	images   map[string]json.RawMessage
 	writes   int
+	deletes  int
+	reads    int
 	refused  []string
 }
 
@@ -91,6 +93,7 @@ func (a *fakeNativeBotAPI) serve(w http.ResponseWriter, r *http.Request) {
 		a.exists = true
 		a.writeBot(w, http.StatusCreated)
 	case r.Method == http.MethodGet && r.URL.Path == bot && a.exists:
+		a.reads++
 		a.writeBot(w, http.StatusOK)
 	case r.Method == http.MethodPatch && r.URL.Path == bot && a.exists:
 		a.writeBot(w, http.StatusOK)
@@ -100,6 +103,7 @@ func (a *fakeNativeBotAPI) serve(w http.ResponseWriter, r *http.Request) {
 		}
 		a.writeBot(w, http.StatusOK)
 	case r.Method == http.MethodDelete && r.URL.Path == bot && a.exists:
+		a.deletes++
 		a.exists = false
 		w.WriteHeader(http.StatusNoContent)
 	case r.Method == http.MethodGet && r.URL.Path == bot+"/suggestions" && a.exists:
@@ -327,6 +331,14 @@ resource "botyard_bot" "native" {
   }
 }
 `, endpoint, configBody)
+}
+
+// Opt in with a separate apply before cleanup; old-provider configurations
+// deliberately cannot contain an attribute their released schema does not know.
+func legacyDeletionOptInConfig(endpoint string) string {
+	config := openClawTestConfig(endpoint, "")
+	config = strings.Replace(config, "  config = {\n    \n  }\n", "", 1)
+	return strings.Replace(config, `  name         = "native-probe"`, "  allow_legacy_deletion = true\n"+`  name         = "native-probe"`, 1)
 }
 
 // TestNativePromptRemoved_UpgradeFromV050 drives real Terraform core through
@@ -583,6 +595,7 @@ func TestConfigModelRemoved_UpgradeFromV060(t *testing.T) {
 				Config:                   without,
 				Check:                    resource.TestCheckNoResourceAttr(addr, "config.model.primary.model"),
 			},
+			{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: legacyDeletionOptInConfig(srv.URL)},
 		},
 	})
 
@@ -601,28 +614,205 @@ func TestConfigToolSearch_RoundTrip(t *testing.T) {
 	const addr = "botyard_bot.native"
 
 	resource.UnitTest(t, resource.TestCase{
-		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
+				ExternalProviders: map[string]resource.ExternalProvider{
+					"botyard": {Source: "Botyard-AI/botyard", VersionConstraint: "0.8.0"},
+				},
 				Config: openClawTestConfig(srv.URL, `tool_search = { mode = "always" }`),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(addr, "config.tool_search.mode", "always"),
 					resource.TestCheckResourceAttr(addr, "config.tool_search.auto_threshold_percent", "10"),
 				),
 			},
-			{Config: openClawTestConfig(srv.URL, `tool_search = { mode = "always" }`), PlanOnly: true},
+			{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: openClawTestConfig(srv.URL, `tool_search = { mode = "always" }`), PlanOnly: true},
 			{
-				Config: openClawTestConfig(srv.URL, `tool_search = { mode = "off" }`),
-				Check:  resource.TestCheckResourceAttr(addr, "config.tool_search.mode", "off"),
+				ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+				Config:                   openClawTestConfig(srv.URL, `tool_search = { mode = "off" }`),
+				Check:                    resource.TestCheckResourceAttr(addr, "config.tool_search.mode", "off"),
 			},
 			{
-				Config:      openClawTestConfig(srv.URL, `tool_search = { mode = "sometimes" }`),
-				PlanOnly:    true,
-				ExpectError: regexp.MustCompile(`Invalid Attribute Value`),
+				ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+				Config:                   openClawTestConfig(srv.URL, `tool_search = { mode = "sometimes" }`),
+				PlanOnly:                 true,
+				ExpectError:              regexp.MustCompile(`Invalid Attribute Value`),
 			},
-			{Config: openClawTestConfig(srv.URL, `tool_search = { mode = "off" }`), PlanOnly: true},
+			// A name change would replace the existing OpenClaw bot. Refuse it
+			// at plan time, before Terraform can delete it.
+			{
+				ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+				Config:                   strings.Replace(openClawTestConfig(srv.URL, `tool_search = { mode = "off" }`), `name         = "native-probe"`, `name         = "renamed"`, 1),
+				PlanOnly:                 true,
+				ExpectError:              regexp.MustCompile(`OpenClaw is existing-bots-only`),
+			},
+			{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: openClawTestConfig(srv.URL, `tool_search = { mode = "off" }`), PlanOnly: true},
+			{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: legacyDeletionOptInConfig(srv.URL)},
 		},
 	})
+}
+
+// Upgrade from the released provider must refuse replacement before any delete,
+// including when a replacement-triggering value is only known after apply.
+func TestNativeDefault_TerraformLegacyUpgradeRefusesReplacement(t *testing.T) {
+	t.Setenv("TF_ACC_PROVIDER_NAMESPACE", "botyard-ai")
+	for _, attribute := range []string{"native", "name", "hosting_type", "harness"} {
+		t.Run(attribute, func(t *testing.T) {
+			api, srv := newFakeOpenClawBotAPI(t)
+			legacy := openClawTestConfig(srv.URL, `thinking_default = "high"`)
+			transition := nativePromptTestConfig(srv.URL, `tool_search = { mode = "auto" }`)
+			if attribute != "native" {
+				// terraform_data.output is unknown until the new resource applies.
+				transition = legacy
+				value := "renamed"
+				switch attribute {
+				case "name":
+					transition = strings.Replace(transition, `name         = "native-probe"`, `name = terraform_data.pending.output`, 1)
+				case "hosting_type":
+					value = "self_hosted"
+					transition = strings.Replace(transition, `hosting_type = "hosted"`, `hosting_type = terraform_data.pending.output`, 1)
+				case "harness":
+					value = "botyard_native"
+					transition = strings.Replace(transition, `  config = {`, "  harness = terraform_data.pending.output\n  config = {", 1)
+				}
+				transition += fmt.Sprintf("\nresource \"terraform_data\" \"pending\" { input = %q }\n", value)
+			}
+			if transition == legacy {
+				t.Fatal("test fixture did not change an immutable value")
+			}
+			resource.UnitTest(t, resource.TestCase{
+				Steps: []resource.TestStep{
+					{ExternalProviders: map[string]resource.ExternalProvider{
+						"botyard": {Source: "Botyard-AI/botyard", VersionConstraint: "0.8.0"},
+					}, Config: legacy},
+					{
+						ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+						Config:                   transition, PlanOnly: true,
+						ExpectError: regexp.MustCompile(`OpenClaw is existing-bots-only`),
+					},
+					{
+						ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+						Config:                   legacy, PlanOnly: true,
+						PreConfig: func() {
+							api.mu.Lock()
+							defer api.mu.Unlock()
+							if !api.exists || api.writes != 1 || api.deletes != 0 {
+								t.Errorf("replacement changed legacy bot before refusal: exists=%v writes=%d deletes=%d", api.exists, api.writes, api.deletes)
+							}
+						},
+					},
+					{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: legacyDeletionOptInConfig(srv.URL)},
+				},
+			})
+		})
+	}
+}
+
+// A lifecycle dependency can request replacement without changing immutable
+// bot attributes. Exercise that decision through real Terraform and v0.8 state.
+func TestNativeDefault_TerraformLegacyReplaceTriggeredBy(t *testing.T) {
+	t.Setenv("TF_ACC_PROVIDER_NAMESPACE", "botyard-ai")
+	for _, shape := range []string{"implicit", "config", "explicit"} {
+		for _, createFirst := range []bool{false, true} {
+			t.Run(fmt.Sprintf("%s/create_before_destroy=%v", shape, createFirst), func(t *testing.T) {
+				api, srv := newFakeOpenClawBotAPI(t)
+				legacy := openClawTestConfig(srv.URL, `thinking_default = "high"`)
+				if shape != "config" {
+					legacy = strings.Replace(legacy, "  config = {\n    thinking_default = \"high\"\n  }\n", "", 1)
+				}
+				lifecycle := fmt.Sprintf("  lifecycle {\n    replace_triggered_by = [terraform_data.trigger]\n    create_before_destroy = %v\n  }\n", createFirst)
+				if shape == "explicit" {
+					lifecycle += "  harness = \"openclaw\"\n"
+				}
+				legacy = strings.Replace(legacy, `  name         = "native-probe"`, lifecycle+`  name         = "native-probe"`, 1)
+				initial := legacy + "\nresource \"terraform_data\" \"trigger\" { input = \"before\" }\n"
+				changed := legacy + "\nresource \"terraform_data\" \"trigger\" { input = \"after\" }\n"
+				resource.UnitTest(t, resource.TestCase{
+					CheckDestroy: func(_ *terraform.State) error {
+						api.mu.Lock()
+						defer api.mu.Unlock()
+						if api.exists || api.writes != 1 || api.deletes != 1 {
+							return fmt.Errorf("ordinary cleanup: exists=%v writes=%d deletes=%d", api.exists, api.writes, api.deletes)
+						}
+						return nil
+					},
+					Steps: []resource.TestStep{
+						{ExternalProviders: map[string]resource.ExternalProvider{"botyard": {Source: "Botyard-AI/botyard", VersionConstraint: "0.8.0"}}, Config: initial},
+						{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: changed, PlanOnly: true, ExpectError: regexp.MustCompile(`OpenClaw is existing-bots-only`)},
+						{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: initial, PlanOnly: true, PreConfig: func() {
+							api.mu.Lock()
+							defer api.mu.Unlock()
+							if !api.exists || api.writes != 1 || api.deletes != 0 {
+								t.Errorf("lifecycle replacement changed legacy bot: exists=%v writes=%d deletes=%d", api.exists, api.writes, api.deletes)
+							}
+						}},
+						{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: legacyDeletionOptInConfig(srv.URL)},
+					},
+				})
+			})
+		}
+	}
+}
+
+// Core hides tainted state during planning, but Delete still receives it.
+// Exercise the actual failed apply, then untaint the intact fake bot before
+// explicitly applying the opt-in and deleting it.
+func TestNativeDefault_TerraformLegacyTaintedReplacementProtected(t *testing.T) {
+	t.Setenv("TF_ACC_PROVIDER_NAMESPACE", "botyard-ai")
+	testDir := t.TempDir()
+	t.Setenv("TF_ACC_TEMP_DIR", testDir)
+	api, srv := newFakeOpenClawBotAPI(t)
+	legacy := strings.Replace(openClawTestConfig(srv.URL, ""), "  config = {\n    \n  }\n", "", 1)
+	resource.UnitTest(t, resource.TestCase{
+		CheckDestroy: func(_ *terraform.State) error {
+			api.mu.Lock()
+			defer api.mu.Unlock()
+			if api.exists || api.writes != 1 || api.deletes != 1 {
+				return fmt.Errorf("explicit deletion: exists=%v writes=%d deletes=%d", api.exists, api.writes, api.deletes)
+			}
+			return nil
+		},
+		Steps: []resource.TestStep{
+			{ExternalProviders: map[string]resource.ExternalProvider{"botyard": {Source: "Botyard-AI/botyard", VersionConstraint: "0.8.0"}}, Config: legacy},
+			{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: legacy, Destroy: true, PlanOnly: true, ExpectError: regexp.MustCompile(`Legacy bot deletion is protected`)},
+			{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: legacy, Taint: []string{"botyard_bot.native"}, ExpectError: regexp.MustCompile(`Legacy bot deletion is protected`)},
+			{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: legacyDeletionOptInConfig(srv.URL), PreConfig: func() {
+				api.mu.Lock()
+				defer api.mu.Unlock()
+				if !api.exists || api.writes != 1 || api.deletes != 0 {
+					t.Errorf("tainted apply changed legacy bot: exists=%v writes=%d deletes=%d", api.exists, api.writes, api.deletes)
+				}
+				untaintLegacyTestBot(t, testDir)
+			}},
+			{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: legacyDeletionOptInConfig(srv.URL), Check: resource.TestCheckResourceAttr("botyard_bot.native", "allow_legacy_deletion", "true")},
+			// Removing or explicitly revoking a previously applied opt-in
+			// restores protection; the flag is provider state, not API config.
+			{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: legacy},
+			{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: legacy, Destroy: true, PlanOnly: true, ExpectError: regexp.MustCompile(`Legacy bot deletion is protected`)},
+			{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: strings.Replace(legacyDeletionOptInConfig(srv.URL), "allow_legacy_deletion = true", "allow_legacy_deletion = false", 1), Check: resource.TestCheckResourceAttr("botyard_bot.native", "allow_legacy_deletion", "false")},
+			{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: legacy, Destroy: true, PlanOnly: true, ExpectError: regexp.MustCompile(`Legacy bot deletion is protected`)},
+			{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: legacyDeletionOptInConfig(srv.URL)},
+			{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: legacyDeletionOptInConfig(srv.URL), Destroy: true},
+		},
+	})
+}
+
+// A native bot must remain replaceable; the private marker is legacy-only.
+func TestNativeDefault_TerraformNativeLifecycleReplacement(t *testing.T) {
+	t.Setenv("TF_ACC_PROVIDER_NAMESPACE", "botyard-ai")
+	api, srv := newFakeNativeBotAPI(t)
+	config := strings.Replace(nativePromptTestConfig(srv.URL, `tool_search = { mode = "off" }`),
+		`  name         = "native-probe"`, "  lifecycle { replace_triggered_by = [terraform_data.trigger] }\n"+`  name         = "native-probe"`, 1)
+	resource.UnitTest(t, resource.TestCase{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Steps: []resource.TestStep{
+		{Config: config + "\nresource \"terraform_data\" \"trigger\" { input = \"before\" }\n"},
+		{Config: config + "\nresource \"terraform_data\" \"trigger\" { input = \"after\" }\n", Check: func(_ *terraform.State) error {
+			api.mu.Lock()
+			defer api.mu.Unlock()
+			if !api.exists || api.writes != 2 || api.deletes != 1 {
+				return fmt.Errorf("native replacement: exists=%v writes=%d deletes=%d", api.exists, api.writes, api.deletes)
+			}
+			return nil
+		}},
+	}})
 }
 
 // TestConfigBlocks_AddedToExistingBot adds nested config blocks to a bot that
@@ -638,15 +828,103 @@ func TestConfigBlocks_AddedToExistingBot(t *testing.T) {
 
 	t.Run("openclaw config.tool_search", func(t *testing.T) {
 		resource.UnitTest(t, resource.TestCase{
-			ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 			Steps: []resource.TestStep{
-				{Config: openClawTestConfig(oc.URL, `thinking_default = "high"`)},
+				{ExternalProviders: map[string]resource.ExternalProvider{
+					"botyard": {Source: "Botyard-AI/botyard", VersionConstraint: "0.8.0"},
+				}, Config: openClawTestConfig(oc.URL, `thinking_default = "high"`)},
 				{
-					Config: openClawTestConfig(oc.URL, "thinking_default = \"high\"\n    tool_search = { mode = \"always\" }"),
-					Check:  resource.TestCheckResourceAttr(addr, "config.tool_search.auto_threshold_percent", "10"),
+					ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+					Config:                   openClawTestConfig(oc.URL, "thinking_default = \"high\"\n    tool_search = { mode = \"always\" }"),
+					Check:                    resource.TestCheckResourceAttr(addr, "config.tool_search.auto_threshold_percent", "10"),
 				},
-				{Config: openClawTestConfig(oc.URL, "thinking_default = \"high\"\n    tool_search = { mode = \"always\" }"), PlanOnly: true},
+				{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: openClawTestConfig(oc.URL, "thinking_default = \"high\"\n    tool_search = { mode = \"always\" }"), PlanOnly: true},
+				{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: legacyDeletionOptInConfig(oc.URL)},
 			},
 		})
+	})
+}
+
+// Terraform core exercises plan modifiers, create, and no-drift refresh against
+// a local fake API; no production resources are touched.
+func TestNativeDefault_TerraformCreateAndRejectLegacy(t *testing.T) {
+	t.Setenv("TF_ACC_PROVIDER_NAMESPACE", "botyard-ai")
+	_, srv := newFakeNativeBotAPI(t)
+	native := nativePromptTestConfig(srv.URL, `tool_search = { mode = "auto" }`)
+	// Exercise the default by omitting both immutable runtime attributes.
+	implicit := strings.Replace(native, "  hosting_type = \"hosted\"\n  harness      = \"botyard_native\"\n", "", 1)
+	if implicit == native {
+		t.Fatal("test fixture did not omit the hosting pair")
+	}
+	legacy := strings.Replace(native, `harness      = "botyard_native"`, `harness      = "openclaw"`, 1)
+	// Isolate the existing-only policy from the separate native-config mismatch.
+	legacyWithoutConfig := strings.Replace(legacy, "  native_config = {\n    tool_search = { mode = \"auto\" }\n  }\n", "", 1)
+	if legacy == native || legacyWithoutConfig == legacy {
+		t.Fatal("test fixture did not produce a bare OpenClaw request")
+	}
+	// No explicit harness and a legacy-only config cannot silently fall back.
+	legacyConfig := openClawTestConfig(srv.URL, `thinking_default = "high"`)
+	resource.UnitTest(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{Config: legacyWithoutConfig, PlanOnly: true, ExpectError: regexp.MustCompile(`OpenClaw is existing-bots-only`)},
+			{Config: legacyConfig, PlanOnly: true, ExpectError: regexp.MustCompile(`Native bots use native_config`)},
+			{
+				Config: implicit,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("botyard_bot.native", "hosting_type", "hosted"),
+					resource.TestCheckResourceAttr("botyard_bot.native", "harness", "botyard_native"),
+					resource.TestCheckResourceAttr("botyard_bot.native", "native_config.tool_search.mode", "auto"),
+				),
+			},
+			{Config: implicit, PlanOnly: true},
+		},
+	})
+}
+
+// v0.3.0 has no harness in saved state. A no-refresh destroy must not infer
+// native from omitted configuration, and opt-in cannot classify a runtime.
+func TestNativeDefault_TerraformUnclassifiedLegacyNoRefresh(t *testing.T) {
+	t.Setenv("TF_ACC_PROVIDER_NAMESPACE", "botyard-ai")
+	api, srv := newFakeOpenClawBotAPI(t)
+	legacy := strings.Replace(openClawTestConfig(srv.URL, ""), "  config = {\n    \n  }\n", "", 1)
+	legacy = strings.Replace(legacy, "  hosting_type = \"hosted\"\n", "", 1)
+	readsBefore := 0
+	cliOptions := &resource.AdditionalCLIOptions{Plan: resource.PlanOptions{NoRefresh: true}}
+	resource.UnitTest(t, resource.TestCase{
+		AdditionalCLIOptions: cliOptions,
+		CheckDestroy: func(_ *terraform.State) error {
+			api.mu.Lock()
+			defer api.mu.Unlock()
+			if api.exists || api.writes != 1 || api.deletes != 1 {
+				return fmt.Errorf("intentional deletion: exists=%v writes=%d deletes=%d", api.exists, api.writes, api.deletes)
+			}
+			return nil
+		},
+		Steps: []resource.TestStep{
+			{ExternalProviders: map[string]resource.ExternalProvider{"botyard": {Source: "Botyard-AI/botyard", VersionConstraint: "0.3.0"}}, Config: legacy, Check: func(state *terraform.State) error {
+				saved := state.RootModule().Resources["botyard_bot.native"].Primary.Attributes
+				if _, ok := saved["harness"]; ok {
+					return fmt.Errorf("released v0.3.0 unexpectedly saved harness: %q", saved["harness"])
+				}
+				api.mu.Lock()
+				defer api.mu.Unlock()
+				readsBefore = api.reads
+				return nil
+			}},
+			{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: legacy, Destroy: true, PlanOnly: true, ExpectError: regexp.MustCompile(`Bot runtime must be classified before deletion`)},
+			{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: legacy, PreConfig: func() {
+				// Re-enable Terraform's normal refresh only after proving refusal
+				// issued no reads, writes, or deletes against unclassified state.
+				cliOptions.Plan.NoRefresh = false
+				api.mu.Lock()
+				defer api.mu.Unlock()
+				if !api.exists || api.writes != 1 || api.deletes != 0 || api.reads != readsBefore {
+					t.Errorf("no-refresh refusal: exists=%v writes=%d deletes=%d reads=%d before=%d", api.exists, api.writes, api.deletes, api.reads, readsBefore)
+				}
+			}, Check: resource.TestCheckResourceAttr("botyard_bot.native", "harness", "openclaw")},
+			{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: legacy, Destroy: true, PlanOnly: true, ExpectError: regexp.MustCompile(`Legacy bot deletion is protected`)},
+			{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: legacyDeletionOptInConfig(srv.URL)},
+			{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: legacyDeletionOptInConfig(srv.URL), Destroy: true},
+		},
 	})
 }

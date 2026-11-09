@@ -56,8 +56,8 @@ func TestBotSchema_ConfigHasNoModelBlock(t *testing.T) {
 	}
 }
 
-// A create with a `config` block that sets neighbouring fields but no model
-// block passes ValidateResourceConfig and PlanResourceChange.
+// Existing OpenClaw bots can still plan a `config` block with neighbouring
+// fields and no removed model block, without replacement.
 func TestBotPlan_ConfigWithoutModelBlockPlansCleanly(t *testing.T) {
 	ctx := context.Background()
 	srv := botProtoServer(t)
@@ -80,16 +80,20 @@ func TestBotPlan_ConfigWithoutModelBlockPlansCleanly(t *testing.T) {
 	}
 	requireNoErrorDiags(t, "validate", vResp.Diagnostics)
 
+	prior := objectFromJSON(t, typ, `{"id":"bot_123","slug":"research-assistant","name":"Research Assistant","hosting_type":"hosted","harness":"openclaw"}`)
 	pResp, err := srv.PlanResourceChange(ctx, &tfprotov6.PlanResourceChangeRequest{
 		TypeName:         botTypeName,
-		PriorState:       dynamicValue(t, typ, tftypes.NewValue(typ, nil)),
-		ProposedNewState: dynamicValue(t, typ, config),
+		PriorState:       dynamicValue(t, typ, prior),
+		ProposedNewState: dynamicValue(t, typ, proposedNewState(t, botSchema(t).Attributes, config, prior)),
 		Config:           dynamicValue(t, typ, config),
 	})
 	if err != nil {
 		t.Fatalf("plan: %v", err)
 	}
 	requireNoErrorDiags(t, "plan", pResp.Diagnostics)
+	if len(pResp.RequiresReplace) != 0 {
+		t.Fatalf("existing OpenClaw config must not replace the bot: %v", pResp.RequiresReplace)
+	}
 	if pResp.PlannedState == nil {
 		t.Fatal("plan returned no planned state")
 	}

@@ -83,6 +83,42 @@ output "bot_id" {
 }
 ```
 
+### Bot runtimes and upgrades
+
+New hosted `botyard_bot` resources use the Botyard native runtime by default.
+Use `native_config` for native configuration. OpenClaw remains supported for
+existing or imported bots, including their `config` updates, but cannot be used
+for new bots. Upgrading the provider does not change an existing bot's runtime
+when `harness` and `hosting_type` are omitted; do not replace a legacy bot to
+upgrade. Immutable-attribute changes and `lifecycle.replace_triggered_by`
+replacements are refused at plan time, including `create_before_destroy`.
+Ordinary bot updates remain supported. **Deletion of existing OpenClaw bots is
+protected by default**, including deletion during a tainted replacement or after
+removing the resource block. The provider checks saved state before sending DELETE.
+Omitted, false, or unknown `allow_legacy_deletion` values do not permit deletion.
+
+Deletion also fails closed when the saved `harness` is absent, unknown, or not
+recognized by this provider, even when `allow_legacy_deletion = true`. This
+includes state from provider 0.1–0.3, before `harness` was recorded. Use
+`terraform apply -refresh-only` without `-refresh=false` to classify the existing
+runtime first, and review the saved harness. An unsupported runtime needs a
+provider that recognizes it; the opt-in is not a substitute for classification.
+Once classified as OpenClaw, the separate opt-in workflow below still applies.
+
+For an intentional deletion, keep the legacy resource block and its runtime
+unchanged, set `allow_legacy_deletion = true`, and **apply that change first**.
+Then review and run a separate destroy/removal operation. Adding the flag only
+when running destroy does not update saved state and cannot unlock deletion.
+If the resource is tainted, first verify that the existing bot is intact and
+untaint the resource before applying the opt-in. Setting the option back to false
+or removing it and applying restores protection. This option is provider-only;
+it is never sent to the API and does not enable OpenClaw creation or migration.
+Native and external bot deletion is unchanged. `prevent_destroy` may still be
+used as additional Terraform configuration protection, not as a replacement for
+the default provider guard.
+
+External self-hosted profiles remain separate from the hosted default.
+
 ### Authentication
 
 The provider authenticates with an **organization-scoped Botyard API key**

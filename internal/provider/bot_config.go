@@ -199,8 +199,8 @@ func botConfigSchemaAttribute() schema.SingleNestedAttribute {
 	}
 }
 
-// buildBotConfigPatch renders the sparse OpenClawConfigPatch object (the value of
-// the `config` key in both the create POST and the `PATCH /config` body). Only
+// buildBotConfigPatch renders the sparse OpenClaw PATCH /config object. New
+// creation directly projects generated variants in bot_create_config.go. Only
 // leaves that are known and non-null are emitted, so omitted fields are left
 // untouched by the server's `patch_model` (unset != explicit null). A nil block
 // yields an empty object `{}` — the Phase A behavior that merges nothing over

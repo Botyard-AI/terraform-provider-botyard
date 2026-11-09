@@ -9,62 +9,29 @@ resource "botyard_bot" "support" {
   suggestions_opt_out = true
 }
 
-# A bot with OpenClaw config overrides. `config` is a nested attribute, so it
-# uses object syntax (`config = { ... }`). Only the fields you set are applied
-# over OpenClaw's defaults; omitted fields keep their server default.
-#
-# The model a bot runs on is not part of `config`: it is derived from the bot's
-# LLM credential links. Set it with `botyard_bot_credential_assignment`
-# (`scope = "llm"`, ordered by `ordinal`, with an optional `default_model`).
+# Hosted bots use the native runtime by default. Declare native_config for
+# runtime-specific overrides; omitted fields keep their server defaults.
+# A bot's model is derived from its LLM credential assignments, not this block.
 resource "botyard_bot" "researcher" {
   name        = "Research Assistant"
   description = "Runs deep research tasks."
 
-  config = {
-    system_prompt_mode = "botyard"
-    thinking_default   = "high"
-    reasoning_default  = "stream"
-
-    identity = {
-      emoji = "🔬"
-      theme = "dark"
-    }
-
-    heartbeat = {
-      every            = "30m"
-      light_context    = true
-      isolated_session = true
-
-      active_hours = {
-        from_time = "09:00"
-        to_time   = "17:00"
-        timezone  = "America/New_York"
-      }
-    }
-
-    compaction = {
-      reserve_tokens            = 24000
-      truncate_after_compaction = true
-    }
-
-    session = {
-      write_lock_max_hold_ms = 300000
-    }
-
-    # Defer tool schemas behind a search surface instead of inlining them.
+  native_config = {
     tool_search = {
       mode = "auto"
     }
   }
 
-  # Size the bot above its plan preset. Only the quantities set here are
-  # managed; the others keep their current values. Changing them restarts the
-  # bot.
+  # Changing compute overrides restarts the bot.
   resources = {
     cpu_limit    = "2"
     memory_limit = "4Gi"
   }
 }
+
+# Existing OpenClaw bots remain manageable after import. Keep their existing
+# `config` block; do not change the immutable runtime merely to upgrade the
+# provider. OpenClaw cannot be selected when creating a new bot.
 
 # A bot created from a Bot Pack. The pack is installed when the bot is
 # created; removing the `pack` block later uninstalls it and keeps the bot.
@@ -127,9 +94,9 @@ output "support_bot_slug" {
 # ---------------------------------------------------------------------------
 # A hosted-native bot.
 #
-# Native bots run on Botyard's own agent loop instead of OpenClaw, and are
-# selected by the hosting pair `hosting_type = "hosted"` + `harness =
-# "botyard_native"`. They carry a different config shape, so they use the
+# Native bots run on Botyard's own agent loop and are the default. The explicit
+# hosting pair below is optional and pins the same new-bot selection: `hosting_type = "hosted"` + `harness =
+# "botyard_native"`. Native bots use the
 # `native_config` block — declaring both `config` and `native_config`, or
 # pairing a block with the wrong harness, fails at plan time.
 #

@@ -94,6 +94,10 @@ TRISTATE_FIELDS=(
   "ScheduleUpdateInput.title"
 )
 
+# New-bot creation does not clear credentials/resources: undeclared values must
+# be absent, not JSON null. Metadata nulls retain their existing wire semantics.
+OMITEMPTY_FIELDS=("BotCreate.credentials" "BotCreate.resources")
+
 OAPI_CODEGEN_VERSION="v2.4.1"
 DOWN_CONVERT_VERSION="0.14.1"
 
@@ -106,7 +110,9 @@ python3 "$ROOT/scripts/openapi-normalize.py" "$SPEC" "$tmp_norm" \
   --keep-tags "${KEEP_TAGS[@]}" \
   --exclude-paths "${EXCLUDE_PATHS[@]}" \
   --exclude-operations "${EXCLUDE_OPERATIONS[@]}" \
-  --tristate-fields "${TRISTATE_FIELDS[@]}"
+  --tristate-fields "${TRISTATE_FIELDS[@]}" \
+  --omitempty-fields "${OMITEMPTY_FIELDS[@]}" \
+  --sparse-schemas NativeConfigPatch OpenClawConfigPatch
 
 echo ">> down-convert 3.1 -> 3.0"
 npx --yes "@apiture/openapi-down-convert@${DOWN_CONVERT_VERSION}" --input "$tmp_norm" --output "$tmp_30"

@@ -51,7 +51,7 @@ var rtDefaultResources = map[string]string{
 	"memory_request": "1Gi", "memory_limit": "2Gi", "storage": "10Gi",
 }
 
-// fakeRuntimeBotAPI serves one OpenClaw bot with the runtime settings modelled
+// fakeRuntimeBotAPI serves one hosted native bot with the runtime settings modelled
 // the way update_bot applies them: sparse, `resources` overlaid onto the
 // current shape or reset by null, privileged moving a runc bot onto Kata, and
 // every write owner-gated.
@@ -314,7 +314,7 @@ func (a *fakeRuntimeBotAPI) writeBot(w http.ResponseWriter, status int) {
 		"name": "rt-probe", "namespace": "bot-rt-probe", "tier": "starter",
 		"storage_class": "cluster_default", "onboarding_state": "complete",
 		"health_status": "healthy", "desired_state": "running", "config_generation": 1,
-		"access": "open", "hosting_type": "hosted", "harness": "openclaw",
+		"access": "open", "hosting_type": "hosted", "harness": "botyard_native",
 		"created_at": "2026-10-29T10:00:00Z", "updated_at": "2026-10-29T10:00:00Z",
 		"desired_config": {}
 	}`, desc, resources, a.autoSuspend, a.privilege, a.runtimeClass, rtBotID)
@@ -670,7 +670,9 @@ func TestBotOwnerForbidden_ConfigAndDelete(t *testing.T) {
 
 	sch := botSchema(t)
 	st := tfsdk.State{Schema: sch}
-	if d := st.Set(ctx, &BotResourceModel{Name: types.StringValue("rt-probe"), Slug: types.StringValue("rt-probe")}); d.HasError() {
+	// This test exercises API ownership after runtime classification; null
+	// harness protection is covered separately by the deletion guard matrix.
+	if d := st.Set(ctx, &BotResourceModel{Name: types.StringValue("rt-probe"), Slug: types.StringValue("rt-probe"), Harness: types.StringValue(harnessNative)}); d.HasError() {
 		t.Fatalf("state: %v", d)
 	}
 	resp := fwresource.DeleteResponse{State: st}
@@ -806,8 +808,8 @@ func TestBotRuntimeSettings_PartialCreate(t *testing.T) {
 		Name:                 types.StringValue("rt-probe"),
 		Description:          types.StringNull(),
 		AvatarURL:            types.StringNull(),
-		HostingType:          types.StringUnknown(),
-		Harness:              types.StringUnknown(),
+		HostingType:          types.StringValue("hosted"),
+		Harness:              types.StringValue("botyard_native"),
 		SuggestionsOptOut:    types.BoolValue(true),
 		AutoSuspendEnabled:   types.BoolValue(false),
 		RuntimePrivilegeMode: types.StringUnknown(),

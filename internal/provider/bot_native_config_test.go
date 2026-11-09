@@ -207,24 +207,12 @@ func TestBuildBotCreateBody_NativeBot(t *testing.T) {
 	}
 }
 
-// REGRESSION: an OpenClaw bot's create body must be byte-identical to what it
-// was before native support existed — no hosting pair keys, no bot_type.
-func TestBuildBotCreateBody_OpenClawUnchanged(t *testing.T) {
+// Retiring creation must fail before an OpenClaw config can be dropped onto native.
+func TestBuildBotCreateBody_RejectsNewOpenClawConfig(t *testing.T) {
 	plan := botResourceModel()
 	plan.Config = &botConfigModel{ThinkingDefault: types.StringValue("high")}
-
-	body, diags := buildBotCreateBody(plan)
-	if diags.HasError() {
-		t.Fatalf("diags: %v", diags)
-	}
-	got := decodeObj(t, body)
-	for _, k := range []string{"hosting_type", "harness"} {
-		if _, present := got[k]; present {
-			t.Errorf("undeclared %q must be omitted so the API applies its default, got %s", k, got[k])
-		}
-	}
-	if cfg := decodeSub(t, got["config"]); len(cfg) != 1 || string(cfg["thinking_default"]) != `"high"` {
-		t.Errorf("openclaw config payload changed: %s", got["config"])
+	if body, diags := buildBotCreateBody(plan); !diags.HasError() || body != nil {
+		t.Fatalf("legacy creation must fail, body=%s diagnostics=%v", body, diags)
 	}
 }
 
@@ -286,11 +274,10 @@ func TestValidateConfig(t *testing.T) {
 			m.Config = openclawCfg
 			m.NativeConfig = nativeCfg
 		}, true},
-		// The silent-drop case: without an explicit harness the API creates an
-		// OpenClaw bot and quietly discards the native config.
+		// Native is now the default. State-aware ModifyPlan checks existing bots.
 		{"native block, no harness", func(m *BotResourceModel) {
 			m.NativeConfig = nativeCfg
-		}, true},
+		}, false},
 		{"native block, openclaw harness", func(m *BotResourceModel) {
 			m.Harness = types.StringValue(harnessOpenClaw)
 			m.NativeConfig = nativeCfg
