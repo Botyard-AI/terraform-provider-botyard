@@ -500,7 +500,7 @@ func (r *BotResource) Update(ctx context.Context, req resource.UpdateRequest, re
 // on failure it records a diagnostic and returns ok=false so the caller aborts
 // without setting state.
 func (r *BotResource) updateBotConfig(ctx context.Context, slug string, plan BotResourceModel, diags *diag.Diagnostics) (*client.BotResponse, bool) {
-	body, err := json.Marshal(map[string]json.RawMessage{"config": buildCreateConfig(plan)})
+	body, err := json.Marshal(map[string]json.RawMessage{"config": buildDeclaredConfigUpdatePatch(plan)})
 	if err != nil {
 		diags.AddError("Error encoding bot config", err.Error())
 		return nil, false
@@ -596,30 +596,12 @@ func buildBotCreateRequest(plan BotResourceModel) (*client.BotCreate, diag.Diagn
 		value := plan.AvatarURL.ValueString()
 		request.AvatarUrl = &value
 	}
-	// Decode the shared Terraform projection into the generated variant before
-	// constructing the union. Generated Nullable fields retain omission/value/
-	// null at every optional config leaf; unknown fields fail closed rather than
-	// slipping through the union's opaque raw-JSON reader.
-	decoder := json.NewDecoder(bytes.NewReader(buildCreateConfig(plan)))
-	decoder.DisallowUnknownFields()
-	var err error
-	if harness == client.BotHarness(harnessNative) {
-		var config client.NativeConfigPatch
-		err = decoder.Decode(&config)
-		if err == nil {
-			err = request.Config.FromNativeConfigPatch(config)
-		}
-	} else {
-		var config client.OpenClawConfigPatch
-		err = decoder.Decode(&config)
-		if err == nil {
-			err = request.Config.FromOpenClawConfigPatch(config)
-		}
-	}
+	config, err := buildTypedCreateConfig(plan, harness)
 	if err != nil {
 		diags.AddError("Error encoding bot config", err.Error())
 		return nil, diags
 	}
+	request.Config = config
 	return request, diags
 }
 
@@ -631,15 +613,9 @@ const (
 	harnessNative   = "botyard_native"
 )
 
-// buildCreateConfig renders the `config` value of the create POST from whichever
-// config block is declared.
-//
-// The OpenClaw path is byte-for-byte what it was before native support existed,
-// including the bare `{}` for no block at all: `{}` validates as an empty
-// OpenClaw patch, which is the correct reading for a bot with no declared
-// config. Only the native path emits a `bot_type` discriminator, and it must —
-// see buildNativeConfigPatch for why omitting it silently drops the config.
-func buildCreateConfig(plan BotResourceModel) json.RawMessage {
+// buildDeclaredConfigUpdatePatch selects the existing sparse PATCH serializer.
+// Creation does not call this helper; it projects generated variant fields.
+func buildDeclaredConfigUpdatePatch(plan BotResourceModel) json.RawMessage {
 	if plan.NativeConfig != nil {
 		return buildNativeConfigPatch(plan.NativeConfig)
 	}
