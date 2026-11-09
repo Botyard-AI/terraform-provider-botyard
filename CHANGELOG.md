@@ -14,6 +14,7 @@ a version.
 
 ### Added
 
+- `botyard_workforce_member`: additive user, bot and API-key membership of existing boards, bound to immutable board identity across slug renames. Requires membership identity preconditions in the API; old API writers reject the strict request field. (#56)
 - `botyard_pack_version` / `botyard_pack_versions` skills gain `version_mode`: `fixed` when the pack pins one skill version, `latest` when it follows the skill's latest version. For `latest`, `skill_version_id`, `version_no` and `version_name` are null. A skill kind the provider does not know fails the read with an upgrade hint instead of being dropped from `skill_ids`.
 
 ### Changed

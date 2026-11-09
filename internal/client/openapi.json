@@ -2870,13 +2870,22 @@
             }
           },
           "422": {
-            "description": "The edit would leave a native bot with an LLM credential owned mode does not serve (native_lane_refused), or the request failed validation",
+            "description": "The edit would leave a native bot with an LLM credential owned mode does not serve (native_lane_refused), a chain the User Claude subscription rules refuse (user_claude_chain_refused), or the request failed validation",
             "content": {
               "application/problem+json": {
                 "schema": {
                   "anyOf": [
                     {
                       "$ref": "#/components/schemas/NativeLaneRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeLinkRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
                     },
                     {
                       "$ref": "#/components/schemas/ProblemDetails"
@@ -2891,10 +2900,31 @@
                       "$ref": "#/components/schemas/NativeLaneRefusedProblem"
                     },
                     {
+                      "$ref": "#/components/schemas/UserClaudeLinkRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
+                    },
+                    {
                       "$ref": "#/components/schemas/ProblemDetails"
+                    },
+                    {
+                      "$ref": "#/components/schemas/NativeLaneRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeLinkRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
                     }
                   ],
-                  "$ref": "#/components/schemas/NativeLaneRefusedProblem"
+                  "title": "Response 422 Create Bot V1 Orgs  Org Id  Bots Post"
                 }
               }
             }
@@ -3106,13 +3136,22 @@
             }
           },
           "422": {
-            "description": "The edit would leave a native bot with an LLM credential owned mode does not serve (native_lane_refused), or the request failed validation",
+            "description": "The edit would leave a native bot with an LLM credential owned mode does not serve (native_lane_refused), a chain the User Claude subscription rules refuse (user_claude_chain_refused), or the request failed validation",
             "content": {
               "application/problem+json": {
                 "schema": {
                   "anyOf": [
                     {
                       "$ref": "#/components/schemas/NativeLaneRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeLinkRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
                     },
                     {
                       "$ref": "#/components/schemas/ProblemDetails"
@@ -3127,10 +3166,31 @@
                       "$ref": "#/components/schemas/NativeLaneRefusedProblem"
                     },
                     {
+                      "$ref": "#/components/schemas/UserClaudeLinkRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
+                    },
+                    {
                       "$ref": "#/components/schemas/ProblemDetails"
+                    },
+                    {
+                      "$ref": "#/components/schemas/NativeLaneRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeLinkRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
                     }
                   ],
-                  "$ref": "#/components/schemas/NativeLaneRefusedProblem"
+                  "title": "Response 422 Copy Bot V1 Orgs  Org Id  Bots  Bot Slug  Copy Post"
                 }
               }
             }
@@ -4489,13 +4549,22 @@
             }
           },
           "422": {
-            "description": "The edit would leave a native bot with an LLM credential owned mode does not serve (native_lane_refused), or the request failed validation",
+            "description": "The edit would leave a native bot with an LLM credential owned mode does not serve (native_lane_refused), a chain the User Claude subscription rules refuse (user_claude_chain_refused), or the request failed validation",
             "content": {
               "application/problem+json": {
                 "schema": {
                   "anyOf": [
                     {
                       "$ref": "#/components/schemas/NativeLaneRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeLinkRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
                     },
                     {
                       "$ref": "#/components/schemas/ProblemDetails"
@@ -4510,10 +4579,31 @@
                       "$ref": "#/components/schemas/NativeLaneRefusedProblem"
                     },
                     {
+                      "$ref": "#/components/schemas/UserClaudeLinkRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
+                    },
+                    {
                       "$ref": "#/components/schemas/ProblemDetails"
+                    },
+                    {
+                      "$ref": "#/components/schemas/NativeLaneRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeLinkRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
                     }
                   ],
-                  "$ref": "#/components/schemas/NativeLaneRefusedProblem"
+                  "title": "Response 422 Create Bot Credentials V1 Orgs  Org Id  Bots  Bot Slug  Credentials Private Post"
                 }
               }
             }
@@ -4578,13 +4668,22 @@
             }
           },
           "422": {
-            "description": "The edit would leave a native bot with an LLM credential owned mode does not serve (native_lane_refused), or the request failed validation",
+            "description": "The edit would leave a native bot with an LLM credential owned mode does not serve (native_lane_refused), a chain the User Claude subscription rules refuse (user_claude_chain_refused), or the request failed validation",
             "content": {
               "application/problem+json": {
                 "schema": {
                   "anyOf": [
                     {
                       "$ref": "#/components/schemas/NativeLaneRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeLinkRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
                     },
                     {
                       "$ref": "#/components/schemas/ProblemDetails"
@@ -4599,10 +4698,31 @@
                       "$ref": "#/components/schemas/NativeLaneRefusedProblem"
                     },
                     {
+                      "$ref": "#/components/schemas/UserClaudeLinkRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
+                    },
+                    {
                       "$ref": "#/components/schemas/ProblemDetails"
+                    },
+                    {
+                      "$ref": "#/components/schemas/NativeLaneRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeLinkRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
                     }
                   ],
-                  "$ref": "#/components/schemas/NativeLaneRefusedProblem"
+                  "title": "Response 422 Delete Bot Credential V1 Orgs  Org Id  Bots  Bot Slug  Credentials Private  Credential Id  Delete"
                 }
               }
             }
@@ -4756,13 +4876,22 @@
             }
           },
           "422": {
-            "description": "The edit would leave a native bot with an LLM credential owned mode does not serve (native_lane_refused), or the request failed validation",
+            "description": "The edit would leave a native bot with an LLM credential owned mode does not serve (native_lane_refused), a chain the User Claude subscription rules refuse (user_claude_chain_refused), or the request failed validation",
             "content": {
               "application/problem+json": {
                 "schema": {
                   "anyOf": [
                     {
                       "$ref": "#/components/schemas/NativeLaneRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeLinkRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
                     },
                     {
                       "$ref": "#/components/schemas/ProblemDetails"
@@ -4777,10 +4906,31 @@
                       "$ref": "#/components/schemas/NativeLaneRefusedProblem"
                     },
                     {
+                      "$ref": "#/components/schemas/UserClaudeLinkRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
+                    },
+                    {
                       "$ref": "#/components/schemas/ProblemDetails"
+                    },
+                    {
+                      "$ref": "#/components/schemas/NativeLaneRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeLinkRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
                     }
                   ],
-                  "$ref": "#/components/schemas/NativeLaneRefusedProblem"
+                  "title": "Response 422 Assign Credentials V1 Orgs  Org Id  Bots  Bot Slug  Credentials Put"
                 }
               }
             }
@@ -4857,13 +5007,22 @@
             }
           },
           "422": {
-            "description": "The edit would leave a native bot with an LLM credential owned mode does not serve (native_lane_refused), or the request failed validation",
+            "description": "The edit would leave a native bot with an LLM credential owned mode does not serve (native_lane_refused), a chain the User Claude subscription rules refuse (user_claude_chain_refused), or the request failed validation",
             "content": {
               "application/problem+json": {
                 "schema": {
                   "anyOf": [
                     {
                       "$ref": "#/components/schemas/NativeLaneRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeLinkRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
                     },
                     {
                       "$ref": "#/components/schemas/ProblemDetails"
@@ -4878,10 +5037,31 @@
                       "$ref": "#/components/schemas/NativeLaneRefusedProblem"
                     },
                     {
+                      "$ref": "#/components/schemas/UserClaudeLinkRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
+                    },
+                    {
                       "$ref": "#/components/schemas/ProblemDetails"
+                    },
+                    {
+                      "$ref": "#/components/schemas/NativeLaneRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeLinkRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
                     }
                   ],
-                  "$ref": "#/components/schemas/NativeLaneRefusedProblem"
+                  "title": "Response 422 Reorder Credentials V1 Orgs  Org Id  Bots  Bot Slug  Credentials Reorder Put"
                 }
               }
             }
@@ -4946,13 +5126,22 @@
             }
           },
           "422": {
-            "description": "The edit would leave a native bot with an LLM credential owned mode does not serve (native_lane_refused), or the request failed validation",
+            "description": "The edit would leave a native bot with an LLM credential owned mode does not serve (native_lane_refused), a chain the User Claude subscription rules refuse (user_claude_chain_refused), or the request failed validation",
             "content": {
               "application/problem+json": {
                 "schema": {
                   "anyOf": [
                     {
                       "$ref": "#/components/schemas/NativeLaneRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeLinkRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
                     },
                     {
                       "$ref": "#/components/schemas/ProblemDetails"
@@ -4967,10 +5156,31 @@
                       "$ref": "#/components/schemas/NativeLaneRefusedProblem"
                     },
                     {
+                      "$ref": "#/components/schemas/UserClaudeLinkRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
+                    },
+                    {
                       "$ref": "#/components/schemas/ProblemDetails"
+                    },
+                    {
+                      "$ref": "#/components/schemas/NativeLaneRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeLinkRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
                     }
                   ],
-                  "$ref": "#/components/schemas/NativeLaneRefusedProblem"
+                  "title": "Response 422 Unassign Credential V1 Orgs  Org Id  Bots  Bot Slug  Credentials  Credential Id  Delete"
                 }
               }
             }
@@ -6525,13 +6735,22 @@
             }
           },
           "422": {
-            "description": "The edit would leave a native bot with an LLM credential owned mode does not serve (native_lane_refused), or the request failed validation",
+            "description": "The edit would leave a native bot with an LLM credential owned mode does not serve (native_lane_refused), a chain the User Claude subscription rules refuse (user_claude_chain_refused), or the request failed validation",
             "content": {
               "application/problem+json": {
                 "schema": {
                   "anyOf": [
                     {
                       "$ref": "#/components/schemas/NativeLaneRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeLinkRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
                     },
                     {
                       "$ref": "#/components/schemas/ProblemDetails"
@@ -6546,10 +6765,31 @@
                       "$ref": "#/components/schemas/NativeLaneRefusedProblem"
                     },
                     {
+                      "$ref": "#/components/schemas/UserClaudeLinkRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
+                    },
+                    {
                       "$ref": "#/components/schemas/ProblemDetails"
+                    },
+                    {
+                      "$ref": "#/components/schemas/NativeLaneRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeLinkRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
                     }
                   ],
-                  "$ref": "#/components/schemas/NativeLaneRefusedProblem"
+                  "title": "Response 422 Update Credential V1 Orgs  Org Id  Credentials  Credential Id  Patch"
                 }
               }
             }
@@ -6603,13 +6843,22 @@
             }
           },
           "422": {
-            "description": "The edit would leave a native bot with an LLM credential owned mode does not serve (native_lane_refused), or the request failed validation",
+            "description": "The edit would leave a native bot with an LLM credential owned mode does not serve (native_lane_refused), a chain the User Claude subscription rules refuse (user_claude_chain_refused), or the request failed validation",
             "content": {
               "application/problem+json": {
                 "schema": {
                   "anyOf": [
                     {
                       "$ref": "#/components/schemas/NativeLaneRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeLinkRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
                     },
                     {
                       "$ref": "#/components/schemas/ProblemDetails"
@@ -6624,10 +6873,31 @@
                       "$ref": "#/components/schemas/NativeLaneRefusedProblem"
                     },
                     {
+                      "$ref": "#/components/schemas/UserClaudeLinkRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
+                    },
+                    {
                       "$ref": "#/components/schemas/ProblemDetails"
+                    },
+                    {
+                      "$ref": "#/components/schemas/NativeLaneRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeLinkRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
                     }
                   ],
-                  "$ref": "#/components/schemas/NativeLaneRefusedProblem"
+                  "title": "Response 422 Delete Credential V1 Orgs  Org Id  Credentials  Credential Id  Delete"
                 }
               }
             }
@@ -11553,7 +11823,7 @@
           "conversations"
         ],
         "summary": "Create Conversation",
-        "description": "Create a new conversation.\n\nScope is derived from the auth context when not provided:\n- JWT users default to ``user`` scope (conversation owned by the caller).\n- API keys default to ``org`` scope (org-wide conversation).",
+        "description": "Create a new, members-only conversation.\n\nA person owns what they create. An API key's conversation belongs to the\nkey's creator, else to its bot with the bot's owner as a member (#5020 4b-1).\n``conversation_scope=org`` is refused.",
         "operationId": "create_conversation_v1_orgs__org_id__conversations_post",
         "parameters": [
           {
@@ -11611,7 +11881,7 @@
           "conversations"
         ],
         "summary": "Search Conversations",
-        "description": "Search conversations for an organization.\n\nAccess scoping:\n- JWT users see their own user-scoped + all org-scoped conversations.\n- API keys see only org-scoped conversations.",
+        "description": "Search conversations for an organization.\n\nAccess scoping:\n- JWT users see their own user-scoped + all org-scoped conversations.\n- API keys see org-scoped conversations and the ones they are a member of\n  (#5020 4b-1).\n- ``kind=bots`` (#5144) replaces that rule with the caller's bot threads:\n  read-only through an origin they are a member of, or as a member. For an\n  API key it is its own visible conversations that are bot threads.",
         "operationId": "search_conversations_v1_orgs__org_id__conversations_search_post",
         "parameters": [
           {
@@ -11641,6 +11911,428 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/PaginatedResponse_ConversationResponse_"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "RFC 9457 Problem Details error response",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/orgs/{org_id}/conversations/members/query": {
+      "post": {
+        "tags": [
+          "conversations"
+        ],
+        "summary": "List the members of many conversations at once",
+        "description": "Members of each requested conversation the caller can see, oldest first.\n\nIds the caller cannot see are returned in ``missing_conversation_ids`` with\nnothing else about them, exactly like ids that do not exist.",
+        "operationId": "query_conversation_members_v1_orgs__org_id__conversations_members_query_post",
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Org Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConversationMembersQuery"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationMembersQueryResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "RFC 9457 Problem Details error response",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/orgs/{org_id}/conversations/background-work/query": {
+      "post": {
+        "tags": [
+          "conversations"
+        ],
+        "summary": "List the background work bots started from many conversations at once",
+        "description": "Threads bots started from each requested conversation that you may open (#5123).\n\nFor each origin you can see: the members-only threads a bot created from\nit that you are a member of, plus, if you are a member of the origin, the\nones nobody has joined yet, which you may read (R5) and Join (R6). Threads\nwhose bot you cannot use are left out. Ids you cannot see are returned in\n``missing_conversation_ids``. These threads never appear in the sidebar;\nthis is the only list of them.",
+        "operationId": "query_background_work_v1_orgs__org_id__conversations_background_work_query_post",
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Org Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BackgroundWorkQuery"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BackgroundWorkQueryResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "RFC 9457 Problem Details error response",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/orgs/{org_id}/conversations/members/candidates": {
+      "post": {
+        "tags": [
+          "conversations"
+        ],
+        "summary": "List the people and bots that could be added to conversations",
+        "description": "For each visible conversation: who can be added, and who already is.\n\nPeople are the org members who can use the conversation's bot, the same\nrule adding refuses by; ``eligible_user_total`` against ``org_user_total``\nlets a picker say how many people the bot's access leaves out. Bots are the\nother bots in the org the caller may add: for a person, the ones they can use.",
+        "operationId": "query_conversation_member_candidates_v1_orgs__org_id__conversations_members_candidates_post",
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Org Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConversationMemberCandidatesQuery"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationMemberCandidatesResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "RFC 9457 Problem Details error response",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/orgs/{org_id}/conversations/me": {
+      "patch": {
+        "tags": [
+          "conversations"
+        ],
+        "summary": "Mute or unmute conversations for yourself",
+        "description": "Set the caller's own mute on each requested conversation they can see.\n\nMute is a person's preference, so only people have one (422 otherwise).\nMuting silences notifications and unread badges for that person only; it\ndoes not change membership or what anyone can see.",
+        "operationId": "update_my_conversations_v1_orgs__org_id__conversations_me_patch",
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Org Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConversationMuteUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationMuteResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "RFC 9457 Problem Details error response",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/orgs/{org_id}/conversations/members/me": {
+      "post": {
+        "tags": [
+          "conversations"
+        ],
+        "summary": "Join conversations you can look into through one you are a member of",
+        "description": "Become a member of bot-created threads you can currently read (#5122 R6).\n\nA person may join a conversation only while they may look into it read-only:\na bot created it from a conversation they are a member of now, no person has\nbeen in it yet, and they can use its bot. Joining makes them an ordinary\nmember, and from then on only members add people. Everything else is\n``refused``, per conversation; one refusal never fails the batch.",
+        "operationId": "join_my_conversations_v1_orgs__org_id__conversations_members_me_post",
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Org Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConversationsJoin"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationsJoinResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "RFC 9457 Problem Details error response",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/orgs/{org_id}/conversations/{conversation_id}/members": {
+      "post": {
+        "tags": [
+          "conversations"
+        ],
+        "summary": "Add people and bots to a conversation",
+        "description": "Add members; any member may add (decision 3).\n\nEach principal gets its own result, so one refusal never fails the batch:\n``added``, ``already_member``, or ``refused`` with ``not_found`` (not in this\norg) or ``cannot_use_bot`` (a person who cannot use the conversation's bot\nwould be a member who can never open it). API keys are refused outright:\nmembership names who added whom, and a key is nobody.",
+        "operationId": "add_members_v1_orgs__org_id__conversations__conversation_id__members_post",
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Org Id"
+            }
+          },
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Conversation Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConversationMembersAdd"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationMembersAddResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "RFC 9457 Problem Details error response",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "conversations"
+        ],
+        "summary": "Remove members from a conversation, or leave it",
+        "description": "Remove members, or leave by naming yourself.\n\nOnly an owner removes other people; anyone may leave. When the owner leaves,\nownership passes to the person added earliest (``owner_transferred_to``).\nWhen the owner is the last person in a private conversation, leaving deletes\nit, and is refused with ``confirm_delete_required`` unless ``confirm_delete``\nis set. Per-principal results, as for adding.",
+        "operationId": "remove_members_v1_orgs__org_id__conversations__conversation_id__members_delete",
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Org Id"
+            }
+          },
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Conversation Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConversationMembersRemove"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationMembersRemoveResponse"
                 }
               }
             }
@@ -12119,7 +12811,7 @@
           "conversations"
         ],
         "summary": "Delete Conversation",
-        "description": "Soft-delete a conversation.",
+        "description": "Soft-delete a conversation.\n\nA private conversation is deleted by its owner only (Task#5017): members can\nsee it, but \"only the owner removes people\" (decision 3) rules out removing\neveryone at once. Anyone else leaves instead. Org-scoped conversations keep\ntoday's rule until #5020 removes org scope.",
         "operationId": "delete_conversation_v1_orgs__org_id__conversations__conversation_id__delete",
         "parameters": [
           {
@@ -12501,7 +13193,7 @@
           "conversations"
         ],
         "summary": "Update Conversation Scope",
-        "description": "Change a conversation's access scope (publish to org / make private).\n\nOnly the conversation **owner** (its creator) may change its scope \u2014 not org\nowners. Privatizing returns a conversation to its owner, so letting a\nnon-owner do it would just remove their own access; and force-publishing\nwould expose someone's private conversation. Ownerless (integration/bot/\nAPI-key) conversations cannot be privatized, and API keys can never move a\nconversation to user-scope.",
+        "description": "Change a conversation's access scope (publish to org / make private).\n\nOnly the conversation **owner** (its creator) may change its scope \u2014 not org\nowners. Privatizing returns a conversation to its owner, so letting a\nnon-owner do it would just remove their own access; and force-publishing\nwould expose someone's private conversation. Ownerless (integration/bot/\nAPI-key) conversations cannot be privatized, and API keys can never move a\nconversation to user-scope.\n\nPublishing to the org is refused (409) since #5020 4b-1: org scope is being\nremoved, and sharing is done by adding members. Making an org-wide\nconversation private still works until 4b-2 removes the route.",
         "operationId": "update_conversation_scope_v1_orgs__org_id__conversations__conversation_id__scope_patch",
         "parameters": [
           {
@@ -17230,6 +17922,26 @@
               "type": "string",
               "title": "Workforce Slug"
             }
+          },
+          {
+            "name": "expected_workforce_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 255
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional immutable workforce ID expected at this slug. A mismatch returns 409 before reading or changing members. Omit for existing slug-only behavior.",
+              "title": "Expected Workforce Id"
+            },
+            "description": "Optional immutable workforce ID expected at this slug. A mismatch returns 409 before reading or changing members. Omit for existing slug-only behavior."
           }
         ],
         "responses": {
@@ -17243,6 +17955,14 @@
                     "$ref": "#/components/schemas/WorkforceMember"
                   },
                   "title": "Response List Workforce Members V1 Orgs  Org Id  Workforces  Workforce Slug  Members Get"
+                }
+              }
+            },
+            "headers": {
+              "X-Botyard-Workforce-Id": {
+                "description": "Immutable ID of the authorized board; confirms support for expected_workforce_id.",
+                "schema": {
+                  "type": "string"
                 }
               }
             }
@@ -17289,6 +18009,26 @@
               "type": "string",
               "title": "Workforce Slug"
             }
+          },
+          {
+            "name": "expected_workforce_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 255
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional immutable workforce ID expected at this slug. A mismatch returns 409 before reading or changing members. Omit for existing slug-only behavior.",
+              "title": "Expected Workforce Id"
+            },
+            "description": "Optional immutable workforce ID expected at this slug. A mismatch returns 409 before reading or changing members. Omit for existing slug-only behavior."
           }
         ],
         "requestBody": {
@@ -17312,6 +18052,14 @@
                     "$ref": "#/components/schemas/WorkforceMember"
                   },
                   "title": "Response Set Workforce Members V1 Orgs  Org Id  Workforces  Workforce Slug  Members Put"
+                }
+              }
+            },
+            "headers": {
+              "X-Botyard-Workforce-Id": {
+                "description": "Immutable ID of the authorized board; confirms support for expected_workforce_id.",
+                "schema": {
+                  "type": "string"
                 }
               }
             }
@@ -17358,6 +18106,26 @@
               "type": "string",
               "title": "Workforce Slug"
             }
+          },
+          {
+            "name": "expected_workforce_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 255
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional immutable workforce ID expected at this slug. A mismatch returns 409 before reading or changing members. Omit for existing slug-only behavior.",
+              "title": "Expected Workforce Id"
+            },
+            "description": "Optional immutable workforce ID expected at this slug. A mismatch returns 409 before reading or changing members. Omit for existing slug-only behavior."
           }
         ],
         "requestBody": {
@@ -17381,6 +18149,14 @@
                     "$ref": "#/components/schemas/WorkforceMember"
                   },
                   "title": "Response Add Workforce Members V1 Orgs  Org Id  Workforces  Workforce Slug  Members Post"
+                }
+              }
+            },
+            "headers": {
+              "X-Botyard-Workforce-Id": {
+                "description": "Immutable ID of the authorized board; confirms support for expected_workforce_id.",
+                "schema": {
+                  "type": "string"
                 }
               }
             }
@@ -17429,6 +18205,26 @@
               "type": "string",
               "title": "Workforce Slug"
             }
+          },
+          {
+            "name": "expected_workforce_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 255
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional immutable workforce ID expected at this slug. A mismatch returns 409 before reading or changing members. Omit for existing slug-only behavior.",
+              "title": "Expected Workforce Id"
+            },
+            "description": "Optional immutable workforce ID expected at this slug. A mismatch returns 409 before reading or changing members. Omit for existing slug-only behavior."
           }
         ],
         "requestBody": {
@@ -17443,7 +18239,15 @@
         },
         "responses": {
           "204": {
-            "description": "Successful Response"
+            "description": "Successful Response",
+            "headers": {
+              "X-Botyard-Workforce-Id": {
+                "description": "Immutable ID of the authorized board; confirms support for expected_workforce_id.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "default": {
             "description": "RFC 9457 Problem Details error response",
@@ -33607,7 +34411,8 @@
           "mcp_image.push",
           "bot_tool.assign",
           "permission.grant",
-          "bot.create"
+          "bot.create",
+          "conversation.members_add"
         ],
         "title": "ApprovalKind",
         "description": "Which action a bot is asking a human's permission to take.\n\nThe open axis of the approval schema, and deliberately the *only* one: each\nmember resolves to a registry entry in\n:mod:`botyard_core.services.api.approval_kinds` supplying the typed payload\nschema, the permission the approver must hold, the quote resolver, the card\npresenter, and the grant issuer. Adding an approval kind is one registry\nentry \u2014 no new API surface, no new tool, no new UI.\n\nValues are dotted ``resource.action`` rather than bare verbs so a kind reads\nthe same as the permission it gates, and so future non-billing approvals\n(the reason the mechanism is generic at all) name themselves consistently.\n\nThe metered members are exactly the bot-facing writes in\n``cluster-services/botyard-mcp`` that reach\n:class:`~botyard_core.services.api.gate_enforcer.GateEnforcer` \u2014 ``org``\ntools expose reads only, so a bot cannot create seats. ``BOT_CREATE`` is the\none way a bot spends a bot slot (epic #4800).\n``BOT_TOOL_ASSIGN`` and ``PERMISSION_GRANT`` are the unmetered members:\nthey gate authority, not spend."
@@ -33828,6 +34633,9 @@
                   },
                   {
                     "$ref": "#/components/schemas/BotCreateApprovalDetails"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ConversationMembersAddApprovalDetails"
                   }
                 ],
                 "discriminator": {
@@ -33835,6 +34643,7 @@
                   "mapping": {
                     "bot.create": "#/components/schemas/BotCreateApprovalDetails",
                     "bot_tool.assign": "#/components/schemas/BotToolAssignApprovalDetails",
+                    "conversation.members_add": "#/components/schemas/ConversationMembersAddApprovalDetails",
                     "mcp_image.push": "#/components/schemas/McpImagePushApprovalDetails",
                     "mcp_server.create": "#/components/schemas/McpServerCreateApprovalDetails",
                     "permission.grant": "#/components/schemas/PermissionGrantApprovalDetails"
@@ -35593,6 +36402,146 @@
         ],
         "title": "AwaitingConnectAction",
         "description": "An authorisation is out (its link went to whoever ran the setup)."
+      },
+      "BackgroundWorkAccess": {
+        "type": "string",
+        "enum": [
+          "read_only",
+          "member"
+        ],
+        "title": "BackgroundWorkAccess",
+        "description": "How the caller may open one thread listed as background work (#5123, R9)."
+      },
+      "BackgroundWorkEntry": {
+        "properties": {
+          "conversation_id": {
+            "type": "string",
+            "title": "Conversation Id",
+            "description": "The origin conversation."
+          },
+          "threads": {
+            "items": {
+              "$ref": "#/components/schemas/BackgroundWorkThreadResponse"
+            },
+            "type": "array",
+            "title": "Threads",
+            "description": "Threads whose origin is this conversation and that you may open, most recently active first, at most 50. A thread a person has joined is listed only to its members."
+          },
+          "has_more": {
+            "type": "boolean",
+            "title": "Has More",
+            "description": "More threads qualified than were returned."
+          }
+        },
+        "type": "object",
+        "required": [
+          "conversation_id",
+          "threads",
+          "has_more"
+        ],
+        "title": "BackgroundWorkEntry"
+      },
+      "BackgroundWorkQuery": {
+        "properties": {
+          "conversation_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 100,
+            "minItems": 1,
+            "title": "Conversation Ids",
+            "description": "Conversations to read; duplicates are refused with 422."
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "conversation_ids"
+        ],
+        "title": "BackgroundWorkQuery",
+        "description": "Request body for listing the background work started from conversations (#5123)."
+      },
+      "BackgroundWorkQueryResponse": {
+        "properties": {
+          "conversations": {
+            "items": {
+              "$ref": "#/components/schemas/BackgroundWorkEntry"
+            },
+            "type": "array",
+            "title": "Conversations",
+            "description": "One entry per visible origin."
+          },
+          "missing_conversation_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Missing Conversation Ids",
+            "description": "Requested ids the caller cannot see, or that do not exist. Nothing else is revealed about them."
+          }
+        },
+        "type": "object",
+        "required": [
+          "conversations",
+          "missing_conversation_ids"
+        ],
+        "title": "BackgroundWorkQueryResponse"
+      },
+      "BackgroundWorkThreadResponse": {
+        "properties": {
+          "conversation_id": {
+            "type": "string",
+            "title": "Conversation Id"
+          },
+          "bot_id": {
+            "type": "string",
+            "title": "Bot Id"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "last_message_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Message At"
+          },
+          "access": {
+            "$ref": "#/components/schemas/BackgroundWorkAccess",
+            "description": "read_only: you are not a member and can read it through the origin until a person joins it; member: you are a member of the thread itself."
+          }
+        },
+        "type": "object",
+        "required": [
+          "conversation_id",
+          "bot_id",
+          "title",
+          "created_at",
+          "last_message_at",
+          "access"
+        ],
+        "title": "BackgroundWorkThreadResponse",
+        "description": "One thread a bot started from the origin, as the caller may open it."
       },
       "BasicHeaderScheme": {
         "additionalProperties": false,
@@ -41512,6 +42461,64 @@
               "external"
             ],
             "title": "Tool Source"
+          },
+          "provenance_assurance": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ToolCallProvenanceAssurance"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Assurance of the reported context: validated_context_claim records capture-time validation of the caller's context/grant, not that this call came from that assignment. Assumes an honest runtime; not authorization, billing identity, or proof of human approval. Null on historical or unattributed records; never inferred from other labels."
+          },
+          "tool_call_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Call Id",
+            "description": "Reported native call correlation, not trusted per-call proof."
+          },
+          "invocation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Invocation Id",
+            "description": "Native invocation in the validated context claim, not proof of call association."
+          },
+          "origin_user_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Origin User Id",
+            "description": "Signed turn-grant subject; call association is a runtime claim, not human approval or the executing actor."
+          },
+          "origin_attendance": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TurnAttendance"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Signed turn-grant attendance; not proof of human presence or approval for this individual call."
           },
           "args_json": {
             "anyOf": [
@@ -49899,6 +50906,188 @@
         "title": "ContextLimitsConfig",
         "description": "Per-agent context budget ceilings serialized into the openclaw config.\n\nThe load-bearing knob is :attr:`tool_result_max_chars`. OpenClaw caps a\nsingle *live* tool result at ``min(floor(contextWindow * 0.3) * 4, cap)``\nchars (``resolveLiveToolResultMaxChars`` /\n``calculateMaxToolResultCharsWithCap``), where ``cap`` is this config value\nwhen set and otherwise an auto cap derived from the model's context window:\n16k chars under 100k tokens, 32k at >=100k, **64k at >=200k**. Every Botyard\nbot on a modern model therefore lands in the 64k bucket, so a single tool\nresult may legally consume ~16k tokens of context.\n\nThat auto cap is the mechanism behind the chronic context overflows: measured\nbotyard-mcp responses on a real bot (13-minute window, ~600 KB total) were\n``search_conversation_history`` 76 KB, ``memory_search`` 36 KB, ``get_task``\n31 KB, ``github_list_prs`` 31 KB, ``search_tasks`` 29 KB, ``list_my_tasks``\n22 KB \u2014 i.e. all but one pass the 64k cap untouched, and a handful of them\nfill the window. Sessions were observed overflowing at ~258k compaction\ntokens with only 47-72 messages.\n\nUnlike OpenClaw's cache-TTL context pruning (which Botyard switches off;\nsee the v2026.6.1 serializer) this does not depend on prompt-cache\neligibility \u2014 ``resolveAgentContextLimits`` takes no provider or auth input,\nand the persistence write path is ungated (it even falls back to 16000\nrather than \"unbounded\" when the context window is unknown). So on the\n**embedded (pi) runner** it applies to every bot whatever model backs it.\n\nTwo scope limits worth knowing before relying on it:\n\n* On **claude-cli** bots it does not bound the CLI's context at all. Claude\n  Code's tool results never reach OpenClaw's persistence write path; the cap\n  only feeds ``shouldPreemptivelyCompactBeforePrompt``'s size estimate.\n* The mid-turn guard consumer reads it via ``midTurnPrecheckOptions``, so\n  that particular path is live only because Botyard sets\n  ``compaction.mid_turn_precheck=True``. The write-time cap itself is\n  unconditional."
       },
+      "ConversationApiKeyMember": {
+        "properties": {
+          "actor_id": {
+            "type": "string",
+            "title": "Actor Id"
+          },
+          "role": {
+            "$ref": "#/components/schemas/ConversationMemberRole"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name",
+            "description": "Display name, or null when it cannot be resolved"
+          },
+          "avatar_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avatar Url"
+          },
+          "added_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Added At"
+          },
+          "added_by": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ConversationMemberAdder"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Who added this member; null when the system did (creation, migration)"
+          },
+          "actor_type": {
+            "type": "string",
+            "const": "api_key",
+            "title": "Actor Type"
+          },
+          "revoked": {
+            "type": "boolean",
+            "title": "Revoked",
+            "description": "Whether the key is revoked. A revoked key's row grants nothing."
+          }
+        },
+        "type": "object",
+        "required": [
+          "actor_id",
+          "role",
+          "name",
+          "avatar_url",
+          "added_at",
+          "added_by",
+          "actor_type",
+          "revoked"
+        ],
+        "title": "ConversationApiKeyMember",
+        "description": "The API key that created the conversation (#5020 4b-1, Janus 2026-11-08).\n\nListed so people can see that a credential has access. Read-only: it is\nalways a ``member``, cannot be removed through the member list (revoke the\nkey instead), and never counts as a person for Private/Shared. ``name`` is\nthe key's label."
+      },
+      "ConversationBotCandidate": {
+        "properties": {
+          "bot_id": {
+            "type": "string",
+            "title": "Bot Id"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "avatar_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avatar Url"
+          },
+          "is_member": {
+            "type": "boolean",
+            "title": "Is Member"
+          }
+        },
+        "type": "object",
+        "required": [
+          "bot_id",
+          "name",
+          "avatar_url",
+          "is_member"
+        ],
+        "title": "ConversationBotCandidate"
+      },
+      "ConversationBotMember": {
+        "properties": {
+          "actor_id": {
+            "type": "string",
+            "title": "Actor Id"
+          },
+          "role": {
+            "$ref": "#/components/schemas/ConversationMemberRole"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name",
+            "description": "Display name, or null when it cannot be resolved"
+          },
+          "avatar_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avatar Url"
+          },
+          "added_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Added At"
+          },
+          "added_by": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ConversationMemberAdder"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Who added this member; null when the system did (creation, migration)"
+          },
+          "actor_type": {
+            "type": "string",
+            "const": "bot",
+            "title": "Actor Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "actor_id",
+          "role",
+          "name",
+          "avatar_url",
+          "added_at",
+          "added_by",
+          "actor_type"
+        ],
+        "title": "ConversationBotMember",
+        "description": "A bot on a conversation's member list."
+      },
       "ConversationCreate": {
         "properties": {
           "bot_id": {
@@ -50093,7 +51282,8 @@
           "external_thread_id",
           "last_message_at",
           "created_at",
-          "updated_at"
+          "updated_at",
+          "run_state"
         ],
         "title": "ConversationFilterField",
         "description": "Filterable fields on the conversation search endpoint."
@@ -50152,6 +51342,679 @@
         ],
         "title": "ConversationForkSummary",
         "description": "Where a forked conversation came from (the \"Copied from\" marker)."
+      },
+      "ConversationJoinResult": {
+        "properties": {
+          "conversation_id": {
+            "type": "string",
+            "title": "Conversation Id"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ConversationJoinStatus"
+          }
+        },
+        "type": "object",
+        "required": [
+          "conversation_id",
+          "status"
+        ],
+        "title": "ConversationJoinResult",
+        "description": "What happened to one conversation in a Join request."
+      },
+      "ConversationJoinStatus": {
+        "type": "string",
+        "enum": [
+          "joined",
+          "already_member",
+          "refused"
+        ],
+        "title": "ConversationJoinStatus",
+        "description": "Per-item outcome of joining one conversation yourself (#5122 R6)."
+      },
+      "ConversationListKind": {
+        "type": "string",
+        "enum": [
+          "people",
+          "bots"
+        ],
+        "title": "ConversationListKind",
+        "description": "Which of the sidebar's two lists a conversation belongs to (#5144).\n\nA *bot thread* is one no person has been in: nobody human created it,\njoined it or posted in it (``had_human_at`` NULL). People and Bots\npartition what a person sees; neither widens the other."
+      },
+      "ConversationMemberAddRefusal": {
+        "type": "string",
+        "enum": [
+          "not_found",
+          "cannot_use_bot",
+          "needs_a_person"
+        ],
+        "title": "ConversationMemberAddRefusal",
+        "description": "Why one principal was not added to a conversation."
+      },
+      "ConversationMemberAddRefused": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "refused",
+            "title": "Status"
+          },
+          "actor_type": {
+            "type": "string",
+            "enum": [
+              "user",
+              "bot"
+            ],
+            "title": "Actor Type"
+          },
+          "actor_id": {
+            "type": "string",
+            "title": "Actor Id"
+          },
+          "reason": {
+            "$ref": "#/components/schemas/ConversationMemberAddRefusal"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "actor_type",
+          "actor_id",
+          "reason"
+        ],
+        "title": "ConversationMemberAddRefused"
+      },
+      "ConversationMemberAdded": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "added",
+            "title": "Status"
+          },
+          "member": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ConversationUserMember"
+              },
+              {
+                "$ref": "#/components/schemas/ConversationBotMember"
+              }
+            ],
+            "title": "Member",
+            "discriminator": {
+              "propertyName": "actor_type",
+              "mapping": {
+                "bot": "#/components/schemas/ConversationBotMember",
+                "user": "#/components/schemas/ConversationUserMember"
+              }
+            }
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "member"
+        ],
+        "title": "ConversationMemberAdded"
+      },
+      "ConversationMemberAdder": {
+        "properties": {
+          "actor_type": {
+            "$ref": "#/components/schemas/ActorType"
+          },
+          "actor_id": {
+            "type": "string",
+            "title": "Actor Id"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name",
+            "description": "Display name, or null when it cannot be resolved"
+          }
+        },
+        "type": "object",
+        "required": [
+          "actor_type",
+          "actor_id",
+          "name"
+        ],
+        "title": "ConversationMemberAdder",
+        "description": "Who added a member. Shown as \"X added you\"."
+      },
+      "ConversationMemberAlreadyMember": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "already_member",
+            "title": "Status"
+          },
+          "member": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ConversationUserMember"
+              },
+              {
+                "$ref": "#/components/schemas/ConversationBotMember"
+              }
+            ],
+            "title": "Member",
+            "discriminator": {
+              "propertyName": "actor_type",
+              "mapping": {
+                "bot": "#/components/schemas/ConversationBotMember",
+                "user": "#/components/schemas/ConversationUserMember"
+              }
+            }
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "member"
+        ],
+        "title": "ConversationMemberAlreadyMember"
+      },
+      "ConversationMemberCandidates": {
+        "properties": {
+          "conversation_id": {
+            "type": "string",
+            "title": "Conversation Id"
+          },
+          "eligible_user_total": {
+            "type": "integer",
+            "title": "Eligible User Total",
+            "description": "People in the org who can use this conversation's bot (decision 2)"
+          },
+          "org_user_total": {
+            "type": "integer",
+            "title": "Org User Total",
+            "description": "People in the org"
+          },
+          "people": {
+            "items": {
+              "$ref": "#/components/schemas/ConversationPersonCandidate"
+            },
+            "type": "array",
+            "title": "People"
+          },
+          "bots": {
+            "items": {
+              "$ref": "#/components/schemas/ConversationBotCandidate"
+            },
+            "type": "array",
+            "title": "Bots"
+          }
+        },
+        "type": "object",
+        "required": [
+          "conversation_id",
+          "eligible_user_total",
+          "org_user_total",
+          "people",
+          "bots"
+        ],
+        "title": "ConversationMemberCandidates",
+        "description": "Who may be added to one conversation."
+      },
+      "ConversationMemberCandidatesQuery": {
+        "properties": {
+          "conversation_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 100,
+            "minItems": 1,
+            "title": "Conversation Ids",
+            "description": "Conversations to read; duplicates are refused with 422."
+          },
+          "query": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Query",
+            "description": "Case-insensitive match on a person's name or email, or a bot's name or slug."
+          },
+          "limit": {
+            "type": "integer",
+            "maximum": 200.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "description": "At most this many people, and this many bots, per conversation.",
+            "default": 50
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "conversation_ids"
+        ],
+        "title": "ConversationMemberCandidatesQuery",
+        "description": "Request body for \"who could I add to these conversations?\"."
+      },
+      "ConversationMemberCandidatesResponse": {
+        "properties": {
+          "conversations": {
+            "items": {
+              "$ref": "#/components/schemas/ConversationMemberCandidates"
+            },
+            "type": "array",
+            "title": "Conversations"
+          },
+          "missing_conversation_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Missing Conversation Ids",
+            "description": "Requested ids the caller cannot see, or that do not exist."
+          }
+        },
+        "type": "object",
+        "required": [
+          "conversations",
+          "missing_conversation_ids"
+        ],
+        "title": "ConversationMemberCandidatesResponse"
+      },
+      "ConversationMemberNotMember": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "not_member",
+            "title": "Status"
+          },
+          "actor_type": {
+            "type": "string",
+            "enum": [
+              "user",
+              "bot"
+            ],
+            "title": "Actor Type"
+          },
+          "actor_id": {
+            "type": "string",
+            "title": "Actor Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "actor_type",
+          "actor_id"
+        ],
+        "title": "ConversationMemberNotMember"
+      },
+      "ConversationMemberRef": {
+        "properties": {
+          "actor_type": {
+            "type": "string",
+            "enum": [
+              "user",
+              "bot"
+            ],
+            "title": "Actor Type",
+            "description": "USER for a person, BOT for a bot. Ids alone do not say which."
+          },
+          "actor_id": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Actor Id",
+            "description": "users.user_id or bots.id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "actor_type",
+          "actor_id"
+        ],
+        "title": "ConversationMemberRef",
+        "description": "One principal named in an add or remove request."
+      },
+      "ConversationMemberRemoveRefusal": {
+        "type": "string",
+        "enum": [
+          "owner_only",
+          "cannot_remove_owner",
+          "cannot_remove_conversation_bot",
+          "confirm_delete_required"
+        ],
+        "title": "ConversationMemberRemoveRefusal",
+        "description": "Why one principal was not removed from a conversation."
+      },
+      "ConversationMemberRemoveRefused": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "refused",
+            "title": "Status"
+          },
+          "actor_type": {
+            "type": "string",
+            "enum": [
+              "user",
+              "bot"
+            ],
+            "title": "Actor Type"
+          },
+          "actor_id": {
+            "type": "string",
+            "title": "Actor Id"
+          },
+          "reason": {
+            "$ref": "#/components/schemas/ConversationMemberRemoveRefusal"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "actor_type",
+          "actor_id",
+          "reason"
+        ],
+        "title": "ConversationMemberRemoveRefused"
+      },
+      "ConversationMemberRemoved": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "removed",
+            "title": "Status"
+          },
+          "actor_type": {
+            "type": "string",
+            "enum": [
+              "user",
+              "bot"
+            ],
+            "title": "Actor Type"
+          },
+          "actor_id": {
+            "type": "string",
+            "title": "Actor Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "actor_type",
+          "actor_id"
+        ],
+        "title": "ConversationMemberRemoved"
+      },
+      "ConversationMemberRole": {
+        "type": "string",
+        "enum": [
+          "owner",
+          "member"
+        ],
+        "title": "ConversationMemberRole",
+        "description": "Capacity a principal holds on a conversation (platform-development #5017).\n\nValues are the ``resource_members.role`` slugs declared for\n``Resource.CONVERSATION`` in ``botyard_core.authz.membership``;\n``test_conversation_membership`` keeps the two identical."
+      },
+      "ConversationMembersAdd": {
+        "properties": {
+          "members": {
+            "items": {
+              "$ref": "#/components/schemas/ConversationMemberRef"
+            },
+            "type": "array",
+            "maxItems": 100,
+            "minItems": 1,
+            "title": "Members",
+            "description": "Principals to add as members. Duplicates are refused with 422. Each gets its own result: added, already_member, or refused with a reason."
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "members"
+        ],
+        "title": "ConversationMembersAdd",
+        "description": "Request body for adding people and bots to a conversation."
+      },
+      "ConversationMembersAddApprovalDetails": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "conversation.members_add",
+            "title": "Kind",
+            "default": "conversation.members_add"
+          },
+          "conversation_id": {
+            "type": "string",
+            "title": "Conversation Id",
+            "description": "The conversation the people would be added to."
+          },
+          "user_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "User Ids",
+            "description": "The people to add, sorted and de-duplicated like the payload."
+          }
+        },
+        "type": "object",
+        "required": [
+          "conversation_id",
+          "user_ids"
+        ],
+        "title": "ConversationMembersAddApprovalDetails",
+        "description": "``conversation.members_add`` \u2014 the conversation and the people to add."
+      },
+      "ConversationMembersAddResponse": {
+        "properties": {
+          "results": {
+            "items": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/ConversationMemberAdded"
+                },
+                {
+                  "$ref": "#/components/schemas/ConversationMemberAlreadyMember"
+                },
+                {
+                  "$ref": "#/components/schemas/ConversationMemberAddRefused"
+                }
+              ],
+              "discriminator": {
+                "propertyName": "status",
+                "mapping": {
+                  "added": "#/components/schemas/ConversationMemberAdded",
+                  "already_member": "#/components/schemas/ConversationMemberAlreadyMember",
+                  "refused": "#/components/schemas/ConversationMemberAddRefused"
+                }
+              }
+            },
+            "type": "array",
+            "title": "Results",
+            "description": "One result per requested principal, in request order."
+          }
+        },
+        "type": "object",
+        "required": [
+          "results"
+        ],
+        "title": "ConversationMembersAddResponse"
+      },
+      "ConversationMembersEntry": {
+        "properties": {
+          "conversation_id": {
+            "type": "string",
+            "title": "Conversation Id"
+          },
+          "members": {
+            "items": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/ConversationUserMember"
+                },
+                {
+                  "$ref": "#/components/schemas/ConversationBotMember"
+                },
+                {
+                  "$ref": "#/components/schemas/ConversationApiKeyMember"
+                }
+              ],
+              "discriminator": {
+                "propertyName": "actor_type",
+                "mapping": {
+                  "api_key": "#/components/schemas/ConversationApiKeyMember",
+                  "bot": "#/components/schemas/ConversationBotMember",
+                  "user": "#/components/schemas/ConversationUserMember"
+                }
+              }
+            },
+            "type": "array",
+            "title": "Members",
+            "description": "Owners first, then members in the order they were added."
+          }
+        },
+        "type": "object",
+        "required": [
+          "conversation_id",
+          "members"
+        ],
+        "title": "ConversationMembersEntry"
+      },
+      "ConversationMembersQuery": {
+        "properties": {
+          "conversation_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 100,
+            "minItems": 1,
+            "title": "Conversation Ids",
+            "description": "Conversations to read; duplicates are refused with 422."
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "conversation_ids"
+        ],
+        "title": "ConversationMembersQuery",
+        "description": "Request body for reading member lists of many conversations at once."
+      },
+      "ConversationMembersQueryResponse": {
+        "properties": {
+          "conversations": {
+            "items": {
+              "$ref": "#/components/schemas/ConversationMembersEntry"
+            },
+            "type": "array",
+            "title": "Conversations"
+          },
+          "missing_conversation_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Missing Conversation Ids",
+            "description": "Requested ids the caller cannot see, or that do not exist. Nothing else is revealed about them."
+          }
+        },
+        "type": "object",
+        "required": [
+          "conversations",
+          "missing_conversation_ids"
+        ],
+        "title": "ConversationMembersQueryResponse"
+      },
+      "ConversationMembersRemove": {
+        "properties": {
+          "members": {
+            "items": {
+              "$ref": "#/components/schemas/ConversationMemberRef"
+            },
+            "type": "array",
+            "maxItems": 100,
+            "minItems": 1,
+            "title": "Members",
+            "description": "Principals to remove. Name yourself to leave. Duplicates \u2192 422."
+          },
+          "confirm_delete": {
+            "type": "boolean",
+            "title": "Confirm Delete",
+            "description": "Required when the owner leaving is the last person in a private conversation: leaving then deletes it. Without it that leave is refused with confirm_delete_required and nothing is deleted.",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "members"
+        ],
+        "title": "ConversationMembersRemove",
+        "description": "Request body for removing members, or leaving (name yourself)."
+      },
+      "ConversationMembersRemoveResponse": {
+        "properties": {
+          "results": {
+            "items": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/ConversationMemberRemoved"
+                },
+                {
+                  "$ref": "#/components/schemas/ConversationMemberNotMember"
+                },
+                {
+                  "$ref": "#/components/schemas/ConversationMemberRemoveRefused"
+                }
+              ],
+              "discriminator": {
+                "propertyName": "status",
+                "mapping": {
+                  "not_member": "#/components/schemas/ConversationMemberNotMember",
+                  "refused": "#/components/schemas/ConversationMemberRemoveRefused",
+                  "removed": "#/components/schemas/ConversationMemberRemoved"
+                }
+              }
+            },
+            "type": "array",
+            "title": "Results",
+            "description": "One result per requested principal, in request order."
+          },
+          "owner_transferred_to": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ConversationMemberRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Set when the owner left and ownership passed to the person added earliest."
+          },
+          "conversation_deleted": {
+            "type": "boolean",
+            "title": "Conversation Deleted",
+            "description": "True when the last person left with confirm_delete and it was deleted."
+          }
+        },
+        "type": "object",
+        "required": [
+          "results",
+          "owner_transferred_to",
+          "conversation_deleted"
+        ],
+        "title": "ConversationMembersRemoveResponse"
       },
       "ConversationMessageCreate": {
         "properties": {
@@ -50617,6 +52480,76 @@
         "title": "ConversationMessagesPage",
         "description": "A page of messages plus the conversation's in-flight turn descriptor."
       },
+      "ConversationMuteResponse": {
+        "properties": {
+          "conversations": {
+            "items": {
+              "$ref": "#/components/schemas/ConversationMuteState"
+            },
+            "type": "array",
+            "title": "Conversations"
+          },
+          "missing_conversation_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Missing Conversation Ids",
+            "description": "Requested ids the caller cannot see, or that do not exist. Left unchanged."
+          }
+        },
+        "type": "object",
+        "required": [
+          "conversations",
+          "missing_conversation_ids"
+        ],
+        "title": "ConversationMuteResponse"
+      },
+      "ConversationMuteState": {
+        "properties": {
+          "conversation_id": {
+            "type": "string",
+            "title": "Conversation Id"
+          },
+          "is_muted": {
+            "type": "boolean",
+            "title": "Is Muted"
+          }
+        },
+        "type": "object",
+        "required": [
+          "conversation_id",
+          "is_muted"
+        ],
+        "title": "ConversationMuteState"
+      },
+      "ConversationMuteUpdate": {
+        "properties": {
+          "conversation_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 100,
+            "minItems": 1,
+            "title": "Conversation Ids",
+            "description": "Conversations to read; duplicates are refused with 422."
+          },
+          "muted": {
+            "type": "boolean",
+            "title": "Muted",
+            "description": "True to mute, false to unmute. Idempotent either way."
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "conversation_ids",
+          "muted"
+        ],
+        "title": "ConversationMuteUpdate",
+        "description": "Request body for muting or unmuting conversations for yourself."
+      },
       "ConversationPageContextRedactedContent": {
         "properties": {
           "event_type": {
@@ -50702,6 +52635,48 @@
         ],
         "title": "ConversationPendingInputs",
         "description": "Everything still waiting on the viewer in one conversation, oldest first."
+      },
+      "ConversationPersonCandidate": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "avatar_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avatar Url"
+          },
+          "is_member": {
+            "type": "boolean",
+            "title": "Is Member"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "name",
+          "avatar_url",
+          "is_member"
+        ],
+        "title": "ConversationPersonCandidate"
       },
       "ConversationPinReorder": {
         "properties": {
@@ -50992,6 +52967,17 @@
             "description": "True when the conversation has at least one live durable process watch. Populated on list/search responses for compact overview indicators.",
             "default": false
           },
+          "viewing_via": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ConversationViewingVia"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Set only when the caller is not a member and may read this conversation read-only because a bot started it from a conversation they are a member of (R5): the conversation they read it through. Clients render it without a composer and offer Join (POST .../conversations/members/me). Null for members, and on list and search responses."
+          },
           "supports_steering": {
             "anyOf": [
               {
@@ -51014,6 +53000,62 @@
               }
             ],
             "description": "Best matching embedded message when the conversation was returned by ConversationSearch.message_search. Omitted for metadata-only searches."
+          },
+          "viewer_role": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ConversationMemberRole"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The authenticated person's role on this conversation's member list, or null when they are not on it (they may still see it through a legacy term: org scope or being its creator). Populated on search and get."
+          },
+          "is_muted": {
+            "type": "boolean",
+            "title": "Is Muted",
+            "description": "True when the authenticated person muted this conversation. Mute silences activity, never needs-you items. Populated on search and get.",
+            "default": false
+          },
+          "member_count": {
+            "type": "integer",
+            "title": "Member Count",
+            "description": "People and bots on the member list. Conversations created before members existed report 0 until they are migrated. Populated on search and get.",
+            "default": 0
+          },
+          "added_by": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ConversationMemberAdder"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Who added the authenticated person, when somebody did. Drives the 'X added you' badge. Null for conversations they started, and for rows the system wrote. Populated on search and get."
+          },
+          "added_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Added At",
+            "description": "When the authenticated person was added; set exactly when added_by is."
+          },
+          "list_kind": {
+            "$ref": "#/components/schemas/ConversationListKind",
+            "description": "The sidebar list this conversation belongs to (#5144): bots when no person has created, joined or posted in it, otherwise people. It says nothing about the caller's access; a bots row the caller is not a member of (viewer_role null) is one they read through the conversation it came from. Populated on search and get.",
+            "default": "people"
+          },
+          "run_status": {
+            "$ref": "#/components/schemas/ConversationRunStatus",
+            "description": "Whether a turn is running or waiting in this conversation right now, read live on every response. Filter on it with the run_state field of the search where clause."
           }
         },
         "type": "object",
@@ -51027,10 +53069,55 @@
           "title",
           "status",
           "created_at",
-          "updated_at"
+          "updated_at",
+          "run_status"
         ],
         "title": "ConversationResponse",
         "description": "Conversation response."
+      },
+      "ConversationRunState": {
+        "type": "string",
+        "enum": [
+          "running",
+          "queued",
+          "idle"
+        ],
+        "title": "ConversationRunState",
+        "description": "Whether a conversation has a turn running, waiting, or neither \u2014 right now.\n\nDerived on read from platform state the chat-proxy maintains for every\nruntime (OpenClaw and native alike); never stored. ``RUNNING`` is a live\nactive-turn lease. ``QUEUED`` is no live lease but at least one live queued\nturn. ``IDLE`` is neither. When a turn is running *and* others wait behind\nit the conversation is ``RUNNING`` \u2014 the waiting count is reported\nseparately as ``queued_count``.\n\nThis is the platform's view of the turn, not a runtime's internal lane: a\nnative daemon wedged on its outbox (PlatDev #4526) can still answer\n``Busy`` for a conversation reported ``IDLE`` here.\n\nMember order is load-bearing: the filter compiler builds its ``CASE`` in\nenum order and treats the last member as the fallthrough."
+      },
+      "ConversationRunStatus": {
+        "properties": {
+          "run_state": {
+            "$ref": "#/components/schemas/ConversationRunState",
+            "description": "running: a turn is in progress now, or has been handed to the runtime and not yet observed starting; queued: no turn is running but at least one is waiting; idle: neither. Derived from live platform state, so a turn whose runtime crashed stops reading as running within the lease TTL."
+          },
+          "turn_started_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Turn Started At",
+            "description": "When the running turn started. Null unless run_state is running, and also null while a native turn has been handed to the runtime but its start has not been observed yet"
+          },
+          "queued_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Queued Count",
+            "description": "Turns waiting to run (a native batch counts once; a batch already handed to the runtime is running, not waiting). May be non-zero while run_state is running",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "required": [
+          "run_state"
+        ],
+        "title": "ConversationRunStatus",
+        "description": "A conversation's run state plus the two cheap facts behind it."
       },
       "ConversationScope": {
         "type": "string",
@@ -51130,6 +53217,28 @@
             ],
             "title": "Metadata Filter"
           },
+          "sharing": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ConversationSharing"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The Private / Shared chip. shared: org-scoped, or at least one other person can see it (as a member or its creator); bot members never count. private: everything else. Relative to the authenticated person."
+          },
+          "kind": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ConversationListKind"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Which sidebar list (#5144). people: everything you can see except bot threads (conversations no person has created, joined or posted in). bots: the bot threads you can read, either read-only through the conversation they came from (you are a member of it) or as a member of the thread; cannot be combined with sharing. Omit for every visible conversation. Relative to the authenticated person. An API key gets its own visible conversations split the same way (its member row never makes a thread people); bots is always empty for bot callers. message_search with bots matches only threads you are a member of."
+          },
           "where": {
             "anyOf": [
               {
@@ -51185,6 +53294,15 @@
         "type": "object",
         "title": "ConversationSearch",
         "description": "Request body for searching / listing conversations."
+      },
+      "ConversationSharing": {
+        "type": "string",
+        "enum": [
+          "private",
+          "shared"
+        ],
+        "title": "ConversationSharing",
+        "description": "The sidebar's Private / Shared split (epic #5016 decision 5)."
       },
       "ConversationSource": {
         "type": "string",
@@ -51363,6 +53481,79 @@
         "title": "ConversationUpdate",
         "description": "Request to update a conversation."
       },
+      "ConversationUserMember": {
+        "properties": {
+          "actor_id": {
+            "type": "string",
+            "title": "Actor Id"
+          },
+          "role": {
+            "$ref": "#/components/schemas/ConversationMemberRole"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name",
+            "description": "Display name, or null when it cannot be resolved"
+          },
+          "avatar_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avatar Url"
+          },
+          "added_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Added At"
+          },
+          "added_by": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ConversationMemberAdder"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Who added this member; null when the system did (creation, migration)"
+          },
+          "actor_type": {
+            "type": "string",
+            "const": "user",
+            "title": "Actor Type"
+          },
+          "can_use_bot": {
+            "type": "boolean",
+            "title": "Can Use Bot",
+            "description": "Whether this person can currently use the conversation's bot. A member who has lost bot access keeps the membership row and does not see the conversation until access returns (decision 2)."
+          }
+        },
+        "type": "object",
+        "required": [
+          "actor_id",
+          "role",
+          "name",
+          "avatar_url",
+          "added_at",
+          "added_by",
+          "actor_type",
+          "can_use_bot"
+        ],
+        "title": "ConversationUserMember",
+        "description": "A person on a conversation's member list."
+      },
       "ConversationUserViewScreenshotCapturedContent": {
         "properties": {
           "event_type": {
@@ -51432,6 +53623,76 @@
         ],
         "title": "ConversationUserViewScreenshotCapturedContent",
         "description": "Typed content for a ``get_user_view`` screenshot handed to a bot (#3305).\n\nScreenshots skip the text secret scan (pixels cannot be scanned); the page\nblanks marked regions and sensitive inputs before encoding, and\n``redactions`` records how many it blanked. Metadata only: never the image,\nnever its URL. The envelope's ``conversation_id`` and ``target_id`` (the\nexposure) locate it. ``exposure_bot_id`` is the bot that asked and\n``target_user_id`` the user it named (#3323), whose tab answered."
+      },
+      "ConversationViewingVia": {
+        "properties": {
+          "conversation_id": {
+            "type": "string",
+            "title": "Conversation Id"
+          },
+          "bot_id": {
+            "type": "string",
+            "title": "Bot Id",
+            "description": "The origin conversation's bot, to link back to it."
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          }
+        },
+        "type": "object",
+        "required": [
+          "conversation_id",
+          "bot_id",
+          "title"
+        ],
+        "title": "ConversationViewingVia",
+        "description": "The conversation a read-only viewer reaches this one through (#5122 R5)."
+      },
+      "ConversationsJoin": {
+        "properties": {
+          "conversation_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 100,
+            "minItems": 1,
+            "title": "Conversation Ids",
+            "description": "Conversations to read; duplicates are refused with 422."
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "conversation_ids"
+        ],
+        "title": "ConversationsJoin",
+        "description": "Request body for joining conversations you may look into (#5122 R6)."
+      },
+      "ConversationsJoinResponse": {
+        "properties": {
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/ConversationJoinResult"
+            },
+            "type": "array",
+            "title": "Results",
+            "description": "One result per requested conversation, in request order: joined, already_member, or refused (it does not exist, you cannot look into it through a conversation you are a member of, or a person has already been in it)."
+          }
+        },
+        "type": "object",
+        "required": [
+          "results"
+        ],
+        "title": "ConversationsJoinResponse"
       },
       "CpuMetrics": {
         "properties": {
@@ -52089,6 +54350,7 @@
           "google_ai_studio",
           "chatgpt_codex",
           "claude_max",
+          "user_claude_subscription",
           "anthropic",
           "brave",
           "tavily",
@@ -56254,11 +58516,15 @@
                 },
                 {
                   "$ref": "#/components/schemas/ModelAccessModelNotOffered"
+                },
+                {
+                  "$ref": "#/components/schemas/ModelAccessChainRefused"
                 }
               ],
               "discriminator": {
                 "propertyName": "outcome",
                 "mapping": {
+                  "chain_refused": "#/components/schemas/ModelAccessChainRefused",
                   "has_active_schedules": "#/components/schemas/ModelAccessSchedulesRefused",
                   "model_not_offered": "#/components/schemas/ModelAccessModelNotOffered",
                   "profile_refused": "#/components/schemas/ModelAccessProfileRefused",
@@ -66738,6 +69004,39 @@
         "title": "MixedAccountsWarning",
         "description": "Targets call through more than one credential.\n\nA provider prompt cache does not carry between accounts (#4581), so a move\nbetween these targets re-sends the whole prompt uncached."
       },
+      "ModelAccessChainRefused": {
+        "properties": {
+          "outcome": {
+            "type": "string",
+            "const": "chain_refused",
+            "title": "Outcome",
+            "default": "chain_refused"
+          },
+          "bot_id": {
+            "type": "string",
+            "title": "Bot Id",
+            "description": "The refused bot"
+          },
+          "reason": {
+            "type": "string",
+            "enum": [
+              "not_first",
+              "model_required",
+              "model_not_claude",
+              "routing_profile_bound"
+            ],
+            "title": "Reason",
+            "description": "Why the resulting chain is refused"
+          }
+        },
+        "type": "object",
+        "required": [
+          "bot_id",
+          "reason"
+        ],
+        "title": "ModelAccessChainRefused",
+        "description": "One bot whose resulting credential chain the User Claude rules refuse (#5061).\n\nThe schedule and profile rules keep their own outcomes; this carries the\nrest: a non-Claude or missing model, or a routing-profile binding."
+      },
       "ModelAccessMode": {
         "type": "string",
         "enum": [
@@ -70124,7 +72423,8 @@
         "enum": [
           "bot_authored",
           "turn_failure",
-          "user_mention"
+          "user_mention",
+          "conversation_member_added"
         ],
         "title": "NotificationKind",
         "description": "Who authored a notification and therefore owns its lifecycle."
@@ -77195,7 +79495,7 @@
               "$ref": "#/components/schemas/KindPreference"
             },
             "type": "array",
-            "maxItems": 3,
+            "maxItems": 4,
             "title": "Kinds",
             "description": "Per-kind on/off, at most one entry per kind; missing kinds inherit."
           },
@@ -88269,6 +90569,56 @@
         "title": "SpendFilterOptionsResponse",
         "description": "Options per requested facet, in request order."
       },
+      "SpendMembersOwnPlans": {
+        "properties": {
+          "value_usd": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Value Usd",
+            "description": "List-price value of the priced calls in the range, USD. Not charged to the org and never part of spend_usd"
+          },
+          "calls": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Calls",
+            "description": "Calls in the range, priced or not"
+          },
+          "unpriced_calls": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Unpriced Calls",
+            "description": "Calls with no price, left out of value_usd"
+          },
+          "previous_value_usd": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Previous Value Usd",
+            "description": "value_usd over the previous, equally long range"
+          },
+          "value_change_ratio": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value Change Ratio",
+            "description": "(value_usd - previous_value_usd) / previous_value_usd; None when the previous value is zero"
+          }
+        },
+        "type": "object",
+        "required": [
+          "value_usd",
+          "calls",
+          "unpriced_calls",
+          "previous_value_usd",
+          "value_change_ratio"
+        ],
+        "title": "SpendMembersOwnPlans",
+        "description": "Usage paid by members' own Claude plans, valued at list price.\n\nIts own figure, never org spend: these calls are excluded from every other\nnumber in the spend API, and this is the only place they are counted. The\norg is not charged for them. It honours every filter in ``where`` except\nthe Payer (``billing_mode``) conditions, which describe how the org pays\nand so never match these calls."
+      },
       "SpendMetrics": {
         "properties": {
           "spend_usd": {
@@ -88703,16 +91053,20 @@
           },
           "change": {
             "$ref": "#/components/schemas/SpendChange"
+          },
+          "members_own_plans": {
+            "$ref": "#/components/schemas/SpendMembersOwnPlans"
           }
         },
         "type": "object",
         "required": [
           "current",
           "previous",
-          "change"
+          "change",
+          "members_own_plans"
         ],
         "title": "SpendSummaryResponse",
-        "description": "Totals for the range and for the previous, equally long one."
+        "description": "Totals for the range and for the previous, equally long one.\n\n``members_own_plans`` is a separate figure, never included in the totals."
       },
       "SpendTimeseriesRequest": {
         "properties": {
@@ -92039,6 +94393,14 @@
         "title": "ToolCallPartDelta",
         "description": "A partial update (delta) for a `ToolCallPart` to modify tool name, arguments, or tool call ID."
       },
+      "ToolCallProvenanceAssurance": {
+        "type": "string",
+        "enum": [
+          "validated_context_claim"
+        ],
+        "title": "ToolCallProvenanceAssurance",
+        "description": "What the audit metadata establishes, not authority or executor attestation."
+      },
       "ToolDomainSettingsResponse": {
         "properties": {
           "settings": {
@@ -93581,6 +95943,15 @@
         "title": "TransportExpiredMessageError",
         "type": "object"
       },
+      "TurnAttendance": {
+        "type": "string",
+        "enum": [
+          "TURN_ATTENDANCE_UNSPECIFIED",
+          "TURN_ATTENDANCE_ATTENDED",
+          "TURN_ATTENDANCE_UNATTENDED"
+        ],
+        "title": "TurnAttendance"
+      },
       "TurnStatus": {
         "type": "string",
         "enum": [
@@ -94605,6 +96976,270 @@
         ],
         "title": "UserActivityInsightsUser",
         "description": "One user's messages within one org."
+      },
+      "UserClaudeBotRefusedProblem": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "enum": [
+              "not_hosted_native",
+              "routing_profile_bound"
+            ],
+            "title": "Reason",
+            "description": "Why the bot cannot use the credential"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type",
+            "description": "URI identifier for the problem type; primary machine identifier. Clients should switch on this (or ``error_code``), not on ``title`` or ``detail``."
+          },
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "Short human summary of the problem type; stable across occurrences. Fallback for humans that don't recognise the type URI."
+          },
+          "status": {
+            "type": "integer",
+            "title": "Status",
+            "description": "HTTP status code for this occurrence"
+          },
+          "detail": {
+            "type": "string",
+            "title": "Detail",
+            "description": "Human-readable explanation specific to this occurrence. Safe to surface to end users \u2014 never contains debugging information."
+          },
+          "instance": {
+            "type": "string",
+            "title": "Instance",
+            "description": "Request path that produced the error"
+          },
+          "error_code": {
+            "type": "string",
+            "const": "user_claude_chain_refused",
+            "title": "Error Code",
+            "description": "Always ``user_claude_chain_refused``; switch on it to narrow the 422"
+          },
+          "errors": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ProblemErrorItem"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Errors",
+            "description": "Field-level failures (present on 422 responses from validation)"
+          },
+          "trace_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trace Id",
+            "description": "OpenTelemetry trace ID (32 hex chars) when tracing is active. Lets support pivot from a failure the caller reports straight to the Tempo trace."
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "required": [
+          "reason",
+          "type",
+          "title",
+          "status",
+          "detail",
+          "instance",
+          "error_code"
+        ],
+        "title": "UserClaudeBotRefusedProblem",
+        "description": "422 ``user_claude_chain_refused``: this bot cannot use the credential."
+      },
+      "UserClaudeLinkRefusedProblem": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "enum": [
+              "not_first",
+              "model_required",
+              "model_not_claude"
+            ],
+            "title": "Reason",
+            "description": "Why the link is refused"
+          },
+          "ordinal": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Ordinal",
+            "description": "The refused User Claude link's position"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type",
+            "description": "URI identifier for the problem type; primary machine identifier. Clients should switch on this (or ``error_code``), not on ``title`` or ``detail``."
+          },
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "Short human summary of the problem type; stable across occurrences. Fallback for humans that don't recognise the type URI."
+          },
+          "status": {
+            "type": "integer",
+            "title": "Status",
+            "description": "HTTP status code for this occurrence"
+          },
+          "detail": {
+            "type": "string",
+            "title": "Detail",
+            "description": "Human-readable explanation specific to this occurrence. Safe to surface to end users \u2014 never contains debugging information."
+          },
+          "instance": {
+            "type": "string",
+            "title": "Instance",
+            "description": "Request path that produced the error"
+          },
+          "error_code": {
+            "type": "string",
+            "const": "user_claude_chain_refused",
+            "title": "Error Code",
+            "description": "Always ``user_claude_chain_refused``; switch on it to narrow the 422"
+          },
+          "errors": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ProblemErrorItem"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Errors",
+            "description": "Field-level failures (present on 422 responses from validation)"
+          },
+          "trace_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trace Id",
+            "description": "OpenTelemetry trace ID (32 hex chars) when tracing is active. Lets support pivot from a failure the caller reports straight to the Tempo trace."
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "required": [
+          "reason",
+          "ordinal",
+          "type",
+          "title",
+          "status",
+          "detail",
+          "instance",
+          "error_code"
+        ],
+        "title": "UserClaudeLinkRefusedProblem",
+        "description": "422 ``user_claude_chain_refused`` about the User Claude link itself."
+      },
+      "UserClaudeSchedulesRefusedProblem": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "const": "has_active_schedules",
+            "title": "Reason",
+            "description": "Always ``has_active_schedules``"
+          },
+          "active_schedules": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Active Schedules",
+            "description": "Enabled schedules on the bot"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type",
+            "description": "URI identifier for the problem type; primary machine identifier. Clients should switch on this (or ``error_code``), not on ``title`` or ``detail``."
+          },
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "Short human summary of the problem type; stable across occurrences. Fallback for humans that don't recognise the type URI."
+          },
+          "status": {
+            "type": "integer",
+            "title": "Status",
+            "description": "HTTP status code for this occurrence"
+          },
+          "detail": {
+            "type": "string",
+            "title": "Detail",
+            "description": "Human-readable explanation specific to this occurrence. Safe to surface to end users \u2014 never contains debugging information."
+          },
+          "instance": {
+            "type": "string",
+            "title": "Instance",
+            "description": "Request path that produced the error"
+          },
+          "error_code": {
+            "type": "string",
+            "const": "user_claude_chain_refused",
+            "title": "Error Code",
+            "description": "Always ``user_claude_chain_refused``; switch on it to narrow the 422"
+          },
+          "errors": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ProblemErrorItem"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Errors",
+            "description": "Field-level failures (present on 422 responses from validation)"
+          },
+          "trace_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trace Id",
+            "description": "OpenTelemetry trace ID (32 hex chars) when tracing is active. Lets support pivot from a failure the caller reports straight to the Tempo trace."
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "required": [
+          "reason",
+          "active_schedules",
+          "type",
+          "title",
+          "status",
+          "detail",
+          "instance",
+          "error_code"
+        ],
+        "title": "UserClaudeSchedulesRefusedProblem",
+        "description": "422 ``user_claude_chain_refused``: the bot has enabled schedules."
       },
       "UserOrgCreate": {
         "properties": {
@@ -96492,6 +99127,20 @@
       },
       "WorkforceMembersRemove": {
         "properties": {
+          "expected_workforce_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Workforce Id",
+            "description": "Optional immutable board ID precondition. A mismatch returns 409 without changes. Older APIs reject this field instead of silently ignoring it; declarative writers should send this body field, not rely solely on the query parameter."
+          },
           "members": {
             "items": {
               "$ref": "#/components/schemas/WorkforceMemberRef"
@@ -96513,6 +99162,20 @@
       },
       "WorkforceMembersSet": {
         "properties": {
+          "expected_workforce_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Workforce Id",
+            "description": "Optional immutable board ID precondition. A mismatch returns 409 without changes. Older APIs reject this field instead of silently ignoring it; declarative writers should send this body field, not rely solely on the query parameter."
+          },
           "members": {
             "items": {
               "$ref": "#/components/schemas/WorkforceMemberSet"
@@ -98196,6 +100859,48 @@
           }
         ]
       },
+      "ConversationMembershipAddedEvent": {
+        "description": "The recipient was added to a conversation (platform-development #5017).\n\nPublished to the added person's ``personal:{user_id}`` channel only, never\nto the org channel: the audience is exactly the people whose membership\nchanged. Identity-free by design, like every personal-channel event (PlatDev\n#4517): the channel is admitted on identity alone with no org boundary, so\nit carries ids and nothing else. Clients refetch the conversation list,\nwhich is boundary-gated, and the row appears there with its ``added_by``.",
+        "properties": {
+          "type": {
+            "const": "conversation.membership_added",
+            "default": "conversation.membership_added",
+            "title": "Type",
+            "type": "string"
+          },
+          "conversation_id": {
+            "description": "Conversation the recipient was added to",
+            "title": "Conversation Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "conversation_id"
+        ],
+        "title": "ConversationMembershipAddedEvent",
+        "type": "object"
+      },
+      "ConversationMembershipRemovedEvent": {
+        "description": "The recipient was removed from a conversation, or left it (#5017).\n\nPublished to the removed person's ``personal:{user_id}`` channel only.\nClients treat it as a list-invalidation signal: refetching drops the row if\nthe recipient no longer sees the conversation by any other route (until\nPR 4, an org-scoped conversation stays visible after its members leave).",
+        "properties": {
+          "type": {
+            "const": "conversation.membership_removed",
+            "default": "conversation.membership_removed",
+            "title": "Type",
+            "type": "string"
+          },
+          "conversation_id": {
+            "description": "Conversation the recipient was removed from",
+            "title": "Conversation Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "conversation_id"
+        ],
+        "title": "ConversationMembershipRemovedEvent",
+        "type": "object"
+      },
       "ConversationMessageRedactionMetadata": {
         "additionalProperties": false,
         "description": "Versioned metadata stored on redacted user text content.",
@@ -98504,6 +101209,12 @@
             "default": null,
             "description": "On the org channel: the conversation's title after the update, or null if it is untitled. On the personal channel: always null, which says nothing about the title; refetch the conversation list for it.",
             "title": "Title"
+          },
+          "members_changed": {
+            "default": false,
+            "description": "True when the update is a membership change: someone was added to, removed from, or left the conversation. Its audience may have changed even when member_count did not (one person replaced by another), so clients re-read its member list and sharing placement. False for a rename or a new title.",
+            "title": "Members Changed",
+            "type": "boolean"
           }
         },
         "required": [
@@ -98767,6 +101478,8 @@
           "mapping": {
             "conversation.activity": "#/components/schemas/ConversationActivityEvent",
             "conversation.deleted": "#/components/schemas/ConversationDeletedEvent",
+            "conversation.membership_added": "#/components/schemas/ConversationMembershipAddedEvent",
+            "conversation.membership_removed": "#/components/schemas/ConversationMembershipRemovedEvent",
             "conversation.new": "#/components/schemas/ConversationNewEvent",
             "conversation.turn": "#/components/schemas/ConversationTurnEvent",
             "conversation.updated": "#/components/schemas/ConversationUpdatedEvent",
@@ -98784,6 +101497,12 @@
           },
           {
             "$ref": "#/components/schemas/ConversationDeletedEvent"
+          },
+          {
+            "$ref": "#/components/schemas/ConversationMembershipAddedEvent"
+          },
+          {
+            "$ref": "#/components/schemas/ConversationMembershipRemovedEvent"
           },
           {
             "$ref": "#/components/schemas/ConversationNewEvent"

@@ -466,27 +466,28 @@ const (
 
 // Defines values for CredentialProvider.
 const (
-	CredentialProviderAnthropic       CredentialProvider = "anthropic"
-	CredentialProviderAvolaflow       CredentialProvider = "avolaflow"
-	CredentialProviderAzureOpenai     CredentialProvider = "azure_openai"
-	CredentialProviderBrave           CredentialProvider = "brave"
-	CredentialProviderChatgptCodex    CredentialProvider = "chatgpt_codex"
-	CredentialProviderClaudeMax       CredentialProvider = "claude_max"
-	CredentialProviderComposio        CredentialProvider = "composio"
-	CredentialProviderCustom          CredentialProvider = "custom"
-	CredentialProviderDinero          CredentialProvider = "dinero"
-	CredentialProviderEconomic        CredentialProvider = "economic"
-	CredentialProviderGarmin          CredentialProvider = "garmin"
-	CredentialProviderGithub          CredentialProvider = "github"
-	CredentialProviderGithubApp       CredentialProvider = "github_app"
-	CredentialProviderGoogleAiStudio  CredentialProvider = "google_ai_studio"
-	CredentialProviderOpenai          CredentialProvider = "openai"
-	CredentialProviderOpenrouter      CredentialProvider = "openrouter"
-	CredentialProviderRedditAds       CredentialProvider = "reddit_ads"
-	CredentialProviderShopify         CredentialProvider = "shopify"
-	CredentialProviderSnowflake       CredentialProvider = "snowflake"
-	CredentialProviderTavily          CredentialProvider = "tavily"
-	CredentialProviderVercelAiGateway CredentialProvider = "vercel_ai_gateway"
+	CredentialProviderAnthropic              CredentialProvider = "anthropic"
+	CredentialProviderAvolaflow              CredentialProvider = "avolaflow"
+	CredentialProviderAzureOpenai            CredentialProvider = "azure_openai"
+	CredentialProviderBrave                  CredentialProvider = "brave"
+	CredentialProviderChatgptCodex           CredentialProvider = "chatgpt_codex"
+	CredentialProviderClaudeMax              CredentialProvider = "claude_max"
+	CredentialProviderComposio               CredentialProvider = "composio"
+	CredentialProviderCustom                 CredentialProvider = "custom"
+	CredentialProviderDinero                 CredentialProvider = "dinero"
+	CredentialProviderEconomic               CredentialProvider = "economic"
+	CredentialProviderGarmin                 CredentialProvider = "garmin"
+	CredentialProviderGithub                 CredentialProvider = "github"
+	CredentialProviderGithubApp              CredentialProvider = "github_app"
+	CredentialProviderGoogleAiStudio         CredentialProvider = "google_ai_studio"
+	CredentialProviderOpenai                 CredentialProvider = "openai"
+	CredentialProviderOpenrouter             CredentialProvider = "openrouter"
+	CredentialProviderRedditAds              CredentialProvider = "reddit_ads"
+	CredentialProviderShopify                CredentialProvider = "shopify"
+	CredentialProviderSnowflake              CredentialProvider = "snowflake"
+	CredentialProviderTavily                 CredentialProvider = "tavily"
+	CredentialProviderUserClaudeSubscription CredentialProvider = "user_claude_subscription"
+	CredentialProviderVercelAiGateway        CredentialProvider = "vercel_ai_gateway"
 )
 
 // Defines values for CredentialScope.
@@ -1802,6 +1803,39 @@ const (
 	UsageErrorScopeMissing  UsageError = "scope_missing"
 	UsageErrorTokenExpired  UsageError = "token_expired"
 	UsageErrorUpstreamError UsageError = "upstream_error"
+)
+
+// Defines values for UserClaudeBotRefusedProblemErrorCode.
+const (
+	UserClaudeBotRefusedProblemErrorCodeUserClaudeChainRefused UserClaudeBotRefusedProblemErrorCode = "user_claude_chain_refused"
+)
+
+// Defines values for UserClaudeBotRefusedProblemReason.
+const (
+	UserClaudeBotRefusedProblemReasonNotHostedNative     UserClaudeBotRefusedProblemReason = "not_hosted_native"
+	UserClaudeBotRefusedProblemReasonRoutingProfileBound UserClaudeBotRefusedProblemReason = "routing_profile_bound"
+)
+
+// Defines values for UserClaudeLinkRefusedProblemErrorCode.
+const (
+	UserClaudeLinkRefusedProblemErrorCodeUserClaudeChainRefused UserClaudeLinkRefusedProblemErrorCode = "user_claude_chain_refused"
+)
+
+// Defines values for UserClaudeLinkRefusedProblemReason.
+const (
+	UserClaudeLinkRefusedProblemReasonModelNotClaude UserClaudeLinkRefusedProblemReason = "model_not_claude"
+	UserClaudeLinkRefusedProblemReasonModelRequired  UserClaudeLinkRefusedProblemReason = "model_required"
+	UserClaudeLinkRefusedProblemReasonNotFirst       UserClaudeLinkRefusedProblemReason = "not_first"
+)
+
+// Defines values for UserClaudeSchedulesRefusedProblemErrorCode.
+const (
+	UserClaudeSchedulesRefusedProblemErrorCodeUserClaudeChainRefused UserClaudeSchedulesRefusedProblemErrorCode = "user_claude_chain_refused"
+)
+
+// Defines values for UserClaudeSchedulesRefusedProblemReason.
+const (
+	UserClaudeSchedulesRefusedProblemReasonHasActiveSchedules UserClaudeSchedulesRefusedProblemReason = "has_active_schedules"
 )
 
 // Defines values for WaitForToolsActionKind.
@@ -11261,6 +11295,123 @@ type UsageWindowResponse struct {
 	UsedPercent float32 `json:"used_percent"`
 }
 
+// UserClaudeBotRefusedProblem 422 “user_claude_chain_refused“: this bot cannot use the credential.
+type UserClaudeBotRefusedProblem struct {
+	// Detail Human-readable explanation specific to this occurrence. Safe to surface to end users — never contains debugging information.
+	Detail string `json:"detail"`
+
+	// ErrorCode Always ``user_claude_chain_refused``; switch on it to narrow the 422
+	ErrorCode UserClaudeBotRefusedProblemErrorCode `json:"error_code"`
+
+	// Errors Field-level failures (present on 422 responses from validation)
+	Errors *[]ProblemErrorItem `json:"errors"`
+
+	// Instance Request path that produced the error
+	Instance string `json:"instance"`
+
+	// Reason Why the bot cannot use the credential
+	Reason UserClaudeBotRefusedProblemReason `json:"reason"`
+
+	// Status HTTP status code for this occurrence
+	Status int `json:"status"`
+
+	// Title Short human summary of the problem type; stable across occurrences. Fallback for humans that don't recognise the type URI.
+	Title string `json:"title"`
+
+	// TraceId OpenTelemetry trace ID (32 hex chars) when tracing is active. Lets support pivot from a failure the caller reports straight to the Tempo trace.
+	TraceId *string `json:"trace_id"`
+
+	// Type URI identifier for the problem type; primary machine identifier. Clients should switch on this (or ``error_code``), not on ``title`` or ``detail``.
+	Type                 string                 `json:"type"`
+	AdditionalProperties map[string]interface{} `json:"-"`
+}
+
+// UserClaudeBotRefusedProblemErrorCode Always “user_claude_chain_refused“; switch on it to narrow the 422
+type UserClaudeBotRefusedProblemErrorCode string
+
+// UserClaudeBotRefusedProblemReason Why the bot cannot use the credential
+type UserClaudeBotRefusedProblemReason string
+
+// UserClaudeLinkRefusedProblem 422 “user_claude_chain_refused“ about the User Claude link itself.
+type UserClaudeLinkRefusedProblem struct {
+	// Detail Human-readable explanation specific to this occurrence. Safe to surface to end users — never contains debugging information.
+	Detail string `json:"detail"`
+
+	// ErrorCode Always ``user_claude_chain_refused``; switch on it to narrow the 422
+	ErrorCode UserClaudeLinkRefusedProblemErrorCode `json:"error_code"`
+
+	// Errors Field-level failures (present on 422 responses from validation)
+	Errors *[]ProblemErrorItem `json:"errors"`
+
+	// Instance Request path that produced the error
+	Instance string `json:"instance"`
+
+	// Ordinal The refused User Claude link's position
+	Ordinal int `json:"ordinal"`
+
+	// Reason Why the link is refused
+	Reason UserClaudeLinkRefusedProblemReason `json:"reason"`
+
+	// Status HTTP status code for this occurrence
+	Status int `json:"status"`
+
+	// Title Short human summary of the problem type; stable across occurrences. Fallback for humans that don't recognise the type URI.
+	Title string `json:"title"`
+
+	// TraceId OpenTelemetry trace ID (32 hex chars) when tracing is active. Lets support pivot from a failure the caller reports straight to the Tempo trace.
+	TraceId *string `json:"trace_id"`
+
+	// Type URI identifier for the problem type; primary machine identifier. Clients should switch on this (or ``error_code``), not on ``title`` or ``detail``.
+	Type                 string                 `json:"type"`
+	AdditionalProperties map[string]interface{} `json:"-"`
+}
+
+// UserClaudeLinkRefusedProblemErrorCode Always “user_claude_chain_refused“; switch on it to narrow the 422
+type UserClaudeLinkRefusedProblemErrorCode string
+
+// UserClaudeLinkRefusedProblemReason Why the link is refused
+type UserClaudeLinkRefusedProblemReason string
+
+// UserClaudeSchedulesRefusedProblem 422 “user_claude_chain_refused“: the bot has enabled schedules.
+type UserClaudeSchedulesRefusedProblem struct {
+	// ActiveSchedules Enabled schedules on the bot
+	ActiveSchedules int `json:"active_schedules"`
+
+	// Detail Human-readable explanation specific to this occurrence. Safe to surface to end users — never contains debugging information.
+	Detail string `json:"detail"`
+
+	// ErrorCode Always ``user_claude_chain_refused``; switch on it to narrow the 422
+	ErrorCode UserClaudeSchedulesRefusedProblemErrorCode `json:"error_code"`
+
+	// Errors Field-level failures (present on 422 responses from validation)
+	Errors *[]ProblemErrorItem `json:"errors"`
+
+	// Instance Request path that produced the error
+	Instance string `json:"instance"`
+
+	// Reason Always ``has_active_schedules``
+	Reason UserClaudeSchedulesRefusedProblemReason `json:"reason"`
+
+	// Status HTTP status code for this occurrence
+	Status int `json:"status"`
+
+	// Title Short human summary of the problem type; stable across occurrences. Fallback for humans that don't recognise the type URI.
+	Title string `json:"title"`
+
+	// TraceId OpenTelemetry trace ID (32 hex chars) when tracing is active. Lets support pivot from a failure the caller reports straight to the Tempo trace.
+	TraceId *string `json:"trace_id"`
+
+	// Type URI identifier for the problem type; primary machine identifier. Clients should switch on this (or ``error_code``), not on ``title`` or ``detail``.
+	Type                 string                 `json:"type"`
+	AdditionalProperties map[string]interface{} `json:"-"`
+}
+
+// UserClaudeSchedulesRefusedProblemErrorCode Always “user_claude_chain_refused“; switch on it to narrow the 422
+type UserClaudeSchedulesRefusedProblemErrorCode string
+
+// UserClaudeSchedulesRefusedProblemReason Always “has_active_schedules“
+type UserClaudeSchedulesRefusedProblemReason string
+
 // VerbatimHeaderScheme Send the secret exactly as stored — the pre-existing behaviour.
 //
 // This is what every row created before schemes existed does, and it stays
@@ -11485,6 +11636,9 @@ type WorkforceMemberSet struct {
 // Every principal must be on the list, or nothing is removed and the 404 names
 // the ones that are not.
 type WorkforceMembersRemove struct {
+	// ExpectedWorkforceId Optional immutable board ID precondition. A mismatch returns 409 without changes. Older APIs reject this field instead of silently ignoring it; declarative writers should send this body field, not rely solely on the query parameter.
+	ExpectedWorkforceId *string `json:"expected_workforce_id"`
+
 	// Members Principals to remove from the board. Each at most once.
 	Members []WorkforceMemberRef `json:"members"`
 }
@@ -11495,6 +11649,9 @@ type WorkforceMembersRemove struct {
 // not named are left as they are. A principal already holding the role it is
 // sent with is a no-op and writes no audit event.
 type WorkforceMembersSet struct {
+	// ExpectedWorkforceId Optional immutable board ID precondition. A mismatch returns 409 without changes. Older APIs reject this field instead of silently ignoring it; declarative writers should send this body field, not rely solely on the query parameter.
+	ExpectedWorkforceId *string `json:"expected_workforce_id"`
+
 	// Members Principals to put on the board with their roles. Each at most once.
 	Members []WorkforceMemberSet `json:"members"`
 }
@@ -11828,6 +11985,30 @@ type ListServableToolsV1OrgsOrgIdToolsServableGetParams struct {
 
 	// McpServer Filter by MCP server name
 	McpServer *string `form:"mcp_server,omitempty" json:"mcp_server,omitempty"`
+}
+
+// ListWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersGetParams defines parameters for ListWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersGet.
+type ListWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersGetParams struct {
+	// ExpectedWorkforceId Optional immutable workforce ID expected at this slug. A mismatch returns 409 before reading or changing members. Omit for existing slug-only behavior.
+	ExpectedWorkforceId *string `form:"expected_workforce_id,omitempty" json:"expected_workforce_id,omitempty"`
+}
+
+// AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostParams defines parameters for AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPost.
+type AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostParams struct {
+	// ExpectedWorkforceId Optional immutable workforce ID expected at this slug. A mismatch returns 409 before reading or changing members. Omit for existing slug-only behavior.
+	ExpectedWorkforceId *string `form:"expected_workforce_id,omitempty" json:"expected_workforce_id,omitempty"`
+}
+
+// SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutParams defines parameters for SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPut.
+type SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutParams struct {
+	// ExpectedWorkforceId Optional immutable workforce ID expected at this slug. A mismatch returns 409 before reading or changing members. Omit for existing slug-only behavior.
+	ExpectedWorkforceId *string `form:"expected_workforce_id,omitempty" json:"expected_workforce_id,omitempty"`
+}
+
+// RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostParams defines parameters for RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePost.
+type RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostParams struct {
+	// ExpectedWorkforceId Optional immutable workforce ID expected at this slug. A mismatch returns 409 before reading or changing members. Omit for existing slug-only behavior.
+	ExpectedWorkforceId *string `form:"expected_workforce_id,omitempty" json:"expected_workforce_id,omitempty"`
 }
 
 // ListTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksGetParams defines parameters for ListTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksGet.
@@ -12330,6 +12511,554 @@ func (a ProblemDetails) MarshalJSON() ([]byte, error) {
 	object["instance"], err = json.Marshal(a.Instance)
 	if err != nil {
 		return nil, fmt.Errorf("error marshaling 'instance': %w", err)
+	}
+
+	object["status"], err = json.Marshal(a.Status)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'status': %w", err)
+	}
+
+	object["title"], err = json.Marshal(a.Title)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'title': %w", err)
+	}
+
+	if a.TraceId != nil {
+		object["trace_id"], err = json.Marshal(a.TraceId)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'trace_id': %w", err)
+		}
+	}
+
+	object["type"], err = json.Marshal(a.Type)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'type': %w", err)
+	}
+
+	for fieldName, field := range a.AdditionalProperties {
+		object[fieldName], err = json.Marshal(field)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling '%s': %w", fieldName, err)
+		}
+	}
+	return json.Marshal(object)
+}
+
+// Getter for additional properties for UserClaudeBotRefusedProblem. Returns the specified
+// element and whether it was found
+func (a UserClaudeBotRefusedProblem) Get(fieldName string) (value interface{}, found bool) {
+	if a.AdditionalProperties != nil {
+		value, found = a.AdditionalProperties[fieldName]
+	}
+	return
+}
+
+// Setter for additional properties for UserClaudeBotRefusedProblem
+func (a *UserClaudeBotRefusedProblem) Set(fieldName string, value interface{}) {
+	if a.AdditionalProperties == nil {
+		a.AdditionalProperties = make(map[string]interface{})
+	}
+	a.AdditionalProperties[fieldName] = value
+}
+
+// Override default JSON handling for UserClaudeBotRefusedProblem to handle AdditionalProperties
+func (a *UserClaudeBotRefusedProblem) UnmarshalJSON(b []byte) error {
+	object := make(map[string]json.RawMessage)
+	err := json.Unmarshal(b, &object)
+	if err != nil {
+		return err
+	}
+
+	if raw, found := object["detail"]; found {
+		err = json.Unmarshal(raw, &a.Detail)
+		if err != nil {
+			return fmt.Errorf("error reading 'detail': %w", err)
+		}
+		delete(object, "detail")
+	}
+
+	if raw, found := object["error_code"]; found {
+		err = json.Unmarshal(raw, &a.ErrorCode)
+		if err != nil {
+			return fmt.Errorf("error reading 'error_code': %w", err)
+		}
+		delete(object, "error_code")
+	}
+
+	if raw, found := object["errors"]; found {
+		err = json.Unmarshal(raw, &a.Errors)
+		if err != nil {
+			return fmt.Errorf("error reading 'errors': %w", err)
+		}
+		delete(object, "errors")
+	}
+
+	if raw, found := object["instance"]; found {
+		err = json.Unmarshal(raw, &a.Instance)
+		if err != nil {
+			return fmt.Errorf("error reading 'instance': %w", err)
+		}
+		delete(object, "instance")
+	}
+
+	if raw, found := object["reason"]; found {
+		err = json.Unmarshal(raw, &a.Reason)
+		if err != nil {
+			return fmt.Errorf("error reading 'reason': %w", err)
+		}
+		delete(object, "reason")
+	}
+
+	if raw, found := object["status"]; found {
+		err = json.Unmarshal(raw, &a.Status)
+		if err != nil {
+			return fmt.Errorf("error reading 'status': %w", err)
+		}
+		delete(object, "status")
+	}
+
+	if raw, found := object["title"]; found {
+		err = json.Unmarshal(raw, &a.Title)
+		if err != nil {
+			return fmt.Errorf("error reading 'title': %w", err)
+		}
+		delete(object, "title")
+	}
+
+	if raw, found := object["trace_id"]; found {
+		err = json.Unmarshal(raw, &a.TraceId)
+		if err != nil {
+			return fmt.Errorf("error reading 'trace_id': %w", err)
+		}
+		delete(object, "trace_id")
+	}
+
+	if raw, found := object["type"]; found {
+		err = json.Unmarshal(raw, &a.Type)
+		if err != nil {
+			return fmt.Errorf("error reading 'type': %w", err)
+		}
+		delete(object, "type")
+	}
+
+	if len(object) != 0 {
+		a.AdditionalProperties = make(map[string]interface{})
+		for fieldName, fieldBuf := range object {
+			var fieldVal interface{}
+			err := json.Unmarshal(fieldBuf, &fieldVal)
+			if err != nil {
+				return fmt.Errorf("error unmarshaling field %s: %w", fieldName, err)
+			}
+			a.AdditionalProperties[fieldName] = fieldVal
+		}
+	}
+	return nil
+}
+
+// Override default JSON handling for UserClaudeBotRefusedProblem to handle AdditionalProperties
+func (a UserClaudeBotRefusedProblem) MarshalJSON() ([]byte, error) {
+	var err error
+	object := make(map[string]json.RawMessage)
+
+	object["detail"], err = json.Marshal(a.Detail)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'detail': %w", err)
+	}
+
+	object["error_code"], err = json.Marshal(a.ErrorCode)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'error_code': %w", err)
+	}
+
+	if a.Errors != nil {
+		object["errors"], err = json.Marshal(a.Errors)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'errors': %w", err)
+		}
+	}
+
+	object["instance"], err = json.Marshal(a.Instance)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'instance': %w", err)
+	}
+
+	object["reason"], err = json.Marshal(a.Reason)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'reason': %w", err)
+	}
+
+	object["status"], err = json.Marshal(a.Status)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'status': %w", err)
+	}
+
+	object["title"], err = json.Marshal(a.Title)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'title': %w", err)
+	}
+
+	if a.TraceId != nil {
+		object["trace_id"], err = json.Marshal(a.TraceId)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'trace_id': %w", err)
+		}
+	}
+
+	object["type"], err = json.Marshal(a.Type)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'type': %w", err)
+	}
+
+	for fieldName, field := range a.AdditionalProperties {
+		object[fieldName], err = json.Marshal(field)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling '%s': %w", fieldName, err)
+		}
+	}
+	return json.Marshal(object)
+}
+
+// Getter for additional properties for UserClaudeLinkRefusedProblem. Returns the specified
+// element and whether it was found
+func (a UserClaudeLinkRefusedProblem) Get(fieldName string) (value interface{}, found bool) {
+	if a.AdditionalProperties != nil {
+		value, found = a.AdditionalProperties[fieldName]
+	}
+	return
+}
+
+// Setter for additional properties for UserClaudeLinkRefusedProblem
+func (a *UserClaudeLinkRefusedProblem) Set(fieldName string, value interface{}) {
+	if a.AdditionalProperties == nil {
+		a.AdditionalProperties = make(map[string]interface{})
+	}
+	a.AdditionalProperties[fieldName] = value
+}
+
+// Override default JSON handling for UserClaudeLinkRefusedProblem to handle AdditionalProperties
+func (a *UserClaudeLinkRefusedProblem) UnmarshalJSON(b []byte) error {
+	object := make(map[string]json.RawMessage)
+	err := json.Unmarshal(b, &object)
+	if err != nil {
+		return err
+	}
+
+	if raw, found := object["detail"]; found {
+		err = json.Unmarshal(raw, &a.Detail)
+		if err != nil {
+			return fmt.Errorf("error reading 'detail': %w", err)
+		}
+		delete(object, "detail")
+	}
+
+	if raw, found := object["error_code"]; found {
+		err = json.Unmarshal(raw, &a.ErrorCode)
+		if err != nil {
+			return fmt.Errorf("error reading 'error_code': %w", err)
+		}
+		delete(object, "error_code")
+	}
+
+	if raw, found := object["errors"]; found {
+		err = json.Unmarshal(raw, &a.Errors)
+		if err != nil {
+			return fmt.Errorf("error reading 'errors': %w", err)
+		}
+		delete(object, "errors")
+	}
+
+	if raw, found := object["instance"]; found {
+		err = json.Unmarshal(raw, &a.Instance)
+		if err != nil {
+			return fmt.Errorf("error reading 'instance': %w", err)
+		}
+		delete(object, "instance")
+	}
+
+	if raw, found := object["ordinal"]; found {
+		err = json.Unmarshal(raw, &a.Ordinal)
+		if err != nil {
+			return fmt.Errorf("error reading 'ordinal': %w", err)
+		}
+		delete(object, "ordinal")
+	}
+
+	if raw, found := object["reason"]; found {
+		err = json.Unmarshal(raw, &a.Reason)
+		if err != nil {
+			return fmt.Errorf("error reading 'reason': %w", err)
+		}
+		delete(object, "reason")
+	}
+
+	if raw, found := object["status"]; found {
+		err = json.Unmarshal(raw, &a.Status)
+		if err != nil {
+			return fmt.Errorf("error reading 'status': %w", err)
+		}
+		delete(object, "status")
+	}
+
+	if raw, found := object["title"]; found {
+		err = json.Unmarshal(raw, &a.Title)
+		if err != nil {
+			return fmt.Errorf("error reading 'title': %w", err)
+		}
+		delete(object, "title")
+	}
+
+	if raw, found := object["trace_id"]; found {
+		err = json.Unmarshal(raw, &a.TraceId)
+		if err != nil {
+			return fmt.Errorf("error reading 'trace_id': %w", err)
+		}
+		delete(object, "trace_id")
+	}
+
+	if raw, found := object["type"]; found {
+		err = json.Unmarshal(raw, &a.Type)
+		if err != nil {
+			return fmt.Errorf("error reading 'type': %w", err)
+		}
+		delete(object, "type")
+	}
+
+	if len(object) != 0 {
+		a.AdditionalProperties = make(map[string]interface{})
+		for fieldName, fieldBuf := range object {
+			var fieldVal interface{}
+			err := json.Unmarshal(fieldBuf, &fieldVal)
+			if err != nil {
+				return fmt.Errorf("error unmarshaling field %s: %w", fieldName, err)
+			}
+			a.AdditionalProperties[fieldName] = fieldVal
+		}
+	}
+	return nil
+}
+
+// Override default JSON handling for UserClaudeLinkRefusedProblem to handle AdditionalProperties
+func (a UserClaudeLinkRefusedProblem) MarshalJSON() ([]byte, error) {
+	var err error
+	object := make(map[string]json.RawMessage)
+
+	object["detail"], err = json.Marshal(a.Detail)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'detail': %w", err)
+	}
+
+	object["error_code"], err = json.Marshal(a.ErrorCode)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'error_code': %w", err)
+	}
+
+	if a.Errors != nil {
+		object["errors"], err = json.Marshal(a.Errors)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'errors': %w", err)
+		}
+	}
+
+	object["instance"], err = json.Marshal(a.Instance)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'instance': %w", err)
+	}
+
+	object["ordinal"], err = json.Marshal(a.Ordinal)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'ordinal': %w", err)
+	}
+
+	object["reason"], err = json.Marshal(a.Reason)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'reason': %w", err)
+	}
+
+	object["status"], err = json.Marshal(a.Status)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'status': %w", err)
+	}
+
+	object["title"], err = json.Marshal(a.Title)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'title': %w", err)
+	}
+
+	if a.TraceId != nil {
+		object["trace_id"], err = json.Marshal(a.TraceId)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'trace_id': %w", err)
+		}
+	}
+
+	object["type"], err = json.Marshal(a.Type)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'type': %w", err)
+	}
+
+	for fieldName, field := range a.AdditionalProperties {
+		object[fieldName], err = json.Marshal(field)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling '%s': %w", fieldName, err)
+		}
+	}
+	return json.Marshal(object)
+}
+
+// Getter for additional properties for UserClaudeSchedulesRefusedProblem. Returns the specified
+// element and whether it was found
+func (a UserClaudeSchedulesRefusedProblem) Get(fieldName string) (value interface{}, found bool) {
+	if a.AdditionalProperties != nil {
+		value, found = a.AdditionalProperties[fieldName]
+	}
+	return
+}
+
+// Setter for additional properties for UserClaudeSchedulesRefusedProblem
+func (a *UserClaudeSchedulesRefusedProblem) Set(fieldName string, value interface{}) {
+	if a.AdditionalProperties == nil {
+		a.AdditionalProperties = make(map[string]interface{})
+	}
+	a.AdditionalProperties[fieldName] = value
+}
+
+// Override default JSON handling for UserClaudeSchedulesRefusedProblem to handle AdditionalProperties
+func (a *UserClaudeSchedulesRefusedProblem) UnmarshalJSON(b []byte) error {
+	object := make(map[string]json.RawMessage)
+	err := json.Unmarshal(b, &object)
+	if err != nil {
+		return err
+	}
+
+	if raw, found := object["active_schedules"]; found {
+		err = json.Unmarshal(raw, &a.ActiveSchedules)
+		if err != nil {
+			return fmt.Errorf("error reading 'active_schedules': %w", err)
+		}
+		delete(object, "active_schedules")
+	}
+
+	if raw, found := object["detail"]; found {
+		err = json.Unmarshal(raw, &a.Detail)
+		if err != nil {
+			return fmt.Errorf("error reading 'detail': %w", err)
+		}
+		delete(object, "detail")
+	}
+
+	if raw, found := object["error_code"]; found {
+		err = json.Unmarshal(raw, &a.ErrorCode)
+		if err != nil {
+			return fmt.Errorf("error reading 'error_code': %w", err)
+		}
+		delete(object, "error_code")
+	}
+
+	if raw, found := object["errors"]; found {
+		err = json.Unmarshal(raw, &a.Errors)
+		if err != nil {
+			return fmt.Errorf("error reading 'errors': %w", err)
+		}
+		delete(object, "errors")
+	}
+
+	if raw, found := object["instance"]; found {
+		err = json.Unmarshal(raw, &a.Instance)
+		if err != nil {
+			return fmt.Errorf("error reading 'instance': %w", err)
+		}
+		delete(object, "instance")
+	}
+
+	if raw, found := object["reason"]; found {
+		err = json.Unmarshal(raw, &a.Reason)
+		if err != nil {
+			return fmt.Errorf("error reading 'reason': %w", err)
+		}
+		delete(object, "reason")
+	}
+
+	if raw, found := object["status"]; found {
+		err = json.Unmarshal(raw, &a.Status)
+		if err != nil {
+			return fmt.Errorf("error reading 'status': %w", err)
+		}
+		delete(object, "status")
+	}
+
+	if raw, found := object["title"]; found {
+		err = json.Unmarshal(raw, &a.Title)
+		if err != nil {
+			return fmt.Errorf("error reading 'title': %w", err)
+		}
+		delete(object, "title")
+	}
+
+	if raw, found := object["trace_id"]; found {
+		err = json.Unmarshal(raw, &a.TraceId)
+		if err != nil {
+			return fmt.Errorf("error reading 'trace_id': %w", err)
+		}
+		delete(object, "trace_id")
+	}
+
+	if raw, found := object["type"]; found {
+		err = json.Unmarshal(raw, &a.Type)
+		if err != nil {
+			return fmt.Errorf("error reading 'type': %w", err)
+		}
+		delete(object, "type")
+	}
+
+	if len(object) != 0 {
+		a.AdditionalProperties = make(map[string]interface{})
+		for fieldName, fieldBuf := range object {
+			var fieldVal interface{}
+			err := json.Unmarshal(fieldBuf, &fieldVal)
+			if err != nil {
+				return fmt.Errorf("error unmarshaling field %s: %w", fieldName, err)
+			}
+			a.AdditionalProperties[fieldName] = fieldVal
+		}
+	}
+	return nil
+}
+
+// Override default JSON handling for UserClaudeSchedulesRefusedProblem to handle AdditionalProperties
+func (a UserClaudeSchedulesRefusedProblem) MarshalJSON() ([]byte, error) {
+	var err error
+	object := make(map[string]json.RawMessage)
+
+	object["active_schedules"], err = json.Marshal(a.ActiveSchedules)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'active_schedules': %w", err)
+	}
+
+	object["detail"], err = json.Marshal(a.Detail)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'detail': %w", err)
+	}
+
+	object["error_code"], err = json.Marshal(a.ErrorCode)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'error_code': %w", err)
+	}
+
+	if a.Errors != nil {
+		object["errors"], err = json.Marshal(a.Errors)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'errors': %w", err)
+		}
+	}
+
+	object["instance"], err = json.Marshal(a.Instance)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'instance': %w", err)
+	}
+
+	object["reason"], err = json.Marshal(a.Reason)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'reason': %w", err)
 	}
 
 	object["status"], err = json.Marshal(a.Status)
@@ -20078,22 +20807,22 @@ type ClientInterface interface {
 	ReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPost(ctx context.Context, orgId string, workforceSlug string, columnId string, body ReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ListWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersGet request
-	ListWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersGet(ctx context.Context, orgId string, workforceSlug string, reqEditors ...RequestEditorFn) (*http.Response, error)
+	ListWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersGet(ctx context.Context, orgId string, workforceSlug string, params *ListWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersGetParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostWithBody request with any body
-	AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostWithBody(ctx context.Context, orgId string, workforceSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostWithBody(ctx context.Context, orgId string, workforceSlug string, params *AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPost(ctx context.Context, orgId string, workforceSlug string, body AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPost(ctx context.Context, orgId string, workforceSlug string, params *AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostParams, body AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutWithBody request with any body
-	SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutWithBody(ctx context.Context, orgId string, workforceSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutWithBody(ctx context.Context, orgId string, workforceSlug string, params *SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPut(ctx context.Context, orgId string, workforceSlug string, body SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPut(ctx context.Context, orgId string, workforceSlug string, params *SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutParams, body SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostWithBody request with any body
-	RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostWithBody(ctx context.Context, orgId string, workforceSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostWithBody(ctx context.Context, orgId string, workforceSlug string, params *RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePost(ctx context.Context, orgId string, workforceSlug string, body RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePost(ctx context.Context, orgId string, workforceSlug string, params *RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostParams, body RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ListTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksGet request
 	ListTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksGet(ctx context.Context, orgId string, workforceSlug string, params *ListTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksGetParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -22192,8 +22921,8 @@ func (c *Client) ReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsCol
 	return c.Client.Do(req)
 }
 
-func (c *Client) ListWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersGet(ctx context.Context, orgId string, workforceSlug string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewListWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersGetRequest(c.Server, orgId, workforceSlug)
+func (c *Client) ListWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersGet(ctx context.Context, orgId string, workforceSlug string, params *ListWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersGetParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersGetRequest(c.Server, orgId, workforceSlug, params)
 	if err != nil {
 		return nil, err
 	}
@@ -22204,8 +22933,8 @@ func (c *Client) ListWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersGe
 	return c.Client.Do(req)
 }
 
-func (c *Client) AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostWithBody(ctx context.Context, orgId string, workforceSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewAddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostRequestWithBody(c.Server, orgId, workforceSlug, contentType, body)
+func (c *Client) AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostWithBody(ctx context.Context, orgId string, workforceSlug string, params *AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostRequestWithBody(c.Server, orgId, workforceSlug, params, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -22216,8 +22945,8 @@ func (c *Client) AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPos
 	return c.Client.Do(req)
 }
 
-func (c *Client) AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPost(ctx context.Context, orgId string, workforceSlug string, body AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewAddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostRequest(c.Server, orgId, workforceSlug, body)
+func (c *Client) AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPost(ctx context.Context, orgId string, workforceSlug string, params *AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostParams, body AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostRequest(c.Server, orgId, workforceSlug, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -22228,8 +22957,8 @@ func (c *Client) AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPos
 	return c.Client.Do(req)
 }
 
-func (c *Client) SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutWithBody(ctx context.Context, orgId string, workforceSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewSetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutRequestWithBody(c.Server, orgId, workforceSlug, contentType, body)
+func (c *Client) SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutWithBody(ctx context.Context, orgId string, workforceSlug string, params *SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutRequestWithBody(c.Server, orgId, workforceSlug, params, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -22240,8 +22969,8 @@ func (c *Client) SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPut
 	return c.Client.Do(req)
 }
 
-func (c *Client) SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPut(ctx context.Context, orgId string, workforceSlug string, body SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewSetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutRequest(c.Server, orgId, workforceSlug, body)
+func (c *Client) SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPut(ctx context.Context, orgId string, workforceSlug string, params *SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutParams, body SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutRequest(c.Server, orgId, workforceSlug, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -22252,8 +22981,8 @@ func (c *Client) SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPut
 	return c.Client.Do(req)
 }
 
-func (c *Client) RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostWithBody(ctx context.Context, orgId string, workforceSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewRemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostRequestWithBody(c.Server, orgId, workforceSlug, contentType, body)
+func (c *Client) RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostWithBody(ctx context.Context, orgId string, workforceSlug string, params *RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostRequestWithBody(c.Server, orgId, workforceSlug, params, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -22264,8 +22993,8 @@ func (c *Client) RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembers
 	return c.Client.Do(req)
 }
 
-func (c *Client) RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePost(ctx context.Context, orgId string, workforceSlug string, body RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewRemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostRequest(c.Server, orgId, workforceSlug, body)
+func (c *Client) RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePost(ctx context.Context, orgId string, workforceSlug string, params *RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostParams, body RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostRequest(c.Server, orgId, workforceSlug, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -28283,7 +29012,7 @@ func NewReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReas
 }
 
 // NewListWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersGetRequest generates requests for ListWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersGet
-func NewListWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersGetRequest(server string, orgId string, workforceSlug string) (*http.Request, error) {
+func NewListWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersGetRequest(server string, orgId string, workforceSlug string, params *ListWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersGetParams) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -28313,6 +29042,28 @@ func NewListWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersGetRequest(
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.ExpectedWorkforceId != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "expected_workforce_id", runtime.ParamLocationQuery, *params.ExpectedWorkforceId); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
 	}
 
 	req, err := http.NewRequest("GET", queryURL.String(), nil)
@@ -28324,18 +29075,18 @@ func NewListWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersGetRequest(
 }
 
 // NewAddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostRequest calls the generic AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPost builder with application/json body
-func NewAddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostRequest(server string, orgId string, workforceSlug string, body AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostJSONRequestBody) (*http.Request, error) {
+func NewAddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostRequest(server string, orgId string, workforceSlug string, params *AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostParams, body AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewAddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostRequestWithBody(server, orgId, workforceSlug, "application/json", bodyReader)
+	return NewAddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostRequestWithBody(server, orgId, workforceSlug, params, "application/json", bodyReader)
 }
 
 // NewAddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostRequestWithBody generates requests for AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPost with any type of body
-func NewAddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostRequestWithBody(server string, orgId string, workforceSlug string, contentType string, body io.Reader) (*http.Request, error) {
+func NewAddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostRequestWithBody(server string, orgId string, workforceSlug string, params *AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostParams, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -28365,6 +29116,28 @@ func NewAddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostRequestW
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.ExpectedWorkforceId != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "expected_workforce_id", runtime.ParamLocationQuery, *params.ExpectedWorkforceId); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
 	}
 
 	req, err := http.NewRequest("POST", queryURL.String(), body)
@@ -28378,18 +29151,18 @@ func NewAddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostRequestW
 }
 
 // NewSetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutRequest calls the generic SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPut builder with application/json body
-func NewSetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutRequest(server string, orgId string, workforceSlug string, body SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutJSONRequestBody) (*http.Request, error) {
+func NewSetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutRequest(server string, orgId string, workforceSlug string, params *SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutParams, body SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewSetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutRequestWithBody(server, orgId, workforceSlug, "application/json", bodyReader)
+	return NewSetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutRequestWithBody(server, orgId, workforceSlug, params, "application/json", bodyReader)
 }
 
 // NewSetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutRequestWithBody generates requests for SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPut with any type of body
-func NewSetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutRequestWithBody(server string, orgId string, workforceSlug string, contentType string, body io.Reader) (*http.Request, error) {
+func NewSetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutRequestWithBody(server string, orgId string, workforceSlug string, params *SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutParams, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -28421,6 +29194,28 @@ func NewSetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutRequestWi
 		return nil, err
 	}
 
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.ExpectedWorkforceId != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "expected_workforce_id", runtime.ParamLocationQuery, *params.ExpectedWorkforceId); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
 	req, err := http.NewRequest("PUT", queryURL.String(), body)
 	if err != nil {
 		return nil, err
@@ -28432,18 +29227,18 @@ func NewSetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutRequestWi
 }
 
 // NewRemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostRequest calls the generic RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePost builder with application/json body
-func NewRemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostRequest(server string, orgId string, workforceSlug string, body RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostJSONRequestBody) (*http.Request, error) {
+func NewRemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostRequest(server string, orgId string, workforceSlug string, params *RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostParams, body RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewRemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostRequestWithBody(server, orgId, workforceSlug, "application/json", bodyReader)
+	return NewRemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostRequestWithBody(server, orgId, workforceSlug, params, "application/json", bodyReader)
 }
 
 // NewRemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostRequestWithBody generates requests for RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePost with any type of body
-func NewRemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostRequestWithBody(server string, orgId string, workforceSlug string, contentType string, body io.Reader) (*http.Request, error) {
+func NewRemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostRequestWithBody(server string, orgId string, workforceSlug string, params *RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostParams, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -28473,6 +29268,28 @@ func NewRemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePos
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.ExpectedWorkforceId != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "expected_workforce_id", runtime.ParamLocationQuery, *params.ExpectedWorkforceId); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
 	}
 
 	req, err := http.NewRequest("POST", queryURL.String(), body)
@@ -29744,22 +30561,22 @@ type ClientWithResponsesInterface interface {
 	ReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPostWithResponse(ctx context.Context, orgId string, workforceSlug string, columnId string, body ReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPostJSONRequestBody, reqEditors ...RequestEditorFn) (*ReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceSlugColumnsColumnIdReassignTasksPostResponse, error)
 
 	// ListWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersGetWithResponse request
-	ListWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersGetWithResponse(ctx context.Context, orgId string, workforceSlug string, reqEditors ...RequestEditorFn) (*ListWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersGetResponse, error)
+	ListWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersGetWithResponse(ctx context.Context, orgId string, workforceSlug string, params *ListWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersGetParams, reqEditors ...RequestEditorFn) (*ListWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersGetResponse, error)
 
 	// AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostWithBodyWithResponse request with any body
-	AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostWithBodyWithResponse(ctx context.Context, orgId string, workforceSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostResponse, error)
+	AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostWithBodyWithResponse(ctx context.Context, orgId string, workforceSlug string, params *AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostResponse, error)
 
-	AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostWithResponse(ctx context.Context, orgId string, workforceSlug string, body AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostJSONRequestBody, reqEditors ...RequestEditorFn) (*AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostResponse, error)
+	AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostWithResponse(ctx context.Context, orgId string, workforceSlug string, params *AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostParams, body AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostJSONRequestBody, reqEditors ...RequestEditorFn) (*AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostResponse, error)
 
 	// SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutWithBodyWithResponse request with any body
-	SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutWithBodyWithResponse(ctx context.Context, orgId string, workforceSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutResponse, error)
+	SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutWithBodyWithResponse(ctx context.Context, orgId string, workforceSlug string, params *SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutResponse, error)
 
-	SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutWithResponse(ctx context.Context, orgId string, workforceSlug string, body SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutJSONRequestBody, reqEditors ...RequestEditorFn) (*SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutResponse, error)
+	SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutWithResponse(ctx context.Context, orgId string, workforceSlug string, params *SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutParams, body SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutJSONRequestBody, reqEditors ...RequestEditorFn) (*SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutResponse, error)
 
 	// RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostWithBodyWithResponse request with any body
-	RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostWithBodyWithResponse(ctx context.Context, orgId string, workforceSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostResponse, error)
+	RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostWithBodyWithResponse(ctx context.Context, orgId string, workforceSlug string, params *RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostResponse, error)
 
-	RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostWithResponse(ctx context.Context, orgId string, workforceSlug string, body RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostJSONRequestBody, reqEditors ...RequestEditorFn) (*RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostResponse, error)
+	RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostWithResponse(ctx context.Context, orgId string, workforceSlug string, params *RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostParams, body RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostJSONRequestBody, reqEditors ...RequestEditorFn) (*RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostResponse, error)
 
 	// ListTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksGetWithResponse request
 	ListTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksGetWithResponse(ctx context.Context, orgId string, workforceSlug string, params *ListTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksGetParams, reqEditors ...RequestEditorFn) (*ListTasksV1OrgsOrgIdWorkforcesWorkforceSlugTasksGetResponse, error)
@@ -29865,10 +30682,12 @@ func (r ListBotsV1OrgsOrgIdBotsGetResponse) StatusCode() int {
 }
 
 type CreateBotV1OrgsOrgIdBotsPostResponse struct {
-	Body                      []byte
-	HTTPResponse              *http.Response
-	JSON201                   *BotResponse
-	JSON422                   *NativeLaneRefusedProblem
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *BotResponse
+	JSON422      *struct {
+		union json.RawMessage
+	}
 	ApplicationproblemJSON422 *struct {
 		union json.RawMessage
 	}
@@ -30122,10 +30941,12 @@ func (r UpdateBotConfigV1OrgsOrgIdBotsBotSlugConfigPatchResponse) StatusCode() i
 }
 
 type CopyBotV1OrgsOrgIdBotsBotSlugCopyPostResponse struct {
-	Body                      []byte
-	HTTPResponse              *http.Response
-	JSON201                   *BotCopyResponse
-	JSON422                   *NativeLaneRefusedProblem
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *BotCopyResponse
+	JSON422      *struct {
+		union json.RawMessage
+	}
 	ApplicationproblemJSON422 *struct {
 		union json.RawMessage
 	}
@@ -30172,10 +30993,12 @@ func (r ListBotCredentialsV1OrgsOrgIdBotsBotSlugCredentialsGetResponse) StatusCo
 }
 
 type AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutResponse struct {
-	Body                      []byte
-	HTTPResponse              *http.Response
-	JSON201                   *[]BotCredentialAssignmentResponse
-	JSON422                   *NativeLaneRefusedProblem
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *[]BotCredentialAssignmentResponse
+	JSON422      *struct {
+		union json.RawMessage
+	}
 	ApplicationproblemJSON422 *struct {
 		union json.RawMessage
 	}
@@ -30199,9 +31022,11 @@ func (r AssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutResponse) StatusCod
 }
 
 type UnassignCredentialV1OrgsOrgIdBotsBotSlugCredentialsCredentialIdDeleteResponse struct {
-	Body                      []byte
-	HTTPResponse              *http.Response
-	JSON422                   *NativeLaneRefusedProblem
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON422      *struct {
+		union json.RawMessage
+	}
 	ApplicationproblemJSON422 *struct {
 		union json.RawMessage
 	}
@@ -34395,8 +35220,8 @@ func (c *ClientWithResponses) ReassignColumnTasksV1OrgsOrgIdWorkforcesWorkforceS
 }
 
 // ListWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersGetWithResponse request returning *ListWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersGetResponse
-func (c *ClientWithResponses) ListWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersGetWithResponse(ctx context.Context, orgId string, workforceSlug string, reqEditors ...RequestEditorFn) (*ListWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersGetResponse, error) {
-	rsp, err := c.ListWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersGet(ctx, orgId, workforceSlug, reqEditors...)
+func (c *ClientWithResponses) ListWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersGetWithResponse(ctx context.Context, orgId string, workforceSlug string, params *ListWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersGetParams, reqEditors ...RequestEditorFn) (*ListWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersGetResponse, error) {
+	rsp, err := c.ListWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersGet(ctx, orgId, workforceSlug, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -34404,16 +35229,16 @@ func (c *ClientWithResponses) ListWorkforceMembersV1OrgsOrgIdWorkforcesWorkforce
 }
 
 // AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostWithBodyWithResponse request with arbitrary body returning *AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostResponse
-func (c *ClientWithResponses) AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostWithBodyWithResponse(ctx context.Context, orgId string, workforceSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostResponse, error) {
-	rsp, err := c.AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostWithBody(ctx, orgId, workforceSlug, contentType, body, reqEditors...)
+func (c *ClientWithResponses) AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostWithBodyWithResponse(ctx context.Context, orgId string, workforceSlug string, params *AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostResponse, error) {
+	rsp, err := c.AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostWithBody(ctx, orgId, workforceSlug, params, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
 	return ParseAddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostResponse(rsp)
 }
 
-func (c *ClientWithResponses) AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostWithResponse(ctx context.Context, orgId string, workforceSlug string, body AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostJSONRequestBody, reqEditors ...RequestEditorFn) (*AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostResponse, error) {
-	rsp, err := c.AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPost(ctx, orgId, workforceSlug, body, reqEditors...)
+func (c *ClientWithResponses) AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostWithResponse(ctx context.Context, orgId string, workforceSlug string, params *AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostParams, body AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostJSONRequestBody, reqEditors ...RequestEditorFn) (*AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPostResponse, error) {
+	rsp, err := c.AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPost(ctx, orgId, workforceSlug, params, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -34421,16 +35246,16 @@ func (c *ClientWithResponses) AddWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceS
 }
 
 // SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutWithBodyWithResponse request with arbitrary body returning *SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutResponse
-func (c *ClientWithResponses) SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutWithBodyWithResponse(ctx context.Context, orgId string, workforceSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutResponse, error) {
-	rsp, err := c.SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutWithBody(ctx, orgId, workforceSlug, contentType, body, reqEditors...)
+func (c *ClientWithResponses) SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutWithBodyWithResponse(ctx context.Context, orgId string, workforceSlug string, params *SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutResponse, error) {
+	rsp, err := c.SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutWithBody(ctx, orgId, workforceSlug, params, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
 	return ParseSetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutResponse(rsp)
 }
 
-func (c *ClientWithResponses) SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutWithResponse(ctx context.Context, orgId string, workforceSlug string, body SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutJSONRequestBody, reqEditors ...RequestEditorFn) (*SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutResponse, error) {
-	rsp, err := c.SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPut(ctx, orgId, workforceSlug, body, reqEditors...)
+func (c *ClientWithResponses) SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutWithResponse(ctx context.Context, orgId string, workforceSlug string, params *SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutParams, body SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutJSONRequestBody, reqEditors ...RequestEditorFn) (*SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutResponse, error) {
+	rsp, err := c.SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPut(ctx, orgId, workforceSlug, params, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -34438,16 +35263,16 @@ func (c *ClientWithResponses) SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceS
 }
 
 // RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostWithBodyWithResponse request with arbitrary body returning *RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostResponse
-func (c *ClientWithResponses) RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostWithBodyWithResponse(ctx context.Context, orgId string, workforceSlug string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostResponse, error) {
-	rsp, err := c.RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostWithBody(ctx, orgId, workforceSlug, contentType, body, reqEditors...)
+func (c *ClientWithResponses) RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostWithBodyWithResponse(ctx context.Context, orgId string, workforceSlug string, params *RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostResponse, error) {
+	rsp, err := c.RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostWithBody(ctx, orgId, workforceSlug, params, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
 	return ParseRemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostResponse(rsp)
 }
 
-func (c *ClientWithResponses) RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostWithResponse(ctx context.Context, orgId string, workforceSlug string, body RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostJSONRequestBody, reqEditors ...RequestEditorFn) (*RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostResponse, error) {
-	rsp, err := c.RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePost(ctx, orgId, workforceSlug, body, reqEditors...)
+func (c *ClientWithResponses) RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostWithResponse(ctx context.Context, orgId string, workforceSlug string, params *RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostParams, body RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostJSONRequestBody, reqEditors ...RequestEditorFn) (*RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePostResponse, error) {
+	rsp, err := c.RemoveWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersDeletePost(ctx, orgId, workforceSlug, params, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -34717,7 +35542,9 @@ func ParseCreateBotV1OrgsOrgIdBotsPostResponse(rsp *http.Response) (*CreateBotV1
 
 	switch {
 	case rsp.Header.Get("Content-Type") == "application/json" && rsp.StatusCode == 422:
-		var dest NativeLaneRefusedProblem
+		var dest struct {
+			union json.RawMessage
+		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -35096,7 +35923,9 @@ func ParseCopyBotV1OrgsOrgIdBotsBotSlugCopyPostResponse(rsp *http.Response) (*Co
 
 	switch {
 	case rsp.Header.Get("Content-Type") == "application/json" && rsp.StatusCode == 422:
-		var dest NativeLaneRefusedProblem
+		var dest struct {
+			union json.RawMessage
+		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -35178,7 +36007,9 @@ func ParseAssignCredentialsV1OrgsOrgIdBotsBotSlugCredentialsPutResponse(rsp *htt
 
 	switch {
 	case rsp.Header.Get("Content-Type") == "application/json" && rsp.StatusCode == 422:
-		var dest NativeLaneRefusedProblem
+		var dest struct {
+			union json.RawMessage
+		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -35227,7 +36058,9 @@ func ParseUnassignCredentialV1OrgsOrgIdBotsBotSlugCredentialsCredentialIdDeleteR
 
 	switch {
 	case rsp.Header.Get("Content-Type") == "application/json" && rsp.StatusCode == 422:
-		var dest NativeLaneRefusedProblem
+		var dest struct {
+			union json.RawMessage
+		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
