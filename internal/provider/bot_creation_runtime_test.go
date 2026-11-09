@@ -144,6 +144,32 @@ func TestNativeDefault_ImmutableLegacyChangeRefusedBeforeReplacement(t *testing.
 	}
 }
 
+func TestNativeDefault_ExistingOpenClawReplacementTransitionsRefused(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		set  func(*BotResourceModel)
+	}{
+		{"native harness", func(m *BotResourceModel) { m.Harness = types.StringValue(harnessNative) }},
+		{"unknown harness", func(m *BotResourceModel) { m.Harness = types.StringUnknown() }},
+		{"unknown name", func(m *BotResourceModel) { m.Name = types.StringUnknown() }},
+		{"unknown hosting", func(m *BotResourceModel) { m.HostingType = types.StringUnknown() }},
+		{"different hosting", func(m *BotResourceModel) { m.HostingType = types.StringValue("self_hosted") }},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			prior := botResourceModel()
+			prior.Harness = types.StringValue(harnessOpenClaw)
+			prior.HostingType = types.StringValue("hosted")
+			plan := prior
+			tc.set(&plan)
+			var diags diag.Diagnostics
+			defaultBotCreationRuntime(&plan, plan, &prior, &diags)
+			if !diags.HasError() {
+				t.Fatal("existing OpenClaw replacement must fail before destruction, regardless of planned runtime")
+			}
+		})
+	}
+}
+
 func TestNativeDefault_UnknownRuntimeFailsClosedAtCreate(t *testing.T) {
 	for _, tc := range []struct {
 		name string

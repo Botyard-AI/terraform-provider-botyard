@@ -9,15 +9,17 @@ import (
 // Creation defaults are deliberately not schema defaults: Optional+Computed
 // runtime fields on existing/imported bots must keep their refreshed state.
 func defaultBotCreationRuntime(plan *BotResourceModel, cfg BotResourceModel, state *BotResourceModel, diags *diag.Diagnostics) {
-	if state != nil && plan.Harness.ValueString() == harnessOpenClaw {
-		// A replacement into a retired runtime must fail at plan, not after
-		// Terraform destroys the old bot. These are the schema's immutable
-		// attributes; explicit CLI -replace remains an operator action.
-		changed := (!plan.Name.IsUnknown() && !plan.Name.Equal(state.Name)) ||
-			(!plan.HostingType.IsUnknown() && !plan.HostingType.Equal(state.HostingType)) ||
+	if state != nil && state.Harness.ValueString() == harnessOpenClaw {
+		// Protect the existing bot, regardless of the requested replacement's
+		// runtime. Unknown immutable values can also force replacement, so
+		// fail closed until they can be shown to equal the existing state.
+		// Explicit CLI -replace remains an operator action.
+		changed := !plan.Name.Equal(state.Name) ||
+			!plan.HostingType.Equal(state.HostingType) ||
 			!plan.Harness.Equal(state.Harness)
 		if changed {
-			validateNewBotRuntime(*plan, diags)
+			diags.AddError("OpenClaw is existing-bots-only",
+				"This change could replace an existing OpenClaw bot. Its name, hosting_type, and harness must remain unchanged and known at plan time. Existing OpenClaw bots remain supported; create a separate native bot instead of replacing this bot.")
 			return
 		}
 	}

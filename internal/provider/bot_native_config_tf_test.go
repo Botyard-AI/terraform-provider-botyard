@@ -40,6 +40,7 @@ type fakeNativeBotAPI struct {
 	mode     string
 	images   map[string]json.RawMessage
 	writes   int
+	deletes  int
 	refused  []string
 }
 
@@ -100,6 +101,7 @@ func (a *fakeNativeBotAPI) serve(w http.ResponseWriter, r *http.Request) {
 		}
 		a.writeBot(w, http.StatusOK)
 	case r.Method == http.MethodDelete && r.URL.Path == bot && a.exists:
+		a.deletes++
 		a.exists = false
 		w.WriteHeader(http.StatusNoContent)
 	case r.Method == http.MethodGet && r.URL.Path == bot+"/suggestions" && a.exists:
@@ -635,6 +637,61 @@ func TestConfigToolSearch_RoundTrip(t *testing.T) {
 			{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: openClawTestConfig(srv.URL, `tool_search = { mode = "off" }`), PlanOnly: true},
 		},
 	})
+}
+
+// Upgrade from the released provider must refuse replacement before any delete,
+// including when a replacement-triggering value is only known after apply.
+func TestNativeDefault_TerraformLegacyUpgradeRefusesReplacement(t *testing.T) {
+	t.Setenv("TF_ACC_PROVIDER_NAMESPACE", "botyard-ai")
+	for _, attribute := range []string{"native", "name", "hosting_type", "harness"} {
+		t.Run(attribute, func(t *testing.T) {
+			api, srv := newFakeOpenClawBotAPI(t)
+			legacy := openClawTestConfig(srv.URL, `thinking_default = "high"`)
+			transition := nativePromptTestConfig(srv.URL, `tool_search = { mode = "auto" }`)
+			if attribute != "native" {
+				// terraform_data.output is unknown until the new resource applies.
+				transition = legacy
+				value := "renamed"
+				switch attribute {
+				case "name":
+					transition = strings.Replace(transition, `name         = "native-probe"`, `name = terraform_data.pending.output`, 1)
+				case "hosting_type":
+					value = "self_hosted"
+					transition = strings.Replace(transition, `hosting_type = "hosted"`, `hosting_type = terraform_data.pending.output`, 1)
+				case "harness":
+					value = "botyard_native"
+					transition = strings.Replace(transition, `  config = {`, "  harness = terraform_data.pending.output\n  config = {", 1)
+				}
+				transition += fmt.Sprintf("\nresource \"terraform_data\" \"pending\" { input = %q }\n", value)
+			}
+			if transition == legacy {
+				t.Fatal("test fixture did not change an immutable value")
+			}
+			resource.UnitTest(t, resource.TestCase{
+				Steps: []resource.TestStep{
+					{ExternalProviders: map[string]resource.ExternalProvider{
+						"botyard": {Source: "Botyard-AI/botyard", VersionConstraint: "0.8.0"},
+					}, Config: legacy},
+					{
+						ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+						Config:                   transition, PlanOnly: true,
+						ExpectError: regexp.MustCompile(`OpenClaw is existing-bots-only`),
+					},
+					{
+						ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+						Config:                   legacy, PlanOnly: true,
+						PreConfig: func() {
+							api.mu.Lock()
+							defer api.mu.Unlock()
+							if !api.exists || api.writes != 1 || api.deletes != 0 {
+								t.Errorf("replacement changed legacy bot before refusal: exists=%v writes=%d deletes=%d", api.exists, api.writes, api.deletes)
+							}
+						},
+					},
+				},
+			})
+		})
+	}
 }
 
 // TestConfigBlocks_AddedToExistingBot adds nested config blocks to a bot that
