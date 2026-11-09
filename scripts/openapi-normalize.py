@@ -47,6 +47,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
+from copy import deepcopy
 from typing import Any
 
 HTTP_METHODS = {"get", "put", "post", "delete", "patch", "head", "options", "trace"}
@@ -460,6 +462,58 @@ def mark_omitempty(spec: dict[str, Any], fields: tuple[str, ...]) -> None:
         prop["x-omitempty"] = True
 
 
+def mark_sparse_schemas(spec: dict[str, Any], roots: tuple[str, ...]) -> None:
+    """Generate three-state optional fields for the selected request graph.
+
+    Hoist the original value schema unchanged into a component, then wrap its
+    generated Go type in Nullable. This delegates objects, enums, arrays and
+    numeric formats to oapi-codegen rather than maintaining a Go type mapper.
+    Only descendants of explicitly selected request schemas are visited.
+    """
+    schemas = spec.get("components", {}).get("schemas", {})
+    pending = list(roots)
+    visited: set[str] = set()
+    while pending:
+        name = pending.pop()
+        if name in visited:
+            continue
+        schema = schemas.get(name)
+        if schema is None:
+            raise SystemExit(f"--sparse-schemas: unknown schema {name!r}")
+        visited.add(name)
+        refs: set[str] = set()
+        collect_refs(schema, refs)
+        for ref in sorted(refs):
+            prefix = "#/components/schemas/"
+            if not ref.startswith(prefix):
+                raise SystemExit(f"--sparse-schemas: unsupported reference {ref!r}")
+            pending.append(ref.removeprefix(prefix))
+        required = schema.get("required", [])
+        for key, prop in schema.get("properties", {}).items():
+            if prop.get("nullable") is not True or key in required:
+                continue
+            value_name = "Sparse" + name + "".join(part.capitalize() for part in key.split("_"))
+            if not re.fullmatch(r"[A-Za-z][A-Za-z0-9]*", value_name):
+                raise SystemExit(f"--sparse-schemas: unsupported name {name}.{key}")
+            if value_name in schemas or "x-go-type" in prop:
+                raise SystemExit(f"--sparse-schemas: conflicting override {name}.{key}")
+            value_schema = deepcopy(prop)
+            value_schema.pop("nullable")
+            schemas[value_name] = value_schema
+            pending.append(value_name)
+            # oapi-codegen resolves allOf before consulting x-go-type; a
+            # single-member oneOf is equivalent and preserves the override.
+            schema["properties"][key] = {
+                "oneOf": [{"$ref": f"#/components/schemas/{value_name}"}],
+                "nullable": True,
+                "x-go-type": f"nullable.Nullable[{value_name}]",
+                "x-go-type-skip-optional-pointer": True,
+                "x-go-type-import": {"path": NULLABLE_IMPORT},
+                "x-omitempty": True,
+                **({"description": prop["description"]} if "description" in prop else {}),
+            }
+
+
 def normalize_spec(
     spec: dict[str, Any],
     keep_tags: set[str],
@@ -467,6 +521,7 @@ def normalize_spec(
     exclude_operations: tuple[str, ...] = (),
     tristate_fields: tuple[str, ...] = (),
     omitempty_fields: tuple[str, ...] = (),
+    sparse_schemas: tuple[str, ...] = (),
 ) -> dict[str, Any]:
     """Full in-place normalization; returns the same spec for convenience."""
     collapse_nullable(spec)
@@ -477,6 +532,7 @@ def normalize_spec(
         print(f"dropped many-to-one discriminator: {dropped}")
     mark_tristate(spec, tristate_fields)
     mark_omitempty(spec, omitempty_fields)
+    mark_sparse_schemas(spec, sparse_schemas)
     return spec
 
 
@@ -510,6 +566,8 @@ def main() -> None:
         "--omitempty-fields", nargs="*", default=[],
         help="Schema.property optional request fields where nil means omission, never clear.",
     )
+    ap.add_argument("--sparse-schemas", nargs="*", default=[],
+                    help="Request schema roots whose optional nullable fields need omit/value/null.")
     args = ap.parse_args()
 
     spec = json.load(open(args.src))
@@ -520,6 +578,7 @@ def main() -> None:
         tuple(args.exclude_operations),
         tuple(args.tristate_fields),
         tuple(args.omitempty_fields),
+        tuple(args.sparse_schemas),
     )
     json.dump(spec, open(args.dst, "w"))
     n_schemas = len(spec.get("components", {}).get("schemas", {}))

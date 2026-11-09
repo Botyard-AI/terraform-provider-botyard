@@ -603,20 +603,6 @@ const (
 	HeartbeatConfigEveryN6h   HeartbeatConfigEvery = "6h"
 )
 
-// Defines values for HeartbeatConfigPatchEvery.
-const (
-	HeartbeatConfigPatchEveryN0m   HeartbeatConfigPatchEvery = "0m"
-	HeartbeatConfigPatchEveryN12h  HeartbeatConfigPatchEvery = "12h"
-	HeartbeatConfigPatchEveryN15m  HeartbeatConfigPatchEvery = "15m"
-	HeartbeatConfigPatchEveryN168h HeartbeatConfigPatchEvery = "168h"
-	HeartbeatConfigPatchEveryN1h   HeartbeatConfigPatchEvery = "1h"
-	HeartbeatConfigPatchEveryN24h  HeartbeatConfigPatchEvery = "24h"
-	HeartbeatConfigPatchEveryN2h   HeartbeatConfigPatchEvery = "2h"
-	HeartbeatConfigPatchEveryN30m  HeartbeatConfigPatchEvery = "30m"
-	HeartbeatConfigPatchEveryN5m   HeartbeatConfigPatchEvery = "5m"
-	HeartbeatConfigPatchEveryN6h   HeartbeatConfigPatchEvery = "6h"
-)
-
 // Defines values for InputModality.
 const (
 	InputModalityImage InputModality = "image"
@@ -1046,30 +1032,6 @@ const (
 // Defines values for OpenClawConfigPatchBotType.
 const (
 	OpenClawConfigPatchBotTypeOpenclaw OpenClawConfigPatchBotType = "openclaw"
-)
-
-// Defines values for OpenClawConfigPatchReasoningDefault.
-const (
-	OpenClawConfigPatchReasoningDefaultOff    OpenClawConfigPatchReasoningDefault = "off"
-	OpenClawConfigPatchReasoningDefaultOn     OpenClawConfigPatchReasoningDefault = "on"
-	OpenClawConfigPatchReasoningDefaultStream OpenClawConfigPatchReasoningDefault = "stream"
-)
-
-// Defines values for OpenClawConfigPatchSystemPromptMode.
-const (
-	OpenClawConfigPatchSystemPromptModeBotyard  OpenClawConfigPatchSystemPromptMode = "botyard"
-	OpenClawConfigPatchSystemPromptModeOpenclaw OpenClawConfigPatchSystemPromptMode = "openclaw"
-)
-
-// Defines values for OpenClawConfigPatchThinkingDefault.
-const (
-	OpenClawConfigPatchThinkingDefaultAdaptive OpenClawConfigPatchThinkingDefault = "adaptive"
-	OpenClawConfigPatchThinkingDefaultHigh     OpenClawConfigPatchThinkingDefault = "high"
-	OpenClawConfigPatchThinkingDefaultLow      OpenClawConfigPatchThinkingDefault = "low"
-	OpenClawConfigPatchThinkingDefaultMedium   OpenClawConfigPatchThinkingDefault = "medium"
-	OpenClawConfigPatchThinkingDefaultMinimal  OpenClawConfigPatchThinkingDefault = "minimal"
-	OpenClawConfigPatchThinkingDefaultOff      OpenClawConfigPatchThinkingDefault = "off"
-	OpenClawConfigPatchThinkingDefaultXhigh    OpenClawConfigPatchThinkingDefault = "xhigh"
 )
 
 // Defines values for OpenClawModelApi.
@@ -1665,6 +1627,59 @@ const (
 	SoulRemovalKindSoul SoulRemovalKind = "soul"
 )
 
+// Defines values for SparseHeartbeatConfigPatchEvery.
+const (
+	SparseHeartbeatConfigPatchEveryN0m   SparseHeartbeatConfigPatchEvery = "0m"
+	SparseHeartbeatConfigPatchEveryN12h  SparseHeartbeatConfigPatchEvery = "12h"
+	SparseHeartbeatConfigPatchEveryN15m  SparseHeartbeatConfigPatchEvery = "15m"
+	SparseHeartbeatConfigPatchEveryN168h SparseHeartbeatConfigPatchEvery = "168h"
+	SparseHeartbeatConfigPatchEveryN1h   SparseHeartbeatConfigPatchEvery = "1h"
+	SparseHeartbeatConfigPatchEveryN24h  SparseHeartbeatConfigPatchEvery = "24h"
+	SparseHeartbeatConfigPatchEveryN2h   SparseHeartbeatConfigPatchEvery = "2h"
+	SparseHeartbeatConfigPatchEveryN30m  SparseHeartbeatConfigPatchEvery = "30m"
+	SparseHeartbeatConfigPatchEveryN5m   SparseHeartbeatConfigPatchEvery = "5m"
+	SparseHeartbeatConfigPatchEveryN6h   SparseHeartbeatConfigPatchEvery = "6h"
+)
+
+// Defines values for SparseOpenClawConfigPatchReasoningDefault.
+const (
+	SparseOpenClawConfigPatchReasoningDefaultOff    SparseOpenClawConfigPatchReasoningDefault = "off"
+	SparseOpenClawConfigPatchReasoningDefaultOn     SparseOpenClawConfigPatchReasoningDefault = "on"
+	SparseOpenClawConfigPatchReasoningDefaultStream SparseOpenClawConfigPatchReasoningDefault = "stream"
+)
+
+// Defines values for SparseOpenClawConfigPatchSystemPromptMode.
+const (
+	SparseOpenClawConfigPatchSystemPromptModeBotyard  SparseOpenClawConfigPatchSystemPromptMode = "botyard"
+	SparseOpenClawConfigPatchSystemPromptModeOpenclaw SparseOpenClawConfigPatchSystemPromptMode = "openclaw"
+)
+
+// Defines values for SparseOpenClawConfigPatchThinkingDefault.
+const (
+	SparseOpenClawConfigPatchThinkingDefaultAdaptive SparseOpenClawConfigPatchThinkingDefault = "adaptive"
+	SparseOpenClawConfigPatchThinkingDefaultHigh     SparseOpenClawConfigPatchThinkingDefault = "high"
+	SparseOpenClawConfigPatchThinkingDefaultLow      SparseOpenClawConfigPatchThinkingDefault = "low"
+	SparseOpenClawConfigPatchThinkingDefaultMedium   SparseOpenClawConfigPatchThinkingDefault = "medium"
+	SparseOpenClawConfigPatchThinkingDefaultMinimal  SparseOpenClawConfigPatchThinkingDefault = "minimal"
+	SparseOpenClawConfigPatchThinkingDefaultOff      SparseOpenClawConfigPatchThinkingDefault = "off"
+	SparseOpenClawConfigPatchThinkingDefaultXhigh    SparseOpenClawConfigPatchThinkingDefault = "xhigh"
+)
+
+// Defines values for SparseToolImageConfigPatchDefaultDetail.
+const (
+	SparseToolImageConfigPatchDefaultDetailAuto     SparseToolImageConfigPatchDefaultDetail = "auto"
+	SparseToolImageConfigPatchDefaultDetailHigh     SparseToolImageConfigPatchDefaultDetail = "high"
+	SparseToolImageConfigPatchDefaultDetailLow      SparseToolImageConfigPatchDefaultDetail = "low"
+	SparseToolImageConfigPatchDefaultDetailOriginal SparseToolImageConfigPatchDefaultDetail = "original"
+)
+
+// Defines values for SparseToolSearchConfigPatchMode.
+const (
+	SparseToolSearchConfigPatchModeAlways SparseToolSearchConfigPatchMode = "always"
+	SparseToolSearchConfigPatchModeAuto   SparseToolSearchConfigPatchMode = "auto"
+	SparseToolSearchConfigPatchModeOff    SparseToolSearchConfigPatchMode = "off"
+)
+
 // Defines values for SuggestionItemKind.
 const (
 	SuggestionItemKindSkill SuggestionItemKind = "skill"
@@ -1709,14 +1724,6 @@ const (
 	ToolImageConfigDefaultDetailOriginal ToolImageConfigDefaultDetail = "original"
 )
 
-// Defines values for ToolImageConfigPatchDefaultDetail.
-const (
-	ToolImageConfigPatchDefaultDetailAuto     ToolImageConfigPatchDefaultDetail = "auto"
-	ToolImageConfigPatchDefaultDetailHigh     ToolImageConfigPatchDefaultDetail = "high"
-	ToolImageConfigPatchDefaultDetailLow      ToolImageConfigPatchDefaultDetail = "low"
-	ToolImageConfigPatchDefaultDetailOriginal ToolImageConfigPatchDefaultDetail = "original"
-)
-
 // Defines values for ToolRemovalAction.
 const (
 	ToolRemovalActionKeptAdopted ToolRemovalAction = "kept_adopted"
@@ -1748,13 +1755,6 @@ const (
 	ToolSearchConfigModeAlways ToolSearchConfigMode = "always"
 	ToolSearchConfigModeAuto   ToolSearchConfigMode = "auto"
 	ToolSearchConfigModeOff    ToolSearchConfigMode = "off"
-)
-
-// Defines values for ToolSearchConfigPatchMode.
-const (
-	ToolSearchConfigPatchModeAlways ToolSearchConfigPatchMode = "always"
-	ToolSearchConfigPatchModeAuto   ToolSearchConfigPatchMode = "auto"
-	ToolSearchConfigPatchModeOff    ToolSearchConfigPatchMode = "off"
 )
 
 // Defines values for ToolsConfigExecAsk.
@@ -1931,13 +1931,13 @@ type ActiveHoursConfig struct {
 // ActiveHoursConfigPatch Patchable fields for active hours configuration.
 type ActiveHoursConfigPatch struct {
 	// FromTime Start time in HH:MM format
-	FromTime *string `json:"from_time"`
+	FromTime nullable.Nullable[SparseActiveHoursConfigPatchFromTime] `json:"from_time,omitempty"`
 
 	// Timezone IANA timezone
-	Timezone *string `json:"timezone"`
+	Timezone nullable.Nullable[SparseActiveHoursConfigPatchTimezone] `json:"timezone,omitempty"`
 
 	// ToTime End time in HH:MM format
-	ToTime *string `json:"to_time"`
+	ToTime nullable.Nullable[SparseActiveHoursConfigPatchToTime] `json:"to_time,omitempty"`
 }
 
 // ActorType Type of an authenticated principal or a message author.
@@ -1955,9 +1955,9 @@ type ActorType string
 
 // AddonInput Shape of an addon instance as it appears in desired_config JSON.
 type AddonInput struct {
-	Config  *map[string]interface{} `json:"config"`
-	Enabled *bool                   `json:"enabled,omitempty"`
-	Id      string                  `json:"id"`
+	Config  nullable.Nullable[SparseAddonInputConfig] `json:"config,omitempty"`
+	Enabled *bool                                     `json:"enabled,omitempty"`
+	Id      string                                    `json:"id"`
 }
 
 // AgentContainerImageMcpServerCreate A container-image MCP server create, as an agent describes one.
@@ -3833,22 +3833,22 @@ type CompactionConfig struct {
 // CompactionConfigPatch Patchable compaction fields (all optional; only provided fields apply).
 type CompactionConfigPatch struct {
 	// MaxActiveTranscriptBytes Byte size that triggers proactive local compaction.
-	MaxActiveTranscriptBytes *int `json:"max_active_transcript_bytes"`
+	MaxActiveTranscriptBytes nullable.Nullable[SparseCompactionConfigPatchMaxActiveTranscriptBytes] `json:"max_active_transcript_bytes,omitempty"`
 
 	// MidTurnPrecheck Run a tool-loop context precheck before the next model call.
-	MidTurnPrecheck *bool `json:"mid_turn_precheck"`
+	MidTurnPrecheck nullable.Nullable[SparseCompactionConfigPatchMidTurnPrecheck] `json:"mid_turn_precheck,omitempty"`
 
 	// ReserveTokens Reply/tool headroom tokens reserved after compaction.
-	ReserveTokens *int `json:"reserve_tokens"`
+	ReserveTokens nullable.Nullable[SparseCompactionConfigPatchReserveTokens] `json:"reserve_tokens,omitempty"`
 
 	// ReserveTokensFloor Floor enforced for reserve_tokens (0 disables).
-	ReserveTokensFloor *int `json:"reserve_tokens_floor"`
+	ReserveTokensFloor nullable.Nullable[SparseCompactionConfigPatchReserveTokensFloor] `json:"reserve_tokens_floor,omitempty"`
 
 	// TimeoutSeconds Maximum seconds allowed for one compaction operation.
-	TimeoutSeconds *int `json:"timeout_seconds"`
+	TimeoutSeconds nullable.Nullable[SparseCompactionConfigPatchTimeoutSeconds] `json:"timeout_seconds,omitempty"`
 
 	// TruncateAfterCompaction Rotate the active transcript to a compacted successor.
-	TruncateAfterCompaction *bool `json:"truncate_after_compaction"`
+	TruncateAfterCompaction nullable.Nullable[SparseCompactionConfigPatchTruncateAfterCompaction] `json:"truncate_after_compaction,omitempty"`
 }
 
 // ComposioConnectionDetail The pollable state of one authorisation attempt.
@@ -5309,32 +5309,29 @@ type HeartbeatConfigEvery string
 // HeartbeatConfigPatch Patchable fields for heartbeat configuration.
 type HeartbeatConfigPatch struct {
 	// AckMaxChars Max characters after HEARTBEAT_OK before delivery
-	AckMaxChars *int `json:"ack_max_chars"`
+	AckMaxChars nullable.Nullable[SparseHeartbeatConfigPatchAckMaxChars] `json:"ack_max_chars,omitempty"`
 
 	// ActiveHours Time window when heartbeats are active
-	ActiveHours *ActiveHoursConfigPatch `json:"active_hours"`
+	ActiveHours nullable.Nullable[SparseHeartbeatConfigPatchActiveHours] `json:"active_hours,omitempty"`
 
 	// Every How often the heartbeat fires. Send '0m' (or null) to disable heartbeats; omit the field to leave the current interval unchanged.
-	Every *HeartbeatConfigPatchEvery `json:"every"`
+	Every nullable.Nullable[SparseHeartbeatConfigPatchEvery] `json:"every,omitempty"`
 
 	// IncludeReasoning Whether to include reasoning traces in heartbeat responses
-	IncludeReasoning *bool `json:"include_reasoning"`
+	IncludeReasoning nullable.Nullable[SparseHeartbeatConfigPatchIncludeReasoning] `json:"include_reasoning,omitempty"`
 
 	// IsolatedSession Run each heartbeat in a fresh session with no history
-	IsolatedSession *bool `json:"isolated_session"`
+	IsolatedSession nullable.Nullable[SparseHeartbeatConfigPatchIsolatedSession] `json:"isolated_session,omitempty"`
 
 	// LightContext Use minimal context (only HEARTBEAT.md) to reduce token cost
-	LightContext *bool `json:"light_context"`
+	LightContext nullable.Nullable[SparseHeartbeatConfigPatchLightContext] `json:"light_context,omitempty"`
 
 	// Model LLM model override for heartbeat runs
-	Model *string `json:"model"`
+	Model nullable.Nullable[SparseHeartbeatConfigPatchModel] `json:"model,omitempty"`
 
 	// Prompt Custom prompt replacing the default HEARTBEAT.md reader
-	Prompt *string `json:"prompt"`
+	Prompt nullable.Nullable[SparseHeartbeatConfigPatchPrompt] `json:"prompt,omitempty"`
 }
-
-// HeartbeatConfigPatchEvery How often the heartbeat fires. Send '0m' (or null) to disable heartbeats; omit the field to leave the current interval unchanged.
-type HeartbeatConfigPatchEvery string
 
 // HostingPair One permitted “(hosting_type, harness)“ combination.
 type HostingPair struct {
@@ -5377,10 +5374,10 @@ type IdentityConfig struct {
 // IdentityConfigPatch Patchable fields for bot identity.
 type IdentityConfigPatch struct {
 	// Emoji Bot identity emoji
-	Emoji *string `json:"emoji"`
+	Emoji nullable.Nullable[SparseIdentityConfigPatchEmoji] `json:"emoji,omitempty"`
 
 	// Theme Bot identity theme
-	Theme *string `json:"theme"`
+	Theme nullable.Nullable[SparseIdentityConfigPatchTheme] `json:"theme,omitempty"`
 }
 
 // InputModality A kind of input a model accepts: text or image.
@@ -7656,16 +7653,16 @@ type NativeConfigPatch struct {
 	BotType *NativeConfigPatchBotType `json:"bot_type,omitempty"`
 
 	// HostPolicy Operator host policy (service_owner disabled|native)
-	HostPolicy *map[string]interface{} `json:"host_policy"`
+	HostPolicy nullable.Nullable[SparseNativeConfigPatchHostPolicy] `json:"host_policy,omitempty"`
 
 	// Model Model ref override
-	Model *ModelRef `json:"model"`
+	Model nullable.Nullable[SparseNativeConfigPatchModel] `json:"model,omitempty"`
 
 	// ToolImages Tool-image overrides (see ToolImageConfigPatch). Null or omitted means no change.
-	ToolImages *ToolImageConfigPatch `json:"tool_images"`
+	ToolImages nullable.Nullable[SparseNativeConfigPatchToolImages] `json:"tool_images,omitempty"`
 
 	// ToolSearch Tool Search overrides (see ToolSearchConfigPatch)
-	ToolSearch *ToolSearchConfigPatch `json:"tool_search"`
+	ToolSearch nullable.Nullable[SparseNativeConfigPatchToolSearch] `json:"tool_search,omitempty"`
 }
 
 // NativeConfigPatchBotType defines model for NativeConfigPatch.BotType.
@@ -7972,45 +7969,36 @@ type OpenClawBotConfigThinkingDefault string
 // from explicitly-set-to-None.
 type OpenClawConfigPatch struct {
 	// Addons Replace addon list (null = no change)
-	Addons  *[]AddonInput               `json:"addons"`
-	BotType *OpenClawConfigPatchBotType `json:"bot_type,omitempty"`
+	Addons  nullable.Nullable[SparseOpenClawConfigPatchAddons] `json:"addons,omitempty"`
+	BotType *OpenClawConfigPatchBotType                        `json:"bot_type,omitempty"`
 
 	// Compaction Context-compaction safeguards
-	Compaction *CompactionConfigPatch `json:"compaction"`
+	Compaction nullable.Nullable[SparseOpenClawConfigPatchCompaction] `json:"compaction,omitempty"`
 
 	// Heartbeat Heartbeat scheduling and behavior configuration
-	Heartbeat *HeartbeatConfigPatch `json:"heartbeat"`
+	Heartbeat nullable.Nullable[SparseOpenClawConfigPatchHeartbeat] `json:"heartbeat,omitempty"`
 
 	// Identity Bot identity
-	Identity *IdentityConfigPatch `json:"identity"`
+	Identity nullable.Nullable[SparseOpenClawConfigPatchIdentity] `json:"identity,omitempty"`
 
 	// ReasoningDefault Default reasoning mode (off, on, or stream)
-	ReasoningDefault *OpenClawConfigPatchReasoningDefault `json:"reasoning_default"`
+	ReasoningDefault nullable.Nullable[SparseOpenClawConfigPatchReasoningDefault] `json:"reasoning_default,omitempty"`
 
 	// Session Session-reliability settings
-	Session *SessionConfigPatch `json:"session"`
+	Session nullable.Nullable[SparseOpenClawConfigPatchSession] `json:"session,omitempty"`
 
 	// SystemPromptMode System prompt source: botyard (lean) or openclaw (default)
-	SystemPromptMode *OpenClawConfigPatchSystemPromptMode `json:"system_prompt_mode"`
+	SystemPromptMode nullable.Nullable[SparseOpenClawConfigPatchSystemPromptMode] `json:"system_prompt_mode,omitempty"`
 
 	// ThinkingDefault Default thinking budget level for conversations
-	ThinkingDefault *OpenClawConfigPatchThinkingDefault `json:"thinking_default"`
+	ThinkingDefault nullable.Nullable[SparseOpenClawConfigPatchThinkingDefault] `json:"thinking_default,omitempty"`
 
 	// ToolSearch Tool Search — defers tool schemas behind a search surface instead of inlining every schema in the prompt. Runtime-agnostic: config generation maps it to Claude Code's ENABLE_TOOL_SEARCH on claude-cli bots and to OpenClaw's tools.toolSearch on embedded (pi) bots.
-	ToolSearch *ToolSearchConfigPatch `json:"tool_search"`
+	ToolSearch nullable.Nullable[SparseOpenClawConfigPatchToolSearch] `json:"tool_search,omitempty"`
 }
 
 // OpenClawConfigPatchBotType defines model for OpenClawConfigPatch.BotType.
 type OpenClawConfigPatchBotType string
-
-// OpenClawConfigPatchReasoningDefault Default reasoning mode (off, on, or stream)
-type OpenClawConfigPatchReasoningDefault string
-
-// OpenClawConfigPatchSystemPromptMode System prompt source: botyard (lean) or openclaw (default)
-type OpenClawConfigPatchSystemPromptMode string
-
-// OpenClawConfigPatchThinkingDefault Default thinking budget level for conversations
-type OpenClawConfigPatchThinkingDefault string
 
 // OpenClawModelApi OpenClaw provider/model API adapter identifiers.
 type OpenClawModelApi string
@@ -10015,7 +10003,7 @@ type SessionConfig struct {
 // SessionConfigPatch Patchable session-reliability fields.
 type SessionConfigPatch struct {
 	// WriteLockMaxHoldMs Watchdog force-release threshold for the session lock (ms).
-	WriteLockMaxHoldMs *int `json:"write_lock_max_hold_ms"`
+	WriteLockMaxHoldMs nullable.Nullable[SparseSessionConfigPatchWriteLockMaxHoldMs] `json:"write_lock_max_hold_ms,omitempty"`
 }
 
 // SessionVisibility OpenClaw session visibility scope — controls which sessions can see each other.
@@ -10492,6 +10480,143 @@ type SoulRemovalAction string
 // SoulRemovalKind defines model for SoulRemoval.Kind.
 type SoulRemovalKind string
 
+// SparseActiveHoursConfigPatchFromTime Start time in HH:MM format
+type SparseActiveHoursConfigPatchFromTime = string
+
+// SparseActiveHoursConfigPatchTimezone IANA timezone
+type SparseActiveHoursConfigPatchTimezone = string
+
+// SparseActiveHoursConfigPatchToTime End time in HH:MM format
+type SparseActiveHoursConfigPatchToTime = string
+
+// SparseAddonInputConfig defines model for SparseAddonInputConfig.
+type SparseAddonInputConfig map[string]interface{}
+
+// SparseCompactionConfigPatchMaxActiveTranscriptBytes Byte size that triggers proactive local compaction.
+type SparseCompactionConfigPatchMaxActiveTranscriptBytes = int
+
+// SparseCompactionConfigPatchMidTurnPrecheck Run a tool-loop context precheck before the next model call.
+type SparseCompactionConfigPatchMidTurnPrecheck = bool
+
+// SparseCompactionConfigPatchReserveTokens Reply/tool headroom tokens reserved after compaction.
+type SparseCompactionConfigPatchReserveTokens = int
+
+// SparseCompactionConfigPatchReserveTokensFloor Floor enforced for reserve_tokens (0 disables).
+type SparseCompactionConfigPatchReserveTokensFloor = int
+
+// SparseCompactionConfigPatchTimeoutSeconds Maximum seconds allowed for one compaction operation.
+type SparseCompactionConfigPatchTimeoutSeconds = int
+
+// SparseCompactionConfigPatchTruncateAfterCompaction Rotate the active transcript to a compacted successor.
+type SparseCompactionConfigPatchTruncateAfterCompaction = bool
+
+// SparseHeartbeatConfigPatchAckMaxChars Max characters after HEARTBEAT_OK before delivery
+type SparseHeartbeatConfigPatchAckMaxChars = int
+
+// SparseHeartbeatConfigPatchActiveHours Patchable fields for active hours configuration.
+type SparseHeartbeatConfigPatchActiveHours = ActiveHoursConfigPatch
+
+// SparseHeartbeatConfigPatchEvery How often the heartbeat fires. Send '0m' (or null) to disable heartbeats; omit the field to leave the current interval unchanged.
+type SparseHeartbeatConfigPatchEvery string
+
+// SparseHeartbeatConfigPatchIncludeReasoning Whether to include reasoning traces in heartbeat responses
+type SparseHeartbeatConfigPatchIncludeReasoning = bool
+
+// SparseHeartbeatConfigPatchIsolatedSession Run each heartbeat in a fresh session with no history
+type SparseHeartbeatConfigPatchIsolatedSession = bool
+
+// SparseHeartbeatConfigPatchLightContext Use minimal context (only HEARTBEAT.md) to reduce token cost
+type SparseHeartbeatConfigPatchLightContext = bool
+
+// SparseHeartbeatConfigPatchModel LLM model override for heartbeat runs
+type SparseHeartbeatConfigPatchModel = string
+
+// SparseHeartbeatConfigPatchPrompt Custom prompt replacing the default HEARTBEAT.md reader
+type SparseHeartbeatConfigPatchPrompt = string
+
+// SparseIdentityConfigPatchEmoji Bot identity emoji
+type SparseIdentityConfigPatchEmoji = string
+
+// SparseIdentityConfigPatchTheme Bot identity theme
+type SparseIdentityConfigPatchTheme = string
+
+// SparseNativeConfigPatchHostPolicy Operator host policy (service_owner disabled|native)
+type SparseNativeConfigPatchHostPolicy map[string]interface{}
+
+// SparseNativeConfigPatchModel A reference to a model within an OpenClaw provider.
+//
+// Mirrors OpenClaw's “ModelRef“ type (“{ provider, model }“).
+// The provider field is the key in “models.providers“ (e.g. “"botyard"“),
+// and model is the model ID within that provider (e.g. “"gpt-5.4"“).
+type SparseNativeConfigPatchModel = ModelRef
+
+// SparseNativeConfigPatchToolImages Patchable tool-image fields (native bots only).
+//
+// The target fields are nullable and “None“ there means "platform
+// default", so an explicit “null“ here resets a field to the default and
+// an omitted field is left unchanged.
+type SparseNativeConfigPatchToolImages = ToolImageConfigPatch
+
+// SparseNativeConfigPatchToolSearch Patchable Tool Search fields.
+//
+// Both fields are non-nullable on the target config, so “None“ here means
+// "no change" with no ambiguity — and because “mode“ alone decides the
+// behaviour, every state is reachable from every other state with a single
+// patch. Setting “mode“ back to “always“ or “off“ does not require
+// clearing the threshold first.
+type SparseNativeConfigPatchToolSearch = ToolSearchConfigPatch
+
+// SparseOpenClawConfigPatchAddons Replace addon list (null = no change)
+type SparseOpenClawConfigPatchAddons = []AddonInput
+
+// SparseOpenClawConfigPatchCompaction Patchable compaction fields (all optional; only provided fields apply).
+type SparseOpenClawConfigPatchCompaction = CompactionConfigPatch
+
+// SparseOpenClawConfigPatchHeartbeat Patchable fields for heartbeat configuration.
+type SparseOpenClawConfigPatchHeartbeat = HeartbeatConfigPatch
+
+// SparseOpenClawConfigPatchIdentity Patchable fields for bot identity.
+type SparseOpenClawConfigPatchIdentity = IdentityConfigPatch
+
+// SparseOpenClawConfigPatchReasoningDefault Default reasoning mode (off, on, or stream)
+type SparseOpenClawConfigPatchReasoningDefault string
+
+// SparseOpenClawConfigPatchSession Patchable session-reliability fields.
+type SparseOpenClawConfigPatchSession = SessionConfigPatch
+
+// SparseOpenClawConfigPatchSystemPromptMode System prompt source: botyard (lean) or openclaw (default)
+type SparseOpenClawConfigPatchSystemPromptMode string
+
+// SparseOpenClawConfigPatchThinkingDefault Default thinking budget level for conversations
+type SparseOpenClawConfigPatchThinkingDefault string
+
+// SparseOpenClawConfigPatchToolSearch Patchable Tool Search fields.
+//
+// Both fields are non-nullable on the target config, so “None“ here means
+// "no change" with no ambiguity — and because “mode“ alone decides the
+// behaviour, every state is reachable from every other state with a single
+// patch. Setting “mode“ back to “always“ or “off“ does not require
+// clearing the threshold first.
+type SparseOpenClawConfigPatchToolSearch = ToolSearchConfigPatch
+
+// SparseSessionConfigPatchWriteLockMaxHoldMs Watchdog force-release threshold for the session lock (ms).
+type SparseSessionConfigPatchWriteLockMaxHoldMs = int
+
+// SparseToolImageConfigPatchDefaultDetail Detail level for a tool image whose MCP server does not request one (auto, low, high or original). Unset leaves it to the provider's default.
+type SparseToolImageConfigPatchDefaultDetail string
+
+// SparseToolImageConfigPatchEnabled Show images returned by tools to the model. False replaces each image with a short text notice. Unset means enabled.
+type SparseToolImageConfigPatchEnabled = bool
+
+// SparseToolImageConfigPatchMaxDimensionPx Longest edge, in pixels, a tool image is downscaled to before the model sees it. At most 8000. Unset means the platform default (2000). Values above 2000 only take effect while a request holds 20 images or fewer; beyond that the provider limits every image to 2000 px and a larger one is replaced by a notice.
+type SparseToolImageConfigPatchMaxDimensionPx = int
+
+// SparseToolSearchConfigPatchAutoThresholdPercent Percentage of the context window the tool schemas must exceed before “auto“ mode defers them. Ignored unless mode is auto, and read only on the claude-cli runtime — OpenClaw's embedded Tool Search has no threshold knob, so auto behaves like always there.
+type SparseToolSearchConfigPatchAutoThresholdPercent = int
+
+// SparseToolSearchConfigPatchMode always (defer every turn) | auto (defer above the threshold) | off (never defer). Applies whatever mechanism the bot's runtime uses — Claude Code's ENABLE_TOOL_SEARCH on claude-cli bots, OpenClaw's tools.toolSearch on embedded (pi) bots.
+type SparseToolSearchConfigPatchMode string
+
 // StorageMetrics defines model for StorageMetrics.
 type StorageMetrics struct {
 	Workspace *WorkspaceStorageMetrics `json:"workspace"`
@@ -10912,17 +11037,14 @@ type ToolImageConfigDefaultDetail string
 // an omitted field is left unchanged.
 type ToolImageConfigPatch struct {
 	// DefaultDetail Detail level for a tool image whose MCP server does not request one (auto, low, high or original). Unset leaves it to the provider's default.
-	DefaultDetail *ToolImageConfigPatchDefaultDetail `json:"default_detail"`
+	DefaultDetail nullable.Nullable[SparseToolImageConfigPatchDefaultDetail] `json:"default_detail,omitempty"`
 
 	// Enabled Show images returned by tools to the model. False replaces each image with a short text notice. Unset means enabled.
-	Enabled *bool `json:"enabled"`
+	Enabled nullable.Nullable[SparseToolImageConfigPatchEnabled] `json:"enabled,omitempty"`
 
 	// MaxDimensionPx Longest edge, in pixels, a tool image is downscaled to before the model sees it. At most 8000. Unset means the platform default (2000). Values above 2000 only take effect while a request holds 20 images or fewer; beyond that the provider limits every image to 2000 px and a larger one is replaced by a notice.
-	MaxDimensionPx *int `json:"max_dimension_px"`
+	MaxDimensionPx nullable.Nullable[SparseToolImageConfigPatchMaxDimensionPx] `json:"max_dimension_px,omitempty"`
 }
-
-// ToolImageConfigPatchDefaultDetail Detail level for a tool image whose MCP server does not request one (auto, low, high or original). Unset leaves it to the provider's default.
-type ToolImageConfigPatchDefaultDetail string
 
 // ToolPermissionCheckRequest The tool set to resolve. **One call for N tools, never N calls.**
 //
@@ -11169,14 +11291,11 @@ type ToolSearchConfigMode string
 // clearing the threshold first.
 type ToolSearchConfigPatch struct {
 	// AutoThresholdPercent Percentage of the context window the tool schemas must exceed before ``auto`` mode defers them. Ignored unless mode is auto, and read only on the claude-cli runtime — OpenClaw's embedded Tool Search has no threshold knob, so auto behaves like always there.
-	AutoThresholdPercent *int `json:"auto_threshold_percent"`
+	AutoThresholdPercent nullable.Nullable[SparseToolSearchConfigPatchAutoThresholdPercent] `json:"auto_threshold_percent,omitempty"`
 
 	// Mode always (defer every turn) | auto (defer above the threshold) | off (never defer). Applies whatever mechanism the bot's runtime uses — Claude Code's ENABLE_TOOL_SEARCH on claude-cli bots, OpenClaw's tools.toolSearch on embedded (pi) bots.
-	Mode *ToolSearchConfigPatchMode `json:"mode"`
+	Mode nullable.Nullable[SparseToolSearchConfigPatchMode] `json:"mode,omitempty"`
 }
-
-// ToolSearchConfigPatchMode always (defer every turn) | auto (defer above the threshold) | off (never defer). Applies whatever mechanism the bot's runtime uses — Claude Code's ENABLE_TOOL_SEARCH on claude-cli bots, OpenClaw's tools.toolSearch on embedded (pi) bots.
-type ToolSearchConfigPatchMode string
 
 // ToolServabilityResponse One catalog tool annotated with servability for a hosting profile.
 //

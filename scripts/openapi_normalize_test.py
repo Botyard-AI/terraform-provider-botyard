@@ -433,5 +433,53 @@ class TestOmitEmptyFields(unittest.TestCase):
                 }}}, (field,))
 
 
+class TestSparseSchemas(unittest.TestCase):
+    def test_generated_value_types_preserve_enum_array_object_and_nested_refs(self):
+        schemas = {
+            "Root": {"required": ["required"], "properties": {
+                "value": {"type": "string", "enum": ["auto", "high"], "nullable": True},
+                "child": {"allOf": [{"$ref": "#/components/schemas/Child"}], "nullable": True},
+                "items": {"type": "array", "items": {"$ref": "#/components/schemas/Child"}, "nullable": True},
+                "inline": {"type": "object", "nullable": True, "properties": {
+                    "enabled": {"type": "boolean", "nullable": True}}},
+                "required": {"type": "string", "nullable": True},
+            }},
+            "Child": {"properties": {"enabled": {"type": "boolean", "nullable": True}}},
+            "Untouched": {"properties": {"value": {"type": "string", "nullable": True}}},
+        }
+        norm.mark_sparse_schemas({"components": {"schemas": schemas}}, ("Root",))
+        self.assertEqual(schemas["SparseRootValue"]["enum"], ["auto", "high"])
+        self.assertNotIn("nullable", schemas["SparseRootValue"])
+        self.assertEqual(schemas["SparseRootItems"]["items"], {"$ref": "#/components/schemas/Child"})
+        for name, key in (("Root", "value"), ("Root", "child"), ("Root", "items"),
+                          ("Child", "enabled"), ("SparseRootInline", "enabled")):
+            with self.subTest(schema=name, field=key):
+                prop = schemas[name]["properties"][key]
+                self.assertTrue(prop["x-omitempty"])
+                self.assertTrue(prop["x-go-type-skip-optional-pointer"])
+                self.assertTrue(prop["x-go-type"].startswith("nullable.Nullable[Sparse"))
+                self.assertIn("oneOf", prop)
+        self.assertNotIn("x-go-type", schemas["Root"]["properties"]["required"])
+        self.assertNotIn("x-go-type", schemas["Untouched"]["properties"]["value"])
+
+    def test_recursive_references_terminate(self):
+        spec = {"components": {"schemas": {"Node": {"properties": {
+            "next": {"allOf": [{"$ref": "#/components/schemas/Node"}], "nullable": True}
+        }}}}}
+        norm.mark_sparse_schemas(spec, ("Node", "Node"))
+        self.assertEqual(len(spec["components"]["schemas"]), 2)
+
+    def test_missing_root_collision_and_external_reference_fail_closed(self):
+        cases = [
+            ({}, "Missing"),
+            ({"Root": {"properties": {"value": {"type": "string", "nullable": True}}},
+              "SparseRootValue": {"type": "string"}}, "Root"),
+            ({"Root": {"properties": {"other": {"$ref": "external.json#/Model"}}}}, "Root"),
+        ]
+        for schemas, root in cases:
+            with self.subTest(root=root, schemas=schemas), self.assertRaises(SystemExit):
+                norm.mark_sparse_schemas({"components": {"schemas": schemas}}, (root,))
+
+
 if __name__ == "__main__":
     unittest.main()

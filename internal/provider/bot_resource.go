@@ -596,11 +596,27 @@ func buildBotCreateRequest(plan BotResourceModel) (*client.BotCreate, diag.Diagn
 		value := plan.AvatarURL.ValueString()
 		request.AvatarUrl = &value
 	}
-	// The generated union's JSON reader preserves the existing sparse Terraform
-	// config projection shared with PATCH, including explicit image resets.
-	// Re-marshalling a zero-valued generated variant would add nulls for every
-	// optional nullable field (notably platform-owned model/host_policy).
-	if err := request.Config.UnmarshalJSON(buildCreateConfig(plan)); err != nil {
+	// Decode the shared Terraform projection into the generated variant before
+	// constructing the union. Generated Nullable fields retain omission/value/
+	// null at every optional config leaf; unknown fields fail closed rather than
+	// slipping through the union's opaque raw-JSON reader.
+	decoder := json.NewDecoder(bytes.NewReader(buildCreateConfig(plan)))
+	decoder.DisallowUnknownFields()
+	var err error
+	if harness == client.BotHarness(harnessNative) {
+		var config client.NativeConfigPatch
+		err = decoder.Decode(&config)
+		if err == nil {
+			err = request.Config.FromNativeConfigPatch(config)
+		}
+	} else {
+		var config client.OpenClawConfigPatch
+		err = decoder.Decode(&config)
+		if err == nil {
+			err = request.Config.FromOpenClawConfigPatch(config)
+		}
+	}
+	if err != nil {
 		diags.AddError("Error encoding bot config", err.Error())
 		return nil, diags
 	}

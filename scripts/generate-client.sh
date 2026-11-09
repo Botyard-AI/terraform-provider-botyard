@@ -111,7 +111,8 @@ python3 "$ROOT/scripts/openapi-normalize.py" "$SPEC" "$tmp_norm" \
   --exclude-paths "${EXCLUDE_PATHS[@]}" \
   --exclude-operations "${EXCLUDE_OPERATIONS[@]}" \
   --tristate-fields "${TRISTATE_FIELDS[@]}" \
-  --omitempty-fields "${OMITEMPTY_FIELDS[@]}"
+  --omitempty-fields "${OMITEMPTY_FIELDS[@]}" \
+  --sparse-schemas NativeConfigPatch OpenClawConfigPatch
 
 echo ">> down-convert 3.1 -> 3.0"
 npx --yes "@apiture/openapi-down-convert@${DOWN_CONVERT_VERSION}" --input "$tmp_norm" --output "$tmp_30"
