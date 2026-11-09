@@ -441,12 +441,32 @@ def mark_tristate(spec: dict[str, Any], fields: tuple[str, ...]) -> None:
         prop["x-omitempty"] = True
 
 
+def mark_omitempty(spec: dict[str, Any], fields: tuple[str, ...]) -> None:
+    """Omit unset optional request fields that the provider never clears.
+
+    Unlike --tristate-fields, this preserves each generated property type,
+    including referenced objects and enums. Use only when nil means omission;
+    fields that must send null to clear still need a three-state representation.
+    """
+    schemas = spec.get("components", {}).get("schemas", {})
+    for field in fields:
+        schema_name, _, prop_name = field.partition(".")
+        schema = schemas.get(schema_name)
+        if not prop_name or schema is None:
+            raise SystemExit(f"--omitempty-fields: unknown Schema.property {field!r}")
+        prop = schema.get("properties", {}).get(prop_name)
+        if prop is None or prop_name in schema.get("required", []):
+            raise SystemExit(f"--omitempty-fields: {field!r} is missing or required")
+        prop["x-omitempty"] = True
+
+
 def normalize_spec(
     spec: dict[str, Any],
     keep_tags: set[str],
     exclude_paths: tuple[str, ...] = (),
     exclude_operations: tuple[str, ...] = (),
     tristate_fields: tuple[str, ...] = (),
+    omitempty_fields: tuple[str, ...] = (),
 ) -> dict[str, Any]:
     """Full in-place normalization; returns the same spec for convenience."""
     collapse_nullable(spec)
@@ -456,6 +476,7 @@ def normalize_spec(
     for dropped in drop_ambiguous_discriminators(spec):
         print(f"dropped many-to-one discriminator: {dropped}")
     mark_tristate(spec, tristate_fields)
+    mark_omitempty(spec, omitempty_fields)
     return spec
 
 
@@ -485,6 +506,10 @@ def main() -> None:
         help="Schema.property request fields to generate as nullable.Nullable[T] "
         "(omit / value / null).",
     )
+    ap.add_argument(
+        "--omitempty-fields", nargs="*", default=[],
+        help="Schema.property optional request fields where nil means omission, never clear.",
+    )
     args = ap.parse_args()
 
     spec = json.load(open(args.src))
@@ -494,6 +519,7 @@ def main() -> None:
         tuple(args.exclude_paths),
         tuple(args.exclude_operations),
         tuple(args.tristate_fields),
+        tuple(args.omitempty_fields),
     )
     json.dump(spec, open(args.dst, "w"))
     n_schemas = len(spec.get("components", {}).get("schemas", {}))

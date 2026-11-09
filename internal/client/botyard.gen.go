@@ -2268,7 +2268,7 @@ type BotCreate struct {
 	Config BotCreate_Config `json:"config"`
 
 	// Credentials Credential assignments to apply atomically with creation — the same body, validation, and bot-owner gate as `PUT /orgs/{org_id}/bots/{bot_slug}/credentials`. Model routing is derived from these links before the bot is first provisioned, so it boots on the chosen model instead of being reconfigured (and restarted) moments later. Any invalid assignment fails the whole create. Only credentials that already exist can be linked; a bot-private credential needs the bot first and is still assigned after creation.
-	Credentials *BotCredentialAssign `json:"credentials"`
+	Credentials *BotCredentialAssign `json:"credentials,omitempty"`
 
 	// Description Short human-facing description / role for the bot (e.g. 'Platform developer'). Display metadata only — not injected into the bot's system prompt.
 	Description *string `json:"description"`
@@ -2310,7 +2310,7 @@ type BotCreate struct {
 	Name string `json:"name"`
 
 	// Resources Per-bot resource customisation on top of the plan preset — a sparse list of MeteredResource line-items (only the resources being set; omitted resources use the preset). Available on every plan, subject to the plan's resource maximums.
-	Resources *ResourceQuantities `json:"resources"`
+	Resources *ResourceQuantities `json:"resources,omitempty"`
 
 	// SkillIds Skills to assign at creation (the wizard's final selection).
 	SkillIds *[]string `json:"skill_ids,omitempty"`

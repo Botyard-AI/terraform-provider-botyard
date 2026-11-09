@@ -416,5 +416,22 @@ class TestMarkTristate(unittest.TestCase):
                 norm.mark_tristate(spec, (field,))
 
 
+class TestOmitEmptyFields(unittest.TestCase):
+    def test_optional_nullable_object_keeps_its_generated_type(self):
+        prop = {"allOf": [{"$ref": "#/components/schemas/Quantities"}], "nullable": True}
+        spec = {"components": {"schemas": {"Create": {"properties": {"resources": prop}}}}}
+        norm.mark_omitempty(spec, ("Create.resources",))
+        self.assertTrue(prop["x-omitempty"])
+        self.assertEqual(prop["allOf"], [{"$ref": "#/components/schemas/Quantities"}])
+        self.assertNotIn("x-go-type", prop)
+
+    def test_missing_or_required_field_fails_closed(self):
+        for field in ("Missing.x", "Create.missing", "Create.name", "invalid"):
+            with self.subTest(field=field), self.assertRaises(SystemExit):
+                norm.mark_omitempty({"components": {"schemas": {
+                    "Create": {"required": ["name"], "properties": {"name": {"type": "string"}}}
+                }}}, (field,))
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -308,14 +308,14 @@ func (r *BotResource) Create(ctx context.Context, req resource.CreateRequest, re
 	}
 
 	want := plannedRuntimeSettings(plan)
-	body, diags := buildBotCreateBody(plan)
+	body, diags := buildBotCreateRequest(plan)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	apiResp, err := r.data.client.CreateBotV1OrgsOrgIdBotsPostWithBodyWithResponse(
-		ctx, r.data.orgID, "application/json", bytes.NewReader(body))
+	apiResp, err := r.data.client.CreateBotV1OrgsOrgIdBotsPostWithResponse(
+		ctx, r.data.orgID, *body)
 	if err != nil {
 		resp.Diagnostics.AddError("Error creating bot", err.Error())
 		return
@@ -564,46 +564,47 @@ func (r *BotResource) ImportState(ctx context.Context, req resource.ImportStateR
 	}
 }
 
-// buildBotCreateBody builds the POST /bots body as a sparse
-// map[string]json.RawMessage. `config` is required by the API but its fields are
-// all optional; buildBotConfigPatch renders the declared config block as a
-// sparse OpenClawConfigPatch object, or `{}` when no config block is declared —
-// the API merges it over native defaults, so an empty object nulls nothing.
-// Building the body by hand (rather than via the generated BotCreate struct)
-// avoids a zero-value OpenClawConfigPatch marshaling its fields as explicit
-// nulls, and keeps the wire body to exactly the fields the strict BotCreate
-// model accepts (it rejects unknown keys).
-func buildBotCreateBody(plan BotResourceModel) ([]byte, diag.Diagnostics) {
+// buildBotCreateRequest uses the generated BotCreate envelope and config union.
+// The existing sparse Terraform config projection supplies only declared fields;
+// an empty config lets the API merge native defaults without clearing anything.
+// Preserve metadata nulls, but omit unconfigured credentials/resources so create
+// does not claim ownership of fields the provider has not declared.
+func buildBotCreateRequest(plan BotResourceModel) (*client.BotCreate, diag.Diagnostics) {
 	var diags diag.Diagnostics
 	validateConcreteBotCreationRuntime(plan, &diags)
 	if diags.HasError() {
 		return nil, diags
 	}
-	body := map[string]json.RawMessage{
-		"name":        rawString(plan.Name),
-		"description": rawString(plan.Description),
-		"avatar_url":  rawString(plan.AvatarURL),
-		"config":      buildCreateConfig(plan),
+	hosting, harness := client.BotHostingType("hosted"), client.BotHarness(harnessNative)
+	if !plan.HostingType.IsNull() {
+		hosting = client.BotHostingType(plan.HostingType.ValueString())
 	}
-	// Explicit creation defaults also make the provider safe against an older
-	// API whose omitted runtime still meant OpenClaw. Never used on updates.
-	body["hosting_type"] = json.RawMessage(`"hosted"`)
-	body["harness"] = json.RawMessage(`"botyard_native"`)
-	putStr(body, "hosting_type", plan.HostingType)
-	putStr(body, "harness", plan.Harness)
-	if rq := resourcesCreateBody(plan.Resources); rq != nil {
-		raw, err := json.Marshal(rq)
-		if err != nil {
-			diags.AddError("Error encoding bot resources", err.Error())
-			return nil, diags
-		}
-		body[botResourcesAttr] = raw
+	if !plan.Harness.IsNull() {
+		harness = client.BotHarness(plan.Harness.ValueString())
 	}
-	out, err := json.Marshal(body)
-	if err != nil {
-		diags.AddError("Error encoding bot", err.Error())
+	request := &client.BotCreate{
+		Name:        plan.Name.ValueString(),
+		HostingType: &hosting,
+		Harness:     &harness,
+		Resources:   resourcesCreateBody(plan.Resources),
 	}
-	return out, diags
+	if !plan.Description.IsNull() && !plan.Description.IsUnknown() {
+		value := plan.Description.ValueString()
+		request.Description = &value
+	}
+	if !plan.AvatarURL.IsNull() && !plan.AvatarURL.IsUnknown() {
+		value := plan.AvatarURL.ValueString()
+		request.AvatarUrl = &value
+	}
+	// The generated union's JSON reader preserves the existing sparse Terraform
+	// config projection shared with PATCH, including explicit image resets.
+	// Re-marshalling a zero-valued generated variant would add nulls for every
+	// optional nullable field (notably platform-owned model/host_policy).
+	if err := request.Config.UnmarshalJSON(buildCreateConfig(plan)); err != nil {
+		diags.AddError("Error encoding bot config", err.Error())
+		return nil, diags
+	}
+	return request, diags
 }
 
 // Harness values this resource reasons about. The generated client exposes
