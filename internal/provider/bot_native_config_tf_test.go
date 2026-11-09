@@ -601,26 +601,38 @@ func TestConfigToolSearch_RoundTrip(t *testing.T) {
 	const addr = "botyard_bot.native"
 
 	resource.UnitTest(t, resource.TestCase{
-		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
+				ExternalProviders: map[string]resource.ExternalProvider{
+					"botyard": {Source: "Botyard-AI/botyard", VersionConstraint: "0.8.0"},
+				},
 				Config: openClawTestConfig(srv.URL, `tool_search = { mode = "always" }`),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(addr, "config.tool_search.mode", "always"),
 					resource.TestCheckResourceAttr(addr, "config.tool_search.auto_threshold_percent", "10"),
 				),
 			},
-			{Config: openClawTestConfig(srv.URL, `tool_search = { mode = "always" }`), PlanOnly: true},
+			{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: openClawTestConfig(srv.URL, `tool_search = { mode = "always" }`), PlanOnly: true},
 			{
-				Config: openClawTestConfig(srv.URL, `tool_search = { mode = "off" }`),
-				Check:  resource.TestCheckResourceAttr(addr, "config.tool_search.mode", "off"),
+				ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+				Config:                   openClawTestConfig(srv.URL, `tool_search = { mode = "off" }`),
+				Check:                    resource.TestCheckResourceAttr(addr, "config.tool_search.mode", "off"),
 			},
 			{
-				Config:      openClawTestConfig(srv.URL, `tool_search = { mode = "sometimes" }`),
-				PlanOnly:    true,
-				ExpectError: regexp.MustCompile(`Invalid Attribute Value`),
+				ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+				Config:                   openClawTestConfig(srv.URL, `tool_search = { mode = "sometimes" }`),
+				PlanOnly:                 true,
+				ExpectError:              regexp.MustCompile(`Invalid Attribute Value`),
 			},
-			{Config: openClawTestConfig(srv.URL, `tool_search = { mode = "off" }`), PlanOnly: true},
+			// A name change would replace the existing OpenClaw bot. Refuse it
+			// at plan time, before Terraform can delete it.
+			{
+				ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+				Config:                   strings.Replace(openClawTestConfig(srv.URL, `tool_search = { mode = "off" }`), `name         = "native-probe"`, `name         = "renamed"`, 1),
+				PlanOnly:                 true,
+				ExpectError:              regexp.MustCompile(`OpenClaw is existing-bots-only`),
+			},
+			{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: openClawTestConfig(srv.URL, `tool_search = { mode = "off" }`), PlanOnly: true},
 		},
 	})
 }
@@ -638,15 +650,54 @@ func TestConfigBlocks_AddedToExistingBot(t *testing.T) {
 
 	t.Run("openclaw config.tool_search", func(t *testing.T) {
 		resource.UnitTest(t, resource.TestCase{
-			ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 			Steps: []resource.TestStep{
-				{Config: openClawTestConfig(oc.URL, `thinking_default = "high"`)},
+				{ExternalProviders: map[string]resource.ExternalProvider{
+					"botyard": {Source: "Botyard-AI/botyard", VersionConstraint: "0.8.0"},
+				}, Config: openClawTestConfig(oc.URL, `thinking_default = "high"`)},
 				{
-					Config: openClawTestConfig(oc.URL, "thinking_default = \"high\"\n    tool_search = { mode = \"always\" }"),
-					Check:  resource.TestCheckResourceAttr(addr, "config.tool_search.auto_threshold_percent", "10"),
+					ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+					Config:                   openClawTestConfig(oc.URL, "thinking_default = \"high\"\n    tool_search = { mode = \"always\" }"),
+					Check:                    resource.TestCheckResourceAttr(addr, "config.tool_search.auto_threshold_percent", "10"),
 				},
-				{Config: openClawTestConfig(oc.URL, "thinking_default = \"high\"\n    tool_search = { mode = \"always\" }"), PlanOnly: true},
+				{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: openClawTestConfig(oc.URL, "thinking_default = \"high\"\n    tool_search = { mode = \"always\" }"), PlanOnly: true},
 			},
 		})
+	})
+}
+
+// Terraform core exercises plan modifiers, create, and no-drift refresh against
+// a local fake API; no production resources are touched.
+func TestNativeDefault_TerraformCreateAndRejectLegacy(t *testing.T) {
+	t.Setenv("TF_ACC_PROVIDER_NAMESPACE", "botyard-ai")
+	_, srv := newFakeNativeBotAPI(t)
+	native := nativePromptTestConfig(srv.URL, `tool_search = { mode = "auto" }`)
+	// Exercise the default by omitting both immutable runtime attributes.
+	implicit := strings.Replace(native, "  hosting_type = \"hosted\"\n  harness      = \"botyard_native\"\n", "", 1)
+	if implicit == native {
+		t.Fatal("test fixture did not omit the hosting pair")
+	}
+	legacy := strings.Replace(native, `harness      = "botyard_native"`, `harness      = "openclaw"`, 1)
+	// Isolate the existing-only policy from the separate native-config mismatch.
+	legacyWithoutConfig := strings.Replace(legacy, "  native_config = {\n    tool_search = { mode = \"auto\" }\n  }\n", "", 1)
+	if legacy == native || legacyWithoutConfig == legacy {
+		t.Fatal("test fixture did not produce a bare OpenClaw request")
+	}
+	// No explicit harness and a legacy-only config cannot silently fall back.
+	legacyConfig := openClawTestConfig(srv.URL, `thinking_default = "high"`)
+	resource.UnitTest(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{Config: legacyWithoutConfig, PlanOnly: true, ExpectError: regexp.MustCompile(`OpenClaw is existing-bots-only`)},
+			{Config: legacyConfig, PlanOnly: true, ExpectError: regexp.MustCompile(`Native bots use native_config`)},
+			{
+				Config: implicit,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("botyard_bot.native", "hosting_type", "hosted"),
+					resource.TestCheckResourceAttr("botyard_bot.native", "harness", "botyard_native"),
+					resource.TestCheckResourceAttr("botyard_bot.native", "native_config.tool_search.mode", "auto"),
+				),
+			},
+			{Config: implicit, PlanOnly: true},
+		},
 	})
 }

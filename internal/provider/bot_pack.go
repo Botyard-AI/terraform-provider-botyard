@@ -531,8 +531,7 @@ func keepPackAvatar(m *BotResourceModel, declared types.String) {
 	}
 }
 
-// ModifyPlan runs the `pack` guards (modifyPackPlan). Nothing else on
-// botyard_bot needs plan modification.
+// ModifyPlan applies creation-only runtime defaults, pack guards and resource settings.
 func (r *BotResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
 	if req.Plan.Raw.IsNull() {
 		return // destroy
@@ -555,6 +554,14 @@ func (r *BotResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanReq
 	resp.Diagnostics.Append(req.Config.Get(ctx, &cfg)...)
 	if resp.Diagnostics.HasError() {
 		return
+	}
+	defaultBotCreationRuntime(&plan, cfg, state, &resp.Diagnostics)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	if state == nil {
+		resp.Diagnostics.Append(resp.Plan.SetAttribute(ctx, path.Root("hosting_type"), plan.HostingType)...)
+		resp.Diagnostics.Append(resp.Plan.SetAttribute(ctx, path.Root("harness"), plan.Harness)...)
 	}
 	modifyBotResourcesPlan(ctx, plan, cfg, state, resp)
 	if runtimeClassMayChange(plan, state) {

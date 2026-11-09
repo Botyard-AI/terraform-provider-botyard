@@ -212,7 +212,7 @@ func (a *fakeSuggestionsBotAPI) writeBot(w http.ResponseWriter, status int) {
 		"runtime_class": "kata_qemu", "storage_class": "cluster_default",
 		"runtime_privilege_mode": "standard", "onboarding_state": "complete",
 		"health_status": "healthy", "desired_state": "running", "config_generation": 1,
-		"access": "open", "hosting_type": "hosted", "harness": "openclaw",
+		"access": "open", "hosting_type": "hosted", "harness": "botyard_native",
 		"created_at": "2026-10-29T10:00:00Z", "updated_at": "2026-10-29T10:00:00Z",
 		"desired_config": {}
 	}`, optOut, desc)

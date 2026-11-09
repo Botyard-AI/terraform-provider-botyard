@@ -3,7 +3,7 @@
 page_title: "botyard_bot Resource - Botyard"
 subcategory: ""
 description: |-
-  Manages a Botyard bot's desired-state record within the configured organization. Creating the resource persists the bot and triggers provisioner reconciliation best-effort. It manages the bot's core identity (name, description, avatar), its OpenClaw config overrides and its runtime settings (auto_suspend_enabled, runtime_privilege_mode, resources), and exposes runtime placement and control-plane state as read-only attributes; the bot's skill/tool/credential assignments are managed separately.
+  Manages a Botyard bot's desired-state record within the configured organization. Creating the resource persists the bot and triggers provisioner reconciliation best-effort. New hosted bots use the Botyard native runtime; OpenClaw is supported for existing bots only. It manages the bot's core identity (name, description, avatar), its native_config (or legacy config) overrides and its runtime settings (auto_suspend_enabled, runtime_privilege_mode, resources), and exposes runtime placement and control-plane state as read-only attributes; the bot's skill/tool/credential assignments are managed separately.
   Bot ownership. An API key owns only the bots it created, even when its organization role is owner. For a bot created in the Botyard app or with another key, import, refresh and planning are supported, but updates and deletion require the API key that created the bot, and fail with a "Not the bot's owner" error.
   On such a bot suggestions_opt_out is read normally, but changing it fails with a "Not the bot's owner" error.
   See Getting started https://docs.botyard.io/docs/getting-started in the Botyard docs.
@@ -11,7 +11,7 @@ description: |-
 
 # botyard_bot (Resource)
 
-Manages a Botyard bot's desired-state record within the configured organization. Creating the resource persists the bot and triggers provisioner reconciliation best-effort. It manages the bot's core identity (name, description, avatar), its OpenClaw `config` overrides and its runtime settings (`auto_suspend_enabled`, `runtime_privilege_mode`, `resources`), and exposes runtime placement and control-plane state as read-only attributes; the bot's skill/tool/credential assignments are managed separately.
+Manages a Botyard bot's desired-state record within the configured organization. Creating the resource persists the bot and triggers provisioner reconciliation best-effort. New hosted bots use the Botyard native runtime; OpenClaw is supported for existing bots only. It manages the bot's core identity (name, description, avatar), its `native_config` (or legacy `config`) overrides and its runtime settings (`auto_suspend_enabled`, `runtime_privilege_mode`, `resources`), and exposes runtime placement and control-plane state as read-only attributes; the bot's skill/tool/credential assignments are managed separately.
 
 **Bot ownership.** An API key owns only the bots it created, even when its organization role is owner. For a bot created in the Botyard app or with another key, import, refresh and planning are supported, but updates and deletion require the API key that created the bot, and fail with a "Not the bot's owner" error.
 
@@ -33,62 +33,29 @@ resource "botyard_bot" "support" {
   suggestions_opt_out = true
 }
 
-# A bot with OpenClaw config overrides. `config` is a nested attribute, so it
-# uses object syntax (`config = { ... }`). Only the fields you set are applied
-# over OpenClaw's defaults; omitted fields keep their server default.
-#
-# The model a bot runs on is not part of `config`: it is derived from the bot's
-# LLM credential links. Set it with `botyard_bot_credential_assignment`
-# (`scope = "llm"`, ordered by `ordinal`, with an optional `default_model`).
+# Hosted bots use the native runtime by default. Declare native_config for
+# runtime-specific overrides; omitted fields keep their server defaults.
+# A bot's model is derived from its LLM credential assignments, not this block.
 resource "botyard_bot" "researcher" {
   name        = "Research Assistant"
   description = "Runs deep research tasks."
 
-  config = {
-    system_prompt_mode = "botyard"
-    thinking_default   = "high"
-    reasoning_default  = "stream"
-
-    identity = {
-      emoji = "🔬"
-      theme = "dark"
-    }
-
-    heartbeat = {
-      every            = "30m"
-      light_context    = true
-      isolated_session = true
-
-      active_hours = {
-        from_time = "09:00"
-        to_time   = "17:00"
-        timezone  = "America/New_York"
-      }
-    }
-
-    compaction = {
-      reserve_tokens            = 24000
-      truncate_after_compaction = true
-    }
-
-    session = {
-      write_lock_max_hold_ms = 300000
-    }
-
-    # Defer tool schemas behind a search surface instead of inlining them.
+  native_config = {
     tool_search = {
       mode = "auto"
     }
   }
 
-  # Size the bot above its plan preset. Only the quantities set here are
-  # managed; the others keep their current values. Changing them restarts the
-  # bot.
+  # Changing compute overrides restarts the bot.
   resources = {
     cpu_limit    = "2"
     memory_limit = "4Gi"
   }
 }
+
+# Existing OpenClaw bots remain manageable after import. Keep their existing
+# `config` block; do not change the immutable runtime merely to upgrade the
+# provider. OpenClaw cannot be selected when creating a new bot.
 
 # A bot created from a Bot Pack. The pack is installed when the bot is
 # created; removing the `pack` block later uninstalls it and keeps the bot.
@@ -151,9 +118,9 @@ output "support_bot_slug" {
 # ---------------------------------------------------------------------------
 # A hosted-native bot.
 #
-# Native bots run on Botyard's own agent loop instead of OpenClaw, and are
-# selected by the hosting pair `hosting_type = "hosted"` + `harness =
-# "botyard_native"`. They carry a different config shape, so they use the
+# Native bots run on Botyard's own agent loop and are the default. The explicit
+# hosting pair below is optional and pins the same new-bot selection: `hosting_type = "hosted"` + `harness =
+# "botyard_native"`. Native bots use the
 # `native_config` block — declaring both `config` and `native_config`, or
 # pairing a block with the wrong harness, fails at plan time.
 #
@@ -232,7 +199,7 @@ Setting it to `false` requires a plan that allows opting out of auto-suspend; on
 - `avatar_url` (String) Avatar image URL (a DiceBear data URI or a custom URL). Optional — the API stores no avatar when omitted. Removing it from the config clears the stored value (sends JSON null).
 - `config` (Attributes) OpenClaw configuration overrides for the bot, applied via the config endpoint (embedded in the create request and sent to `PATCH /config` on update). Only the fields you set are applied over OpenClaw's defaults; omitted fields keep their server default. This block models the patchable config surface incrementally — `addons` and `bot_type` are not yet modeled. The model a bot runs on is not set here: it is derived from the bot's LLM credential links, managed with `botyard_bot_credential_assignment` (`scope = "llm"`, ordered by `ordinal`, with an optional `default_model`). (see [below for nested schema](#nestedatt--config))
 - `description` (String) Short human-facing description / role for the bot (max 500 chars). Display metadata only — not injected into the bot's system prompt. Omit to leave unset.
-- `harness` (String) Which agent software this bot runs: `openclaw` (default), `botyard_native`, or `claude_code`. Immutable — changing it forces replacement. Declare `config` for `openclaw` and `native_config` for `botyard_native`. The permitted pairs with `hosting_type` are `(hosted, openclaw)`, `(hosted, botyard_native)` and `(self_hosted, claude_code)`.
+- `harness` (String) Which agent software this bot runs: `botyard_native` (default for new hosted bots), or `claude_code` for external bots. `openclaw` is supported for existing bots only and cannot be selected for new creation. Immutable: a configured change forces replacement, which loses bot history. Upgrading preserves existing/imported runtime state when omitted. Use `native_config` for native bots; existing OpenClaw bots may keep `config`.
 - `hosting_type` (String) Who runs this bot's runtime: `hosted` (default) or `self_hosted`. Immutable — changing it forces replacement. Must form a permitted pair with `harness`; the API enforces the allowlist behind `GET /orgs/{org_id}/bots/hosting-options`.
 - `native_config` (Attributes) Configuration for a native (`botyard_native`) bot, applied via the config endpoint (embedded in the create request and sent to `PATCH /config` on update). Requires `harness = "botyard_native"`, and conflicts with `config`, which models the OpenClaw shape. Only the fields you set are applied over the platform's defaults. (see [below for nested schema](#nestedatt--native_config))
 - `pack` (Attributes) A Bot Pack to create this bot from. When set, the bot is created with `POST /bots/from-pack`, which installs the pack in the same transaction. Removing the block uninstalls the pack and keeps the bot. Adding it to an existing bot, or changing `pack_version_id`, is refused at plan time: the API has no install-on-existing-bot or upgrade path yet, and the provider never replaces a bot (that would lose its conversations and memory). `avatar_url` left unset means the pack's avatar is kept. The pack's config is applied first and the bot's declared `config` / `native_config` values win. A declared `native_config.tool_images` owns all its fields, so a partial block resets the fields it leaves out to the platform defaults, not to the pack's values: declare every `tool_images` field, or leave the block out. The pack's skills and tools count toward `botyard_bot_skill_assignment` / `botyard_bot_tool_assignment`, which own the bot's complete sets: include them with `setunion(data.botyard_pack_version.<name>.skill_ids, [...])`. (see [below for nested schema](#nestedatt--pack))

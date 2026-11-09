@@ -12,6 +12,12 @@ a version.
 
 ## [Unreleased]
 
+### Changed
+
+- **`botyard_bot`: new hosted bots default to the Botyard native runtime.** Use `native_config` for native settings; creating OpenClaw bots or supplying an OpenClaw-only `config` for a new native bot is refused. Existing and imported OpenClaw bots retain their runtime and `config` management when upgrading. Immutable runtime changes still replace a bot, so review plans carefully before applying.
+- Pack-version reads understand fixed skill pins and skills following latest edits. Latest skills have null computed version fields rather than a fabricated pin; older fixed-reference responses remain readable. The vendored public API and generated client are refreshed canonically.
+- The next planned provider release for this change is the minor version **0.9.0**. Release publication remains a separate manual action; its dated changelog section is prepared when the release date is set.
+
 ## [0.8.0] - 2026-11-01
 
 ### Added

@@ -83,6 +83,19 @@ output "bot_id" {
 }
 ```
 
+### Bot runtimes and upgrades
+
+New hosted `botyard_bot` resources use the Botyard native runtime by default.
+Use `native_config` for native configuration. OpenClaw remains supported for
+existing or imported bots, including their `config` updates, but cannot be used
+for new bots. Upgrading the provider does not change an existing bot's runtime
+when `harness` and `hosting_type` are omitted; do not replace a legacy bot to
+upgrade. Configuration-driven legacy replacements are refused at plan time.
+Do not use `terraform -replace` on an OpenClaw bot: an explicit forced replacement
+may delete the existing bot before the new-creation refusal is reached. Review
+plans carefully; this provider cannot make a forced legacy recreation succeed.
+External self-hosted profiles remain separate from the hosted default.
+
 ### Authentication
 
 The provider authenticates with an **organization-scoped Botyard API key**

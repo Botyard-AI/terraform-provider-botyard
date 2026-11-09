@@ -52,7 +52,7 @@ type BotResourceModel struct {
 	AvatarURL   types.String `tfsdk:"avatar_url"`
 
 	// Hosting pair. Optional+Computed: the API defaults these to
-	// (hosted, openclaw), and both are immutable server-side, so a change forces
+	// (hosted, botyard_native) for new bots, and both are immutable server-side, so a change forces
 	// replacement. They must form a permitted pair — the API enforces that
 	// against the allowlist behind GET /bots/hosting-options.
 	HostingType types.String `tfsdk:"hosting_type"`
@@ -132,7 +132,8 @@ func (r *BotResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "Manages a Botyard bot's desired-state record within the configured organization. " +
 			"Creating the resource persists the bot and triggers provisioner reconciliation best-effort. " +
-			"It manages the bot's core identity (name, description, avatar), its OpenClaw `config` " +
+			"New hosted bots use the Botyard native runtime; OpenClaw is supported for existing bots only. " +
+			"It manages the bot's core identity (name, description, avatar), its `native_config` (or legacy `config`) " +
 			"overrides and its runtime settings (`auto_suspend_enabled`, `runtime_privilege_mode`, " +
 			"`resources`), and exposes runtime placement and control-plane state as read-only attributes; " +
 			"the bot's skill/tool/credential assignments are managed separately.\n\n" +
@@ -176,11 +177,11 @@ func (r *BotResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *
 			"harness": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
-				MarkdownDescription: "Which agent software this bot runs: `openclaw` (default), `botyard_native`, " +
-					"or `claude_code`. Immutable — changing it forces replacement. Declare `config` for " +
-					"`openclaw` and `native_config` for `botyard_native`. The permitted pairs with " +
-					"`hosting_type` are `(hosted, openclaw)`, `(hosted, botyard_native)` and " +
-					"`(self_hosted, claude_code)`.",
+				MarkdownDescription: "Which agent software this bot runs: `botyard_native` (default for new hosted bots), " +
+					"or `claude_code` for external bots. `openclaw` is supported for existing bots only and cannot " +
+					"be selected for new creation. Immutable: a configured change forces replacement, which " +
+					"loses bot history. Upgrading preserves existing/imported runtime state when omitted. " +
+					"Use `native_config` for native bots; existing OpenClaw bots may keep `config`.",
 				// ORDER IS LOAD-BEARING: UseStateForUnknown MUST precede
 				// RequiresReplace on an Optional+Computed attribute.
 				//
@@ -267,34 +268,12 @@ func (r *BotResource) ValidateConfig(ctx context.Context, req resource.ValidateC
 		return
 	}
 
-	// An unknown harness cannot be checked; a null one means the API default,
-	// `openclaw`, which is exactly what a bare `config` block wants.
-	harness := cfg.Harness
-	if harness.IsUnknown() {
+	// Validation cannot distinguish a new bot from an existing/imported one.
+	// Resolve omitted runtimes only in ModifyPlan, where state is available.
+	if cfg.Harness.IsNull() || cfg.Harness.IsUnknown() {
 		return
 	}
-	declared := harness.ValueString()
-	if harness.IsNull() {
-		declared = harnessOpenClaw
-	}
-
-	switch {
-	case cfg.NativeConfig != nil && declared != harnessNative:
-		detail := fmt.Sprintf("`native_config` describes a native bot, but this bot's harness is %q.", declared)
-		if harness.IsNull() {
-			detail = "`native_config` describes a native bot, but no `harness` is set, so the API will " +
-				"create this bot as `openclaw` — and because the config union carries no discriminator, " +
-				"the native config would be silently dropped rather than rejected."
-		}
-		resp.Diagnostics.AddAttributeError(path.Root("native_config"),
-			"Config block does not match the bot's harness",
-			detail+" Set `harness = \"botyard_native\"`, or use the `config` block instead.")
-	case cfg.Config != nil && declared == harnessNative:
-		resp.Diagnostics.AddAttributeError(path.Root("config"),
-			"Config block does not match the bot's harness",
-			"`config` models the OpenClaw config shape, but this bot's harness is `botyard_native`. "+
-				"Use the `native_config` block instead.")
-	}
+	validateBotRuntimeConfig(cfg, &resp.Diagnostics)
 }
 
 // Configure receives the shared provider data.
@@ -314,6 +293,11 @@ func (r *BotResource) Configure(_ context.Context, req resource.ConfigureRequest
 func (r *BotResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	var plan BotResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	validateConcreteBotCreationRuntime(plan, &resp.Diagnostics)
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -584,22 +568,27 @@ func (r *BotResource) ImportState(ctx context.Context, req resource.ImportStateR
 // map[string]json.RawMessage. `config` is required by the API but its fields are
 // all optional; buildBotConfigPatch renders the declared config block as a
 // sparse OpenClawConfigPatch object, or `{}` when no config block is declared —
-// the API merges it over OpenClaw defaults, so an empty object nulls nothing.
+// the API merges it over native defaults, so an empty object nulls nothing.
 // Building the body by hand (rather than via the generated BotCreate struct)
 // avoids a zero-value OpenClawConfigPatch marshaling its fields as explicit
 // nulls, and keeps the wire body to exactly the fields the strict BotCreate
 // model accepts (it rejects unknown keys).
 func buildBotCreateBody(plan BotResourceModel) ([]byte, diag.Diagnostics) {
 	var diags diag.Diagnostics
+	validateConcreteBotCreationRuntime(plan, &diags)
+	if diags.HasError() {
+		return nil, diags
+	}
 	body := map[string]json.RawMessage{
 		"name":        rawString(plan.Name),
 		"description": rawString(plan.Description),
 		"avatar_url":  rawString(plan.AvatarURL),
 		"config":      buildCreateConfig(plan),
 	}
-	// Only send the hosting pair when the practitioner declared it. Omitting
-	// the keys lets the API apply its own defaults (hosted, openclaw); sending
-	// an explicit null would fail validation, since neither field is nullable.
+	// Explicit creation defaults also make the provider safe against an older
+	// API whose omitted runtime still meant OpenClaw. Never used on updates.
+	body["hosting_type"] = json.RawMessage(`"hosted"`)
+	body["harness"] = json.RawMessage(`"botyard_native"`)
 	putStr(body, "hosting_type", plan.HostingType)
 	putStr(body, "harness", plan.Harness)
 	if rq := resourcesCreateBody(plan.Resources); rq != nil {

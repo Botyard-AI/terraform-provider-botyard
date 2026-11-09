@@ -3,7 +3,7 @@
 page_title: "botyard_pack_version Data Source - Botyard"
 subcategory: ""
 description: |-
-  Reads the full contents of one bot-pack version: its skills (with pinned skill versions), tools, connections, settings and soul.
+  Reads the full contents of one bot-pack version: its skills (pinned or following latest), tools, connections, settings and soul.
   Address the version by pack_version_id, or by slug for the pack's latest published version. The API cannot look up an older version by number, so pin an older version by its id.
   Versions of archived packs stay readable by id and have pack_archived = true.
   skill_ids and tool_ids list every skill and tool the version names, required or not. Use them with setunion in botyard_bot_skill_assignment and botyard_bot_tool_assignment, which are exclusive and would otherwise remove pack items from a bot.
@@ -11,7 +11,7 @@ description: |-
 
 # botyard_pack_version (Data Source)
 
-Reads the full contents of one bot-pack version: its skills (with pinned skill versions), tools, connections, settings and soul.
+Reads the full contents of one bot-pack version: its skills (pinned or following latest), tools, connections, settings and soul.
 
 Address the version by `pack_version_id`, or by `slug` for the pack's latest published version. The API cannot look up an older version by number, so pin an older version by its id.
 
@@ -65,7 +65,7 @@ resource "botyard_bot_skill_assignment" "example" {
 - `recommended_model` (Attributes) The model the pack recommends. Null when it recommends none. (see [below for nested schema](#nestedatt--recommended_model))
 - `settings` (Attributes) Bot settings the pack applies. A null field means the pack does not set it. (see [below for nested schema](#nestedatt--settings))
 - `skill_ids` (Set of String) Ids of every skill in `skills`.
-- `skills` (Attributes List) Skills the version includes, each pinned to a skill version. (see [below for nested schema](#nestedatt--skills))
+- `skills` (Attributes List) Skills the version includes. A null skill_version_id means the skill follows latest edits. (see [below for nested schema](#nestedatt--skills))
 - `soul` (String) The soul (system instructions) the pack gives a bot.
 - `start_with_default_tools` (Boolean) Whether a bot created from this version also gets the platform's suggested default tools. No effect when installing onto an existing bot.
 - `summary` (String) One-line summary of this version.
@@ -157,9 +157,9 @@ Read-Only:
 - `skill_id` (String) Skill id. Use with `botyard_bot_skill_assignment`.
 - `skill_name` (String) Skill name.
 - `skill_slug` (String) Skill slug.
-- `skill_version_id` (String) Id of the pinned skill version.
-- `version_name` (String) Name of the pinned skill version.
-- `version_no` (Number) Number of the pinned skill version.
+- `skill_version_id` (String) Id of the pinned skill version. Null when following latest.
+- `version_name` (String) Name of the pinned skill version. Null when following latest.
+- `version_no` (Number) Number of the pinned skill version. Null when following latest.
 
 
 <a id="nestedatt--tools"></a>
