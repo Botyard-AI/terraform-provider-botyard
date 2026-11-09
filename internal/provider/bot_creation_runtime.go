@@ -1,6 +1,9 @@
 package provider
 
 import (
+	"fmt"
+
+	"github.com/Botyard-AI/terraform-provider-botyard/internal/client"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -39,10 +42,23 @@ func defaultBotCreationRuntime(plan *BotResourceModel, cfg BotResourceModel, sta
 }
 
 func validateNewBotRuntime(plan BotResourceModel, diags *diag.Diagnostics) {
-	if plan.Harness.ValueString() == harnessOpenClaw {
-		diags.AddAttributeError(path.Root("harness"), "OpenClaw is existing-bots-only",
-			"New bots use the Botyard native runtime. Existing OpenClaw bots remain supported and must not be replaced to upgrade. Remove harness = \"openclaw\" for a new bot, and use native_config instead of config.")
-		return
+	harness := plan.Harness.ValueString()
+	if plan.Harness.IsNull() {
+		harness = harnessNative
+	}
+	if !plan.Harness.IsUnknown() {
+		switch client.BotHarness(harness) {
+		case client.BotHarnessBotyardNative, client.BotHarnessClaudeCode:
+			// Each supported creation harness has an explicit generated variant.
+		case client.BotHarnessOpenclaw:
+			diags.AddAttributeError(path.Root("harness"), "OpenClaw is existing-bots-only",
+				"New bots use the Botyard native runtime. Existing OpenClaw bots remain supported and must not be replaced to upgrade. Remove harness = \"openclaw\" for a new bot, and use native_config instead of config.")
+			return
+		default:
+			diags.AddAttributeError(path.Root("harness"), "Unsupported new-bot harness",
+				fmt.Sprintf("Cannot create a bot with harness %q. Supported creation harnesses are botyard_native and claude_code; an unhandled harness must not inherit another runtime's config shape.", harness))
+			return
+		}
 	}
 	validateBotRuntimeConfig(plan, diags)
 }

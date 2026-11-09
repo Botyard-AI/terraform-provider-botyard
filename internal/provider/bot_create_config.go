@@ -1,6 +1,9 @@
 package provider
 
 import (
+	"errors"
+	"fmt"
+
 	"github.com/Botyard-AI/terraform-provider-botyard/internal/client"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/oapi-codegen/nullable"
@@ -11,10 +14,15 @@ import (
 func buildTypedCreateConfig(plan BotResourceModel, harness client.BotHarness) (client.BotCreate_Config, error) {
 	var union client.BotCreate_Config
 	var err error
-	if harness == client.BotHarness(harnessNative) {
+	switch harness {
+	case client.BotHarnessBotyardNative:
 		err = union.FromNativeConfigPatch(createNativeConfig(plan.NativeConfig))
-	} else {
+	case client.BotHarnessClaudeCode:
 		err = union.FromOpenClawConfigPatch(createExternalConfig(plan.Config))
+	case client.BotHarnessOpenclaw:
+		err = errors.New("OpenClaw is existing-bots-only")
+	default:
+		err = fmt.Errorf("unsupported new-bot harness %q", harness)
 	}
 	return union, err
 }

@@ -86,3 +86,18 @@ func TestDirectCreateConfigNativeIgnoresComputedSettings(t *testing.T) {
 		t.Fatal("declared native config lost its discriminator")
 	}
 }
+
+func TestDirectCreateConfigRejectsUnsupportedHarness(t *testing.T) {
+	for _, harness := range []client.BotHarness{client.BotHarnessOpenclaw, "future_harness", ""} {
+		t.Run(string(harness), func(t *testing.T) {
+			plan := botResourceModel()
+			plan.Harness = types.StringValue(string(harness))
+			if _, err := buildTypedCreateConfig(plan, harness); err == nil {
+				t.Error("unsupported harness received a generated config variant")
+			}
+			if _, diags := buildBotCreateRequest(plan); !diags.HasError() {
+				t.Error("unsupported harness passed the creation boundary")
+			}
+		})
+	}
+}
