@@ -30,6 +30,12 @@ const (
 	PackToolRuntimeOpenclaw = "openclaw"
 )
 
+// Discriminator values for NamedPackSkill.skill (`kind`).
+const (
+	PackSkillKindFixed  = "fixed"
+	PackSkillKindLatest = "latest"
+)
+
 // Discriminator values for OrgPackVersion.connections[] (`kind`).
 const (
 	PackConnectionKindMcpCatalogEntry = "mcp_catalog_entry"
@@ -175,6 +181,67 @@ func DecodePackConnection(c OrgPackVersion_Connections_Item) (PackConnection, er
 	default:
 		return nil, &UnknownDiscriminatorError{
 			Union: "OrgPackVersion.connections", Field: "kind", Value: kind, KnownValues: known, PresentInJSON: true,
+		}
+	}
+}
+
+// PackSkill is a decoded NamedPackSkill.skill: a sealed set of variants, like
+// PackTool. Dispatch with a type switch on *PackSkillFixed / *PackSkillLatest.
+type PackSkill interface {
+	// Kind is the `kind` discriminator value of this variant.
+	Kind() string
+	isPackSkill()
+}
+
+// PackSkillFixed is a skill pinned to one version (`kind: fixed`).
+type PackSkillFixed struct {
+	Ref SkillVersionRef
+}
+
+// PackSkillLatest is a skill that follows its latest version (`kind:
+// latest`). It names no version: which one a bot runs is decided at install.
+type PackSkillLatest struct {
+	Ref LatestSkillRef
+}
+
+func (*PackSkillFixed) Kind() string  { return PackSkillKindFixed }
+func (*PackSkillLatest) Kind() string { return PackSkillKindLatest }
+func (*PackSkillFixed) isPackSkill()  {}
+func (*PackSkillLatest) isPackSkill() {}
+
+// DecodePackSkill dispatches a NamedPackSkill.skill on its `kind` field. It
+// reads `kind` itself for the same reason as DecodePackConnection.
+func DecodePackSkill(s NamedPackSkill_Skill) (PackSkill, error) {
+	known := []string{PackSkillKindFixed, PackSkillKindLatest}
+	raw, err := s.MarshalJSON()
+	if err != nil {
+		return nil, fmt.Errorf("reading NamedPackSkill.skill: %w", err)
+	}
+	var disc struct {
+		Kind *string `json:"kind"`
+	}
+	if err := json.Unmarshal(raw, &disc); err != nil {
+		return nil, fmt.Errorf("decoding NamedPackSkill.skill kind: %w", err)
+	}
+	if disc.Kind == nil {
+		return nil, &UnknownDiscriminatorError{Union: "NamedPackSkill.skill", Field: "kind", KnownValues: known}
+	}
+	switch kind := *disc.Kind; kind {
+	case PackSkillKindFixed:
+		v, err := s.AsSkillVersionRef()
+		if err != nil {
+			return nil, fmt.Errorf("decoding fixed skill: %w", err)
+		}
+		return &PackSkillFixed{Ref: v}, nil
+	case PackSkillKindLatest:
+		v, err := s.AsLatestSkillRef()
+		if err != nil {
+			return nil, fmt.Errorf("decoding latest skill: %w", err)
+		}
+		return &PackSkillLatest{Ref: v}, nil
+	default:
+		return nil, &UnknownDiscriminatorError{
+			Union: "NamedPackSkill.skill", Field: "kind", Value: kind, KnownValues: known, PresentInJSON: true,
 		}
 	}
 }
