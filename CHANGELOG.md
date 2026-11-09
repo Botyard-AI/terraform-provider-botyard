@@ -12,6 +12,10 @@ a version.
 
 ## [Unreleased]
 
+### Added
+
+- `botyard_workforce_member`: additive user, bot and API-key membership of existing boards, bound to immutable board identity across slug renames. Requires membership identity preconditions in the API; old API writers reject the strict request field.
+
 ## [0.8.0] - 2026-11-01
 
 ### Added

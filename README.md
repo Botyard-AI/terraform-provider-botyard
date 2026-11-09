@@ -27,6 +27,7 @@ walks through a first configuration.
 | `botyard_skill` | An organization skill and its files | — |
 | `botyard_mcp_server` | An organization MCP server | [MCP setup templates](https://docs.botyard.io/docs/mcp-setup-templates) |
 | `botyard_mcp_server_member` | One member of an MCP server's member list | [MCP setup templates](https://docs.botyard.io/docs/mcp-setup-templates) |
+| `botyard_workforce_member` | One member of an existing workforce board, preserving every other member | — |
 | `botyard_vault_secret` | A Runtime Vault secret and its access rules | [Runtime Vault](https://docs.botyard.io/docs/runtime-vault) |
 
 Data sources: `botyard_bot`, `botyard_bot_template`, `botyard_bot_templates`,
