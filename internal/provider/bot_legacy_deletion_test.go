@@ -15,25 +15,54 @@ import (
 )
 
 func TestNativeDefault_LegacyDeleteFailsBeforeClientCall(t *testing.T) {
-	ctx := context.Background()
-	r := &BotResource{} // No API client: a DELETE attempt would panic.
-	schemaResp := &resource.SchemaResponse{}
-	r.Schema(ctx, resource.SchemaRequest{}, schemaResp)
-	state := botResourceModel()
-	state.Harness = types.StringValue(harnessOpenClaw)
-	raw, d := tfsdkValueFrom(t, schemaResp.Schema, state)
-	if d.HasError() {
-		t.Fatal(d)
-	}
-	resp := &resource.DeleteResponse{}
-	r.Delete(ctx, resource.DeleteRequest{State: tfsdk.State{Raw: raw, Schema: schemaResp.Schema}}, resp)
-	if !resp.Diagnostics.HasError() || !strings.Contains(resp.Diagnostics.Errors()[0].Detail(), "allow_legacy_deletion") {
-		t.Fatalf("diagnostics=%v", resp.Diagnostics)
+	for _, tc := range []struct {
+		name       string
+		harness    types.String
+		optIn      types.Bool
+		diagnostic string
+	}{
+		{"legacy", types.StringValue(harnessOpenClaw), types.BoolNull(), "allow_legacy_deletion"},
+		{"null", types.StringNull(), types.BoolNull(), "Refresh"},
+		{"unknown", types.StringUnknown(), types.BoolNull(), "Refresh"},
+		{"unsupported", types.StringValue("future_harness"), types.BoolValue(true), "Refresh"},
+		{"null_opt_in", types.StringNull(), types.BoolValue(true), "Refresh"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx := context.Background()
+			r := &BotResource{} // No API client: a DELETE attempt would panic.
+			schemaResp := &resource.SchemaResponse{}
+			r.Schema(ctx, resource.SchemaRequest{}, schemaResp)
+			state := botResourceModel()
+			state.Harness = tc.harness
+			state.AllowLegacyDeletion = tc.optIn
+			raw, d := tfsdkValueFrom(t, schemaResp.Schema, state)
+			if d.HasError() {
+				t.Fatal(d)
+			}
+			resp := &resource.DeleteResponse{}
+			r.Delete(ctx, resource.DeleteRequest{State: tfsdk.State{Raw: raw, Schema: schemaResp.Schema}}, resp)
+			if !resp.Diagnostics.HasError() || !strings.Contains(resp.Diagnostics.Errors()[0].Detail(), tc.diagnostic) {
+				t.Fatalf("diagnostics=%v", resp.Diagnostics)
+			}
+		})
 	}
 }
 
 func TestNativeDefault_LegacyDeletionOptInMatrix(t *testing.T) {
-	for _, harness := range []string{harnessOpenClaw, harnessNative, "claude_code"} {
+	for _, harness := range []struct {
+		name       string
+		value      types.String
+		classified bool
+		legacy     bool
+	}{
+		{"openclaw", types.StringValue(harnessOpenClaw), true, true},
+		{"native", types.StringValue(harnessNative), true, false},
+		{"external", types.StringValue("claude_code"), true, false},
+		{"null", types.StringNull(), false, false},
+		{"unknown", types.StringUnknown(), false, false},
+		{"empty", types.StringValue(""), false, false},
+		{"unsupported", types.StringValue("future_harness"), false, false},
+	} {
 		for _, option := range []struct {
 			name    string
 			value   types.Bool
@@ -44,13 +73,13 @@ func TestNativeDefault_LegacyDeletionOptInMatrix(t *testing.T) {
 			{"unknown", types.BoolUnknown(), false},
 			{"true", types.BoolValue(true), true},
 		} {
-			t.Run(harness+"/"+option.name, func(t *testing.T) {
+			t.Run(harness.name+"/"+option.name, func(t *testing.T) {
 				state := botResourceModel()
-				state.Harness = types.StringValue(harness)
+				state.Harness = harness.value
 				state.AllowLegacyDeletion = option.value
 				var diagnostics diag.Diagnostics
 				allowed := allowLegacyBotDeletion(state, &diagnostics)
-				want := harness != harnessOpenClaw || option.optedIn
+				want := harness.classified && (!harness.legacy || option.optedIn)
 				if allowed != want || diagnostics.HasError() == want {
 					t.Fatalf("allowed=%v want=%v diagnostics=%v", allowed, want, diagnostics)
 				}

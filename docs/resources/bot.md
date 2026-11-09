@@ -193,7 +193,7 @@ output "triage_host_policy" {
 
 ### Optional
 
-- `allow_legacy_deletion` (Boolean) Explicit opt-in to delete an existing OpenClaw bot. Defaults to protected when omitted or false. Set true and apply that change before intentional deletion; merely adding it to a destroy command does not update saved state. This provider-only setting is never sent to the API. Native and external bot deletion is unchanged.
+- `allow_legacy_deletion` (Boolean) Explicit opt-in to delete an existing OpenClaw bot. Defaults to protected when omitted or false. Set true and apply that change before intentional deletion; merely adding it to a destroy command does not update saved state. This provider-only setting is never sent to the API. Absent, unknown, or unsupported saved harness values block deletion even with this opt-in; refresh to classify the runtime first. Native and external bot deletion is unchanged.
 - `auto_suspend_enabled` (Boolean) Whether the platform may suspend the bot after a period without human activity. When omitted, Terraform reads the current value and leaves it alone.
 
 Setting it to `false` requires a plan that allows opting out of auto-suspend; on other plans the API refuses the change. This is the owner's stored preference: a plan that enforces auto-suspend still suspends the bot.

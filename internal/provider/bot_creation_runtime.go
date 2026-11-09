@@ -16,12 +16,22 @@ const legacyBotPlanKey = "botyard_existing_openclaw"
 // Delete receives the original state even when Core hides tainted state during
 // planning. Only a previously applied, known-true opt-in permits legacy deletion.
 func allowLegacyBotDeletion(state BotResourceModel, diags *diag.Diagnostics) bool {
-	if state.Harness.ValueString() == harnessOpenClaw && !state.AllowLegacyDeletion.ValueBool() {
+	switch client.BotHarness(state.Harness.ValueString()) {
+	case client.BotHarnessBotyardNative, client.BotHarnessClaudeCode:
+		return true
+	case client.BotHarnessOpenclaw:
+		if state.AllowLegacyDeletion.ValueBool() {
+			return true
+		}
 		diags.AddError("Legacy bot deletion is protected",
 			"Deletion of an existing OpenClaw bot is blocked by default, including deletion during replacement. For intentional deletion, set allow_legacy_deletion = true and apply that change first. If the resource is tainted, untaint it before applying the opt-in. This does not enable OpenClaw creation or migration.")
-		return false
+	default:
+		// ValueString is empty for null/unknown, including pre-harness states.
+		// An opt-in permits legacy deletion, not deletion of an unclassified bot.
+		diags.AddError("Bot runtime must be classified before deletion",
+			"The saved harness is absent, unknown, or unsupported, so deletion is blocked. Refresh the existing bot using a provider that recognizes its runtime (terraform apply -refresh-only without -refresh=false), then review the saved harness before retrying deletion. allow_legacy_deletion cannot bypass runtime classification; a classified OpenClaw bot still requires a separately applied opt-in.")
 	}
-	return true
+	return false
 }
 
 // Core replans replacements with null prior state but carries PlannedPrivate

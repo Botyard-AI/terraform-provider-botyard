@@ -670,7 +670,9 @@ func TestBotOwnerForbidden_ConfigAndDelete(t *testing.T) {
 
 	sch := botSchema(t)
 	st := tfsdk.State{Schema: sch}
-	if d := st.Set(ctx, &BotResourceModel{Name: types.StringValue("rt-probe"), Slug: types.StringValue("rt-probe")}); d.HasError() {
+	// This test exercises API ownership after runtime classification; null
+	// harness protection is covered separately by the deletion guard matrix.
+	if d := st.Set(ctx, &BotResourceModel{Name: types.StringValue("rt-probe"), Slug: types.StringValue("rt-probe"), Harness: types.StringValue(harnessNative)}); d.HasError() {
 		t.Fatalf("state: %v", d)
 	}
 	resp := fwresource.DeleteResponse{State: st}

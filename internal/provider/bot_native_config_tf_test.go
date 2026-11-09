@@ -41,6 +41,7 @@ type fakeNativeBotAPI struct {
 	images   map[string]json.RawMessage
 	writes   int
 	deletes  int
+	reads    int
 	refused  []string
 }
 
@@ -92,6 +93,7 @@ func (a *fakeNativeBotAPI) serve(w http.ResponseWriter, r *http.Request) {
 		a.exists = true
 		a.writeBot(w, http.StatusCreated)
 	case r.Method == http.MethodGet && r.URL.Path == bot && a.exists:
+		a.reads++
 		a.writeBot(w, http.StatusOK)
 	case r.Method == http.MethodPatch && r.URL.Path == bot && a.exists:
 		a.writeBot(w, http.StatusOK)
@@ -875,6 +877,54 @@ func TestNativeDefault_TerraformCreateAndRejectLegacy(t *testing.T) {
 				),
 			},
 			{Config: implicit, PlanOnly: true},
+		},
+	})
+}
+
+// v0.3.0 has no harness in saved state. A no-refresh destroy must not infer
+// native from omitted configuration, and opt-in cannot classify a runtime.
+func TestNativeDefault_TerraformUnclassifiedLegacyNoRefresh(t *testing.T) {
+	t.Setenv("TF_ACC_PROVIDER_NAMESPACE", "botyard-ai")
+	api, srv := newFakeOpenClawBotAPI(t)
+	legacy := strings.Replace(openClawTestConfig(srv.URL, ""), "  config = {\n    \n  }\n", "", 1)
+	legacy = strings.Replace(legacy, "  hosting_type = \"hosted\"\n", "", 1)
+	readsBefore := 0
+	cliOptions := &resource.AdditionalCLIOptions{Plan: resource.PlanOptions{NoRefresh: true}}
+	resource.UnitTest(t, resource.TestCase{
+		AdditionalCLIOptions: cliOptions,
+		CheckDestroy: func(_ *terraform.State) error {
+			api.mu.Lock()
+			defer api.mu.Unlock()
+			if api.exists || api.writes != 1 || api.deletes != 1 {
+				return fmt.Errorf("intentional deletion: exists=%v writes=%d deletes=%d", api.exists, api.writes, api.deletes)
+			}
+			return nil
+		},
+		Steps: []resource.TestStep{
+			{ExternalProviders: map[string]resource.ExternalProvider{"botyard": {Source: "Botyard-AI/botyard", VersionConstraint: "0.3.0"}}, Config: legacy, Check: func(state *terraform.State) error {
+				saved := state.RootModule().Resources["botyard_bot.native"].Primary.Attributes
+				if _, ok := saved["harness"]; ok {
+					return fmt.Errorf("released v0.3.0 unexpectedly saved harness: %q", saved["harness"])
+				}
+				api.mu.Lock()
+				defer api.mu.Unlock()
+				readsBefore = api.reads
+				return nil
+			}},
+			{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: legacy, Destroy: true, PlanOnly: true, ExpectError: regexp.MustCompile(`Bot runtime must be classified before deletion`)},
+			{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: legacy, PreConfig: func() {
+				// Re-enable Terraform's normal refresh only after proving refusal
+				// issued no reads, writes, or deletes against unclassified state.
+				cliOptions.Plan.NoRefresh = false
+				api.mu.Lock()
+				defer api.mu.Unlock()
+				if !api.exists || api.writes != 1 || api.deletes != 0 || api.reads != readsBefore {
+					t.Errorf("no-refresh refusal: exists=%v writes=%d deletes=%d reads=%d before=%d", api.exists, api.writes, api.deletes, api.reads, readsBefore)
+				}
+			}, Check: resource.TestCheckResourceAttr("botyard_bot.native", "harness", "openclaw")},
+			{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: legacy, Destroy: true, PlanOnly: true, ExpectError: regexp.MustCompile(`Legacy bot deletion is protected`)},
+			{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: legacyDeletionOptInConfig(srv.URL)},
+			{ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Config: legacyDeletionOptInConfig(srv.URL), Destroy: true},
 		},
 	})
 }

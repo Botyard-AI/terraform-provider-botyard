@@ -169,7 +169,7 @@ func (r *BotResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *
 				Optional: true,
 				MarkdownDescription: "Explicit opt-in to delete an existing OpenClaw bot. Defaults to protected when omitted or false. " +
 					"Set true and apply that change before intentional deletion; merely adding it to a destroy command does not update saved state. " +
-					"This provider-only setting is never sent to the API. Native and external bot deletion is unchanged.",
+					"This provider-only setting is never sent to the API. Absent, unknown, or unsupported saved harness values block deletion even with this opt-in; refresh to classify the runtime first. Native and external bot deletion is unchanged.",
 			},
 			"hosting_type": schema.StringAttribute{
 				Optional: true,

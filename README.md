@@ -97,6 +97,14 @@ protected by default**, including deletion during a tainted replacement or after
 removing the resource block. The provider checks saved state before sending DELETE.
 Omitted, false, or unknown `allow_legacy_deletion` values do not permit deletion.
 
+Deletion also fails closed when the saved `harness` is absent, unknown, or not
+recognized by this provider, even when `allow_legacy_deletion = true`. This
+includes state from provider 0.1–0.3, before `harness` was recorded. Use
+`terraform apply -refresh-only` without `-refresh=false` to classify the existing
+runtime first, and review the saved harness. An unsupported runtime needs a
+provider that recognizes it; the opt-in is not a substitute for classification.
+Once classified as OpenClaw, the separate opt-in workflow below still applies.
+
 For an intentional deletion, keep the legacy resource block and its runtime
 unchanged, set `allow_legacy_deletion = true`, and **apply that change first**.
 Then review and run a separate destroy/removal operation. Adding the flag only
