@@ -163,7 +163,15 @@ func (r *WorkforceMemberResource) Delete(ctx context.Context, req resource.Delet
 			resp.Diagnostics.AddError("Missing workforce identity acknowledgement", "The API did not confirm the expected board ID after removal. The row may have been removed; refresh before retrying. No automatic retry was made.")
 		}
 	case http.StatusNotFound:
-		// The one row (or the board) disappeared after our guarded preflight.
+		// A rename can make the old slug return 404 while the grant survives.
+		// Recheck by immutable identity; never retry the mutation automatically.
+		_, remaining, boardAbsent := r.members(ctx, id, &resp.Diagnostics)
+		if resp.Diagnostics.HasError() {
+			return
+		}
+		if !boardAbsent && findWorkforceMember(remaining, state.ActorType.ValueString(), state.ActorID.ValueString()) != nil {
+			resp.Diagnostics.AddError("Workforce membership still exists", "The removal returned HTTP 404 but a guarded read by immutable board ID found the membership still present. Existing state is preserved. Refresh before deliberately retrying; no automatic write retry was made.")
+		}
 	default:
 		addWorkforceMemberAPIError(&resp.Diagnostics, "remove", status, body)
 	}
@@ -197,6 +205,10 @@ func (r *WorkforceMemberResource) members(ctx context.Context, id string, diags 
 		slug := ""
 		found := false
 		for _, board := range *boards.JSON200 {
+			if board.Id == "" || board.Slug == "" {
+				diags.AddError("Invalid workforce identity response", "The API returned a board without its required ID or slug. Existing state is preserved and no write is made.")
+				return "", nil, false
+			}
 			if board.Id == id {
 				if found || board.Slug == "" {
 					diags.AddError("Invalid workforce identity response", "The API returned an empty slug or duplicate entries for the configured board ID.")

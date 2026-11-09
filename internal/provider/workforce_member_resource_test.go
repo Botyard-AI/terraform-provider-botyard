@@ -497,7 +497,7 @@ func TestWorkforceMember_Delete(t *testing.T) {
 		{"old write replica", func(a *workforceMemberAPI) { a.oldWriteReplica = true }, "HTTP 422", 0},
 		{"forbidden", func(a *workforceMemberAPI) { a.writeStatus = 403 }, "forbidden", 0},
 		{"last owner conflict", func(a *workforceMemberAPI) { a.writeStatus = 409 }, "conflict", 0},
-		{"row disappeared after read", func(a *workforceMemberAPI) { a.writeStatus = 404 }, "", 0},
+		{"404 with membership still present", func(a *workforceMemberAPI) { a.writeStatus = 404 }, "still exists", 0},
 		{"slug reuse", func(a *workforceMemberAPI) { a.renameBeforeWrite = true }, "conflict", 0},
 		{"missing ack after success", func(a *workforceMemberAPI) { a.missingWriteAck = true }, "Missing workforce identity acknowledgement", 1},
 	} {
