@@ -6,6 +6,10 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"regexp"
+
+	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/terraform"
 	"testing"
 
 	fwresource "github.com/hashicorp/terraform-plugin-framework/resource"
@@ -72,6 +76,74 @@ func TestWorkforceMember_MalformedBoardIdentitiesPreserveState(t *testing.T) {
 			r.Delete(context.Background(), fwresource.DeleteRequest{State: state}, &remove)
 			if !remove.Diagnostics.HasError() || !remove.State.Raw.Equal(state.Raw) || writes != 0 {
 				t.Fatalf("malformed list allowed delete: %v writes=%d", remove.Diagnostics, writes)
+			}
+		})
+	}
+}
+
+// Exercise a real Terraform Create, not just the internal write helper. The
+// server commits the row before replacing its response with an unusable one.
+func TestWorkforceMember_UncertainTerraformCreate(t *testing.T) {
+	for _, mode := range []string{"null", "proxy 502", "missing acknowledgement", "lost response"} {
+		t.Run(mode, func(t *testing.T) {
+			api, _ := newWorkforceMemberAPI(t)
+			srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+				if req.Method != http.MethodPut {
+					api.serve(w, req)
+					return
+				}
+				committed := httptest.NewRecorder()
+				api.serve(committed, req)
+				if committed.Code != http.StatusOK {
+					t.Errorf("write did not commit: %d", committed.Code)
+				}
+				w.Header().Set("Content-Type", "application/json")
+				switch mode {
+				case "proxy 502":
+					w.WriteHeader(http.StatusBadGateway)
+					_, _ = io.WriteString(w, `{"title":"upstream response lost"}`)
+				case "lost response":
+					hijacker, ok := w.(http.Hijacker)
+					if !ok {
+						t.Error("test server does not support connection loss")
+						return
+					}
+					conn, _, err := hijacker.Hijack()
+					if err != nil {
+						t.Error(err)
+						return
+					}
+					_ = conn.Close()
+				case "null":
+					_, _ = io.WriteString(w, "null")
+				default:
+					_, _ = w.Write(committed.Body.Bytes())
+				}
+			}))
+			defer srv.Close()
+			checkedState := false
+			checkAbsent := func(state *terraform.State) error {
+				checkedState = true
+				for _, module := range state.Modules {
+					for _, row := range module.Resources {
+						if row.Type == "botyard_workforce_member" {
+							return fmt.Errorf("uncertain create unexpectedly tracked a grant: %v", row)
+						}
+					}
+				}
+				return nil
+			}
+			resource.UnitTest(t, resource.TestCase{
+				ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+				Steps: []resource.TestStep{
+					{Config: workforceMemberConfig(srv.URL, ""), ExpectError: regexp.MustCompile(`(?s)may have been written.*terraform import.*wf-1/bot/bot-1.*deliberately remove.*No\s+automatic\s+retry`)},
+					{RefreshState: true, ExpectNonEmptyPlan: true, Check: checkAbsent},
+				},
+			})
+			api.mu.Lock()
+			defer api.mu.Unlock()
+			if !checkedState || api.puts != 1 || api.mutations != 1 || findWorkforceMember(api.rows["wf-1"], "bot", "bot-1") == nil {
+				t.Fatalf("must leave untracked committed grant without retry: checked=%t puts=%d mutations=%d", checkedState, api.puts, api.mutations)
 			}
 		})
 	}

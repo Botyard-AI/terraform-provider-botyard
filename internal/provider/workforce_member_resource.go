@@ -68,7 +68,7 @@ func (r *WorkforceMemberResource) Schema(_ context.Context, _ resource.SchemaReq
 			"A board absent from the caller-visible list is treated as missing, including loss of visibility; use a key with appropriate visibility when managing memberships.\n\n" +
 			"Requires an API supporting `expected_workforce_id` and `X-Botyard-Workforce-Id` on membership operations. " +
 			"The provider verifies support with a guarded read before writing; every write also carries the ID in the strict request body, so old API replicas reject it rather than ignore it. " +
-			"No automatic write retries are made. A lost response may mean a write succeeded; refresh before retrying.\n\n" +
+			"No automatic write retries are made. A lost or unusable write response may mean a grant succeeded without entering Terraform state. Before retrying, inspect membership by immutable board ID, principal type and principal ID. If present, use `terraform import ADDRESS '{workforce_id}/{actor_type}/{actor_id}'` to adopt it, or deliberately remove the grant. Refresh alone cannot discover an untracked failed-create grant.\n\n" +
 			"The provider API key must be able to list/view the board. Member writes require board-owner or organization-wide `workforce:board.manage` authority, and the API also checks that the caller may confer the requested role.",
 		Attributes: map[string]schema.Attribute{
 			"id":             schema.StringAttribute{Computed: true, MarkdownDescription: "`{workforce_id}/{actor_type}/{actor_id}`.", PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()}},
@@ -263,27 +263,37 @@ func (r *WorkforceMemberResource) put(ctx context.Context, plan *WorkforceMember
 		r.data.orgID, slug, &client.SetWorkforceMembersV1OrgsOrgIdWorkforcesWorkforceSlugMembersPutParams{ExpectedWorkforceId: &id},
 		client.WorkforceMembersSet{ExpectedWorkforceId: &id, Members: []client.WorkforceMemberSet{{ActorType: client.ActorType(plan.ActorType.ValueString()), ActorId: plan.ActorID.ValueString(), Role: &role}}})
 	if err != nil {
-		diags.AddError("Error setting workforce member", "The membership may have been written; refresh before retrying. No automatic retry was made.\n\n"+err.Error())
+		diags.AddError("Error setting workforce member", uncertainWorkforceWrite(plan)+"\n\n"+err.Error())
 		return
 	}
 	if written.JSON200 == nil || *written.JSON200 == nil {
-		addWorkforceMemberAPIError(diags, "set", written.StatusCode(), written.Body)
+		if written.StatusCode() >= 500 || (written.StatusCode() >= 200 && written.StatusCode() < 300) {
+			diags.AddError("Uncertain workforce membership write", uncertainWorkforceWrite(plan)+fmt.Sprintf("\n\nHTTP %d: %s", written.StatusCode(), describeAPIError(written.Body)))
+		} else {
+			addWorkforceMemberAPIError(diags, "set", written.StatusCode(), written.Body)
+		}
 		return
 	}
-	if !acknowledgeWorkforce(written.HTTPResponse, id, diags) {
+	if written.HTTPResponse == nil || written.HTTPResponse.Header.Get(client.WorkforceIdentityHeader) != id {
+		diags.AddError("API does not acknowledge workforce identity", uncertainWorkforceWrite(plan)+"\n\nThe write response did not acknowledge workforce identity with the expected board ID.")
 		return
 	}
 	row := findWorkforceMember(*written.JSON200, plan.ActorType.ValueString(), plan.ActorID.ValueString())
 	if row == nil || row.Role != role || row.CreatedAt.IsZero() {
-		diags.AddError("Invalid workforce member write response", "The API accepted the write but did not return the intended member, role and creation timestamp. The write may have succeeded; refresh before retrying. No automatic retry was made.")
+		diags.AddError("Invalid workforce member write response", uncertainWorkforceWrite(plan)+"\n\nThe API did not return the intended member, role and creation timestamp.")
 		return
 	}
 	mapWorkforceMember(slug, row, plan)
 }
 
+// Failed Create may have no Terraform state, so refresh is not a recovery path.
+func uncertainWorkforceWrite(model *WorkforceMemberResourceModel) string {
+	return fmt.Sprintf("The membership may have been written without entering Terraform state. Before retrying, inspect the membership by immutable board ID %q, principal type %q and principal ID %q. If it exists, use terraform import ADDRESS '%s' to adopt it into this resource, or deliberately remove the grant. Refresh alone cannot recover an untracked failed-create grant. No automatic retry was made.", model.WorkforceID.ValueString(), model.ActorType.ValueString(), model.ActorID.ValueString(), workforceMemberID(model.WorkforceID.ValueString(), model.ActorType.ValueString(), model.ActorID.ValueString()))
+}
+
 func acknowledgeWorkforce(response *http.Response, id string, diags *diag.Diagnostics) bool {
 	if response == nil || response.Header.Get(client.WorkforceIdentityHeader) != id {
-		diags.AddError("API does not acknowledge workforce identity", "This resource requires membership identity preconditions and a matching X-Botyard-Workforce-Id response header. Upgrade the API before managing memberships. A read preflight failure makes no membership write; a missing acknowledgement after a write requires a refresh before retrying.")
+		diags.AddError("API does not acknowledge workforce identity", "This resource requires membership identity preconditions and a matching X-Botyard-Workforce-Id response header. Upgrade the API before managing memberships. This read preflight failure makes no membership write.")
 		return false
 	}
 	return true
