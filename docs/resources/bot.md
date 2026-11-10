@@ -146,6 +146,16 @@ resource "botyard_bot" "triage" {
       max_dimension_px = 1568
       default_detail   = "high"
     }
+
+    # Tools kept loaded in every conversation instead of deferred behind tool
+    # search. Leaves you leave out are left unchanged; token_budget = 0 clears
+    # the budget.
+    tool_pinning = {
+      limit        = 12
+      owner_pins   = ["search_tickets"]
+      never_pin    = ["delete_ticket"]
+      token_budget = 8000
+    }
   }
 }
 
@@ -320,6 +330,7 @@ Optional:
 Optional:
 
 - `tool_images` (Attributes) How images returned by the bot's tools are shown to the model. Once this block is declared it owns all three fields: a field you leave out is sent as null, which resets it to the platform default. Removing the whole block leaves the last applied values in place, because the API treats an omitted `tool_images` as "no change". To return to the defaults, apply an empty block, `tool_images = {}`, first. (see [below for nested schema](#nestedatt--native_config--tool_images))
+- `tool_pinning` (Attributes) Which tools this bot keeps loaded in every conversation instead of deferring them behind tool search. Native bots only (`harness = "botyard_native"`). Removing this block does NOT reset the setting: a patch that omits a field means "no change", so the last applied values persist. Set the fields explicitly to change them; `token_budget = 0` clears the budget and `never_pin = []` / `owner_pins = []` clear the lists. (see [below for nested schema](#nestedatt--native_config--tool_pinning))
 - `tool_search` (Attributes) Tool Search: defer tool schemas out of the prompt behind a search surface instead of inlining every schema on every turn. Removing this block does NOT reset the setting: the API's target field is non-nullable with a default, so a patch that omits it means "no change" and the last applied values persist. Set the fields explicitly to change them. (see [below for nested schema](#nestedatt--native_config--tool_search))
 
 Read-Only:
@@ -336,6 +347,17 @@ Optional:
 - `default_detail` (String) Detail level for a tool image whose MCP server does not request one: `auto`, `low`, `high` or `original`. Unset leaves it to the model provider's default.
 - `enabled` (Boolean) Show images returned by tools to the model. `false` replaces each image with a short text notice. Unset means enabled.
 - `max_dimension_px` (Number) Longest edge, in pixels, a tool image is downscaled to before the model sees it, from 1 to 8000. Unset means the platform default (2000). Values above 2000 only take effect while a request holds 20 images or fewer.
+
+
+<a id="nestedatt--native_config--tool_pinning"></a>
+### Nested Schema for `native_config.tool_pinning`
+
+Optional:
+
+- `limit` (Number) How many tools each conversation keeps loaded (0 to 50). `0` turns pinning off for this bot. Owner pins count toward it. The platform default is 20.
+- `never_pin` (List of String) Tools never kept loaded, whatever their usage (at most 200). They stay reachable through tool search. A name may not also be an owner pin.
+- `owner_pins` (List of String) Tools always kept loaded, ahead of the usage ranking (at most `limit`, and at most 50). A tool name this bot cannot call is ignored until that tool is assigned. Duplicates are removed by the platform.
+- `token_budget` (Number) Most tokens the kept-loaded tools' schemas may take together: `1000` to `100000`, or `0` for no budget (the default, count only). Owner pins are always kept and use the budget first; usage-ranked tools fill the rest, best first, skipping any that do not fit. Sizes are an estimate (o200k_base).
 
 
 <a id="nestedatt--native_config--tool_search"></a>

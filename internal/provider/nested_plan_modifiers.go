@@ -28,6 +28,7 @@ type nestedUseStateForUnknown struct{}
 func nestedUseStateForUnknownString() planmodifier.String { return nestedUseStateForUnknown{} }
 func nestedUseStateForUnknownInt64() planmodifier.Int64   { return nestedUseStateForUnknown{} }
 func nestedUseStateForUnknownBool() planmodifier.Bool     { return nestedUseStateForUnknown{} }
+func nestedUseStateForUnknownList() planmodifier.List     { return nestedUseStateForUnknown{} }
 
 func (nestedUseStateForUnknown) Description(context.Context) string {
 	return "Once set, the value of this attribute in state will not change, unless its enclosing object is new."
@@ -69,6 +70,12 @@ func (m nestedUseStateForUnknown) PlanModifyInt64(ctx context.Context, req planm
 }
 
 func (m nestedUseStateForUnknown) PlanModifyBool(ctx context.Context, req planmodifier.BoolRequest, resp *planmodifier.BoolResponse) {
+	if m.keepPrior(ctx, req.Path, req.State, req.PlanValue.IsUnknown(), req.ConfigValue.IsUnknown()) {
+		resp.PlanValue = req.StateValue
+	}
+}
+
+func (m nestedUseStateForUnknown) PlanModifyList(ctx context.Context, req planmodifier.ListRequest, resp *planmodifier.ListResponse) {
 	if m.keepPrior(ctx, req.Path, req.State, req.PlanValue.IsUnknown(), req.ConfigValue.IsUnknown()) {
 		resp.PlanValue = req.StateValue
 	}

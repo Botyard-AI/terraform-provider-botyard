@@ -122,6 +122,16 @@ resource "botyard_bot" "triage" {
       max_dimension_px = 1568
       default_detail   = "high"
     }
+
+    # Tools kept loaded in every conversation instead of deferred behind tool
+    # search. Leaves you leave out are left unchanged; token_budget = 0 clears
+    # the budget.
+    tool_pinning = {
+      limit        = 12
+      owner_pins   = ["search_tickets"]
+      never_pin    = ["delete_ticket"]
+      token_budget = 8000
+    }
   }
 }
 

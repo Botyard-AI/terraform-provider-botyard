@@ -12,6 +12,10 @@ a version.
 
 ## [Unreleased]
 
+### Added
+
+- **`botyard_bot`: `native_config.tool_pinning`** sets which tools a native bot keeps loaded instead of deferring them behind tool search: `limit` (0 to 50, default 20; `0` turns pinning off), `owner_pins` and `never_pin` (tool names), and `token_budget` (`1000` to `100000`, or `0` for no budget). A leaf you leave out is unchanged, and `token_budget = 0` clears the budget. Removing the whole block does not reset the setting.
+
 ### Changed
 
 - **`botyard_bot`: new hosted bots default to the Botyard native runtime.** Use `native_config` for native settings; creating OpenClaw bots or supplying an OpenClaw-only `config` for a new native bot is refused. Existing and imported OpenClaw bots retain their runtime and `config` management when upgrading. Replacement of existing OpenClaw bots is refused. Legacy deletion is protected by default, including tainted replacement; deliberate deletion requires setting `allow_legacy_deletion = true` and applying it before a separate deletion operation. Native and external deletion is unchanged. Deletion fails closed for absent, unknown, or unrecognized saved harness values, even with the legacy opt-in; refresh to classify older state before intentional deletion.
