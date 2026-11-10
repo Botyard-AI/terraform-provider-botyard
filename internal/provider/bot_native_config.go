@@ -55,8 +55,9 @@ import (
 // stale keys (see TestBotState_RemovedNativePromptFieldsDroppedOnUpgrade).
 type botNativeConfigModel struct {
 	// Practitioner-owned.
-	ToolSearch *botToolSearchModel `tfsdk:"tool_search"`
-	ToolImages *botToolImagesModel `tfsdk:"tool_images"`
+	ToolSearch  *botToolSearchModel  `tfsdk:"tool_search"`
+	ToolImages  *botToolImagesModel  `tfsdk:"tool_images"`
+	ToolPinning *botToolPinningModel `tfsdk:"tool_pinning"`
 
 	// Platform-owned, read-only (see the block comment above).
 	ModelProvider  types.String `tfsdk:"model_provider"`
@@ -92,7 +93,8 @@ func botNativeConfigSchemaAttribute() schema.SingleNestedAttribute {
 			"`harness = \"botyard_native\"`, and conflicts with `config`, which models the OpenClaw shape. " +
 			"Only the fields you set are applied over the platform's defaults.",
 		Attributes: map[string]schema.Attribute{
-			"tool_search": toolSearchSchemaAttribute(),
+			"tool_search":  toolSearchSchemaAttribute(),
+			"tool_pinning": toolPinningSchemaAttribute(),
 			"tool_images": schema.SingleNestedAttribute{
 				Optional: true,
 				MarkdownDescription: "How images returned by the bot's tools are shown to the model. Once this " +
@@ -176,6 +178,9 @@ func buildNativeConfigPatch(cfg *botNativeConfigModel) json.RawMessage {
 	if v, ok := buildToolImagesPatch(cfg.ToolImages); ok {
 		m["tool_images"] = v
 	}
+	if v, ok := buildToolPinningPatch(cfg.ToolPinning); ok {
+		m["tool_pinning"] = v
+	}
 	// `model` and `host_policy` are never emitted — they are platform-owned.
 	return marshalObj(m)
 }
@@ -218,6 +223,7 @@ func mapNativeBotConfig(nc *client.NativeBotConfig, cfg *botNativeConfigModel) {
 	// server side is a pointer too (the field is optional in the response), so
 	// both halves are guarded.
 	mapToolSearch(nc.ToolSearch, cfg.ToolSearch)
+	mapToolPinning(nc.ToolPinning, cfg.ToolPinning)
 
 	// tool_images leaves are not Computed, so a declared block takes the
 	// server's values as they are, nulls included. A response without

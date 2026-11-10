@@ -2885,9 +2885,6 @@
                       "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
                     },
                     {
-                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
-                    },
-                    {
                       "$ref": "#/components/schemas/ProblemDetails"
                     }
                   ]
@@ -2906,9 +2903,6 @@
                       "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
                     },
                     {
-                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
-                    },
-                    {
                       "$ref": "#/components/schemas/ProblemDetails"
                     },
                     {
@@ -2919,9 +2913,6 @@
                     },
                     {
                       "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
-                    },
-                    {
-                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
                     }
                   ],
                   "title": "Response 422 Create Bot V1 Orgs  Org Id  Bots Post"
@@ -3151,9 +3142,6 @@
                       "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
                     },
                     {
-                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
-                    },
-                    {
                       "$ref": "#/components/schemas/ProblemDetails"
                     }
                   ]
@@ -3172,9 +3160,6 @@
                       "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
                     },
                     {
-                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
-                    },
-                    {
                       "$ref": "#/components/schemas/ProblemDetails"
                     },
                     {
@@ -3185,9 +3170,6 @@
                     },
                     {
                       "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
-                    },
-                    {
-                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
                     }
                   ],
                   "title": "Response 422 Copy Bot V1 Orgs  Org Id  Bots  Bot Slug  Copy Post"
@@ -3602,6 +3584,64 @@
         }
       }
     },
+    "/v1/orgs/{org_id}/bots/resources/batch": {
+      "post": {
+        "tags": [
+          "bots"
+        ],
+        "summary": "Get Bots Resources",
+        "description": "Get live runtime storage, memory, and CPU usage for many bots at once.",
+        "operationId": "get_bots_resources_v1_orgs__org_id__bots_resources_batch_post",
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Org Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BotResourcesBatchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BotResourcesBatchResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "RFC 9457 Problem Details error response",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/orgs/{org_id}/bots/{bot_slug}/resources": {
       "get": {
         "tags": [
@@ -3610,6 +3650,7 @@
         "summary": "Get Bot Resources",
         "description": "Get live runtime storage, memory, and CPU usage for a bot.",
         "operationId": "get_bot_resources_v1_orgs__org_id__bots__bot_slug__resources_get",
+        "deprecated": true,
         "parameters": [
           {
             "name": "org_id",
@@ -3789,7 +3830,7 @@
           "bots"
         ],
         "summary": "Put Bot Model Source",
-        "description": "Put a bot on each person's own Claude, or back on its own credentials (PlatDev #4924).\n\nThe org model picker's writer of ``bots.model_access_mode``, alongside the\nplatform admin route (``POST /admin/fleet/model-access-switches``), with the\nsame service and therefore the same rules: hosted native bots only, refused\nwhile the bot has enabled schedules (until PlatDev #4469), audited, and the\npod re-renders on its next reconcile. Onto per-user Claude it also pins the\nchosen Claude model, which must be one of\n``GET /orgs/{org_id}/per-user-claude/models``; back onto credentials the\nmodel is re-derived from the bot's credential chain, which a switch never\ntouches, so the bot returns to the source it had. That rollback is never\nrefused.\n\nAuthority (decision PlatDev #4916): a person who owns the bot, or an owner\nof the org; in an org reading bot membership, also a bot that owns it\n(epic #4942 D5), held to ``bot:bot.update``. Never an API key, and never a\nbot on itself. The audit row names the actor on its own column.",
+        "description": "Put a bot on each person's own Claude, or back on its own credentials (PlatDev #4924).\n\nThe org model picker's writer of ``bots.model_access_mode``, alongside the\nplatform admin route (``POST /admin/fleet/model-access-switches``), with the\nsame service and therefore the same rules: hosted native bots only, audited,\nand the pod re-renders on its next reconcile. Onto per-user Claude it also pins the\nchosen Claude model, which must be one of\n``GET /orgs/{org_id}/per-user-claude/models``; back onto credentials the\nmodel is re-derived from the bot's credential chain, which a switch never\ntouches, so the bot returns to the source it had. That rollback is never\nrefused.\n\nAuthority (decision PlatDev #4916): a person who owns the bot, or an owner\nof the org; in an org reading bot membership, also a bot that owns it\n(epic #4942 D5), held to ``bot:bot.update``. Never an API key, and never a\nbot on itself. The audit row names the actor on its own column.",
         "operationId": "put_bot_model_source_v1_orgs__org_id__bots__bot_slug__model_source_put",
         "parameters": [
           {
@@ -4289,7 +4330,7 @@
           "bot-access"
         ],
         "summary": "List Bot Member Bots",
-        "description": "List the bots that are members of this bot (platform-development #4409).\n\nSame audience as the human member list: bot members and org owners.",
+        "description": "List the bots that are members of this bot (platform-development #4409).\n\nSame audience as the human member list: bot members and org owners. Each\nowner row lists the people who own this bot through that owner bot (D3), so\nthe bot's whole set of owners can be shown without a read per owner bot.",
         "operationId": "list_bot_member_bots_v1_orgs__org_id__bots__bot_slug__member_bots_get",
         "parameters": [
           {
@@ -4319,7 +4360,21 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/BotMemberBotResponse"
+                    "oneOf": [
+                      {
+                        "$ref": "#/components/schemas/BotMemberBotOwnerResponse"
+                      },
+                      {
+                        "$ref": "#/components/schemas/BotMemberBotMemberResponse"
+                      }
+                    ],
+                    "discriminator": {
+                      "propertyName": "role",
+                      "mapping": {
+                        "owner": "#/components/schemas/BotMemberBotOwnerResponse",
+                        "member": "#/components/schemas/BotMemberBotMemberResponse"
+                      }
+                    }
                   },
                   "title": "Response List Bot Member Bots V1 Orgs  Org Id  Bots  Bot Slug  Member Bots Get"
                 }
@@ -4388,7 +4443,21 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/BotMemberBotResponse"
+                    "oneOf": [
+                      {
+                        "$ref": "#/components/schemas/BotMemberBotOwnerResponse"
+                      },
+                      {
+                        "$ref": "#/components/schemas/BotMemberBotMemberResponse"
+                      }
+                    ],
+                    "discriminator": {
+                      "propertyName": "role",
+                      "mapping": {
+                        "owner": "#/components/schemas/BotMemberBotOwnerResponse",
+                        "member": "#/components/schemas/BotMemberBotMemberResponse"
+                      }
+                    }
                   },
                   "title": "Response Set Bot Member Bots V1 Orgs  Org Id  Bots  Bot Slug  Member Bots Put"
                 }
@@ -4564,9 +4633,6 @@
                       "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
                     },
                     {
-                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
-                    },
-                    {
                       "$ref": "#/components/schemas/ProblemDetails"
                     }
                   ]
@@ -4585,9 +4651,6 @@
                       "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
                     },
                     {
-                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
-                    },
-                    {
                       "$ref": "#/components/schemas/ProblemDetails"
                     },
                     {
@@ -4598,9 +4661,6 @@
                     },
                     {
                       "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
-                    },
-                    {
-                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
                     }
                   ],
                   "title": "Response 422 Create Bot Credentials V1 Orgs  Org Id  Bots  Bot Slug  Credentials Private Post"
@@ -4683,9 +4743,6 @@
                       "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
                     },
                     {
-                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
-                    },
-                    {
                       "$ref": "#/components/schemas/ProblemDetails"
                     }
                   ]
@@ -4704,9 +4761,6 @@
                       "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
                     },
                     {
-                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
-                    },
-                    {
                       "$ref": "#/components/schemas/ProblemDetails"
                     },
                     {
@@ -4717,9 +4771,6 @@
                     },
                     {
                       "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
-                    },
-                    {
-                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
                     }
                   ],
                   "title": "Response 422 Delete Bot Credential V1 Orgs  Org Id  Bots  Bot Slug  Credentials Private  Credential Id  Delete"
@@ -4891,9 +4942,6 @@
                       "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
                     },
                     {
-                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
-                    },
-                    {
                       "$ref": "#/components/schemas/ProblemDetails"
                     }
                   ]
@@ -4912,9 +4960,6 @@
                       "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
                     },
                     {
-                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
-                    },
-                    {
                       "$ref": "#/components/schemas/ProblemDetails"
                     },
                     {
@@ -4925,9 +4970,6 @@
                     },
                     {
                       "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
-                    },
-                    {
-                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
                     }
                   ],
                   "title": "Response 422 Assign Credentials V1 Orgs  Org Id  Bots  Bot Slug  Credentials Put"
@@ -5022,9 +5064,6 @@
                       "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
                     },
                     {
-                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
-                    },
-                    {
                       "$ref": "#/components/schemas/ProblemDetails"
                     }
                   ]
@@ -5043,9 +5082,6 @@
                       "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
                     },
                     {
-                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
-                    },
-                    {
                       "$ref": "#/components/schemas/ProblemDetails"
                     },
                     {
@@ -5056,9 +5092,6 @@
                     },
                     {
                       "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
-                    },
-                    {
-                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
                     }
                   ],
                   "title": "Response 422 Reorder Credentials V1 Orgs  Org Id  Bots  Bot Slug  Credentials Reorder Put"
@@ -5141,9 +5174,6 @@
                       "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
                     },
                     {
-                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
-                    },
-                    {
                       "$ref": "#/components/schemas/ProblemDetails"
                     }
                   ]
@@ -5162,9 +5192,6 @@
                       "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
                     },
                     {
-                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
-                    },
-                    {
                       "$ref": "#/components/schemas/ProblemDetails"
                     },
                     {
@@ -5175,9 +5202,6 @@
                     },
                     {
                       "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
-                    },
-                    {
-                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
                     }
                   ],
                   "title": "Response 422 Unassign Credential V1 Orgs  Org Id  Bots  Bot Slug  Credentials  Credential Id  Delete"
@@ -6750,9 +6774,6 @@
                       "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
                     },
                     {
-                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
-                    },
-                    {
                       "$ref": "#/components/schemas/ProblemDetails"
                     }
                   ]
@@ -6771,9 +6792,6 @@
                       "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
                     },
                     {
-                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
-                    },
-                    {
                       "$ref": "#/components/schemas/ProblemDetails"
                     },
                     {
@@ -6784,9 +6802,6 @@
                     },
                     {
                       "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
-                    },
-                    {
-                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
                     }
                   ],
                   "title": "Response 422 Update Credential V1 Orgs  Org Id  Credentials  Credential Id  Patch"
@@ -6858,9 +6873,6 @@
                       "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
                     },
                     {
-                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
-                    },
-                    {
                       "$ref": "#/components/schemas/ProblemDetails"
                     }
                   ]
@@ -6879,9 +6891,6 @@
                       "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
                     },
                     {
-                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
-                    },
-                    {
                       "$ref": "#/components/schemas/ProblemDetails"
                     },
                     {
@@ -6892,9 +6901,6 @@
                     },
                     {
                       "$ref": "#/components/schemas/UserClaudeBotRefusedProblem"
-                    },
-                    {
-                      "$ref": "#/components/schemas/UserClaudeSchedulesRefusedProblem"
                     }
                   ],
                   "title": "Response 422 Delete Credential V1 Orgs  Org Id  Credentials  Credential Id  Delete"
@@ -11823,7 +11829,7 @@
           "conversations"
         ],
         "summary": "Create Conversation",
-        "description": "Create a new, members-only conversation.\n\nA person owns what they create. An API key's conversation belongs to the\nkey's creator, else to its bot with the bot's owner as a member (#5020 4b-1).\n``conversation_scope=org`` is refused.",
+        "description": "Create a new, members-only conversation.\n\nA person owns what they create. An API key's conversation belongs to the\nkey's creator, else to its bot with the bot's owner as a member (#5020 4b-1).",
         "operationId": "create_conversation_v1_orgs__org_id__conversations_post",
         "parameters": [
           {
@@ -11881,7 +11887,7 @@
           "conversations"
         ],
         "summary": "Search Conversations",
-        "description": "Search conversations for an organization.\n\nAccess scoping:\n- JWT users see their own user-scoped + all org-scoped conversations.\n- API keys see org-scoped conversations and the ones they are a member of\n  (#5020 4b-1).\n- ``kind=bots`` (#5144) replaces that rule with the caller's bot threads:\n  read-only through an origin they are a member of, or as a member. For an\n  API key it is its own visible conversations that are bot threads.",
+        "description": "Search conversations for an organization.\n\nAccess scoping:\n- JWT users see the conversations they are a member of.\n- API keys see the conversations they are a member of: the ones they\n  created or posted in.\n- ``kind=bots`` (#5144) replaces that rule with the caller's bot threads:\n  read-only through an origin they are a member of, or as a member. For an\n  API key it is its own visible conversations that are bot threads.",
         "operationId": "search_conversations_v1_orgs__org_id__conversations_search_post",
         "parameters": [
           {
@@ -11997,7 +12003,7 @@
           "conversations"
         ],
         "summary": "List the background work bots started from many conversations at once",
-        "description": "Threads bots started from each requested conversation that you may open (#5123).\n\nFor each origin you can see: the members-only threads a bot created from\nit that you are a member of, plus, if you are a member of the origin, the\nones nobody has joined yet, which you may read (R5) and Join (R6). Threads\nwhose bot you cannot use are left out. Ids you cannot see are returned in\n``missing_conversation_ids``. These threads never appear in the sidebar;\nthis is the only list of them.\n\nEach thread carries its live ``status`` (#5189): run state, next wake,\nlive watches, and what it is waiting on you for.",
+        "description": "Threads bots started from each requested conversation that you may open (#5123).\n\nFor each origin you can see: the members-only threads a bot created from\nit that you are a member of, plus, if you are a member of the origin, the\nones nobody has joined yet, which you may read (R5) and Join (R6). Threads\nwhose bot you cannot use are left out. Ids you cannot see are returned in\n``missing_conversation_ids``. These threads never appear in the sidebar;\nthis is the only list of them.\n\nEach thread carries its live ``status`` (#5189): run state, next wake,\nlive watches, and what it is waiting on you for. Each entry carries the\n``bots`` of its threads (slug, name, avatar), so a client shows and opens a\nrow without listing the org's bots.",
         "operationId": "query_background_work_v1_orgs__org_id__conversations_background_work_query_post",
         "parameters": [
           {
@@ -12811,7 +12817,7 @@
           "conversations"
         ],
         "summary": "Delete Conversation",
-        "description": "Soft-delete a conversation.\n\nA private conversation is deleted by its owner only (Task#5017): members can\nsee it, but \"only the owner removes people\" (decision 3) rules out removing\neveryone at once. Anyone else leaves instead. Org-scoped conversations keep\ntoday's rule until #5020 removes org scope.",
+        "description": "Soft-delete a conversation.\n\nA private conversation is deleted by its owner only (Task#5017): members can\nsee it, but \"only the owner removes people\" (decision 3) rules out removing\neveryone at once. Anyone else leaves instead. An API key is never an owner\nand cannot delete.",
         "operationId": "delete_conversation_v1_orgs__org_id__conversations__conversation_id__delete",
         "parameters": [
           {
@@ -13165,73 +13171,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ConversationTimedWakeResponse"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "RFC 9457 Problem Details error response",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/orgs/{org_id}/conversations/{conversation_id}/scope": {
-      "patch": {
-        "tags": [
-          "conversations"
-        ],
-        "summary": "Update Conversation Scope",
-        "description": "Change a conversation's access scope (publish to org / make private).\n\nOnly the conversation **owner** (its creator) may change its scope \u2014 not org\nowners. Privatizing returns a conversation to its owner, so letting a\nnon-owner do it would just remove their own access; and force-publishing\nwould expose someone's private conversation. Ownerless (integration/bot/\nAPI-key) conversations cannot be privatized, and API keys can never move a\nconversation to user-scope.\n\nPublishing to the org is refused (409) since #5020 4b-1: org scope is being\nremoved, and sharing is done by adding members. Making an org-wide\nconversation private still works until 4b-2 removes the route.",
-        "operationId": "update_conversation_scope_v1_orgs__org_id__conversations__conversation_id__scope_patch",
-        "parameters": [
-          {
-            "name": "org_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Org Id"
-            }
-          },
-          {
-            "name": "conversation_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Conversation Id"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ConversationScopeUpdate"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ConversationResponse"
                 }
               }
             }
@@ -17922,6 +17861,26 @@
               "type": "string",
               "title": "Workforce Slug"
             }
+          },
+          {
+            "name": "expected_workforce_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 255
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional immutable workforce ID expected at this slug. A mismatch returns 409 before reading or changing members. Omit for existing slug-only behavior.",
+              "title": "Expected Workforce Id"
+            },
+            "description": "Optional immutable workforce ID expected at this slug. A mismatch returns 409 before reading or changing members. Omit for existing slug-only behavior."
           }
         ],
         "responses": {
@@ -17935,6 +17894,14 @@
                     "$ref": "#/components/schemas/WorkforceMember"
                   },
                   "title": "Response List Workforce Members V1 Orgs  Org Id  Workforces  Workforce Slug  Members Get"
+                }
+              }
+            },
+            "headers": {
+              "X-Botyard-Workforce-Id": {
+                "description": "Immutable ID of the authorized board; confirms support for expected_workforce_id.",
+                "schema": {
+                  "type": "string"
                 }
               }
             }
@@ -17981,6 +17948,26 @@
               "type": "string",
               "title": "Workforce Slug"
             }
+          },
+          {
+            "name": "expected_workforce_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 255
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional immutable workforce ID expected at this slug. A mismatch returns 409 before reading or changing members. Omit for existing slug-only behavior.",
+              "title": "Expected Workforce Id"
+            },
+            "description": "Optional immutable workforce ID expected at this slug. A mismatch returns 409 before reading or changing members. Omit for existing slug-only behavior."
           }
         ],
         "requestBody": {
@@ -18004,6 +17991,14 @@
                     "$ref": "#/components/schemas/WorkforceMember"
                   },
                   "title": "Response Set Workforce Members V1 Orgs  Org Id  Workforces  Workforce Slug  Members Put"
+                }
+              }
+            },
+            "headers": {
+              "X-Botyard-Workforce-Id": {
+                "description": "Immutable ID of the authorized board; confirms support for expected_workforce_id.",
+                "schema": {
+                  "type": "string"
                 }
               }
             }
@@ -18050,6 +18045,26 @@
               "type": "string",
               "title": "Workforce Slug"
             }
+          },
+          {
+            "name": "expected_workforce_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 255
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional immutable workforce ID expected at this slug. A mismatch returns 409 before reading or changing members. Omit for existing slug-only behavior.",
+              "title": "Expected Workforce Id"
+            },
+            "description": "Optional immutable workforce ID expected at this slug. A mismatch returns 409 before reading or changing members. Omit for existing slug-only behavior."
           }
         ],
         "requestBody": {
@@ -18073,6 +18088,14 @@
                     "$ref": "#/components/schemas/WorkforceMember"
                   },
                   "title": "Response Add Workforce Members V1 Orgs  Org Id  Workforces  Workforce Slug  Members Post"
+                }
+              }
+            },
+            "headers": {
+              "X-Botyard-Workforce-Id": {
+                "description": "Immutable ID of the authorized board; confirms support for expected_workforce_id.",
+                "schema": {
+                  "type": "string"
                 }
               }
             }
@@ -18121,6 +18144,26 @@
               "type": "string",
               "title": "Workforce Slug"
             }
+          },
+          {
+            "name": "expected_workforce_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 255
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional immutable workforce ID expected at this slug. A mismatch returns 409 before reading or changing members. Omit for existing slug-only behavior.",
+              "title": "Expected Workforce Id"
+            },
+            "description": "Optional immutable workforce ID expected at this slug. A mismatch returns 409 before reading or changing members. Omit for existing slug-only behavior."
           }
         ],
         "requestBody": {
@@ -18135,7 +18178,15 @@
         },
         "responses": {
           "204": {
-            "description": "Successful Response"
+            "description": "Successful Response",
+            "headers": {
+              "X-Botyard-Workforce-Id": {
+                "description": "Immutable ID of the authorized board; confirms support for expected_workforce_id.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "default": {
             "description": "RFC 9457 Problem Details error response",
@@ -20851,8 +20902,28 @@
           "realtime"
         ],
         "summary": "Get Realtime Token",
-        "description": "Mint a short-lived Centrifugo connection token.\n\nThe token carries the session facts the org boundary needs (``meta``), so\norg-scoped channels are authorized like org-scoped REST routes rather than\nby membership alone. It names no org and grants no org channel by itself:\norg-scoped subscriptions need a token from ``POST\n/v1/realtime/subscription-tokens``.",
+        "description": "Mint a short-lived Centrifugo connection token.\n\nThe token carries the session facts the org boundary needs (``meta``), so\norg-scoped channels are authorized like org-scoped REST routes rather than\nby membership alone. It names no org and grants no org channel by itself:\norg-scoped subscriptions need a token from ``POST\n/v1/realtime/subscription-tokens``.\n\nIt expires (``exp``), so the client fetches a new one while the socket\nstays open, and carries the client's build (``build``) when the request\nnames a well-formed one.",
         "operationId": "get_realtime_token_v1_realtime_token_get",
+        "parameters": [
+          {
+            "name": "X-Client-Build",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "The build of the client asking, e.g. ``v1.7.2712``. Optional. Carried as the token's ``build`` claim when it is a release tag or ``git describe`` of at most 64 characters; any other value is ignored, never refused.",
+              "title": "X-Client-Build"
+            },
+            "description": "The build of the client asking, e.g. ``v1.7.2712``. Optional. Carried as the token's ``build`` claim when it is a release tag or ``git describe`` of at most 64 characters; any other value is ignored, never refused."
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -26382,6 +26453,72 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ToolDomainSettingsResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "RFC 9457 Problem Details error response",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/orgs/{org_id}/bot-tool-usage": {
+      "get": {
+        "tags": [
+          "bot-tools"
+        ],
+        "summary": "List Bot Tool Usage",
+        "description": "Rank each selected bot's assigned tools by adaptive-pinning score, best first.\n\nOne group per bot, in request order. Each tool carries the bot's decayed\nand lifetime calls, its last use, its share of the fleet prior and the\nblended score. Every assigned tool is listed, including those the bot has\nnever called. A bot with no calls of its own (a new bot, or one whose\nruntime does not record usage) has zero `own_calls` and `total_calls`\nthroughout, yet its platform tools can still score above zero from the\nfleet prior.",
+        "operationId": "list_bot_tool_usage_v1_orgs__org_id__bot_tool_usage_get",
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Org Id"
+            }
+          },
+          {
+            "name": "bot_slugs",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "minItems": 1,
+              "maxItems": 10,
+              "description": "Bots to rank tools for (repeatable): slugs, or bot ids. A bot named twice is rejected with 422. All-or-nothing: a bot that does not exist, or that the caller may not see, fails the whole read with the same 404.",
+              "title": "Bot Slugs"
+            },
+            "description": "Bots to rank tools for (repeatable): slugs, or bot ids. A bot named twice is rejected with 422. All-or-nothing: a bot that does not exist, or that the caller may not see, fails the whole read with the same 404."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BotToolUsageResponse"
                 }
               }
             }
@@ -36300,6 +36437,44 @@
         "title": "BackgroundWorkAccess",
         "description": "How the caller may open one thread listed as background work (#5123, R9)."
       },
+      "BackgroundWorkBot": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "slug": {
+            "type": "string",
+            "title": "Slug",
+            "description": "To open the bot's threads without listing the org's bots."
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "avatar_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avatar Url",
+            "description": "Avatar image: a data URI, an https:// URL, or an API-relative path (`/v1/pack-avatars/{hex}`), as on the bot itself."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "slug",
+          "name",
+          "avatar_url"
+        ],
+        "title": "BackgroundWorkBot",
+        "description": "A bot behind listed background threads: what a row shows and opens it by."
+      },
       "BackgroundWorkEntry": {
         "properties": {
           "conversation_id": {
@@ -36319,13 +36494,22 @@
             "type": "boolean",
             "title": "Has More",
             "description": "More threads qualified than were returned."
+          },
+          "bots": {
+            "items": {
+              "$ref": "#/components/schemas/BackgroundWorkBot"
+            },
+            "type": "array",
+            "title": "Bots",
+            "description": "The bots of the threads listed here, once each: match a thread by its bot_id. A thread whose bot has been deleted has no entry and cannot be opened."
           }
         },
         "type": "object",
         "required": [
           "conversation_id",
           "threads",
-          "has_more"
+          "has_more",
+          "bots"
         ],
         "title": "BackgroundWorkEntry"
       },
@@ -37631,6 +37815,33 @@
         ],
         "title": "BotCreatedByBotContent",
         "description": "What a bot-created child started with (epic #4800).\n\nThe creator is the event's ``bot_id`` actor and the child its resource. Ids\nand counts only: a file's content is the child's own workspace, not audit\nmaterial."
+      },
+      "BotCreatorBot": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Creator bot identifier (UUID)"
+          },
+          "slug": {
+            "type": "string",
+            "title": "Slug",
+            "description": "Creator bot slug, for linking to it"
+          },
+          "deleted": {
+            "type": "boolean",
+            "title": "Deleted",
+            "description": "Whether the creator bot has since been deleted. Its name still resolves in `created_by_name`, but it can no longer be opened."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "slug",
+          "deleted"
+        ],
+        "title": "BotCreatorBot",
+        "description": "The bot that created a bot (creation provenance, never transferred)."
       },
       "BotCredentialAssign": {
         "properties": {
@@ -39267,7 +39478,7 @@
               }
             ],
             "title": "Created By Name",
-            "description": "Display name of the user or API key that created the bot"
+            "description": "Display name of the user, API key or bot that created the bot. A creator bot's name is kept as-is after that bot is deleted, and is shown to everyone who can list this bot, even when the creator bot is restricted."
           },
           "created_by_actor_type": {
             "anyOf": [
@@ -39278,7 +39489,18 @@
                 "type": "null"
               }
             ],
-            "description": "Type of actor that created the bot (user or api_key)"
+            "description": "Type of actor that created the bot (user, api_key or bot)"
+          },
+          "created_by_bot": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BotCreatorBot"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The creator bot, when `created_by_actor_type` is `bot`; null for every other creator."
           },
           "member_role": {
             "anyOf": [
@@ -39406,8 +39628,14 @@
         "title": "BotMemberBotEntry",
         "description": "One bot on a bot's member-bot list, with the role it holds."
       },
-      "BotMemberBotResponse": {
+      "BotMemberBotMemberResponse": {
         "properties": {
+          "role": {
+            "type": "string",
+            "const": "member",
+            "title": "Role",
+            "description": "Discriminator: the bot is a member. Where the organization reads the bot membership model, it may use and see this bot"
+          },
           "bot_id": {
             "type": "string",
             "title": "Bot Id",
@@ -39435,15 +39663,6 @@
             "title": "Avatar Url",
             "description": "Member bot avatar URL"
           },
-          "role": {
-            "type": "string",
-            "enum": [
-              "owner",
-              "member"
-            ],
-            "title": "Role",
-            "description": "Role the bot holds on this bot. Stored only: neither role confers any permission yet"
-          },
           "created_at": {
             "type": "string",
             "format": "date-time",
@@ -39453,14 +39672,76 @@
         },
         "type": "object",
         "required": [
+          "role",
           "bot_id",
           "slug",
           "name",
-          "role",
           "created_at"
         ],
-        "title": "BotMemberBotResponse",
-        "description": "A bot that is a member of another bot (platform-development #4409)."
+        "title": "BotMemberBotMemberResponse",
+        "description": "A bot that is a member of this bot."
+      },
+      "BotMemberBotOwnerResponse": {
+        "properties": {
+          "role": {
+            "type": "string",
+            "const": "owner",
+            "title": "Role",
+            "description": "Discriminator: the bot owns this bot. Where the organization reads the bot membership model, it may manage this bot and its human owners own it too"
+          },
+          "bot_id": {
+            "type": "string",
+            "title": "Bot Id",
+            "description": "Member bot ID"
+          },
+          "slug": {
+            "type": "string",
+            "title": "Slug",
+            "description": "Member bot slug"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Member bot display name"
+          },
+          "avatar_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avatar Url",
+            "description": "Member bot avatar URL"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "When the membership was created"
+          },
+          "owners": {
+            "items": {
+              "$ref": "#/components/schemas/InheritedBotOwner"
+            },
+            "type": "array",
+            "title": "Owners",
+            "description": "Current organization members who own this bot through this owner bot, ordered by name: exactly the owners this bot's own authorization grants through it, within the owner-bot depth bound and never by a path back through this bot. Empty where the organization does not read the bot membership model, where ownership is not inherited"
+          }
+        },
+        "type": "object",
+        "required": [
+          "role",
+          "bot_id",
+          "slug",
+          "name",
+          "created_at",
+          "owners"
+        ],
+        "title": "BotMemberBotOwnerResponse",
+        "description": "A bot that owns this bot, with the people who own this bot through it."
       },
       "BotMemberBotsUpdate": {
         "properties": {
@@ -40211,9 +40492,6 @@
                 "$ref": "#/components/schemas/ModelAccessProfileRefused"
               },
               {
-                "$ref": "#/components/schemas/ModelAccessSchedulesRefused"
-              },
-              {
                 "$ref": "#/components/schemas/ModelAccessModelNotOffered"
               }
             ],
@@ -40222,7 +40500,6 @@
             "discriminator": {
               "propertyName": "outcome",
               "mapping": {
-                "has_active_schedules": "#/components/schemas/ModelAccessSchedulesRefused",
                 "model_not_offered": "#/components/schemas/ModelAccessModelNotOffered",
                 "profile_refused": "#/components/schemas/ModelAccessProfileRefused",
                 "refused": "#/components/schemas/ModelAccessSwitchRefused",
@@ -40237,7 +40514,7 @@
           "result"
         ],
         "title": "BotModelSourceResponse",
-        "description": "What the update did to the bot.\n\n``switched`` wrote the mode (and, onto per-user Claude, the model), bumped\n``config_generation`` and recorded a ``provisioning.bot_model_access.switched``\naudit row. Every other outcome wrote nothing: ``unchanged``, or a typed\nrefusal the app shows as is (``profile_refused`` for a bot that is not hosted\nnative, ``has_active_schedules`` until PlatDev #4469, ``model_not_offered``)."
+        "description": "What the update did to the bot.\n\n``switched`` wrote the mode (and, onto per-user Claude, the model), bumped\n``config_generation`` and recorded a ``provisioning.bot_model_access.switched``\naudit row. Every other outcome wrote nothing: ``unchanged``, or a typed\nrefusal the app shows as is (``profile_refused`` for a bot that is not hosted\nnative, ``model_not_offered``)."
       },
       "BotModelSourceUpdate": {
         "properties": {
@@ -40818,6 +41095,180 @@
         ],
         "title": "BotPendingMemberResponse",
         "description": "Someone invited to the organization who will join this bot on accepting."
+      },
+      "BotResourcesBatchRequest": {
+        "properties": {
+          "bot_slugs": {
+            "items": {
+              "type": "string",
+              "maxLength": 128,
+              "minLength": 1
+            },
+            "type": "array",
+            "maxItems": 50,
+            "minItems": 1,
+            "title": "Bot Slugs",
+            "description": "Bot slugs (or bot ids). A bot named more than once is answered once, at its first position."
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "bot_slugs"
+        ],
+        "title": "BotResourcesBatchRequest",
+        "description": "The bots to read live resource usage for."
+      },
+      "BotResourcesBatchResponse": {
+        "properties": {
+          "results": {
+            "items": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/BotResourcesOk"
+                },
+                {
+                  "$ref": "#/components/schemas/BotResourcesNotFound"
+                },
+                {
+                  "$ref": "#/components/schemas/BotResourcesError"
+                }
+              ],
+              "discriminator": {
+                "propertyName": "status",
+                "mapping": {
+                  "error": "#/components/schemas/BotResourcesError",
+                  "not_found": "#/components/schemas/BotResourcesNotFound",
+                  "ok": "#/components/schemas/BotResourcesOk"
+                }
+              }
+            },
+            "type": "array",
+            "title": "Results",
+            "description": "One result per distinct requested bot, in request order: ``ok`` with its report, ``error`` with the problem, or ``not_found``."
+          }
+        },
+        "type": "object",
+        "required": [
+          "results"
+        ],
+        "title": "BotResourcesBatchResponse",
+        "description": "One result per distinct requested bot, in request order."
+      },
+      "BotResourcesError": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "error",
+            "title": "Status",
+            "description": "Discriminator: the read failed."
+          },
+          "bot_slug": {
+            "type": "string",
+            "title": "Bot Slug",
+            "description": "The bot as named in the request."
+          },
+          "problem": {
+            "$ref": "#/components/schemas/BotResourcesProblem",
+            "description": "Why the read failed."
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "bot_slug",
+          "problem"
+        ],
+        "title": "BotResourcesError",
+        "description": "The bot exists and is visible, but its runtime could not be read."
+      },
+      "BotResourcesNotFound": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "not_found",
+            "title": "Status",
+            "description": "Discriminator: no such bot, or one the caller may not see."
+          },
+          "bot_slug": {
+            "type": "string",
+            "title": "Bot Slug",
+            "description": "The bot as named in the request."
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "bot_slug"
+        ],
+        "title": "BotResourcesNotFound",
+        "description": "No bot by this name that the caller may see.\n\nA bot that does not exist and one the caller may not see get this same\nresult, so the response does not reveal which restricted bots exist."
+      },
+      "BotResourcesOk": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "ok",
+            "title": "Status",
+            "description": "Discriminator: the runtime answered."
+          },
+          "bot_slug": {
+            "type": "string",
+            "title": "Bot Slug",
+            "description": "The bot as named in the request."
+          },
+          "report": {
+            "$ref": "#/components/schemas/ResourceReport",
+            "description": "The runtime's live usage report."
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "bot_slug",
+          "report"
+        ],
+        "title": "BotResourcesOk",
+        "description": "The bot's runtime answered."
+      },
+      "BotResourcesProblem": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "title": "Type",
+            "description": "Problem type URI; switch on this or ``error_code``."
+          },
+          "error_code": {
+            "type": "string",
+            "title": "Error Code",
+            "description": "Stable machine code for the problem type."
+          },
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "Short human summary of the problem type."
+          },
+          "status": {
+            "type": "integer",
+            "title": "Status",
+            "description": "The HTTP status the single-bot route would answer with for this problem."
+          },
+          "detail": {
+            "type": "string",
+            "title": "Detail",
+            "description": "What went wrong for this bot, safe to show the user."
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "error_code",
+          "title",
+          "status",
+          "detail"
+        ],
+        "title": "BotResourcesProblem",
+        "description": "Why one bot's read failed, in the fields of an RFC 9457 problem."
       },
       "BotResourcesUpdatedContent": {
         "properties": {
@@ -43441,6 +43892,157 @@
         "type": "object",
         "title": "BotToolRetrySyncRequest",
         "description": "Request body for retrying failed tool-assignment config pushes.\n\nAn empty/omitted ``tool_ids`` retries every failed assignment on the bot."
+      },
+      "BotToolUsageEntry": {
+        "properties": {
+          "tool_id": {
+            "type": "string",
+            "title": "Tool Id",
+            "description": "Tool catalog ID"
+          },
+          "slug": {
+            "type": "string",
+            "title": "Slug",
+            "description": "Globally unique composite identifier"
+          },
+          "runtime_tool_name": {
+            "type": "string",
+            "title": "Runtime Tool Name",
+            "description": "The name the model calls the tool by. Pinned-tools settings (`owner_pins`, `never_pin`) name tools by this."
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Tool display name"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title",
+            "description": "Human-readable title advertised by the MCP server, if any. Display it in preference to `name` when present; never use it as an identifier."
+          },
+          "own_calls": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Own Calls",
+            "description": "This bot's calls of the tool, decayed with a 7-day half-life to now"
+          },
+          "total_calls": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Total Calls",
+            "description": "This bot's undecayed lifetime calls of the tool (0 if never called)"
+          },
+          "last_used_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Used At",
+            "description": "When this bot last called the tool; null if it never has"
+          },
+          "fleet_share": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Fleet Share",
+            "description": "The tool's share of the fleet-wide usage prior over this bot's assigned platform tools, from 0 to 1. Always 0 for an organization's own tools."
+          },
+          "score": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Score",
+            "description": "Blended score: own_weight * the tool's share of this bot's calls + (1 - own_weight) * fleet_share, from 0 to 1. Higher ranks first; 0 is never pinned on usage."
+          }
+        },
+        "type": "object",
+        "required": [
+          "tool_id",
+          "slug",
+          "runtime_tool_name",
+          "name",
+          "own_calls",
+          "total_calls",
+          "last_used_at",
+          "fleet_share",
+          "score"
+        ],
+        "title": "BotToolUsageEntry",
+        "description": "One tool assigned to the bot, with its usage and adaptive-pinning score."
+      },
+      "BotToolUsageGroup": {
+        "properties": {
+          "bot_id": {
+            "type": "string",
+            "title": "Bot Id",
+            "description": "The bot's ID"
+          },
+          "bot_slug": {
+            "type": "string",
+            "title": "Bot Slug",
+            "description": "The bot's slug"
+          },
+          "own_weight": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Own Weight",
+            "description": "How far the score trusts this bot's own history over the fleet prior: own_calls_total / (own_calls_total + 50), from 0 up to (not including) 1"
+          },
+          "own_calls_total": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Own Calls Total",
+            "description": "This bot's decayed calls summed over its assigned tools"
+          },
+          "tools": {
+            "items": {
+              "$ref": "#/components/schemas/BotToolUsageEntry"
+            },
+            "type": "array",
+            "title": "Tools",
+            "description": "Assigned tools, highest score first; equal scores by slug. Bounded by the bot's tool assignment; empty for a bot with no tools."
+          }
+        },
+        "type": "object",
+        "required": [
+          "bot_id",
+          "bot_slug",
+          "own_weight",
+          "own_calls_total",
+          "tools"
+        ],
+        "title": "BotToolUsageGroup",
+        "description": "One selected bot: who it is, and its assigned tools as adaptive pinning ranks them."
+      },
+      "BotToolUsageResponse": {
+        "properties": {
+          "bots": {
+            "items": {
+              "$ref": "#/components/schemas/BotToolUsageGroup"
+            },
+            "type": "array",
+            "maxItems": 10,
+            "minItems": 1,
+            "title": "Bots",
+            "description": "One group per selected bot, in the order the request named them"
+          }
+        },
+        "type": "object",
+        "required": [
+          "bots"
+        ],
+        "title": "BotToolUsageResponse",
+        "description": "The selected bots' rankings, one group per bot."
       },
       "BotType": {
         "type": "string",
@@ -47707,6 +48309,23 @@
             "title": "Preset Model Id",
             "description": "Canonical preset-model UUID; unknown on older cached metadata."
           },
+          "native_reasoning_efforts": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array",
+                "maxItems": 16,
+                "minItems": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Native Reasoning Efforts",
+            "description": "Effective explicit native OpenAI/Codex choices; not a vendor default or shared clamp profile."
+          },
           "reasoning_control": {
             "anyOf": [
               {
@@ -51056,17 +51675,6 @@
             "title": "Bot Slug",
             "description": "Bot slug \u2014 resolved to UUID server-side"
           },
-          "conversation_scope": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/ConversationScope"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Access scope (derived from auth context when omitted)"
-          },
           "title": {
             "anyOf": [
               {
@@ -51217,7 +51825,6 @@
           "conversation_id",
           "title",
           "status",
-          "conversation_scope",
           "source",
           "bot_id",
           "user_id",
@@ -52225,6 +52832,9 @@
                   },
                   {
                     "$ref": "#/components/schemas/QuestionnaireWakeOrigin"
+                  },
+                  {
+                    "$ref": "#/components/schemas/TurnRetryWakeOrigin"
                   }
                 ],
                 "discriminator": {
@@ -52232,7 +52842,8 @@
                   "mapping": {
                     "process_watch": "#/components/schemas/ProcessWatchWakeOrigin",
                     "questionnaire": "#/components/schemas/QuestionnaireWakeOrigin",
-                    "schedule": "#/components/schemas/ScheduleWakeOrigin"
+                    "schedule": "#/components/schemas/ScheduleWakeOrigin",
+                    "turn_retry": "#/components/schemas/TurnRetryWakeOrigin"
                   }
                 }
               },
@@ -52825,9 +53436,6 @@
             "title": "Owner Name",
             "description": "Display name of the conversation owner, when it has a user owner"
           },
-          "conversation_scope": {
-            "$ref": "#/components/schemas/ConversationScope"
-          },
           "forked_from_conversation_id": {
             "anyOf": [
               {
@@ -53015,7 +53623,7 @@
                 "type": "null"
               }
             ],
-            "description": "The authenticated person's role on this conversation's member list, or null when they are not on it (they may still see it through a legacy term: org scope or being its creator). Populated on search and get."
+            "description": "The authenticated person's role on this conversation's member list. Null when the caller is not a person, or is a person not on the list, who then reads a bot-created conversation read-only through a conversation they are a member of (see viewing_via). Populated on search and get."
           },
           "is_muted": {
             "type": "boolean",
@@ -53069,7 +53677,6 @@
           "org_id",
           "bot_id",
           "user_id",
-          "conversation_scope",
           "source",
           "title",
           "status",
@@ -53124,30 +53731,6 @@
         "title": "ConversationRunStatus",
         "description": "A conversation's run state plus the two cheap facts behind it."
       },
-      "ConversationScope": {
-        "type": "string",
-        "enum": [
-          "user",
-          "org"
-        ],
-        "title": "ConversationScope",
-        "description": "How a conversation is scoped for access control."
-      },
-      "ConversationScopeUpdate": {
-        "properties": {
-          "conversation_scope": {
-            "$ref": "#/components/schemas/ConversationScope",
-            "description": "New access scope: 'user' (private to owner) or 'org' (org-wide)"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "required": [
-          "conversation_scope"
-        ],
-        "title": "ConversationScopeUpdate",
-        "description": "Request to change a conversation's access scope."
-      },
       "ConversationSearch": {
         "properties": {
           "bot_id": {
@@ -53173,16 +53756,6 @@
             ],
             "title": "Bot Slug",
             "description": "Filter by bot slug \u2014 resolved to UUID server-side"
-          },
-          "conversation_scope": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/ConversationScope"
-              },
-              {
-                "type": "null"
-              }
-            ]
           },
           "deletion": {
             "anyOf": [
@@ -53638,7 +54211,19 @@
           "bot_id": {
             "type": "string",
             "title": "Bot Id",
-            "description": "The origin conversation's bot, to link back to it."
+            "description": "The origin conversation's bot."
+          },
+          "bot_slug": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bot Slug",
+            "description": "That bot's slug, to link back without listing the org's bots. Null when the bot has been deleted or you cannot use it: the origin cannot be opened."
           },
           "title": {
             "anyOf": [
@@ -53656,6 +54241,7 @@
         "required": [
           "conversation_id",
           "bot_id",
+          "bot_slug",
           "title"
         ],
         "title": "ConversationViewingVia",
@@ -55143,80 +55729,6 @@
           "has_more"
         ],
         "title": "CursorPaginatedResponse[ConversationFileResponse]"
-      },
-      "CustomPrompt": {
-        "properties": {
-          "kind": {
-            "type": "string",
-            "const": "custom",
-            "title": "Kind"
-          },
-          "text": {
-            "type": "string",
-            "maxLength": 4000,
-            "minLength": 1,
-            "title": "Text",
-            "description": "The judge prompt"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "required": [
-          "kind",
-          "text"
-        ],
-        "title": "CustomPrompt",
-        "description": "An org-written judge prompt."
-      },
-      "DecisionJudge": {
-        "properties": {
-          "kind": {
-            "type": "string",
-            "const": "decision",
-            "title": "Kind"
-          },
-          "model": {
-            "$ref": "#/components/schemas/ModelOnCredential"
-          },
-          "up_cutoff": {
-            "type": "number",
-            "exclusiveMaximum": 1.0,
-            "exclusiveMinimum": 0.0,
-            "title": "Up Cutoff",
-            "description": "Score above which to move up",
-            "default": 0.6
-          },
-          "down_cutoff": {
-            "type": "number",
-            "exclusiveMaximum": 1.0,
-            "exclusiveMinimum": 0.0,
-            "title": "Down Cutoff",
-            "description": "Score below which to move down",
-            "default": 0.25
-          },
-          "evidence": {
-            "type": "string",
-            "const": "target_descriptions",
-            "title": "Evidence",
-            "default": "target_descriptions"
-          },
-          "timeout_ms": {
-            "type": "integer",
-            "maximum": 10000.0,
-            "minimum": 50.0,
-            "title": "Timeout Ms",
-            "description": "Per-call timeout",
-            "default": 1500
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "required": [
-          "kind",
-          "model"
-        ],
-        "title": "DecisionJudge",
-        "description": "Jev or any Decisions-API model: one model, with a hysteresis band."
       },
       "DeleteMessagesCommand": {
         "properties": {
@@ -58487,7 +58999,7 @@
           },
           "model_access_mode": {
             "$ref": "#/components/schemas/ModelAccessMode",
-            "description": "per_user_claude runs each turn on its originating human's own Claude login on claude-host: hosted native bots only, and refused while the bot has enabled schedules (until PlatDev #4469). bot_credentials is the rollback and is never refused."
+            "description": "per_user_claude runs each turn on its originating human's own Claude login on claude-host: hosted native bots only. bot_credentials is the rollback and is never refused."
           }
         },
         "additionalProperties": false,
@@ -58517,9 +59029,6 @@
                   "$ref": "#/components/schemas/ModelAccessProfileRefused"
                 },
                 {
-                  "$ref": "#/components/schemas/ModelAccessSchedulesRefused"
-                },
-                {
                   "$ref": "#/components/schemas/ModelAccessModelNotOffered"
                 },
                 {
@@ -58530,7 +59039,6 @@
                 "propertyName": "outcome",
                 "mapping": {
                   "chain_refused": "#/components/schemas/ModelAccessChainRefused",
-                  "has_active_schedules": "#/components/schemas/ModelAccessSchedulesRefused",
                   "model_not_offered": "#/components/schemas/ModelAccessModelNotOffered",
                   "profile_refused": "#/components/schemas/ModelAccessProfileRefused",
                   "refused": "#/components/schemas/ModelAccessSwitchRefused",
@@ -62068,6 +62576,39 @@
         ],
         "title": "IncidentEpisode"
       },
+      "InheritedBotOwner": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id",
+            "description": "The person's user ID"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "The person's display name"
+          },
+          "avatar_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avatar Url",
+            "description": "The person's avatar URL"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "name"
+        ],
+        "title": "InheritedBotOwner",
+        "description": "A person who owns this bot through an owner bot (D3).\n\nThey are a full owner of this bot. They appear under the owner bot because\nthat bot is where their ownership comes from: removing the owner bot, or\nthem from it, is what ends it."
+      },
       "InputModality": {
         "type": "string",
         "enum": [
@@ -62862,30 +63403,12 @@
         "properties": {
           "judges": {
             "items": {
-              "oneOf": [
-                {
-                  "$ref": "#/components/schemas/SignalsJudge"
-                },
-                {
-                  "$ref": "#/components/schemas/LlmJudge"
-                },
-                {
-                  "$ref": "#/components/schemas/DecisionJudge"
-                }
-              ],
-              "discriminator": {
-                "propertyName": "kind",
-                "mapping": {
-                  "decision": "#/components/schemas/DecisionJudge",
-                  "llm": "#/components/schemas/LlmJudge",
-                  "signals": "#/components/schemas/SignalsJudge"
-                }
-              }
+              "$ref": "#/components/schemas/SignalsJudge"
             },
             "type": "array",
-            "maxItems": 4,
+            "maxItems": 1,
             "title": "Judges",
-            "description": "Judges in cascade order; empty is a static ladder at the default target"
+            "description": "Judges; the routing engine needs exactly one, a signals judge"
           },
           "budget_ms": {
             "type": "integer",
@@ -62899,7 +63422,7 @@
         "additionalProperties": false,
         "type": "object",
         "title": "JudgeChain",
-        "description": "An ordered cascade: the first decisive verdict wins (#4585 \u00a72)."
+        "description": "The profile's judge: the routing engine needs exactly one, a signals judge (#5176)."
       },
       "KindPreference": {
         "properties": {
@@ -62931,7 +63454,7 @@
           },
           "mid_turn": {
             "$ref": "#/components/schemas/MidTurnSettings",
-            "description": "Per-algorithm mid-turn signals configuration; disabled by default"
+            "description": "Mid-turn routing: the engine may switch between model steps; disabled by default"
           },
           "default_target_id": {
             "type": "string",
@@ -62976,7 +63499,7 @@
           "default_target_id"
         ],
         "title": "LadderAlgorithm",
-        "description": "The #4584 policy: one move per turn, with hold counters after a move."
+        "description": "Two targets the routing engine routes between: one move per turn, holds after a move."
       },
       "LatestSkillRef": {
         "properties": {
@@ -63053,10 +63576,6 @@
             "type": "boolean",
             "title": "Is Readable",
             "description": "Whether the current caller can read/subscribe"
-          },
-          "conversation_scope": {
-            "$ref": "#/components/schemas/ConversationScope",
-            "description": "Conversation access scope"
           },
           "has_active_timed_wake": {
             "type": "boolean",
@@ -63176,7 +63695,6 @@
         "required": [
           "conversation_id",
           "is_readable",
-          "conversation_scope",
           "bot_id"
         ],
         "title": "LinkedConversationSummary",
@@ -63345,104 +63863,6 @@
         "type": "object",
         "title": "LlmChainState",
         "description": "The bot's provider chain as it will be, and as it currently is.\n\nTwo states of the same list, which is what lets the LLM card show BEFORE and\nAFTER while a config is applying instead of a list of derived consequences."
-      },
-      "LlmJudge": {
-        "properties": {
-          "kind": {
-            "type": "string",
-            "const": "llm",
-            "title": "Kind"
-          },
-          "models": {
-            "items": {
-              "$ref": "#/components/schemas/ModelOnCredential"
-            },
-            "type": "array",
-            "maxItems": 3,
-            "minItems": 1,
-            "title": "Models",
-            "description": "Ordered failover models"
-          },
-          "prompt": {
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/PresetPrompt"
-              },
-              {
-                "$ref": "#/components/schemas/CustomPrompt"
-              }
-            ],
-            "title": "Prompt",
-            "discriminator": {
-              "propertyName": "kind",
-              "mapping": {
-                "custom": "#/components/schemas/CustomPrompt",
-                "preset": "#/components/schemas/PresetPrompt"
-              }
-            }
-          },
-          "recent_turn_window": {
-            "type": "integer",
-            "maximum": 32.0,
-            "minimum": 1.0,
-            "title": "Recent Turn Window",
-            "description": "Recent turns the judge sees",
-            "default": 8
-          },
-          "max_output_tokens": {
-            "type": "integer",
-            "maximum": 512.0,
-            "minimum": 16.0,
-            "title": "Max Output Tokens",
-            "description": "Judge output cap",
-            "default": 64
-          },
-          "timeout_ms": {
-            "type": "integer",
-            "maximum": 10000.0,
-            "minimum": 50.0,
-            "title": "Timeout Ms",
-            "description": "Covers the judge's own failover attempts",
-            "default": 4000
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "required": [
-          "kind",
-          "models",
-          "prompt"
-        ],
-        "title": "LlmJudge",
-        "description": "Any chat model plus a prompt; opt-in, since it adds ~3 s to a judged turn."
-      },
-      "LlmJudgeLatencyWarning": {
-        "properties": {
-          "kind": {
-            "type": "string",
-            "const": "llm_judge_latency",
-            "title": "Kind"
-          },
-          "judge_index": {
-            "type": "integer",
-            "title": "Judge Index",
-            "description": "Position of the LLM judge in the judge chain"
-          },
-          "approx_turn_start_ms": {
-            "type": "integer",
-            "title": "Approx Turn Start Ms",
-            "description": "Approximate added latency, in milliseconds"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "required": [
-          "kind",
-          "judge_index",
-          "approx_turn_start_ms"
-        ],
-        "title": "LlmJudgeLatencyWarning",
-        "description": "An LLM judge adds roughly three seconds to the start of every judged turn."
       },
       "LoadCapabilityArgs-Input": {
         "properties": {
@@ -68517,38 +68937,8 @@
           "enabled": {
             "type": "boolean",
             "title": "Enabled",
-            "description": "Enable signals-only decisions between model steps",
+            "description": "Let the routing engine switch targets between model steps",
             "default": false
-          },
-          "up_after_failed_results": {
-            "type": "integer",
-            "maximum": 64.0,
-            "minimum": 0.0,
-            "title": "Up After Failed Results",
-            "description": "Consecutive new failed tool results before an up decision; zero disables",
-            "default": 2
-          },
-          "down_after_clean_steps": {
-            "type": "integer",
-            "maximum": 100.0,
-            "minimum": 0.0,
-            "title": "Down After Clean Steps",
-            "description": "Clean model steps after an up-switch before a down decision; zero disables",
-            "default": 3
-          },
-          "every_n_steps": {
-            "anyOf": [
-              {
-                "type": "integer",
-                "maximum": 100.0,
-                "minimum": 1.0
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Every N Steps",
-            "description": "Periodic signals re-evaluation; null disables, all safety thresholds still apply"
           },
           "max_switches": {
             "type": "integer",
@@ -68570,7 +68960,7 @@
         "additionalProperties": false,
         "type": "object",
         "title": "MidTurnSettings",
-        "description": "Opt-in, profile-versioned step signals. No paid judge is ever called."
+        "description": "Opt-in routing between model steps (#5176).\n\nThe routing engine decides every step; these are the gateway's safety\nguards around it. When a guard holds, the step stays on its target and the\nengine is not asked."
       },
       "MigrationCreate": {
         "properties": {
@@ -69040,7 +69430,7 @@
           "reason"
         ],
         "title": "ModelAccessChainRefused",
-        "description": "One bot whose resulting credential chain the User Claude rules refuse (#5061).\n\nThe schedule and profile rules keep their own outcomes; this carries the\nrest: a non-Claude or missing model, or a routing-profile binding."
+        "description": "One bot whose resulting credential chain the User Claude rules refuse (#5061).\n\nThe profile rule keeps its own outcome; this carries the\nrest: a non-Claude or missing model, or a routing-profile binding."
       },
       "ModelAccessMode": {
         "type": "string",
@@ -69112,41 +69502,13 @@
         "title": "ModelAccessRefusal",
         "description": "Why a bot's profile cannot run a model-access mode, decided at config time (N6).\n\nThe vocabulary the mode switch refuses on\n(``POST /v1/admin/fleet/model-access-switches``). A fact about the bot's\nprofile only: whether a particular *turn* may run on a person's Claude is\nthe per-turn policy's question (``PerUserClaudeRefusal``), never this one."
       },
-      "ModelAccessSchedulesRefused": {
-        "properties": {
-          "outcome": {
-            "type": "string",
-            "const": "has_active_schedules",
-            "title": "Outcome",
-            "default": "has_active_schedules"
-          },
-          "bot_id": {
-            "type": "string",
-            "title": "Bot Id",
-            "description": "The refused bot"
-          },
-          "active_schedules": {
-            "type": "integer",
-            "minimum": 1.0,
-            "title": "Active Schedules",
-            "description": "Enabled schedules on the bot that nothing would backfill or pause"
-          }
-        },
-        "type": "object",
-        "required": [
-          "bot_id",
-          "active_schedules"
-        ],
-        "title": "ModelAccessSchedulesRefused",
-        "description": "One bot refused because it has enabled schedules, until #4469 backfills them.\n\nIts own ``outcome``, so ``results`` stays one union discriminated on it."
-      },
       "ModelAccessSwitchRefusal": {
         "type": "string",
         "enum": [
           "bot_not_found"
         ],
         "title": "ModelAccessSwitchRefusal",
-        "description": "Why one bot was not switched, for any reason but its profile or schedules."
+        "description": "Why one bot was not switched, for any reason but its profile."
       },
       "ModelAccessSwitchRefused": {
         "properties": {
@@ -69443,6 +69805,23 @@
             "$ref": "#/components/schemas/ReasoningStyle",
             "description": "Derived from reasoning_options"
           },
+          "reasoning_efforts": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array",
+                "maxItems": 16,
+                "minItems": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reasoning Efforts",
+            "description": "Exact ordered models.dev effort values; None = no stated effort list"
+          },
           "release_date": {
             "anyOf": [
               {
@@ -69495,42 +69874,6 @@
         ],
         "title": "ModelModality",
         "description": "A kind of content a model reads or writes, as models.dev names it.\n\nThe closed set the model catalogue stores (``model_catalogue_entries``).\nWider than :class:`InputModality` (the OpenClaw-facing preset column): the\ncatalogue records PDF documents, audio and video too, so a media gate can\nask \"does this model read a PDF\" (PlatDev #3072). A value outside this set\nfails the models.dev boundary rather than being dropped."
-      },
-      "ModelOnCredential": {
-        "properties": {
-          "credential_id": {
-            "type": "string",
-            "format": "uuid",
-            "title": "Credential Id",
-            "description": "Provider credential to call through; must be linked to every bound caller"
-          },
-          "model": {
-            "type": "string",
-            "maxLength": 255,
-            "minLength": 1,
-            "title": "Model",
-            "description": "Model id as the credential's provider lists it in the model catalogue"
-          },
-          "effort": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/RoutingEffort"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Vendor-neutral reasoning effort; null sends none (the vendor default)"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "required": [
-          "credential_id",
-          "model"
-        ],
-        "title": "ModelOnCredential",
-        "description": "A catalogue model called through one explicit credential, at an optional effort."
       },
       "ModelPrice": {
         "properties": {
@@ -71295,6 +71638,10 @@
           "tool_images": {
             "$ref": "#/components/schemas/ToolImageConfig",
             "description": "How images returned by tools are shown to the model: on/off, downscaling ceiling and default detail. Unset fields use the platform default. Native bots only."
+          },
+          "tool_pinning": {
+            "$ref": "#/components/schemas/ToolPinningConfig",
+            "description": "Which tools each conversation keeps loaded instead of deferring them behind tool search: how many, which always and which never. Unset uses the defaults (20, chosen by usage). Native bots only."
           }
         },
         "type": "object",
@@ -71357,6 +71704,17 @@
               }
             ],
             "description": "Tool-image overrides (see ToolImageConfigPatch). Null or omitted means no change."
+          },
+          "tool_pinning": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ToolPinningConfigPatch"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Pinned-tools overrides (see ToolPinningConfigPatch). Null or omitted means no change."
           }
         },
         "additionalProperties": false,
@@ -79533,28 +79891,6 @@
         "title": "PreferenceValues",
         "description": "The editable values of one preference row. ``None`` = inherit.\n\n``kinds`` replaces the row's per-kind settings wholesale on PUT; a kind left\nout inherits (and so defaults on)."
       },
-      "PresetPrompt": {
-        "properties": {
-          "kind": {
-            "type": "string",
-            "const": "preset",
-            "title": "Kind"
-          },
-          "preset": {
-            "type": "string",
-            "const": "ladder_v1",
-            "title": "Preset"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "required": [
-          "kind",
-          "preset"
-        ],
-        "title": "PresetPrompt",
-        "description": "A platform-maintained judge prompt."
-      },
       "PrincipalOrgResponse": {
         "properties": {
           "org_id": {
@@ -83383,15 +83719,11 @@
                 },
                 {
                   "$ref": "#/components/schemas/MissingModalitiesWarning"
-                },
-                {
-                  "$ref": "#/components/schemas/LlmJudgeLatencyWarning"
                 }
               ],
               "discriminator": {
                 "propertyName": "kind",
                 "mapping": {
-                  "llm_judge_latency": "#/components/schemas/LlmJudgeLatencyWarning",
                   "missing_modalities": "#/components/schemas/MissingModalitiesWarning",
                   "mixed_accounts": "#/components/schemas/MixedAccountsWarning",
                   "smaller_context_window": "#/components/schemas/SmallerContextWindowWarning"
@@ -90124,6 +90456,16 @@
         "title": "SpendBreakdownRow",
         "description": "One group's totals and its change against the previous period."
       },
+      "SpendBucket": {
+        "type": "string",
+        "enum": [
+          "day",
+          "hour",
+          "minute"
+        ],
+        "title": "SpendBucket",
+        "description": "How wide each point of a time series is, on the UTC clock."
+      },
       "SpendChange": {
         "properties": {
           "previous_spend_usd": {
@@ -90576,56 +90918,6 @@
         "title": "SpendFilterOptionsResponse",
         "description": "Options per requested facet, in request order."
       },
-      "SpendMembersOwnPlans": {
-        "properties": {
-          "value_usd": {
-            "type": "string",
-            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
-            "title": "Value Usd",
-            "description": "List-price value of the priced calls in the range, USD. Not charged to the org and never part of spend_usd"
-          },
-          "calls": {
-            "type": "integer",
-            "minimum": 0.0,
-            "title": "Calls",
-            "description": "Calls in the range, priced or not"
-          },
-          "unpriced_calls": {
-            "type": "integer",
-            "minimum": 0.0,
-            "title": "Unpriced Calls",
-            "description": "Calls with no price, left out of value_usd"
-          },
-          "previous_value_usd": {
-            "type": "string",
-            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
-            "title": "Previous Value Usd",
-            "description": "value_usd over the previous, equally long range"
-          },
-          "value_change_ratio": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Value Change Ratio",
-            "description": "(value_usd - previous_value_usd) / previous_value_usd; None when the previous value is zero"
-          }
-        },
-        "type": "object",
-        "required": [
-          "value_usd",
-          "calls",
-          "unpriced_calls",
-          "previous_value_usd",
-          "value_change_ratio"
-        ],
-        "title": "SpendMembersOwnPlans",
-        "description": "Usage paid by members' own Claude plans, valued at list price.\n\nIts own figure, never org spend: these calls are excluded from every other\nnumber in the spend API, and this is the only place they are counted. The\norg is not charged for them. It honours every filter in ``where`` except\nthe Payer (``billing_mode``) conditions, which describe how the org pays\nand so never match these calls."
-      },
       "SpendMetrics": {
         "properties": {
           "spend_usd": {
@@ -90962,7 +91254,7 @@
             },
             "type": "array",
             "title": "Points",
-            "description": "Days with any calls in this series"
+            "description": "Buckets with any calls in this series"
           }
         },
         "type": "object",
@@ -90976,10 +91268,17 @@
       },
       "SpendSeriesPoint": {
         "properties": {
+          "start": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Start",
+            "description": "The bucket's start (UTC); one of the response's `buckets`"
+          },
           "day": {
             "type": "string",
             "format": "date",
-            "title": "Day"
+            "title": "Day",
+            "description": "The UTC day the bucket starts on"
           },
           "spend_usd": {
             "type": "string",
@@ -91006,6 +91305,7 @@
         },
         "type": "object",
         "required": [
+          "start",
           "day",
           "spend_usd",
           "native_turns",
@@ -91013,7 +91313,7 @@
           "turns"
         ],
         "title": "SpendSeriesPoint",
-        "description": "One series' spend on one UTC day."
+        "description": "One series' spend in one time bucket."
       },
       "SpendSummaryRequest": {
         "properties": {
@@ -91060,20 +91360,16 @@
           },
           "change": {
             "$ref": "#/components/schemas/SpendChange"
-          },
-          "members_own_plans": {
-            "$ref": "#/components/schemas/SpendMembersOwnPlans"
           }
         },
         "type": "object",
         "required": [
           "current",
           "previous",
-          "change",
-          "members_own_plans"
+          "change"
         ],
         "title": "SpendSummaryResponse",
-        "description": "Totals for the range and for the previous, equally long one.\n\n``members_own_plans`` is a separate figure, never included in the totals."
+        "description": "Totals for the range and for the previous, equally long one."
       },
       "SpendTimeseriesRequest": {
         "properties": {
@@ -91110,6 +91406,11 @@
             "title": "Top",
             "description": "Named series, by spend over the whole range; the rest fold into Other",
             "default": 8
+          },
+          "bucket": {
+            "$ref": "#/components/schemas/SpendBucket",
+            "description": "Width of each point on the UTC clock. The range may touch at most 1500 buckets, so `minute` covers about a day and `hour` about two months",
+            "default": "day"
           }
         },
         "additionalProperties": false,
@@ -91126,6 +91427,18 @@
         "properties": {
           "group_by": {
             "$ref": "#/components/schemas/SpendDimension"
+          },
+          "bucket": {
+            "$ref": "#/components/schemas/SpendBucket"
+          },
+          "buckets": {
+            "items": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "type": "array",
+            "title": "Buckets",
+            "description": "The start (UTC) of every bucket the range touches, in order"
           },
           "days": {
             "items": {
@@ -91147,11 +91460,13 @@
         "type": "object",
         "required": [
           "group_by",
+          "bucket",
+          "buckets",
           "days",
           "series"
         ],
         "title": "SpendTimeseriesResponse",
-        "description": "Daily spend per series: the top groups by spend, then Other."
+        "description": "Spend per bucket per series: the top groups by spend, then Other."
       },
       "SpendToolKey": {
         "properties": {
@@ -91258,7 +91573,7 @@
           "filter"
         ],
         "title": "SpendUnattributedToolKey",
-        "description": "Calls with no tool attribution.\n\nEvery non-native (OpenClaw, Claude Code) call, which has none yet, and\nnative judge calls, older rows and calls whose attribution failed open."
+        "description": "Calls with no tool attribution.\n\nEvery non-native (OpenClaw, Claude Code) call, which has none yet, and\nolder native rows and calls whose attribution failed open."
       },
       "SpendUnattributedUserKey": {
         "properties": {
@@ -94642,6 +94957,125 @@
         "title": "ToolPermissionCheckResponse",
         "description": "What a bot holds and lacks across a whole tool set."
       },
+      "ToolPinningConfig": {
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "maximum": 50.0,
+            "minimum": 0.0,
+            "title": "Limit",
+            "description": "How many tools each conversation keeps loaded instead of deferring them behind tool search (0 to 50). 0 turns pinning off for this bot. Owner pins count toward it.",
+            "default": 20
+          },
+          "owner_pins": {
+            "items": {
+              "type": "string",
+              "maxLength": 100,
+              "minLength": 1
+            },
+            "type": "array",
+            "maxItems": 50,
+            "title": "Owner Pins",
+            "description": "Tools always kept loaded, ahead of the usage ranking. At most `limit` of them. A name this bot cannot call is ignored until such a tool is assigned. Duplicates are removed.",
+            "default": []
+          },
+          "never_pin": {
+            "items": {
+              "type": "string",
+              "maxLength": 100,
+              "minLength": 1
+            },
+            "type": "array",
+            "maxItems": 200,
+            "title": "Never Pin",
+            "description": "Tools never kept loaded, whatever their usage (at most 200). They stay reachable through tool search. A name may not also be an owner pin. Duplicates are removed.",
+            "default": []
+          },
+          "token_budget": {
+            "type": "integer",
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Token Budget",
+            "description": "Most tokens the kept-loaded tools' schemas may take together (1000 to 100000), or 0 for no budget (count only). Owner pins are always kept and use the budget first; usage-ranked tools fill the rest, best first, skipping any that do not fit, never more than `limit` tools in all. Sizes are an o200k_base estimate. Send 0 to clear it.",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "title": "ToolPinningConfig",
+        "description": "Which tools a native bot keeps loaded instead of deferring them behind tool search.\n\nThe defaults are exactly the behaviour before this setting existed: 20\ntools chosen by usage, none forced in or out. A stored config without\nthis key reads as the defaults."
+      },
+      "ToolPinningConfigPatch": {
+        "properties": {
+          "limit": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 50.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Limit",
+            "description": "How many tools each conversation keeps loaded instead of deferring them behind tool search (0 to 50). 0 turns pinning off for this bot. Owner pins count toward it."
+          },
+          "owner_pins": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string",
+                  "maxLength": 100,
+                  "minLength": 1
+                },
+                "type": "array",
+                "maxItems": 50
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Owner Pins",
+            "description": "Tools always kept loaded, ahead of the usage ranking. At most `limit` of them. A name this bot cannot call is ignored until such a tool is assigned. Duplicates are removed."
+          },
+          "never_pin": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string",
+                  "maxLength": 100,
+                  "minLength": 1
+                },
+                "type": "array",
+                "maxItems": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Never Pin",
+            "description": "Tools never kept loaded, whatever their usage (at most 200). They stay reachable through tool search. A name may not also be an owner pin. Duplicates are removed."
+          },
+          "token_budget": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 100000.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Token Budget",
+            "description": "Most tokens the kept-loaded tools' schemas may take together (1000 to 100000), or 0 for no budget (count only). Owner pins are always kept and use the budget first; usage-ranked tools fill the rest, best first, skipping any that do not fit, never more than `limit` tools in all. Sizes are an o200k_base estimate. Send 0 to clear it."
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ToolPinningConfigPatch",
+        "description": "Patchable pinned-tools settings (native bots only).\n\nEvery target field is non-nullable, so ``None`` (or an explicit ``null``)\nmeans \"no change\". A list replaces the stored list wholesale; send ``[]``\nto clear it. The rules that relate fields (owner pins within the limit,\nno name in both lists) are checked on the result of the patch, so a patch\nthat lowers ``limit`` below the stored owner pins is refused with a 422."
+      },
       "ToolRemoval": {
         "properties": {
           "bot_pack_item_id": {
@@ -95959,6 +96393,39 @@
         ],
         "title": "TurnAttendance"
       },
+      "TurnRetryWakeOrigin": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "turn_retry",
+            "title": "Kind",
+            "default": "turn_retry"
+          },
+          "failed_request_id": {
+            "type": "string",
+            "title": "Failed Request Id",
+            "description": "The failed turn's request id; for a retry of a retry, the root's."
+          },
+          "requested_by_id": {
+            "type": "string",
+            "title": "Requested By Id",
+            "description": "The authenticated user who asked for the retry."
+          },
+          "requested_by_name": {
+            "type": "string",
+            "title": "Requested By Name",
+            "description": "That user's display name when they asked."
+          }
+        },
+        "type": "object",
+        "required": [
+          "failed_request_id",
+          "requested_by_id",
+          "requested_by_name"
+        ],
+        "title": "TurnRetryWakeOrigin",
+        "description": "A person asked the bot to retry a turn that failed before it answered.\n\nThe retry is a wake, not a re-post: the failed request stays as it was,\nunder its original sender, and the server composes the bot's instructions\nfrom that row (#5301). Only identifying metadata travels to the event card;\nthe failed request's text and attachments stay in the wake's model message."
+      },
       "TurnStatus": {
         "type": "string",
         "enum": [
@@ -97159,94 +97626,6 @@
         ],
         "title": "UserClaudeLinkRefusedProblem",
         "description": "422 ``user_claude_chain_refused`` about the User Claude link itself."
-      },
-      "UserClaudeSchedulesRefusedProblem": {
-        "properties": {
-          "reason": {
-            "type": "string",
-            "const": "has_active_schedules",
-            "title": "Reason",
-            "description": "Always ``has_active_schedules``"
-          },
-          "active_schedules": {
-            "type": "integer",
-            "minimum": 1.0,
-            "title": "Active Schedules",
-            "description": "Enabled schedules on the bot"
-          },
-          "type": {
-            "type": "string",
-            "title": "Type",
-            "description": "URI identifier for the problem type; primary machine identifier. Clients should switch on this (or ``error_code``), not on ``title`` or ``detail``."
-          },
-          "title": {
-            "type": "string",
-            "title": "Title",
-            "description": "Short human summary of the problem type; stable across occurrences. Fallback for humans that don't recognise the type URI."
-          },
-          "status": {
-            "type": "integer",
-            "title": "Status",
-            "description": "HTTP status code for this occurrence"
-          },
-          "detail": {
-            "type": "string",
-            "title": "Detail",
-            "description": "Human-readable explanation specific to this occurrence. Safe to surface to end users \u2014 never contains debugging information."
-          },
-          "instance": {
-            "type": "string",
-            "title": "Instance",
-            "description": "Request path that produced the error"
-          },
-          "error_code": {
-            "type": "string",
-            "const": "user_claude_chain_refused",
-            "title": "Error Code",
-            "description": "Always ``user_claude_chain_refused``; switch on it to narrow the 422"
-          },
-          "errors": {
-            "anyOf": [
-              {
-                "items": {
-                  "$ref": "#/components/schemas/ProblemErrorItem"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Errors",
-            "description": "Field-level failures (present on 422 responses from validation)"
-          },
-          "trace_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Trace Id",
-            "description": "OpenTelemetry trace ID (32 hex chars) when tracing is active. Lets support pivot from a failure the caller reports straight to the Tempo trace."
-          }
-        },
-        "additionalProperties": true,
-        "type": "object",
-        "required": [
-          "reason",
-          "active_schedules",
-          "type",
-          "title",
-          "status",
-          "detail",
-          "instance",
-          "error_code"
-        ],
-        "title": "UserClaudeSchedulesRefusedProblem",
-        "description": "422 ``user_claude_chain_refused``: the bot has enabled schedules."
       },
       "UserOrgCreate": {
         "properties": {
@@ -99134,6 +99513,20 @@
       },
       "WorkforceMembersRemove": {
         "properties": {
+          "expected_workforce_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Workforce Id",
+            "description": "Optional immutable board ID precondition. A mismatch returns 409 without changes. Older APIs reject this field instead of silently ignoring it; declarative writers should send this body field, not rely solely on the query parameter."
+          },
           "members": {
             "items": {
               "$ref": "#/components/schemas/WorkforceMemberRef"
@@ -99155,6 +99548,20 @@
       },
       "WorkforceMembersSet": {
         "properties": {
+          "expected_workforce_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Workforce Id",
+            "description": "Optional immutable board ID precondition. A mismatch returns 409 without changes. Older APIs reject this field instead of silently ignoring it; declarative writers should send this body field, not rely solely on the query parameter."
+          },
           "members": {
             "items": {
               "$ref": "#/components/schemas/WorkforceMemberSet"
@@ -100709,7 +101116,7 @@
         "type": "object"
       },
       "ConversationActivityEvent": {
-        "description": "Published to personal:{user_id} or org:{org_id}.",
+        "description": "Published to the personal channel of a conversation's owner and each human member.",
         "properties": {
           "type": {
             "const": "conversation.activity",
@@ -100741,7 +101148,7 @@
         "type": "object"
       },
       "ConversationDeletedEvent": {
-        "description": "Published when a conversation disappears from an audience's view.\n\nEmitted when a conversation is deleted \u2014 and also to the **org** channel\nwhen an org-shared conversation is made private, because from the org\naudience's perspective the conversation is gone (they lost access and\ncannot refetch it). Routed by scope like :class:`ConversationUpdatedEvent`:\norg-scoped conversations reach the whole org's sidebar via the org channel;\nuser-scoped ones reach only the owner's personal channel. Clients treat it\nas a list-invalidation signal \u2014 refetching drops the row.",
+        "description": "Published when a conversation disappears from an audience's view.\n\nEmitted when a conversation is deleted, and when a bot thread a person could\nread through its origin is sealed. Routed like\n:class:`ConversationUpdatedEvent`, to personal channels only. Clients treat\nit as a list-invalidation signal \u2014 refetching drops the row.",
         "properties": {
           "type": {
             "const": "conversation.deleted",
@@ -100839,7 +101246,7 @@
         ]
       },
       "ConversationMembershipAddedEvent": {
-        "description": "The recipient was added to a conversation (platform-development #5017).\n\nPublished to the added person's ``personal:{user_id}`` channel only, never\nto the org channel: the audience is exactly the people whose membership\nchanged. Identity-free by design, like every personal-channel event (PlatDev\n#4517): the channel is admitted on identity alone with no org boundary, so\nit carries ids and nothing else. Clients refetch the conversation list,\nwhich is boundary-gated, and the row appears there with its ``added_by``.",
+        "description": "The recipient was added to a conversation (platform-development #5017).\n\nPublished to the added person's ``personal:{user_id}`` channel only: the audience is exactly the people whose membership\nchanged. Identity-free by design, like every personal-channel event (PlatDev\n#4517): the channel is admitted on identity alone with no org boundary, so\nit carries ids and nothing else. Clients refetch the conversation list,\nwhich is boundary-gated, and the row appears there with its ``added_by``.",
         "properties": {
           "type": {
             "const": "conversation.membership_added",
@@ -100860,7 +101267,7 @@
         "type": "object"
       },
       "ConversationMembershipRemovedEvent": {
-        "description": "The recipient was removed from a conversation, or left it (#5017).\n\nPublished to the removed person's ``personal:{user_id}`` channel only.\nClients treat it as a list-invalidation signal: refetching drops the row if\nthe recipient no longer sees the conversation by any other route (until\nPR 4, an org-scoped conversation stays visible after its members leave).",
+        "description": "The recipient was removed from a conversation, or left it (#5017).\n\nPublished to the removed person's ``personal:{user_id}`` channel only.\nClients treat it as a list-invalidation signal: refetching drops the row\nunless the recipient still reads it through an origin (#5122).",
         "properties": {
           "type": {
             "const": "conversation.membership_removed",
@@ -100943,7 +101350,7 @@
         "type": "object"
       },
       "ConversationNewEvent": {
-        "description": "Published when a new conversation is created.\n\nRouted by scope like :class:`ConversationActivityEvent`: org-scoped\nconversations reach the whole org's sidebar via the org channel;\nuser-scoped ones reach only the owner's personal channel.",
+        "description": "Published when a new conversation is created.\n\nRouted like :class:`ConversationActivityEvent`, to the personal channel of\nthe owner and each human member.",
         "properties": {
           "type": {
             "const": "conversation.new",
@@ -101116,7 +101523,7 @@
         "type": "object"
       },
       "ConversationTurnEvent": {
-        "description": "A conversation's active turn started or ended.\n\nPublished to the conversation's *sidebar* channel \u2014 ``org:{org_id}`` for\norg-scoped conversations, the owner's ``personal:{user_id}`` for user-scoped\nones \u2014 exactly like :class:`ConversationActivityEvent`. Lets aggregate\nsurfaces (workforce boards, sidebars, launchpad) drive their \"bot is working\"\npulses from the one or two shared channels every client already holds,\ninstead of live-subscribing to one ``conversation:`` channel per watched\nconversation (Centrifugo caps a connection at 128 channels; EPIC #3530).\n\nThe event mirrors the ``conversation_active_turn`` lease, which is what the\nbulk ``/active-turns`` poll reads: ``started`` is published when a turn\nclaims the lease, ``ended`` only when that turn's terminal actually released\nit. It is a compact lifecycle edge, never a stream \u2014 deltas stay on the\nconversation channel. Best-effort: a missed ``ended`` (crashed publisher,\ndropped socket) is repaired by the active-turn poll.\n\n``request_id`` names the turn that produced the edge. Two turns' edges can\nreach a client out of order (a successor's ``started`` can overtake its\npredecessor's ``ended``), so a consumer applies an ``ended`` only when it\nnames the turn it currently believes is running.",
+        "description": "A conversation's active turn started or ended.\n\nPublished to the conversation's *sidebar* channels \u2014 the personal channel\nof its owner and each human member \u2014 exactly like\n:class:`ConversationActivityEvent`. Lets aggregate surfaces (workforce\nboards, sidebars, launchpad) drive their \"bot is working\" pulses from the\npersonal channel every client already holds,\ninstead of live-subscribing to one ``conversation:`` channel per watched\nconversation (Centrifugo caps a connection at 128 channels; EPIC #3530).\n\nThe event mirrors the ``conversation_active_turn`` lease, which is what the\nbulk ``/active-turns`` poll reads: ``started`` is published when a turn\nclaims the lease, ``ended`` only when that turn's terminal actually released\nit. It is a compact lifecycle edge, never a stream \u2014 deltas stay on the\nconversation channel. Best-effort: a missed ``ended`` (crashed publisher,\ndropped socket) is repaired by the active-turn poll.\n\n``request_id`` names the turn that produced the edge. Two turns' edges can\nreach a client out of order (a successor's ``started`` can overtake its\npredecessor's ``ended``), so a consumer applies an ``ended`` only when it\nnames the turn it currently believes is running.",
         "properties": {
           "type": {
             "const": "conversation.turn",
@@ -101163,7 +101570,7 @@
         "type": "string"
       },
       "ConversationUpdatedEvent": {
-        "description": "Published when a conversation's own fields change \u2014 e.g. its title is\nauto-generated from the first user message, or a user renames it.\n\nLets sidebar/list views refresh without a manual reload. Routed like\n:class:`ConversationActivityEvent`: to the org channel for org-scoped\nconversations and the owner's personal channel for user-scoped ones.\n\n``title`` rides along on the **org** channel only, whose subscribe and\nsub-refresh pass the org boundary. The personal channel is admitted on\nidentity alone, with no org boundary, so it carries no content: ids and\nkinds still cross (activity metadata), but the client refetches the title\nthrough the boundary-gated REST list (PlatDev #4517). The payload inventory\nis pinned in ``core/tests/services/test_personal_channel_payloads.py``.\nThe conversation-list refetch is the source of truth on both channels.",
+        "description": "Published when a conversation's own fields change \u2014 e.g. its title is\nauto-generated from the first user message, or a user renames it.\n\nLets sidebar/list views refresh without a manual reload. Routed like\n:class:`ConversationActivityEvent`, to personal channels only.\n\nA personal channel is admitted on identity alone, with no org boundary, so\nit carries no content: ids and kinds still cross (activity metadata), but\nthe client refetches the title through the boundary-gated REST list\n(PlatDev #4517). The payload inventory is pinned in\n``core/tests/services/test_personal_channel_payloads.py``.",
         "properties": {
           "type": {
             "const": "conversation.updated",
@@ -101186,7 +101593,7 @@
               }
             ],
             "default": null,
-            "description": "On the org channel: the conversation's title after the update, or null if it is untitled. On the personal channel: always null, which says nothing about the title; refetch the conversation list for it.",
+            "description": "Deprecated: always null, which says nothing about the title; refetch the conversation list for it.",
             "title": "Title"
           },
           "members_changed": {
