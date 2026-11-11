@@ -30,7 +30,7 @@ walks through a first configuration.
 | `botyard_vault_secret` | A Runtime Vault secret and its access rules | [Runtime Vault](https://docs.botyard.io/docs/runtime-vault) |
 
 Data sources: `botyard_bot`, `botyard_bot_template`, `botyard_bot_templates`,
-`botyard_credentials`, `botyard_mcp_servers`, `botyard_skill`, `botyard_skills`,
+`botyard_credential`, `botyard_credentials`, `botyard_mcp_servers`, `botyard_skill`, `botyard_skills`,
 `botyard_tool`, `botyard_tools`.
 
 Reference documentation is generated for the Terraform Registry and lives in
