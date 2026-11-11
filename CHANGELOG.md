@@ -12,6 +12,10 @@ a version.
 
 ## [Unreleased]
 
+### Added
+
+- **New data source `botyard_credential`** looks up one organization credential by `slug` and exposes its `credential_id` for `botyard_bot_credential_assignment`, so configurations no longer hard-code a UUID that differs per organization. Use `slug = "user-claude-subscription"` to find the system-created credential that puts a bot on each person's own Claude subscription when it is first in the bot's `llm` list. The vendor is exposed as `credential_provider`, because `provider` is a reserved attribute name at a data source's root.
+
 ### Changed
 
 - **`botyard_bot`: new hosted bots default to the Botyard native runtime.** Use `native_config` for native settings; creating OpenClaw bots or supplying an OpenClaw-only `config` for a new native bot is refused. Existing and imported OpenClaw bots retain their runtime and `config` management when upgrading. Replacement of existing OpenClaw bots is refused. Legacy deletion is protected by default, including tainted replacement; deliberate deletion requires setting `allow_legacy_deletion = true` and applying it before a separate deletion operation. Native and external deletion is unchanged. Deletion fails closed for absent, unknown, or unrecognized saved harness values, even with the legacy opt-in; refresh to classify older state before intentional deletion.

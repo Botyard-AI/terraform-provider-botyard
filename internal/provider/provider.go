@@ -189,6 +189,7 @@ func (p *BotyardProvider) DataSources(_ context.Context) []func() datasource.Dat
 		NewBotSchedulesDataSource,
 		NewBotTemplateDataSource,
 		NewBotTemplatesDataSource,
+		NewCredentialDataSource,
 		NewCredentialsDataSource,
 		NewMcpServersDataSource,
 		NewPackDataSource,
