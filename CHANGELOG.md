@@ -18,6 +18,10 @@ a version.
 - Pack-version reads understand fixed skill pins and skills following latest edits. Latest skills have null computed version fields rather than a fabricated pin; older fixed-reference responses remain readable. The vendored public API and generated client are refreshed canonically.
 - The next planned provider release for this change is the minor version **0.9.0**. Release publication remains a separate manual action; its dated changelog section is prepared when the release date is set.
 
+### Security
+
+- Release binaries are built with Go 1.26.11, which fixes GO-2026-6859 (an HTTP/1 server crash caused by a `MaxBytesReader` header race in `net/http`).
+
 ## [0.8.0] - 2026-11-01
 
 ### Added
